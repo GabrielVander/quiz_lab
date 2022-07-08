@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_lab/features/counter/presentation/pages/main_page.dart';
 
 class QuizLabApplication extends StatelessWidget {
-  const QuizLabApplication({Key? key}) : super(key: key);
+  const QuizLabApplication({super.key});
 
   // This widget is the root of your application.
   @override
