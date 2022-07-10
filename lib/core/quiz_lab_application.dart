@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/features/counter/presentation/pages/main_page.dart';
+import 'package:quiz_lab/core/presentation/pages/main_page.dart';
+import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
 
 class QuizLabApplication extends StatelessWidget {
   const QuizLabApplication({super.key});
@@ -9,19 +10,8 @@ class QuizLabApplication extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Quiz Lab',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MainPage(title: 'Flutter Demo Home Page'),
+      theme: lightTheme,
+      home: const MainPage(),
     );
   }
 }
