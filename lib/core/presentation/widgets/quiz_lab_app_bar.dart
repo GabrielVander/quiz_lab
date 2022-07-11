@@ -40,8 +40,10 @@ class QuizLabAppBar extends StatelessWidget {
         iconSize: leadingIconSize,
         leftPadding: leadingIconLeftPadding,
       ),
-      actions: const [
-        SettingsAction(),
+      actions: [
+        SettingsAction(
+          size: leadingIconSize * .5,
+        ),
       ],
     );
   }
@@ -79,7 +81,10 @@ class LeadingIcon extends StatelessWidget {
 class SettingsAction extends StatelessWidget {
   const SettingsAction({
     super.key,
+    required this.size,
   });
+
+  final double size;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +94,7 @@ class SettingsAction extends StatelessWidget {
       icon: Icon(
         Icons.settings,
         color: Theme.of(context).textTheme.titleLarge?.color,
-        size: 30,
+        size: size,
       ),
     );
   }
