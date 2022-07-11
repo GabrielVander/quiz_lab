@@ -21,8 +21,9 @@ class MainPage extends StatelessWidget {
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(appBarHeight),
               child: QuizLabAppBar(
+                key: const ValueKey<String>('quizLabAppBar'),
                 leadingIconLeftPadding: contentPadding,
-                iconSize: iconSize,
+                leadingIconSize: iconSize,
               ),
             ),
             body: Center(

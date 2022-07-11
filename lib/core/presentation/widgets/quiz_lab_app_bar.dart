@@ -7,32 +7,37 @@ import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 class QuizLabAppBar extends StatelessWidget {
   const QuizLabAppBar({
     super.key,
-    required this.iconSize,
+    required this.leadingIconSize,
     required this.leadingIconLeftPadding,
   });
 
-  final double iconSize;
+  final double leadingIconSize;
   final double leadingIconLeftPadding;
 
   @override
   Widget build(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>()!;
-    final leadingIconWidth = iconSize + leadingIconLeftPadding;
-    final appBarHeight = iconSize + 20.0;
+    final leadingIconWidth = leadingIconSize + leadingIconLeftPadding;
+    final appBarHeight = leadingIconSize + 20.0;
 
     return AppBar(
+      key: const ValueKey('appBar'),
       backgroundColor: Theme.of(context).canvasColor,
       elevation: 0,
       toolbarHeight: appBarHeight,
-      title: const Text('Quiz Lab'),
+      title: const Text(
+        'Quiz Lab',
+        key: ValueKey('appBarTitle'),
+      ),
       leadingWidth: leadingIconWidth,
       titleTextStyle: TextStyle(
-        fontSize: lerpDouble(14, iconSize, 0.4),
+        fontSize: lerpDouble(14, leadingIconSize, 0.4),
         color: themeColors.textColors.primary,
       ),
       centerTitle: true,
       leading: LeadingIcon(
-        iconSize: iconSize,
+        key: const ValueKey('appBarIcon'),
+        iconSize: leadingIconSize,
         leftPadding: leadingIconLeftPadding,
       ),
       actions: const [
@@ -79,6 +84,7 @@ class SettingsAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      key: const ValueKey('appBarSettingsButton'),
       onPressed: () => {},
       icon: Icon(
         Icons.settings,
