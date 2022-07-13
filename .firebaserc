@@ -3,7 +3,7 @@
     "dev": "quiz-lab-dev",
     "uat": "quiz-lab-uat",
     "prod": "quiz-lab-24e91",
-    "default": "quiz-lab-24e91"
+    "default": "quiz-lab-dev"
   },
   "targets": {},
   "etags": {}
