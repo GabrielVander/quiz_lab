@@ -2,8 +2,8 @@
   "projects": {
     "dev": "quiz-lab-dev",
     "uat": "quiz-lab-uat",
-    "prod": "quiz-lab-24e91",
-    "default": "quiz-lab-dev"
+    "default": "quiz-lab-dev",
+    "prod": "quiz-lab-live"
   },
   "targets": {},
   "etags": {}
