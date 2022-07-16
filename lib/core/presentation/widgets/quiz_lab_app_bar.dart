@@ -1,79 +1,66 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/assets/images.dart';
-import 'package:quiz_lab/core/presentation/themes/extensions.dart';
+import 'package:sizer/sizer.dart';
 
-class QuizLabAppBar extends StatelessWidget {
+class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
   const QuizLabAppBar({
     super.key,
-    required this.leadingIconSize,
-    required this.leadingIconLeftPadding,
+    required this.height,
+    required this.padding,
   });
 
-  final double leadingIconSize;
-  final double leadingIconLeftPadding;
+  final double height;
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
-    final themeColors = Theme.of(context).extension<ThemeColors>()!;
-    final leadingIconWidth = leadingIconSize + leadingIconLeftPadding;
-    final appBarHeight = leadingIconSize + 20.0;
-
-    return AppBar(
-      key: const ValueKey('appBar'),
-      backgroundColor: Theme.of(context).canvasColor,
-      elevation: 0,
-      toolbarHeight: appBarHeight,
-      title: const Text(
-        'Quiz Lab',
-        key: ValueKey('appBarTitle'),
+    return Padding(
+      padding: padding,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Column(
+            children: const [
+              Expanded(
+                child: LeadingIcon(
+                  key: ValueKey('appBarIcon'),
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // TODO: Add
+                Text(
+                  'Quiz Lab',
+                  key: const ValueKey('appBarTitle'),
+                  style: TextStyle(fontSize: 15.sp),
+                ),
+              ],
+            ),
+          ),
+          const SettingsAction(),
+        ],
       ),
-      leadingWidth: leadingIconWidth,
-      titleTextStyle: TextStyle(
-        fontSize: lerpDouble(14, leadingIconSize, 0.4),
-        color: themeColors.textColors.primary,
-      ),
-      centerTitle: true,
-      leading: LeadingIcon(
-        key: const ValueKey('appBarIcon'),
-        iconSize: leadingIconSize,
-        leftPadding: leadingIconLeftPadding,
-      ),
-      actions: [
-        SettingsAction(
-          size: leadingIconSize * .5,
-        ),
-      ],
     );
   }
+
+  @override
+  Size get preferredSize => Size(double.infinity, height);
 }
 
 class LeadingIcon extends StatelessWidget {
   const LeadingIcon({
     super.key,
-    required this.iconSize,
-    required this.leftPadding,
   });
-
-  final double leftPadding;
-  final double iconSize;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          width: leftPadding,
-        ),
-        Image.asset(
-          Images.appIconIconOnly,
-          height: iconSize,
-          width: iconSize,
-          // leadingIconLeftPadding: leadingIconLeftPadding,
-          // paladinsIconSize: paladinsIconSize,
-        ),
-      ],
+    return Image.asset(
+      Images.appIconIconOnly,
+      fit: BoxFit.scaleDown,
     );
   }
 }
@@ -81,10 +68,7 @@ class LeadingIcon extends StatelessWidget {
 class SettingsAction extends StatelessWidget {
   const SettingsAction({
     super.key,
-    required this.size,
   });
-
-  final double size;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +78,6 @@ class SettingsAction extends StatelessWidget {
       icon: Icon(
         Icons.settings,
         color: Theme.of(context).textTheme.titleLarge?.color,
-        size: size,
       ),
     );
   }
