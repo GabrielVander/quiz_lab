@@ -1,0 +1,10 @@
+{
+  "projects": {
+    "dev": "quiz-lab-dev",
+    "uat": "quiz-lab-uat",
+    "default": "quiz-lab-dev",
+    "prod": "quiz-lab-live"
+  },
+  "targets": {},
+  "etags": {}
+}
