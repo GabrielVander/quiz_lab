@@ -38,6 +38,7 @@ dependencies:
   responsive_builder: ^0.4.2
 
 dev_dependencies:
+  flutter_parameterized_test: ^0.2.1
   flutter_test:
     sdk: flutter
   very_good_analysis: ^3.0.1
