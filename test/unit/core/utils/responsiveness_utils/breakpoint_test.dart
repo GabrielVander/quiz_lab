@@ -2,7 +2,7 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart'
     show ParameterizedSource, parameterizedTest;
 import 'package:flutter_test/flutter_test.dart' show expect, group, setUp, test;
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart'
-    show BoundType, MobileBreakpoint;
+    show BoundType, MobileBreakpoint, TabletBreakpoint;
 
 void main() {
   group('MobileBreakpoint', () {
@@ -13,11 +13,11 @@ void main() {
     });
 
     test('value matches', () {
-      expect(600, breakpoint.value);
+      expect(breakpoint.value, 600);
     });
 
     test('bound type matches', () {
-      expect(BoundType.lowerBound, breakpoint.boundType);
+      expect(breakpoint.boundType, BoundType.upperBound);
     });
 
     parameterizedTest(
@@ -32,6 +32,41 @@ void main() {
         [600.1, false],
         [601.0, false],
         [999.9, false],
+      ]),
+      (List<dynamic> testCases) {
+        final measurement = testCases[0] as double;
+        final shouldApply = testCases[1] as bool;
+
+        final result = breakpoint.applies(measurement);
+
+        expect(result, shouldApply);
+      },
+    );
+  });
+  group('TabletBreakpoint', () {
+    late TabletBreakpoint breakpoint;
+
+    setUp(() {
+      breakpoint = TabletBreakpoint();
+    });
+
+    test('value matches', () {
+      expect(breakpoint.value, 600);
+    });
+
+    test('bound type matches', () {
+      expect(breakpoint.boundType, BoundType.lowerBound);
+    });
+
+    parameterizedTest(
+      'applies',
+      ParameterizedSource.values([
+        [599.0, false],
+        [599.9, false],
+        [600.0, true],
+        [600.1, true],
+        [601.0, true],
+        [999.9, true],
       ]),
       (List<dynamic> testCases) {
         final measurement = testCases[0] as double;
