@@ -30,3 +30,7 @@ class MobileBreakpoint extends Breakpoint {
 class TabletBreakpoint extends Breakpoint {
   TabletBreakpoint() : super(value: 600);
 }
+
+class DesktopBreakpoint extends Breakpoint {
+  DesktopBreakpoint() : super(value: 992);
+}

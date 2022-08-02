@@ -2,7 +2,7 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart'
     show ParameterizedSource, parameterizedTest;
 import 'package:flutter_test/flutter_test.dart' show expect, group, setUp, test;
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart'
-    show BoundType, MobileBreakpoint, TabletBreakpoint;
+    show BoundType, DesktopBreakpoint, MobileBreakpoint, TabletBreakpoint;
 
 void main() {
   group('MobileBreakpoint', () {
@@ -43,6 +43,7 @@ void main() {
       },
     );
   });
+
   group('TabletBreakpoint', () {
     late TabletBreakpoint breakpoint;
 
@@ -66,6 +67,41 @@ void main() {
         [600.0, true],
         [600.1, true],
         [601.0, true],
+        [999.9, true],
+      ]),
+      (List<dynamic> testCases) {
+        final measurement = testCases[0] as double;
+        final shouldApply = testCases[1] as bool;
+
+        final result = breakpoint.applies(measurement);
+
+        expect(result, shouldApply);
+      },
+    );
+  });
+
+  group('DesktopBreakpoint', () {
+    late DesktopBreakpoint breakpoint;
+
+    setUp(() {
+      breakpoint = DesktopBreakpoint();
+    });
+
+    test('value matches', () {
+      expect(breakpoint.value, 992);
+    });
+
+    test('bound type matches', () {
+      expect(breakpoint.boundType, BoundType.lowerBound);
+    });
+
+    parameterizedTest(
+      'applies',
+      ParameterizedSource.values([
+        [991.0, false],
+        [991.9, false],
+        [992.0, true],
+        [992.1, true],
         [999.9, true],
       ]),
       (List<dynamic> testCases) {
