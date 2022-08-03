@@ -1,13 +1,16 @@
+import 'package:flutter/material.dart';
+
 enum BoundType { lowerBound, upperBound }
 
+@immutable
 abstract class Breakpoint {
-  Breakpoint({
+  const Breakpoint({
     required this.value,
     this.boundType = BoundType.lowerBound,
   });
 
-  double value;
-  BoundType boundType = BoundType.lowerBound;
+  final double value;
+  final BoundType boundType;
 
   bool applies(double measurement) {
     switch (boundType) {
@@ -21,16 +24,52 @@ abstract class Breakpoint {
         }
     }
   }
+
+//<editor-fold desc="Data Methods">
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Breakpoint &&
+          runtimeType == other.runtimeType &&
+          boundType == other.boundType);
+
+  @override
+  int get hashCode => boundType.hashCode;
+
+  @override
+  String toString() {
+    return 'Breakpoint{ boundType: $boundType,}';
+  }
+
+//</editor-fold>
 }
 
+@immutable
+class UnknownBreakpoint implements Breakpoint {
+  @override
+  final BoundType boundType = BoundType.lowerBound;
+
+  @override
+  final double value = 0;
+
+  @override
+  bool applies(double measurement) {
+    return false;
+  }
+}
+
+@immutable
 class MobileBreakpoint extends Breakpoint {
-  MobileBreakpoint() : super(value: 600, boundType: BoundType.upperBound);
+  const MobileBreakpoint() : super(value: 600, boundType: BoundType.upperBound);
 }
 
+@immutable
 class TabletBreakpoint extends Breakpoint {
-  TabletBreakpoint() : super(value: 600);
+  const TabletBreakpoint() : super(value: 600);
 }
 
+@immutable
 class DesktopBreakpoint extends Breakpoint {
-  DesktopBreakpoint() : super(value: 992);
+  const DesktopBreakpoint() : super(value: 992);
 }

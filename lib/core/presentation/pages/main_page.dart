@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_app_bar.dart';
-import 'package:responsive_builder/responsive_builder.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -10,11 +11,20 @@ class MainPage extends StatelessWidget {
     return SafeArea(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          final appBarHeight = getValueForScreenType<double>(
+          final appBarHeight = ScreenBreakpoints.getValueForScreenType<double>(
             context: context,
-            mobile: 75,
-            tablet: 90,
-            desktop: 100,
+            map: (p) {
+              switch (p.runtimeType) {
+                case MobileBreakpoint:
+                  return 75;
+                case TabletBreakpoint:
+                  return 90;
+                case DesktopBreakpoint:
+                  return 95;
+                default:
+                  return 100;
+              }
+            },
           );
 
           return Scaffold(

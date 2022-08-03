@@ -9,7 +9,7 @@ void main() {
     late MobileBreakpoint breakpoint;
 
     setUp(() {
-      breakpoint = MobileBreakpoint();
+      breakpoint = const MobileBreakpoint();
     });
 
     test('value matches', () {
@@ -48,7 +48,7 @@ void main() {
     late TabletBreakpoint breakpoint;
 
     setUp(() {
-      breakpoint = TabletBreakpoint();
+      breakpoint = const TabletBreakpoint();
     });
 
     test('value matches', () {
@@ -84,7 +84,7 @@ void main() {
     late DesktopBreakpoint breakpoint;
 
     setUp(() {
-      breakpoint = DesktopBreakpoint();
+      breakpoint = const DesktopBreakpoint();
     });
 
     test('value matches', () {
