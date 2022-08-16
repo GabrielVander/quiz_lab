@@ -1,3 +1,4 @@
+import 'package:quiz_lab/core/presentation/widgets/quiz_lab_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_app_bar.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
@@ -32,6 +33,9 @@ class MainPage extends StatelessWidget {
               key: const ValueKey<String>('quizLabAppBar'),
               padding: const EdgeInsets.all(10),
               height: appBarHeight,
+            ),
+            bottomNavigationBar: const QuizLabNavBar(
+              key: ValueKey<String>('navBar'),
             ),
             body: Center(
               child: Column(
