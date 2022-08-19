@@ -13,6 +13,7 @@ class QuizLabNavBar extends StatelessWidget {
 
     return BottomNavigationBar(
       backgroundColor: themeColors?.backgroundColors.tertiary,
+      unselectedItemColor: themeColors?.textColors.primary,
       items: [
         BottomNavigationBarItem(
           label: 'Assessments',
