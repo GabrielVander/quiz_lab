@@ -14,7 +14,7 @@ class ThemeColors extends ThemeExtension<ThemeColors> {
   @override
   ThemeExtension<ThemeColors> copyWith({
     TextColors? textColors,
-    BackgroundColors? backgroundColors
+    BackgroundColors? backgroundColors,
   }) =>
       ThemeColors(
         textColors: textColors ?? this.textColors,

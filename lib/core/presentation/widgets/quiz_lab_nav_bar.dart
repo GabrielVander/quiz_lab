@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import '../themes/extensions.dart';
+import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 
 class QuizLabNavBar extends StatelessWidget {
   const QuizLabNavBar({
@@ -14,18 +13,21 @@ class QuizLabNavBar extends StatelessWidget {
 
     return BottomNavigationBar(
       backgroundColor: themeColors?.backgroundColors.tertiary,
-      items: const [
+      items: [
         BottomNavigationBarItem(
           label: 'Assessments',
           icon: Icon(MdiIcons.schoolOutline),
+          activeIcon: Icon(MdiIcons.school),
         ),
         BottomNavigationBarItem(
           label: 'Questions',
-          icon: Icon(MdiIcons.database),
+          icon: Icon(MdiIcons.databaseOutline),
+          activeIcon: Icon(MdiIcons.database),
         ),
         BottomNavigationBarItem(
           label: 'Results',
-          icon: Icon(MdiIcons.cardBulleted),
+          icon: Icon(MdiIcons.cardBulletedOutline),
+          activeIcon: Icon(MdiIcons.cardBulleted),
         ),
       ],
     );
