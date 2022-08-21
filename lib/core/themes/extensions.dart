@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/themes/background_colors.dart';
-import 'package:quiz_lab/core/presentation/themes/text_colors.dart';
+import 'package:quiz_lab/core/themes/background_colors.dart';
+import 'package:quiz_lab/core/themes/text_colors.dart';
 
 class ThemeColors extends ThemeExtension<ThemeColors> {
   const ThemeColors({

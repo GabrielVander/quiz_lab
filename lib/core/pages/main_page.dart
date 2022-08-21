@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/widgets/quiz_lab_app_bar.dart';
-import 'package:quiz_lab/core/presentation/widgets/quiz_lab_nav_bar.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/core/widgets/quiz_lab_app_bar.dart';
+import 'package:quiz_lab/core/widgets/quiz_lab_nav_bar.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});

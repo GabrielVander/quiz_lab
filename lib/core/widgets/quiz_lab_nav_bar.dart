@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:quiz_lab/core/presentation/themes/extensions.dart';
+import 'package:quiz_lab/core/themes/extensions.dart';
 
 class QuizLabNavBar extends StatelessWidget {
   const QuizLabNavBar({
@@ -14,7 +14,7 @@ class QuizLabNavBar extends StatelessWidget {
     return BottomNavigationBar(
       backgroundColor: themeColors?.backgroundColors.tertiary,
       unselectedItemColor: themeColors?.textColors.primary,
-      items: [
+      items: const [
         BottomNavigationBarItem(
           label: 'Assessments',
           icon: Icon(MdiIcons.schoolOutline),
