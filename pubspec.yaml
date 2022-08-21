@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.5
   sizer: ^2.0.15
   material_design_icons_flutter: ^5.0.6996
+  get_it: ^7.2.0
 
 dev_dependencies:
   flutter_parameterized_test: ^0.2.1
