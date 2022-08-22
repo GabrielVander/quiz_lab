@@ -38,6 +38,8 @@ dependencies:
   material_design_icons_flutter: ^5.0.6996
   equatable: ^2.0.5
   get_it: ^7.2.0
+  flutter_hooks: ^0.18.5+1
+  hooked_bloc: ^1.2.0
 
 dev_dependencies:
   flutter_parameterized_test: ^0.2.1
