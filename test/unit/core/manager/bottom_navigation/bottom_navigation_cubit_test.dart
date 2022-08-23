@@ -15,29 +15,29 @@ void main() {
   test('initial state', () {
     expect(
       cubit.state,
-      const BottomNavigationIndexChangedState(
-        newIndex: NavigationIndex.assessments,
+      BottomNavigationIndexChangedState(
+        newIndex: NavigationIndex.assessments.indexNumber,
       ),
     );
   });
   group('transitionTo', () {
     group('emits correct state', () {
       <NavigationIndex, BottomNavigationIndexChangedState>{
-        NavigationIndex.assessments: const BottomNavigationIndexChangedState(
-          newIndex: NavigationIndex.assessments,
+        NavigationIndex.assessments: BottomNavigationIndexChangedState(
+          newIndex: NavigationIndex.assessments.indexNumber,
         ),
-        NavigationIndex.questions: const BottomNavigationIndexChangedState(
-          newIndex: NavigationIndex.questions,
+        NavigationIndex.questions: BottomNavigationIndexChangedState(
+          newIndex: NavigationIndex.questions.indexNumber,
         ),
-        NavigationIndex.results: const BottomNavigationIndexChangedState(
-          newIndex: NavigationIndex.results,
+        NavigationIndex.results: BottomNavigationIndexChangedState(
+          newIndex: NavigationIndex.results.indexNumber,
         ),
       }.forEach((key, value) {
         test('$key -> $value', () {
           expectLater(cubit.stream, emits(value));
 
           cubit
-            ..transitionTo(newIndex: key)
+            ..transitionTo(newIndex: key.indexNumber)
             ..close();
         });
       });
@@ -49,16 +49,16 @@ void main() {
           NavigationIndex.questions,
           NavigationIndex.results
         ]: [
-          const BottomNavigationIndexChangedState(
-            newIndex: NavigationIndex.assessments,
+          BottomNavigationIndexChangedState(
+            newIndex: NavigationIndex.assessments.indexNumber,
           ),
-          const BottomNavigationIndexChangedState(
-            previousIndex: NavigationIndex.assessments,
-            newIndex: NavigationIndex.questions,
+          BottomNavigationIndexChangedState(
+            previousIndex: NavigationIndex.assessments.indexNumber,
+            newIndex: NavigationIndex.questions.indexNumber,
           ),
-          const BottomNavigationIndexChangedState(
-            previousIndex: NavigationIndex.questions,
-            newIndex: NavigationIndex.results,
+          BottomNavigationIndexChangedState(
+            previousIndex: NavigationIndex.questions.indexNumber,
+            newIndex: NavigationIndex.results.indexNumber,
           )
         ],
         [
@@ -66,16 +66,16 @@ void main() {
           NavigationIndex.assessments,
           NavigationIndex.results
         ]: [
-          const BottomNavigationIndexChangedState(
-            newIndex: NavigationIndex.questions,
+          BottomNavigationIndexChangedState(
+            newIndex: NavigationIndex.questions.indexNumber,
           ),
-          const BottomNavigationIndexChangedState(
-            previousIndex: NavigationIndex.questions,
-            newIndex: NavigationIndex.assessments,
+          BottomNavigationIndexChangedState(
+            previousIndex: NavigationIndex.questions.indexNumber,
+            newIndex: NavigationIndex.assessments.indexNumber,
           ),
-          const BottomNavigationIndexChangedState(
-            previousIndex: NavigationIndex.assessments,
-            newIndex: NavigationIndex.results,
+          BottomNavigationIndexChangedState(
+            previousIndex: NavigationIndex.assessments.indexNumber,
+            newIndex: NavigationIndex.results.indexNumber,
           )
         ],
         [
@@ -83,16 +83,16 @@ void main() {
           NavigationIndex.questions,
           NavigationIndex.assessments
         ]: [
-          const BottomNavigationIndexChangedState(
-            newIndex: NavigationIndex.results,
+          BottomNavigationIndexChangedState(
+            newIndex: NavigationIndex.results.indexNumber,
           ),
-          const BottomNavigationIndexChangedState(
-            previousIndex: NavigationIndex.results,
-            newIndex: NavigationIndex.questions,
+          BottomNavigationIndexChangedState(
+            previousIndex: NavigationIndex.results.indexNumber,
+            newIndex: NavigationIndex.questions.indexNumber,
           ),
-          const BottomNavigationIndexChangedState(
-            previousIndex: NavigationIndex.questions,
-            newIndex: NavigationIndex.assessments,
+          BottomNavigationIndexChangedState(
+            previousIndex: NavigationIndex.questions.indexNumber,
+            newIndex: NavigationIndex.assessments.indexNumber,
           )
         ]
       }.forEach((List<NavigationIndex> indexes, value) {
@@ -100,7 +100,7 @@ void main() {
           expectLater(cubit.stream, emitsInOrder(value));
 
           for (final i in indexes) {
-            cubit.transitionTo(newIndex: i);
+            cubit.transitionTo(newIndex: i.indexNumber);
           }
 
           cubit.close();

@@ -15,8 +15,8 @@ class BottomNavigationIndexChangedState extends BottomNavigationState {
     required this.newIndex,
   });
 
-  final NavigationIndex? previousIndex;
-  final NavigationIndex newIndex;
+  final int? previousIndex;
+  final int newIndex;
 
   @override
   List<Object> get props {

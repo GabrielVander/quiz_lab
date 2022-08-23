@@ -22,12 +22,11 @@ class QuizLabNavBar extends HookWidget {
     final index = _getNavIndex(state);
 
     return BottomNavigationBar(
-      currentIndex: index.indexNumber,
+      currentIndex: index,
       backgroundColor: themeColors?.backgroundColors.tertiary,
       unselectedItemColor: themeColors?.textColors.primary,
-      selectedIconTheme: const IconThemeData(size: 30.0),
-      onTap: (int newIndex) =>
-          cubit.transitionTo(newIndex: _intAsNavIndex(newIndex)),
+      selectedIconTheme: const IconThemeData(size: 30),
+      onTap: (int newIndex) => cubit.transitionTo(newIndex: newIndex),
       items: const [
         BottomNavigationBarItem(
           label: 'Assessments',
@@ -48,24 +47,11 @@ class QuizLabNavBar extends HookWidget {
     );
   }
 
-  NavigationIndex _getNavIndex(BottomNavigationState state) {
+  int _getNavIndex(BottomNavigationState state) {
     if (state is BottomNavigationIndexChangedState) {
       return state.newIndex;
     }
 
-    return NavigationIndex.assessments;
-  }
-
-  NavigationIndex _intAsNavIndex(int numberIndex) {
-    switch (numberIndex) {
-      case 0:
-        return NavigationIndex.assessments;
-      case 1:
-        return NavigationIndex.questions;
-      case 2:
-        return NavigationIndex.results;
-      default:
-        return NavigationIndex.assessments;
-    }
+    return 0;
   }
 }

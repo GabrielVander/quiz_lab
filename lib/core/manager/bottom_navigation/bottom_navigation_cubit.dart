@@ -6,22 +6,35 @@ part 'bottom_navigation_state.dart';
 class BottomNavigationCubit extends Cubit<BottomNavigationState> {
   BottomNavigationCubit()
       : super(
-          const BottomNavigationIndexChangedState(
-            newIndex: NavigationIndex.assessments,
+          BottomNavigationIndexChangedState(
+            newIndex: NavigationIndex.assessments.indexNumber,
           ),
         );
 
   NavigationIndex? previousIndex;
 
-  void transitionTo({required NavigationIndex newIndex}) {
+  void transitionTo({required int newIndex}) {
     emit(
       BottomNavigationIndexChangedState(
-        previousIndex: previousIndex,
+        previousIndex: previousIndex?.indexNumber,
         newIndex: newIndex,
       ),
     );
 
-    previousIndex = newIndex;
+    previousIndex = _intAsNavIndex(newIndex);
+  }
+
+  NavigationIndex _intAsNavIndex(int numberIndex) {
+    switch (numberIndex) {
+      case 0:
+        return NavigationIndex.assessments;
+      case 1:
+        return NavigationIndex.questions;
+      case 2:
+        return NavigationIndex.results;
+      default:
+        return NavigationIndex.assessments;
+    }
   }
 }
 
