@@ -25,6 +25,7 @@ class QuizLabNavBar extends HookWidget {
       currentIndex: index.indexNumber,
       backgroundColor: themeColors?.backgroundColors.tertiary,
       unselectedItemColor: themeColors?.textColors.primary,
+      selectedIconTheme: const IconThemeData(size: 30.0),
       onTap: (int newIndex) =>
           cubit.transitionTo(newIndex: _intAsNavIndex(newIndex)),
       items: const [
