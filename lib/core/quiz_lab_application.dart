@@ -3,12 +3,14 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/pages/main_page.dart';
 import 'package:quiz_lab/core/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/get_it_dependency_injection.dart';
 
 class QuizLabApplication extends StatelessWidget {
-  QuizLabApplication({super.key});
+  const QuizLabApplication({
+    super.key,
+    required this.dependencyInjection,
+  });
 
-  final DependencyInjection dependencyInjection = GetItDependencyInjection();
+  final DependencyInjection dependencyInjection;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,9 @@ class QuizLabApplication extends StatelessWidget {
       child: MaterialApp(
         title: 'Quiz Lab',
         theme: lightTheme,
-        home: const MainPage(),
+        home: MainPage(
+          dependencyInjection: dependencyInjection,
+        ),
       ),
     );
   }

@@ -4,16 +4,20 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quiz_lab/core/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/themes/extensions.dart';
+import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 
 class QuizLabNavBar extends HookWidget {
   const QuizLabNavBar({
     super.key,
+    required this.dependencyInjection,
   });
+
+  final DependencyInjection dependencyInjection;
 
   @override
   Widget build(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>();
-    final cubit = useBloc<BottomNavigationCubit>();
+    final cubit = dependencyInjection.get<BottomNavigationCubit>();
     final BottomNavigationState state = useBlocBuilder(cubit);
     final index = _getNavIndex(state);
 

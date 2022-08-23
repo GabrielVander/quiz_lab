@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/core/widgets/quiz_lab_app_bar.dart';
 import 'package:quiz_lab/core/widgets/quiz_lab_nav_bar.dart';
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+  const MainPage({
+    super.key,
+    required this.dependencyInjection,
+  });
+
+  final DependencyInjection dependencyInjection;
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +40,9 @@ class MainPage extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               height: appBarHeight,
             ),
-            bottomNavigationBar: const QuizLabNavBar(
-              key: ValueKey<String>('navBar'),
+            bottomNavigationBar: QuizLabNavBar(
+              key: const ValueKey<String>('navBar'),
+              dependencyInjection: dependencyInjection,
             ),
             body: Center(
               child: Column(
