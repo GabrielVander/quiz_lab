@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/pages/main_page.dart';
+import 'package:quiz_lab/core/pages/main_scaffold.dart';
 import 'package:quiz_lab/core/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 
@@ -19,7 +19,7 @@ class QuizLabApplication extends StatelessWidget {
       child: MaterialApp(
         title: 'Quiz Lab',
         theme: lightTheme,
-        home: MainPage(
+        home: MainScaffold(
           dependencyInjection: dependencyInjection,
         ),
       ),

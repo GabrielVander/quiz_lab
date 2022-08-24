@@ -6,8 +6,8 @@ import 'package:quiz_lab/core/widgets/quiz_lab_app_bar.dart';
 import 'package:quiz_lab/core/widgets/quiz_lab_nav_bar.dart';
 import 'package:quiz_lab/core/widgets/under_construction.dart';
 
-class MainPage extends StatelessWidget {
-  const MainPage({
+class MainScaffold extends StatelessWidget {
+  const MainScaffold({
     super.key,
     required this.dependencyInjection,
   });
