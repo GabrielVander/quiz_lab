@@ -7,5 +7,6 @@ import 'package:quiz_lab/core/assets/images.dart';
 void main() {
   test('images assets test', () {
     expect(File(Images.appIconIconOnly).existsSync(), true);
+    expect(File(Images.forklift).existsSync(), true);
   });
 }
