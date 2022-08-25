@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/quiz_lab_application.dart';
 import 'package:quiz_lab/core/utils/constants.dart';
+import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 
 void main() async {
   setupInjections();
