@@ -4,6 +4,7 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/features/quiz/presentation/pages/questions_page.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/quiz_lab_app_bar.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/quiz_lab_nav_bar.dart';
 
@@ -94,7 +95,7 @@ class Page extends StatelessWidget {
       case 0:
         return Container();
       case 1:
-        return Container();
+        return const QuestionsPage();
       case 2:
         return Container();
     }
