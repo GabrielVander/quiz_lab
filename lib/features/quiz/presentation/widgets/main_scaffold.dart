@@ -6,6 +6,7 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/pages/questions_page.dart';
+import 'package:quiz_lab/features/quiz/presentation/pages/results_page.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/quiz_lab_app_bar.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/quiz_lab_nav_bar.dart';
 
@@ -96,7 +97,7 @@ class Page extends StatelessWidget {
       case 1:
         return const QuestionsPage();
       case 2:
-        return Container();
+        return const ResultsPage();
     }
 
     return Container();

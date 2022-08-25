@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/under_construction.dart';
 
-class QuestionsPage extends StatelessWidget {
-  const QuestionsPage({super.key});
+class ResultsPage extends StatelessWidget {
+  const ResultsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class QuestionsPage extends StatelessWidget {
         children: [
           Row(
             children: const [
-              PageSubtitle(title: 'Questions'),
+              PageSubtitle(title: 'Results'),
             ],
           ),
           Expanded(

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 
-class PageSubTitle extends StatelessWidget {
-  const PageSubTitle({
+class PageSubtitle extends StatelessWidget {
+  const PageSubtitle({
     super.key,
     required this.title,
   });
