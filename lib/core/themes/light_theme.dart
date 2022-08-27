@@ -17,6 +17,9 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
 class LightThemeTextColors implements TextColors {
   @override
   Color get primary => Colors.black;
+
+  @override
+  Color get secondary => Colors.white;
 }
 
 class LightThemeBackgroundColors implements BackgroundColors {

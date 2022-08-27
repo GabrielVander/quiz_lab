@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
+import 'package:quiz_lab/features/quiz/presentation/widgets/assessment_overview.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/page_subtitle.dart';
 
 class AssessmentsPage extends HookWidget {
@@ -62,9 +63,15 @@ class Content extends StatelessWidget {
     if (state is AssessmentsOverviewLoaded) {
       final assessments = (state as AssessmentsOverviewLoaded).assessments;
 
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: assessments.map((e) => Text(e.toString())).toList(),
+      return ListView.separated(
+        itemCount: assessments.length,
+        itemBuilder: (BuildContext context, int index) => AssessmentOverview(
+          key: UniqueKey(),
+          assessment: assessments[index],
+        ),
+        separatorBuilder: (BuildContext _, int __) => const SizedBox(
+          height: 10,
+        ),
       );
     }
 

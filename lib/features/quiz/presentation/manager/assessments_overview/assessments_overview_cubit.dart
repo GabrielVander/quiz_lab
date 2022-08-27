@@ -12,33 +12,45 @@ class AssessmentsOverviewCubit extends Cubit<AssessmentsOverviewState> {
     AssessmentOverviewModel.having(
       title: 'Mathematics 1',
       amountOfQuestions: 10,
-      amountOfAnswers: 3,
-      answerLimit: 15,
-      dueDate: '6/23/2022',
+      answers: AnswersViewModel.having(
+        amountOfAnswers: 3,
+        answerLimit: 15,
+      ),
+      dueDate: DueDateViewModel.having(dueDate: '6/23/2022'),
     ),
     AssessmentOverviewModel.having(
       title: 'Mathematics 2',
       amountOfQuestions: 10,
-      amountOfAnswers: 6,
-      answerLimit: 15,
-      dueDate: '6/28/2022',
+      answers: AnswersViewModel.having(
+        amountOfAnswers: 6,
+        answerLimit: 15,
+      ),
+      dueDate: DueDateViewModel.having(dueDate: '6/28/2022'),
     ),
     AssessmentOverviewModel.having(
       title: 'Matrices',
       amountOfQuestions: 25,
-      amountOfAnswers: 27,
-      answerLimit: 27,
-      dueDate: '6/28/2022',
+      answers: AnswersViewModel.having(
+        amountOfAnswers: 27,
+        answerLimit: 27,
+      ),
+      dueDate: DueDateViewModel.having(dueDate: '6/28/2022'),
     ),
     AssessmentOverviewModel.having(
       title: 'Statistics 1',
       amountOfQuestions: 15,
-      amountOfAnswers: 7,
+      answers: AnswersViewModel.having(
+        amountOfAnswers: 7,
+      ),
+      dueDate: DueDateViewModel.having(),
     ),
     AssessmentOverviewModel.having(
       title: 'Integers Quiz',
       amountOfQuestions: 5,
-      amountOfAnswers: 5,
+      answers: AnswersViewModel.having(
+        amountOfAnswers: 5,
+      ),
+      dueDate: DueDateViewModel.having(),
     ),
   ];
 

@@ -4,10 +4,7 @@ class AssessmentOverviewModel extends Equatable {
   const AssessmentOverviewModel({
     required this.title,
     required this.amountOfQuestions,
-    required this.amountOfAnswers,
-    required this.hasAnswerLimit,
-    required this.answerLimit,
-    required this.hasDueDate,
+    required this.answers,
     required this.dueDate,
     required this.state,
   });
@@ -15,30 +12,23 @@ class AssessmentOverviewModel extends Equatable {
   factory AssessmentOverviewModel.having({
     required String title,
     required int amountOfQuestions,
-    required int amountOfAnswers,
-    int? answerLimit,
-    String? dueDate,
+    required AnswersViewModel answers,
+    required DueDateViewModel dueDate,
     AssessmentState? state,
   }) {
     return AssessmentOverviewModel(
       title: title,
       amountOfQuestions: amountOfQuestions,
-      amountOfAnswers: amountOfAnswers,
-      hasAnswerLimit: answerLimit != null,
-      answerLimit: answerLimit,
-      hasDueDate: dueDate != null,
+      answers: answers,
       dueDate: dueDate,
-      state: state ?? _buildState(amountOfAnswers, answerLimit),
+      state: state ?? _buildState(answers.amountOfAnswers, answers.answerLimit),
     );
   }
 
   final String title;
   final int amountOfQuestions;
-  final int amountOfAnswers;
-  final bool hasAnswerLimit;
-  final int? answerLimit;
-  final bool hasDueDate;
-  final String? dueDate;
+  final AnswersViewModel answers;
+  final DueDateViewModel dueDate;
   final AssessmentState state;
 
   @override
@@ -46,10 +36,7 @@ class AssessmentOverviewModel extends Equatable {
     return 'AssessmentsOverviewModel{ '
         'title: $title, '
         'amountOfQuestions: $amountOfQuestions, '
-        'amountOfAnswers: $amountOfAnswers, '
-        'hasAnswerLimit: $hasAnswerLimit, '
-        'answerLimit: $answerLimit, '
-        'hasDueDate: $hasDueDate, '
+        'answers: $answers, '
         'dueDate: $dueDate, '
         'state: $state, '
         '}';
@@ -58,20 +45,15 @@ class AssessmentOverviewModel extends Equatable {
   AssessmentOverviewModel copyWith({
     String? title,
     int? amountOfQuestions,
-    int? amountOfAnswers,
-    bool? hasAnswerLimit,
-    int? answerLimit,
+    AnswersViewModel? answers,
     bool? hasDueDate,
-    String? dueDate,
+    DueDateViewModel? dueDate,
     AssessmentState? state,
   }) {
     return AssessmentOverviewModel(
       title: title ?? this.title,
       amountOfQuestions: amountOfQuestions ?? this.amountOfQuestions,
-      amountOfAnswers: amountOfAnswers ?? this.amountOfAnswers,
-      hasAnswerLimit: hasAnswerLimit ?? this.hasAnswerLimit,
-      answerLimit: answerLimit ?? this.answerLimit,
-      hasDueDate: hasDueDate ?? this.hasDueDate,
+      answers: answers ?? this.answers,
       dueDate: dueDate ?? this.dueDate,
       state: state ?? this.state,
     );
@@ -81,9 +63,100 @@ class AssessmentOverviewModel extends Equatable {
   List<Object?> get props => [
         title,
         amountOfQuestions,
+        answers,
+        dueDate,
+      ];
+}
+
+class AnswersViewModel extends Equatable {
+  const AnswersViewModel({
+    required this.amountOfAnswers,
+    required this.hasAnswerLimit,
+    this.answerLimit,
+  });
+
+  factory AnswersViewModel.having({
+    required int amountOfAnswers,
+    int? answerLimit,
+  }) {
+    return AnswersViewModel(
+      amountOfAnswers: amountOfAnswers,
+      hasAnswerLimit: answerLimit != null,
+      answerLimit: answerLimit,
+    );
+  }
+
+  final int amountOfAnswers;
+  final bool hasAnswerLimit;
+  final int? answerLimit;
+
+  @override
+  String toString() {
+    return 'Answers{ '
+        'amountOfAnswers: $amountOfAnswers, '
+        'hasAnswerLimit: $hasAnswerLimit, '
+        'answerLimit: $answerLimit, '
+        '}';
+  }
+
+  AnswersViewModel copyWith({
+    int? amountOfAnswers,
+    bool? hasAnswerLimit,
+    int? answerLimit,
+  }) {
+    return AnswersViewModel(
+      amountOfAnswers: amountOfAnswers ?? this.amountOfAnswers,
+      hasAnswerLimit: hasAnswerLimit ?? this.hasAnswerLimit,
+      answerLimit: answerLimit ?? this.answerLimit,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
         amountOfAnswers,
         hasAnswerLimit,
         answerLimit,
+      ];
+}
+
+class DueDateViewModel extends Equatable {
+  const DueDateViewModel({
+    required this.hasDueDate,
+    this.dueDate,
+  });
+
+  factory DueDateViewModel.having({
+    String? dueDate,
+  }) {
+    return DueDateViewModel(
+      hasDueDate: dueDate != null,
+      dueDate: dueDate,
+    );
+  }
+
+  final bool hasDueDate;
+  final String? dueDate;
+
+  @override
+  String toString() {
+    return 'DueDateViewModel{ '
+        'hasDueDate: $hasDueDate, '
+        'dueDate: $dueDate, '
+        '}';
+  }
+
+  DueDateViewModel copyWith({
+    bool? hasDueDate,
+    String? dueDate,
+  }) {
+    return DueDateViewModel(
+      hasDueDate: hasDueDate ?? this.hasDueDate,
+      dueDate: dueDate ?? this.dueDate,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
         hasDueDate,
         dueDate,
       ];
