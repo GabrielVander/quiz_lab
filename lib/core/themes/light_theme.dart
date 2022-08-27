@@ -8,6 +8,7 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
       textColors: LightThemeTextColors(),
       backgroundColors: LightThemeBackgroundColors(),
       mainColors: LightMainColors(),
+      difficultyColors: LightDifficultyColors(),
     ),
   ],
 );
@@ -40,4 +41,15 @@ class LightMainColors implements MainColors {
 
   @override
   Color get secondary => const Color(0xFF6791EC);
+}
+
+class LightDifficultyColors implements DifficultyColors {
+  @override
+  Color get easy => Colors.green;
+
+  @override
+  Color get hard => Colors.red;
+
+  @override
+  Color get medium => Colors.blue;
 }

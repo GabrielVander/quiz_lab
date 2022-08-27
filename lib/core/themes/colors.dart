@@ -33,3 +33,15 @@ abstract class TextColors {
   final Color primary;
   final Color secondary;
 }
+
+abstract class DifficultyColors {
+  const DifficultyColors({
+    required this.easy,
+    required this.medium,
+    required this.hard,
+  });
+
+  final Color easy;
+  final Color medium;
+  final Color hard;
+}
