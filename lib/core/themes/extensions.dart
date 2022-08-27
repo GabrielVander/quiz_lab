@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/themes/background_colors.dart';
+import 'package:quiz_lab/core/themes/main_colors.dart';
 import 'package:quiz_lab/core/themes/text_colors.dart';
 
 class ThemeColors extends ThemeExtension<ThemeColors> {
   const ThemeColors({
     required this.textColors,
     required this.backgroundColors,
+    required this.mainColors,
   });
 
   final TextColors textColors;
   final BackgroundColors backgroundColors;
+  final MainColors mainColors;
 
   @override
   ThemeExtension<ThemeColors> copyWith({
     TextColors? textColors,
     BackgroundColors? backgroundColors,
+    MainColors? mainColors,
   }) =>
       ThemeColors(
         textColors: textColors ?? this.textColors,
         backgroundColors: backgroundColors ?? this.backgroundColors,
+        mainColors: mainColors ?? this.mainColors,
       );
 
   @override

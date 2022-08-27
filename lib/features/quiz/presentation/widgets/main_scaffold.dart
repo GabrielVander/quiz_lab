@@ -5,6 +5,7 @@ import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.da
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/features/quiz/presentation/pages/assessments_page.dart';
 import 'package:quiz_lab/features/quiz/presentation/pages/questions_page.dart';
 import 'package:quiz_lab/features/quiz/presentation/pages/results_page.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/quiz_lab_app_bar.dart';
@@ -76,6 +77,7 @@ class Pager extends HookWidget {
     switch (state.runtimeType) {
       case BottomNavigationIndexChangedState:
         return Page(
+          dependencyInjection: dependencyInjection,
           index: (state as BottomNavigationIndexChangedState).newIndex,
         );
     }
@@ -85,15 +87,20 @@ class Pager extends HookWidget {
 }
 
 class Page extends StatelessWidget {
-  const Page({super.key, required this.index});
+  const Page({
+    super.key,
+    required this.index,
+    required this.dependencyInjection,
+  });
 
+  final DependencyInjection dependencyInjection;
   final int index;
 
   @override
   Widget build(BuildContext context) {
     switch (index) {
       case 0:
-        return Container();
+        return AssessmentsPage(dependencyInjection: dependencyInjection);
       case 1:
         return const QuestionsPage();
       case 2:
