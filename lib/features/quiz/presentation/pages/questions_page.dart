@@ -63,9 +63,26 @@ class Content extends HookWidget {
 
       return ListView.separated(
         itemCount: questions.length,
-        itemBuilder: (BuildContext context, int index) => QuestionOverview(
+        itemBuilder: (BuildContext context, int index) => Dismissible(
           key: UniqueKey(),
-          question: questions[index],
+          direction: DismissDirection.endToStart,
+          background: Container(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              color: Colors.red,
+            ),
+            alignment: Alignment.centerRight,
+            child: Container(
+              margin: const EdgeInsets.only(right: 15),
+              child: const Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          child: QuestionOverview(
+            question: questions[index],
+          ),
         ),
         separatorBuilder: (BuildContext _, int __) => const SizedBox(
           height: 10,

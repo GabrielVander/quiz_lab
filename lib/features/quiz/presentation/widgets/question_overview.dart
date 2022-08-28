@@ -7,9 +7,9 @@ import 'package:quiz_lab/features/quiz/presentation/view_models/question_overvie
 
 class QuestionOverview extends StatelessWidget {
   const QuestionOverview({
-    required Key key,
+    super.key,
     required this.question,
-  }) : super(key: key);
+  });
 
   final QuestionOverviewViewModel question;
 
