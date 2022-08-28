@@ -110,4 +110,10 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
       },
     );
   }
+
+  Future<void> removeQuestion(QuestionOverviewViewModel question) async {
+    emit(QuestionsOverviewLoading());
+    _dummyQuestions.remove(question);
+    emit(QuestionsOverviewLoaded(questions: _dummyQuestions));
+  }
 }

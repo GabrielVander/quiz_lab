@@ -66,6 +66,8 @@ class Content extends HookWidget {
         itemBuilder: (BuildContext context, int index) => Dismissible(
           key: UniqueKey(),
           direction: DismissDirection.endToStart,
+          onDismissed: (DismissDirection _) =>
+              cubit.removeQuestion(questions[index]),
           background: Container(
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(20)),
