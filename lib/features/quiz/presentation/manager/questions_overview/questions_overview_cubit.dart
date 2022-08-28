@@ -68,7 +68,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
       ],
     ),
     const QuestionOverviewViewModel(
-      shortDescription: 'Solve',
+      shortDescription: 'Solve 4/2 + 7/2',
       description: 'Solve: 4/2 + 7/2 = ?',
       categories: [
         QuestionCategoryViewModel.math,

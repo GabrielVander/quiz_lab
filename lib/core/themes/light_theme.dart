@@ -45,11 +45,11 @@ class LightMainColors implements MainColors {
 
 class LightDifficultyColors implements DifficultyColors {
   @override
-  Color get easy => Colors.green;
+  Color get easy => const Color(0xFF006C04);
 
   @override
-  Color get hard => Colors.red;
+  Color get hard => const Color(0xFF6C0000);
 
   @override
-  Color get medium => Colors.blue;
+  Color get medium => const Color(0xFF00326C);
 }
