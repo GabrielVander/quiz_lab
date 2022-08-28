@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/themes/background_colors.dart';
+import 'package:quiz_lab/core/themes/colors.dart';
 import 'package:quiz_lab/core/themes/extensions.dart';
-import 'package:quiz_lab/core/themes/main_colors.dart';
-import 'package:quiz_lab/core/themes/text_colors.dart';
 
 final ThemeData lightTheme = ThemeData.light().copyWith(
   extensions: <ThemeExtension<dynamic>>[
@@ -10,6 +8,7 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
       textColors: LightThemeTextColors(),
       backgroundColors: LightThemeBackgroundColors(),
       mainColors: LightMainColors(),
+      difficultyColors: LightDifficultyColors(),
     ),
   ],
 );
@@ -42,4 +41,15 @@ class LightMainColors implements MainColors {
 
   @override
   Color get secondary => const Color(0xFF6791EC);
+}
+
+class LightDifficultyColors implements DifficultyColors {
+  @override
+  Color get easy => const Color(0xFF006C04);
+
+  @override
+  Color get hard => const Color(0xFF6C0000);
+
+  @override
+  Color get medium => const Color(0xFF00326C);
 }
