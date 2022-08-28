@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-class AssessmentOverviewModel extends Equatable {
-  const AssessmentOverviewModel({
+class AssessmentOverviewViewModel extends Equatable {
+  const AssessmentOverviewViewModel({
     required this.title,
     required this.amountOfQuestions,
     required this.answers,
@@ -9,14 +9,14 @@ class AssessmentOverviewModel extends Equatable {
     required this.state,
   });
 
-  factory AssessmentOverviewModel.having({
+  factory AssessmentOverviewViewModel.having({
     required String title,
     required int amountOfQuestions,
     required AnswersViewModel answers,
     required DueDateViewModel dueDate,
     AssessmentState? state,
   }) {
-    return AssessmentOverviewModel(
+    return AssessmentOverviewViewModel(
       title: title,
       amountOfQuestions: amountOfQuestions,
       answers: answers,
@@ -42,7 +42,7 @@ class AssessmentOverviewModel extends Equatable {
         '}';
   }
 
-  AssessmentOverviewModel copyWith({
+  AssessmentOverviewViewModel copyWith({
     String? title,
     int? amountOfQuestions,
     AnswersViewModel? answers,
@@ -50,7 +50,7 @@ class AssessmentOverviewModel extends Equatable {
     DueDateViewModel? dueDate,
     AssessmentState? state,
   }) {
-    return AssessmentOverviewModel(
+    return AssessmentOverviewViewModel(
       title: title ?? this.title,
       amountOfQuestions: amountOfQuestions ?? this.amountOfQuestions,
       answers: answers ?? this.answers,

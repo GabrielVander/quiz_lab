@@ -19,7 +19,7 @@ class AssessmentsOverviewLoaded extends AssessmentsOverviewState {
     required this.assessments,
   });
 
-  final List<AssessmentOverviewModel> assessments;
+  final List<AssessmentOverviewViewModel> assessments;
 
 
   @override

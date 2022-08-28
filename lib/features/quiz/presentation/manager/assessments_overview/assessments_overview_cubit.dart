@@ -1,15 +1,15 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/features/quiz/presentation/models/assessment_overview_model.dart';
+import 'package:quiz_lab/features/quiz/presentation/view_models/assessment_overview.dart';
 
 part 'assessments_overview_state.dart';
 
 class AssessmentsOverviewCubit extends Cubit<AssessmentsOverviewState> {
   AssessmentsOverviewCubit() : super(AssessmentsOverviewInitial());
 
-  final List<AssessmentOverviewModel> _dummyAssessments = [
-    AssessmentOverviewModel.having(
+  final List<AssessmentOverviewViewModel> _dummyAssessments = [
+    AssessmentOverviewViewModel.having(
       title: 'Mathematics 1',
       amountOfQuestions: 10,
       answers: AnswersViewModel.having(
@@ -18,7 +18,7 @@ class AssessmentsOverviewCubit extends Cubit<AssessmentsOverviewState> {
       ),
       dueDate: DueDateViewModel.having(dueDate: '6/23/2022'),
     ),
-    AssessmentOverviewModel.having(
+    AssessmentOverviewViewModel.having(
       title: 'Mathematics 2',
       amountOfQuestions: 10,
       answers: AnswersViewModel.having(
@@ -27,7 +27,7 @@ class AssessmentsOverviewCubit extends Cubit<AssessmentsOverviewState> {
       ),
       dueDate: DueDateViewModel.having(dueDate: '6/28/2022'),
     ),
-    AssessmentOverviewModel.having(
+    AssessmentOverviewViewModel.having(
       title: 'Matrices',
       amountOfQuestions: 25,
       answers: AnswersViewModel.having(
@@ -36,7 +36,7 @@ class AssessmentsOverviewCubit extends Cubit<AssessmentsOverviewState> {
       ),
       dueDate: DueDateViewModel.having(dueDate: '6/28/2022'),
     ),
-    AssessmentOverviewModel.having(
+    AssessmentOverviewViewModel.having(
       title: 'Statistics 1',
       amountOfQuestions: 15,
       answers: AnswersViewModel.having(
@@ -44,7 +44,7 @@ class AssessmentsOverviewCubit extends Cubit<AssessmentsOverviewState> {
       ),
       dueDate: DueDateViewModel.having(),
     ),
-    AssessmentOverviewModel.having(
+    AssessmentOverviewViewModel.having(
       title: 'Integers Quiz',
       amountOfQuestions: 5,
       answers: AnswersViewModel.having(
