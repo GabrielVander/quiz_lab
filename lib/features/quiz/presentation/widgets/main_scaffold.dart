@@ -102,7 +102,7 @@ class Page extends StatelessWidget {
       case 0:
         return AssessmentsPage(dependencyInjection: dependencyInjection);
       case 1:
-        return const QuestionsPage();
+        return QuestionsPage(dependencyInjection: dependencyInjection,);
       case 2:
         return const ResultsPage();
     }
