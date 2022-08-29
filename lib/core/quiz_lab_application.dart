@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/features/quiz/presentation/pages/question_view.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/main_scaffold.dart';
 
 class QuizLabApplication extends StatelessWidget {
@@ -38,6 +39,12 @@ class QuizLabApplication extends StatelessWidget {
             return MainScaffold(
               dependencyInjection: dependencyInjection,
             );
+          },
+        ),
+        GoRoute(
+          path: '/question',
+          builder: (BuildContext context, GoRouterState state) {
+            return const QuestionView();
           },
         ),
       ],

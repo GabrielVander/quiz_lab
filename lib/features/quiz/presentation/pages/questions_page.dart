@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
+import 'package:quiz_lab/core/themes/extensions.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/question_overview.dart';
@@ -16,23 +19,94 @@ class QuestionsPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final questionsOverviewCubit =
+        dependencyInjection.get<QuestionsOverviewCubit>();
+
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(
         children: [
           Row(
-            children: const [
-              PageSubtitle(title: 'Questions'),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const PageSubtitle(title: 'Questions'),
+              AddButton(
+                cubit: questionsOverviewCubit,
+              ),
             ],
+          ),
+          const SizedBox(
+            height: 15,
           ),
           Expanded(
             child: Content(
-              cubit: dependencyInjection.get<QuestionsOverviewCubit>(),
+              cubit: questionsOverviewCubit,
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+class AddButton extends StatelessWidget {
+  const AddButton({
+    super.key,
+    required this.cubit,
+  });
+
+  final QuestionsOverviewCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    final iconSize = _getIconSize(context);
+    final buttonColor = _getButtonColor(context);
+    final iconColor = _getIconColor(context);
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color: buttonColor,
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        onPressed: () => cubit.createNew(context),
+        color: iconColor,
+        iconSize: iconSize,
+        icon: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  double _getIconSize(BuildContext context) {
+    return ScreenBreakpoints.getValueForScreenType<double>(
+      context: context,
+      map: (p) {
+        switch (p.runtimeType) {
+          case MobileBreakpoint:
+            return 25;
+          case TabletBreakpoint:
+            return 30;
+          case DesktopBreakpoint:
+            return 30;
+          default:
+            return 20;
+        }
+      },
+    );
+  }
+
+  Color _getButtonColor(BuildContext context) {
+    final themeColors = Theme.of(context).extension<ThemeColors>();
+    final buttonColor = themeColors!.mainColors.accent;
+
+    return buttonColor;
+  }
+
+  Color _getIconColor(BuildContext context) {
+    final themeColors = Theme.of(context).extension<ThemeColors>();
+
+    return themeColors!.textColors.secondary;
   }
 }
 
