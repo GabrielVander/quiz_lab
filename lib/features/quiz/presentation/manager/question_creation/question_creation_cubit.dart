@@ -11,7 +11,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   String _shortDescription = '';
   String _description = '';
 
-  final QuestionCreationViewModel _viewModel = const QuestionCreationViewModel(
+  QuestionCreationViewModel _viewModel = const QuestionCreationViewModel(
     shortDescription: FieldViewModel(
       value: '',
       isEnabled: true,
@@ -31,16 +31,63 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
 
   Future<void> onShortDescriptionUpdate(String newValue) async {
     _shortDescription = newValue;
-    _emitValidatedFields();
+    _viewModel = _validateShortDescription(_viewModel);
+
+    emit(
+      QuestionCreationDisplayUpdate(
+        viewModel: _viewModel,
+      ),
+    );
   }
 
   Future<void> onDescriptionUpdate(String newValue) async {
     _description = newValue;
-    _emitValidatedFields();
+    _viewModel = _validateDescription(_viewModel);
+
+    emit(
+      QuestionCreationDisplayUpdate(
+        viewModel: _viewModel,
+      ),
+    );
   }
 
   Future<void> createQuestion(BuildContext context) async {
     _emitValidatedFields();
+  }
+
+  void addOption() {
+    _viewModel = _viewModel.copyWith(
+      options: _viewModel.options.copyWith(
+        optionViewModels: [
+          ..._viewModel.options.optionViewModels,
+          SingleOptionViewModel(
+            fieldViewModel: const FieldViewModel(
+              value: '',
+              isEnabled: true,
+              hasError: false,
+            ),
+            isCorrect: false,
+          )
+        ],
+      ),
+    );
+
+    emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
+  }
+
+  void optionIsCorrect(SingleOptionViewModel viewModel) {
+    _viewModel = _viewModel.copyWith(
+      options: _viewModel.options.copyWith(
+        optionViewModels: _viewModel.options.optionViewModels.map((element) {
+          if (element.id == viewModel.id) {
+            return element.copyWith(isCorrect: !element.isCorrect);
+          }
+          return element;
+        }).toList(),
+      ),
+    );
+
+    emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
   void _emitValidatedFields() {
@@ -54,36 +101,47 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   ) {
     var copy = viewModel;
 
-    if (_shortDescription == '') {
-      copy = copy.copyWith(
-        shortDescription: copy.shortDescription.copyWith(
-          hasError: true,
-          errorMessage: 'Must Be Set',
-        ),
-      );
-    } else {
-      copy = copy.copyWith(
-        shortDescription: copy.shortDescription.copyWith(
-          hasError: false,
-        ),
-      );
-    }
-
-    if (_description == '') {
-      copy = copy.copyWith(
-        description: copy.description.copyWith(
-          hasError: true,
-          errorMessage: 'Must Be Set',
-        ),
-      );
-    } else {
-      copy = copy.copyWith(
-        description: copy.description.copyWith(
-          hasError: false,
-        ),
-      );
-    }
+    copy = _validateShortDescription(copy);
+    copy = _validateDescription(copy);
 
     return copy;
+  }
+
+  QuestionCreationViewModel _validateDescription(
+    QuestionCreationViewModel viewModel,
+  ) {
+    if (_description == '') {
+      return viewModel.copyWith(
+        description: viewModel.description.copyWith(
+          hasError: true,
+          errorMessage: 'Must Be Set',
+        ),
+      );
+    }
+
+    return viewModel.copyWith(
+      description: viewModel.description.copyWith(
+        hasError: false,
+      ),
+    );
+  }
+
+  QuestionCreationViewModel _validateShortDescription(
+    QuestionCreationViewModel viewModel,
+  ) {
+    if (_shortDescription == '') {
+      return viewModel.copyWith(
+        shortDescription: viewModel.shortDescription.copyWith(
+          hasError: true,
+          errorMessage: 'Must Be Set',
+        ),
+      );
+    }
+
+    return viewModel.copyWith(
+      shortDescription: viewModel.shortDescription.copyWith(
+        hasError: false,
+      ),
+    );
   }
 }

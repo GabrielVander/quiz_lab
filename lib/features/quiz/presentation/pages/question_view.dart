@@ -17,10 +17,10 @@ class QuestionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: SingleChildScrollView(
+    return SafeArea(
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.all(10),
           child: Body(
             cubit: dependencyInjection.get<QuestionCreationCubit>(),
           ),
@@ -48,32 +48,25 @@ class Body extends HookWidget {
 
     if (state is QuestionCreationDisplayUpdate) {
       return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  PageTitle(),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  viewModel: state.viewModel,
-                  onShortDescriptionChange: cubit.onShortDescriptionUpdate,
-                  onDescriptionChange: cubit.onDescriptionUpdate,
-                ),
-              ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              PageTitle(),
             ],
           ),
-          ElevatedButton(
-            onPressed: () => cubit.createQuestion(context),
-            child: const Text('Create'),
+          const SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: Form(
+              viewModel: state.viewModel,
+              onShortDescriptionChange: cubit.onShortDescriptionUpdate,
+              onDescriptionChange: cubit.onDescriptionUpdate,
+              onCreateQuestion: () => cubit.createQuestion(context),
+              onAddOption: cubit.addOption,
+              onIsCorrect: cubit.optionIsCorrect,
+            ),
           ),
         ],
       );
@@ -126,45 +119,75 @@ class Form extends StatelessWidget {
     required this.viewModel,
     required this.onShortDescriptionChange,
     required this.onDescriptionChange,
+    required this.onAddOption,
+    required this.onIsCorrect,
+    required this.onCreateQuestion,
   });
 
   final QuestionCreationViewModel viewModel;
   final void Function(String newValue) onShortDescriptionChange;
   final void Function(String newValue) onDescriptionChange;
+  final void Function() onAddOption;
+  final void Function(SingleOptionViewModel viewModel) onIsCorrect;
+  final void Function() onCreateQuestion;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 15),
-          child: Row(
-            children: [
-              Expanded(
-                child: ShortDescriptionField(
-                  viewModel: viewModel.shortDescription,
-                  onChanged: onShortDescriptionChange,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ShortDescriptionField(
+                    viewModel: viewModel.shortDescription,
+                    onChanged: onShortDescriptionChange,
+                  ),
                 ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: Row(
+              children: [
+                Expanded(
+                  child: DescriptionField(
+                    viewModel: viewModel.description,
+                    onChange: onDescriptionChange,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Options(
+                    viewModel: viewModel.options,
+                    onAddOption: onAddOption,
+                    onIsCorrect: onIsCorrect,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: onCreateQuestion,
+                child: const Text('Create'),
               ),
             ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 15),
-          child: Row(
-            children: [
-              Expanded(
-                child: DescriptionField(
-                  viewModel: viewModel.description,
-                  onChange: onDescriptionChange,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const Options(),
-      ],
+          )
+        ],
+      ),
     );
   }
 }
@@ -221,10 +244,19 @@ class DescriptionField extends StatelessWidget {
 class Options extends StatelessWidget {
   const Options({
     super.key,
+    required this.viewModel,
+    required this.onAddOption,
+    required this.onIsCorrect,
   });
+
+  final OptionsViewModel viewModel;
+  final void Function() onAddOption;
+  final void Function(SingleOptionViewModel viewModel) onIsCorrect;
 
   @override
   Widget build(BuildContext context) {
+    final options = viewModel.optionViewModels;
+
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5)),
@@ -234,30 +266,79 @@ class Options extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Subtitle(),
+                ],
+              ),
+            ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Subtitle(),
+              children: [
+                Expanded(
+                  child: Column(
+                    children: options
+                        .map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            child: Option(
+                              key: e.id,
+                              viewModel: e,
+                              onIsCorrect: (bool _) => onIsCorrect(e),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
               ],
             ),
-            const SizedBox(
-              height: 15,
+            OutlinedButton(
+              onPressed: onAddOption,
+              child: const Text('Add Option'),
             ),
-            const Option(),
-            const Option(),
-            const Option(),
-            const Option(),
-            const Option(),
-            const Option(),
-            const Option(),
-            const Option(),
-            const Option(),
-            const Option(),
-            const Option(),
-            OutlinedButton(onPressed: () {}, child: const Text('Add Option'))
           ],
         ),
       ),
+    );
+  }
+}
+
+class Option extends StatelessWidget {
+  const Option({
+    super.key,
+    required this.viewModel,
+    required this.onIsCorrect,
+  });
+
+  final SingleOptionViewModel viewModel;
+  final void Function(bool value) onIsCorrect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Expanded(
+          child: TextField(
+            decoration: InputDecoration(
+              labelText: 'Option',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            Checkbox(
+              value: viewModel.isCorrect,
+              onChanged: (bool? value) => onIsCorrect(value ?? false),
+            ),
+            const Text('Is Correct'),
+          ],
+        )
+      ],
     );
   }
 }
@@ -295,34 +376,6 @@ class Subtitle extends StatelessWidget {
             return 16;
         }
       },
-    );
-  }
-}
-
-class Option extends StatelessWidget {
-  const Option({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              labelText: 'Option #',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        Row(
-          children: [
-            Checkbox(value: false, onChanged: (bool? _) {}),
-            const Text('Is Correct')
-          ],
-        )
-      ],
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:quiz_lab/features/quiz/presentation/view_models/question_overview.dart';
+import 'package:flutter/widgets.dart';
 
 class QuestionCreationViewModel extends Equatable {
   const QuestionCreationViewModel({
@@ -70,17 +70,19 @@ class OptionsViewModel extends Equatable {
 }
 
 class SingleOptionViewModel extends Equatable {
-  const SingleOptionViewModel({
+  SingleOptionViewModel({
     required this.fieldViewModel,
     required this.isCorrect,
   });
 
+  final UniqueKey id = UniqueKey();
   final FieldViewModel fieldViewModel;
   final bool isCorrect;
 
   @override
   String toString() {
     return 'SingleOptionViewModel{ '
+        'id: $id, '
         'fieldViewModel: $fieldViewModel, '
         'isCorrect: $isCorrect, '
         '}';
@@ -98,6 +100,7 @@ class SingleOptionViewModel extends Equatable {
 
   @override
   List<Object?> get props => [
+        id,
         fieldViewModel,
         isCorrect,
       ];
