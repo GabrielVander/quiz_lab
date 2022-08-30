@@ -44,7 +44,7 @@ class QuizLabApplication extends StatelessWidget {
         GoRoute(
           path: '/question',
           builder: (BuildContext context, GoRouterState state) {
-            return const QuestionView();
+            return QuestionView(dependencyInjection: dependencyInjection,);
           },
         ),
       ],
