@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_creation.dart';
 
 part 'question_creation_state.dart';
@@ -10,6 +11,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
 
   String _shortDescription = '';
   String _description = '';
+  bool _isValid = false;
 
   QuestionCreationViewModel _viewModel = const QuestionCreationViewModel(
     shortDescription: FieldViewModel(
@@ -53,6 +55,10 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
 
   Future<void> createQuestion(BuildContext context) async {
     _emitValidatedFields();
+
+    if (_isValid) {
+      GoRouter.of(context).go('/');
+    }
   }
 
   void addOption() {
@@ -103,6 +109,8 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
 
     copy = _validateShortDescription(copy);
     copy = _validateDescription(copy);
+
+    _isValid = copy == viewModel;
 
     return copy;
   }
