@@ -238,12 +238,14 @@ class Difficulty extends StatelessWidget {
     final themeColors = Theme.of(context).extension<ThemeColors>();
     final difficultyColors = themeColors!.difficultyColors;
 
-    switch (difficulty) {
-      case QuestionDifficultyViewModel.easy:
+    switch (difficulty.value) {
+      case 'Easy':
         return difficultyColors.easy;
-      case QuestionDifficultyViewModel.medium:
+      case 'Medium':
         return difficultyColors.medium;
-      case QuestionDifficultyViewModel.hard:
+      case 'Hard':
+        return difficultyColors.hard;
+      default:
         return difficultyColors.hard;
     }
   }
