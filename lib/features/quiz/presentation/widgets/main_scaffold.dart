@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/pages/assessments_page.dart';
 import 'package:quiz_lab/features/quiz/presentation/pages/questions_page.dart';
 import 'package:quiz_lab/features/quiz/presentation/pages/results_page.dart';
@@ -14,10 +15,10 @@ import 'package:quiz_lab/features/quiz/presentation/widgets/quiz_lab_nav_bar.dar
 class MainScaffold extends StatelessWidget {
   const MainScaffold({
     super.key,
-    required this.dependencyInjection,
+    required this.bottomNavigationCubit,
   });
 
-  final DependencyInjection dependencyInjection;
+  final BottomNavigationCubit bottomNavigationCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +35,10 @@ class MainScaffold extends StatelessWidget {
             ),
             bottomNavigationBar: QuizLabNavBar(
               key: const ValueKey<String>('navBar'),
-              dependencyInjection: dependencyInjection,
+              bottomNavigationCubit: bottomNavigationCubit,
             ),
             body: Pager(
-              dependencyInjection: dependencyInjection,
+              bottomNavigationCubit: bottomNavigationCubit,
             ),
           );
         },
@@ -65,19 +66,21 @@ class MainScaffold extends StatelessWidget {
 }
 
 class Pager extends HookWidget {
-  const Pager({super.key, required this.dependencyInjection});
+  const Pager({
+    super.key,
+    required this.bottomNavigationCubit,
+  });
 
-  final DependencyInjection dependencyInjection;
+  final BottomNavigationCubit bottomNavigationCubit;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = dependencyInjection.get<BottomNavigationCubit>();
-    final BottomNavigationState state = useBlocBuilder(cubit);
+    final BottomNavigationState state = useBlocBuilder(bottomNavigationCubit);
 
     switch (state.runtimeType) {
       case BottomNavigationIndexChangedState:
         return Page(
-          dependencyInjection: dependencyInjection,
+          bottomNavigationCubit: bottomNavigationCubit,
           index: (state as BottomNavigationIndexChangedState).newIndex,
         );
     }
@@ -90,19 +93,23 @@ class Page extends StatelessWidget {
   const Page({
     super.key,
     required this.index,
-    required this.dependencyInjection,
+    required this.bottomNavigationCubit,
   });
 
-  final DependencyInjection dependencyInjection;
+  final BottomNavigationCubit bottomNavigationCubit;
   final int index;
 
   @override
   Widget build(BuildContext context) {
     switch (index) {
       case 0:
-        return AssessmentsPage(dependencyInjection: dependencyInjection);
+        return AssessmentsPage(
+          assessmentsOverviewCubit: AssessmentsOverviewCubit(),
+        );
       case 1:
-        return QuestionsPage(dependencyInjection: dependencyInjection,);
+        return QuestionsPage(
+          questionsOverviewCubit: QuestionsOverviewCubit(),
+        );
       case 2:
         return const ResultsPage();
     }

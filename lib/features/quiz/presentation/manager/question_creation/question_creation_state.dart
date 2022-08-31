@@ -21,3 +21,8 @@ class QuestionCreationDisplayUpdate extends QuestionCreationState {
         viewModel,
       ];
 }
+
+class QuestionCreationQuestionCreated extends QuestionCreationState {
+  @override
+  List<Object> get props => [];
+}

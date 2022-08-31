@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/themes/extensions.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
@@ -12,16 +11,13 @@ import 'package:quiz_lab/features/quiz/presentation/widgets/question_overview.da
 class QuestionsPage extends HookWidget {
   const QuestionsPage({
     super.key,
-    required this.dependencyInjection,
+    required this.questionsOverviewCubit,
   });
 
-  final DependencyInjection dependencyInjection;
+  final QuestionsOverviewCubit questionsOverviewCubit;
 
   @override
   Widget build(BuildContext context) {
-    final questionsOverviewCubit =
-        dependencyInjection.get<QuestionsOverviewCubit>();
-
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(

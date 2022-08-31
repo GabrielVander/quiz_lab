@@ -2,30 +2,31 @@ import 'package:equatable/equatable.dart';
 
 class QuestionOverviewViewModel extends Equatable {
   const QuestionOverviewViewModel({
+    required this.id,
     required this.shortDescription,
     required this.description,
     required this.categories,
     required this.difficulty,
-    required this.options,
   });
 
+  final String id;
   final String shortDescription;
   final String description;
   final List<QuestionCategoryViewModel> categories;
   final QuestionDifficultyViewModel difficulty;
-  final List<OptionViewModel> options;
 
   @override
   String toString() {
     return 'QuestionOverviewViewModel{ '
+        'id: $id, '
         'shortDescription: $shortDescription, '
         'description: $description, '
         'category: $categories, '
-        'options: $options, '
         '}';
   }
 
   QuestionOverviewViewModel copyWith({
+    String? id,
     String? shortDescription,
     String? description,
     List<QuestionCategoryViewModel>? categories,
@@ -33,38 +34,31 @@ class QuestionOverviewViewModel extends Equatable {
     List<OptionViewModel>? options,
   }) {
     return QuestionOverviewViewModel(
+      id: id ?? this.id,
       shortDescription: shortDescription ?? this.shortDescription,
       description: description ?? this.description,
       categories: categories ?? this.categories,
       difficulty: difficulty ?? this.difficulty,
-      options: options ?? this.options,
     );
   }
 
   @override
   List<Object?> get props => [
+        id,
         shortDescription,
         description,
         categories,
         difficulty,
-        options,
       ];
 }
 
-enum QuestionCategoryViewModel {
-  math(value: 'Math'),
-  algebra(value: 'Algebra');
-
+class QuestionCategoryViewModel {
   const QuestionCategoryViewModel({required this.value});
 
   final String value;
 }
 
-enum QuestionDifficultyViewModel {
-  easy(value: 'Easy'),
-  medium(value: 'Medium'),
-  hard(value: 'Hard');
-
+class QuestionDifficultyViewModel {
   const QuestionDifficultyViewModel({required this.value});
 
   final String value;
