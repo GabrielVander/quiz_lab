@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_overview.dart';
 
 part 'questions_overview_state.dart';
@@ -114,6 +115,12 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   Future<void> removeQuestion(QuestionOverviewViewModel question) async {
     emit(QuestionsOverviewLoading());
     _dummyQuestions.remove(question);
+    emit(QuestionsOverviewLoaded(questions: _dummyQuestions));
+  }
+
+  Future<void> createNew(BuildContext context) async {
+    emit(QuestionsOverviewLoading());
+    GoRouter.of(context).go('/question');
     emit(QuestionsOverviewLoaded(questions: _dummyQuestions));
   }
 }

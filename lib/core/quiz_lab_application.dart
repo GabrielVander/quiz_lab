@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/features/quiz/presentation/pages/question_view.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/main_scaffold.dart';
 
 class QuizLabApplication extends StatelessWidget {
@@ -14,15 +16,38 @@ class QuizLabApplication extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final router = _getGoRouter();
+
     return HookedBlocConfigProvider(
       injector: dependencyInjection.get,
-      child: MaterialApp(
+      child: MaterialApp.router(
         title: 'Quiz Lab',
         theme: lightTheme,
-        home: MainScaffold(
-          dependencyInjection: dependencyInjection,
-        ),
+        routeInformationProvider: router.routeInformationProvider,
+        routeInformationParser: router.routeInformationParser,
+        routerDelegate: router.routerDelegate,
       ),
+    );
+  }
+
+  GoRouter _getGoRouter() {
+    return GoRouter(
+      routes: <GoRoute>[
+        GoRoute(
+          path: '/',
+          builder: (BuildContext context, GoRouterState state) {
+            return MainScaffold(
+              dependencyInjection: dependencyInjection,
+            );
+          },
+        ),
+        GoRoute(
+          path: '/question',
+          builder: (BuildContext context, GoRouterState state) {
+            return QuestionView(dependencyInjection: dependencyInjection,);
+          },
+        ),
+      ],
     );
   }
 }
