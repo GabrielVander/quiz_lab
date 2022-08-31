@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
+import 'package:quiz_lab/core/manager/network/network_cubit.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/core/widgets/network_checker.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
@@ -16,9 +18,11 @@ class MainScaffold extends StatelessWidget {
   const MainScaffold({
     super.key,
     required this.bottomNavigationCubit,
+    required this.networkCubit,
   });
 
   final BottomNavigationCubit bottomNavigationCubit;
+  final NetworkCubit networkCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +41,11 @@ class MainScaffold extends StatelessWidget {
               key: const ValueKey<String>('navBar'),
               bottomNavigationCubit: bottomNavigationCubit,
             ),
-            body: Pager(
-              bottomNavigationCubit: bottomNavigationCubit,
+            body: NetworkChecker(
+              cubit: networkCubit,
+              child: Pager(
+                bottomNavigationCubit: bottomNavigationCubit,
+              ),
             ),
           );
         },
