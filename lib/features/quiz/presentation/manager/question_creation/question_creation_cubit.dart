@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_creation.dart';
 
 part 'question_creation_state.dart';
@@ -9,8 +9,6 @@ part 'question_creation_state.dart';
 class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationCubit() : super(QuestionCreationInitial());
 
-  String _shortDescription = '';
-  String _description = '';
   bool _isValid = false;
 
   QuestionCreationViewModel _viewModel = const QuestionCreationViewModel(
@@ -28,11 +26,26 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   );
 
   Future<void> update() async {
+    _viewModel = const QuestionCreationViewModel(
+      shortDescription: FieldViewModel(
+        value: '',
+        isEnabled: true,
+        hasError: false,
+      ),
+      description: FieldViewModel(
+        value: '',
+        isEnabled: true,
+        hasError: false,
+      ),
+      options: OptionsViewModel(optionViewModels: []),
+    );
     emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
   Future<void> onShortDescriptionUpdate(String newValue) async {
-    _shortDescription = newValue;
+    _viewModel = _viewModel.copyWith(
+      shortDescription: _viewModel.shortDescription.copyWith(value: newValue),
+    );
     _viewModel = _validateShortDescription(_viewModel);
 
     emit(
@@ -43,7 +56,11 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   Future<void> onDescriptionUpdate(String newValue) async {
-    _description = newValue;
+    _viewModel = _viewModel.copyWith(
+      description: _viewModel.description.copyWith(
+        value: newValue,
+      ),
+    );
     _viewModel = _validateDescription(_viewModel);
 
     emit(
@@ -57,7 +74,15 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     _emitValidatedFields();
 
     if (_isValid) {
-      GoRouter.of(context).go('/');
+      final db = FirebaseFirestore.instance;
+      final difficulties = ['Hard', 'Medium', 'Easy']..shuffle();
+
+      await db.collection('questions').add({
+        'shortDescription': _viewModel.shortDescription.value,
+        'description': _viewModel.description.value,
+        'categories': ['Math', 'Algebra'],
+        'difficulty': difficulties.first,
+      }).then((_) => emit(QuestionCreationInitial()));
     }
   }
 
@@ -118,7 +143,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationViewModel _validateDescription(
     QuestionCreationViewModel viewModel,
   ) {
-    if (_description == '') {
+    if (_viewModel.description.value == '') {
       return viewModel.copyWith(
         description: viewModel.description.copyWith(
           hasError: true,
@@ -137,7 +162,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationViewModel _validateShortDescription(
     QuestionCreationViewModel viewModel,
   ) {
-    if (_shortDescription == '') {
+    if (viewModel.shortDescription.value == '') {
       return viewModel.copyWith(
         shortDescription: viewModel.shortDescription.copyWith(
           hasError: true,

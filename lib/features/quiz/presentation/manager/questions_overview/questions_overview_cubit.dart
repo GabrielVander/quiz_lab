@@ -28,6 +28,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
   Future<void> createNew(BuildContext context) async {
     GoRouter.of(context).go('/question');
+    emit(QuestionsOverviewInitial());
   }
 
   Future<void> _loadQuestions() async {
@@ -41,8 +42,8 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
           id: doc.id,
           shortDescription: doc.get('shortDescription') as String,
           description: doc.get('description') as String,
-          categories: (doc.get('categories') as List<String>)
-              .map((e) => QuestionCategoryViewModel(value: e))
+          categories: (doc.get('categories') as List<dynamic>)
+              .map((e) => QuestionCategoryViewModel(value: e as String))
               .toList(),
           difficulty: QuestionDifficultyViewModel(
             value: doc.get('difficulty') as String,
