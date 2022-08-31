@@ -116,23 +116,33 @@ class Categories extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              'Categories',
-              style: TextStyle(
-                color: textColor,
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Row(
+            children: [
+              Text(
+                'Categories',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Row(
           children: categories
               .map(
                 (e) => Container(
                   margin: const EdgeInsets.only(right: 10),
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(
+                      color: textColor,
+                    ),
+                  ),
                   child: Text(
                     e.value,
                     style: TextStyle(
@@ -184,9 +194,10 @@ class Categories extends StatelessWidget {
     );
   }
 
-  Color? _getTextColor(BuildContext context) {
+  Color _getTextColor(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors?.textColors.secondary;
+    final textColor = themeColors!.textColors.secondary;
+
     return textColor;
   }
 }
