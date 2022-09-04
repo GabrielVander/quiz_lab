@@ -66,7 +66,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '189945333110',
     projectId: 'quiz-lab-dev',
     storageBucket: 'quiz-lab-dev.appspot.com',
-    iosClientId: '189945333110-3oh713d6f2hrfv1utt6s6g0megik9pqa.apps.googleusercontent.com',
+    iosClientId:
+        '189945333110-3oh713d6f2hrfv1utt6s6g0megik9pqa.apps.googleusercontent.com',
     iosBundleId: 'gabriel.guimaraes.quizLab',
   );
 
@@ -76,7 +77,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '189945333110',
     projectId: 'quiz-lab-dev',
     storageBucket: 'quiz-lab-dev.appspot.com',
-    iosClientId: '189945333110-3oh713d6f2hrfv1utt6s6g0megik9pqa.apps.googleusercontent.com',
+    iosClientId:
+        '189945333110-3oh713d6f2hrfv1utt6s6g0megik9pqa.apps.googleusercontent.com',
     iosBundleId: 'gabriel.guimaraes.quizLab',
   );
 }

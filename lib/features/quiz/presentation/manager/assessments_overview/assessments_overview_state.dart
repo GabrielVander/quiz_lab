@@ -21,7 +21,6 @@ class AssessmentsOverviewLoaded extends AssessmentsOverviewState {
 
   final List<AssessmentOverviewViewModel> assessments;
 
-
   @override
   List<Object> get props => [assessments];
 }
