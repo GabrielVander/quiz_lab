@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/quiz/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/fetch_questions_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_overview.dart';
 
@@ -14,17 +15,19 @@ part 'questions_overview_state.dart';
 class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   QuestionsOverviewCubit({
     required this.fetchAllQuestionsUseCase,
+    required this.deleteQuestionUseCase,
   }) : super(QuestionsOverviewInitial());
 
   final FetchAllQuestionsUseCase fetchAllQuestionsUseCase;
+  final DeleteQuestionUseCase deleteQuestionUseCase;
 
-  Stream<List<Question>>? questions;
+  Stream<List<Question>>? _questions;
 
   void getQuestions(BuildContext context) {
     emit(QuestionsOverviewLoading());
-    questions = fetchAllQuestionsUseCase.execute();
+    _questions = fetchAllQuestionsUseCase.execute();
 
-    questions?.listen((questions) {
+    _questions?.listen((questions) {
       emit(
         QuestionsOverviewLoaded(
           questions: questions
@@ -50,11 +53,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   Future<void> removeQuestion(QuestionOverviewViewModel question) async {
     emit(QuestionsOverviewLoading());
 
-    final db = FirebaseFirestore.instance;
-
-    await db.collection('questions').doc(question.id).delete().then((_) async {
-      await _loadQuestions();
-    });
+    await deleteQuestionUseCase.execute(question.id!);
   }
 
   Future<void> createNew(BuildContext context) async {
