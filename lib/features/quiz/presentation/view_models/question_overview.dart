@@ -2,14 +2,14 @@ import 'package:equatable/equatable.dart';
 
 class QuestionOverviewViewModel extends Equatable {
   const QuestionOverviewViewModel({
-    this.id,
+    required this.id,
     required this.shortDescription,
     required this.description,
     required this.categories,
     required this.difficulty,
   });
 
-  final String? id;
+  final String id;
   final String shortDescription;
   final String description;
   final List<QuestionCategoryViewModel> categories;

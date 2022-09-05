@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,35 +24,14 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
   void getQuestions(BuildContext context) {
     emit(QuestionsOverviewLoading());
+
     _questions = fetchAllQuestionsUseCase.execute();
 
-    _questions?.listen((questions) {
-      emit(
-        QuestionsOverviewLoaded(
-          questions: questions
-              .map(
-                (question) => QuestionOverviewViewModel(
-                  shortDescription: question.shortDescription,
-                  categories: question.categories
-                      .map(
-                        (QuestionCategory c) =>
-                            QuestionCategoryViewModel(value: c.value),
-                      )
-                      .toList(),
-                  difficulty: _difficultyToString(context, question.difficulty),
-                  description: question.description,
-                ),
-              )
-              .toList(),
-        ),
-      );
-    });
+    _questions?.listen((questions) => _onQuestionsUpdate(context, questions));
   }
 
   Future<void> removeQuestion(QuestionOverviewViewModel question) async {
-    emit(QuestionsOverviewLoading());
-
-    await deleteQuestionUseCase.execute(question.id!);
+    await deleteQuestionUseCase.execute(question.id);
   }
 
   Future<void> createNew(BuildContext context) async {
@@ -61,33 +39,46 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     emit(QuestionsOverviewInitial());
   }
 
-  Future<void> _loadQuestions() async {
-    final db = FirebaseFirestore.instance;
-
-    await db.collection('questions').get().then((event) {
-      final viewModels = <QuestionOverviewViewModel>[];
-
-      for (final doc in event.docs) {
-        final viewModel = QuestionOverviewViewModel(
-          id: doc.id,
-          shortDescription: doc.get('shortDescription') as String,
-          description: doc.get('description') as String,
-          categories: (doc.get('categories') as List<dynamic>)
-              .map((e) => QuestionCategoryViewModel(value: e as String))
-              .toList(),
-          difficulty: QuestionDifficultyViewModel(
-            value: doc.get('difficulty') as String,
-          ),
-        );
-
-        viewModels.add(viewModel);
-      }
-
-      emit(QuestionsOverviewLoaded(questions: viewModels));
-    });
+  void _onQuestionsUpdate(BuildContext context, List<Question> questions) {
+    emit(
+      QuestionsOverviewLoaded(
+        questions: _mapQuestionsToViewModels(questions, context),
+      ),
+    );
   }
 
-  QuestionDifficultyViewModel _difficultyToString(
+  List<QuestionOverviewViewModel> _mapQuestionsToViewModels(
+    List<Question> questions,
+    BuildContext context,
+  ) {
+    return questions
+        .map((question) => _questionToViewModel(context, question))
+        .toList();
+  }
+
+  QuestionOverviewViewModel _questionToViewModel(
+    BuildContext context,
+    Question question,
+  ) {
+    return QuestionOverviewViewModel(
+      id: question.id,
+      shortDescription: question.shortDescription,
+      categories: _categoriesToViewModels(question.categories),
+      difficulty: _difficultyToViewModel(context, question.difficulty),
+      description: question.description,
+    );
+  }
+
+  List<QuestionCategoryViewModel> _categoriesToViewModels(
+    List<QuestionCategory> categories,
+  ) {
+    return categories.map(_categoryToViewModel).toList();
+  }
+
+  QuestionCategoryViewModel _categoryToViewModel(QuestionCategory c) =>
+      QuestionCategoryViewModel(value: c.value);
+
+  QuestionDifficultyViewModel _difficultyToViewModel(
     BuildContext context,
     QuestionDifficulty difficulty,
   ) {
