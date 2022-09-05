@@ -10,9 +10,9 @@ class QuestionRepositoryFirebaseImpl implements QuestionRepository {
   final FirebaseDataSource dataSource;
 
   @override
-  Stream<List<Question>> fetchAll() {
+  Stream<List<Question>> watchAll() {
     return dataSource
-        .fetchPublicQuestions()
+        .watchPublicQuestions()
         .map((models) => models.map((e) => e.toEntity()).toList());
   }
 

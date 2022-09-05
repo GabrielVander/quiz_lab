@@ -13,11 +13,11 @@ part 'questions_overview_state.dart';
 
 class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   QuestionsOverviewCubit({
-    required this.fetchAllQuestionsUseCase,
+    required this.watchAllQuestionsUseCase,
     required this.deleteQuestionUseCase,
   }) : super(QuestionsOverviewInitial());
 
-  final FetchAllQuestionsUseCase fetchAllQuestionsUseCase;
+  final WatchAllQuestionsUseCase watchAllQuestionsUseCase;
   final DeleteQuestionUseCase deleteQuestionUseCase;
 
   Stream<List<Question>>? _questions;
@@ -25,7 +25,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   void getQuestions(BuildContext context) {
     emit(QuestionsOverviewLoading());
 
-    _questions = fetchAllQuestionsUseCase.execute();
+    _questions = watchAllQuestionsUseCase.execute();
 
     _questions?.listen((questions) => _onQuestionsUpdate(context, questions));
   }

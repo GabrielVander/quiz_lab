@@ -7,21 +7,21 @@ import 'package:quiz_lab/features/quiz/domain/use_cases/fetch_questions_use_case
 
 void main() {
   late QuestionRepository dummyQuestionRepository;
-  late FetchAllQuestionsUseCase useCase;
+  late WatchAllQuestionsUseCase useCase;
 
   setUp(() {
     dummyQuestionRepository = DummyQuestionRepository();
     useCase =
-        FetchAllQuestionsUseCase(questionRepository: dummyQuestionRepository);
+        WatchAllQuestionsUseCase(questionRepository: dummyQuestionRepository);
   });
 
   test('Use case should use repository correctly', () {
-    when(() => dummyQuestionRepository.fetchAll())
+    when(() => dummyQuestionRepository.watchAll())
         .thenAnswer((_) => const Stream<List<Question>>.empty());
 
     useCase.execute();
 
-    verify(() => dummyQuestionRepository.fetchAll()).called(1);
+    verify(() => dummyQuestionRepository.watchAll()).called(1);
   });
 
   group('Use case should return stream from repository', () {
@@ -70,7 +70,7 @@ void main() {
       ]),
     ]) {
       test(stream, () {
-        when(() => dummyQuestionRepository.fetchAll())
+        when(() => dummyQuestionRepository.watchAll())
             .thenAnswer((_) => stream);
 
         final result = useCase.execute();

@@ -16,12 +16,12 @@ void main() {
 
   group('Question watching', () {
     test('Should call data source correctly', () {
-      when(() => dummyDataSource.fetchPublicQuestions())
+      when(() => dummyDataSource.watchPublicQuestions())
           .thenAnswer((_) => const Stream<List<QuestionModel>>.empty());
 
-      repository.fetchAll();
+      repository.watchAll();
 
-      verify(() => dummyDataSource.fetchPublicQuestions()).called(1);
+      verify(() => dummyDataSource.watchPublicQuestions()).called(1);
     });
 
     group('Should handle data source result', () {
@@ -42,10 +42,10 @@ void main() {
             return models;
           });
 
-          when(() => dummyDataSource.fetchPublicQuestions())
+          when(() => dummyDataSource.watchPublicQuestions())
               .thenAnswer((_) => dummyModelsStream);
 
-          repository.fetchAll().forEach((question) {
+          repository.watchAll().forEach((question) {
             expect(question, [dummyQuestionEntity]);
           });
         });

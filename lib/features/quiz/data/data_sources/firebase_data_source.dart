@@ -6,7 +6,7 @@ import 'package:quiz_lab/features/quiz/data/data_sources/models/question_model.d
 class FirebaseDataSource {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<List<QuestionModel>> fetchPublicQuestions() {
+  Stream<List<QuestionModel>> watchPublicQuestions() {
     final collectionPath = PublicQuestions().getFirebasePath();
 
     return _firestore.collection(collectionPath).snapshots().map(

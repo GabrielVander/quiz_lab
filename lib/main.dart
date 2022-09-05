@@ -37,8 +37,8 @@ void setupInjections() {
         dataSource: dependencyInjection.get<FirebaseDataSource>(),
       ),
     )
-    ..registerBuilder<FetchAllQuestionsUseCase>(
-      () => FetchAllQuestionsUseCase(
+    ..registerBuilder<WatchAllQuestionsUseCase>(
+      () => WatchAllQuestionsUseCase(
         questionRepository: dependencyInjection.get<QuestionRepository>(),
       ),
     )
@@ -51,8 +51,8 @@ void setupInjections() {
     ..registerBuilder<AssessmentsOverviewCubit>(AssessmentsOverviewCubit.new)
     ..registerBuilder<QuestionsOverviewCubit>(
       () => QuestionsOverviewCubit(
-        fetchAllQuestionsUseCase:
-            dependencyInjection.get<FetchAllQuestionsUseCase>(),
+        watchAllQuestionsUseCase:
+            dependencyInjection.get<WatchAllQuestionsUseCase>(),
         deleteQuestionUseCase: dependencyInjection.get<DeleteQuestionUseCase>(),
       ),
     )
