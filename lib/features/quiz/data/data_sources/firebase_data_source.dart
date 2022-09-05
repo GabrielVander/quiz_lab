@@ -15,13 +15,19 @@ class FirebaseDataSource {
               .toList(),
         );
   }
+
+  Future<void> deleteQuestionById(String id) async {
+    final collectionPath = PublicQuestions().getFirebasePath();
+
+    await _firestore.collection(collectionPath).doc(id).delete();
+  }
 }
 
-abstract class FirebaseCollection {
+mixin FirebaseCollection {
   String getFirebasePath();
 }
 
-class PublicQuestions implements FirebaseCollection {
+class PublicQuestions with FirebaseCollection {
   @override
   String getFirebasePath() {
     return 'questions';
