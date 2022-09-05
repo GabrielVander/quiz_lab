@@ -15,4 +15,9 @@ class QuestionRepositoryFirebaseImpl implements QuestionRepository {
         .fetchPublicQuestions()
         .map((models) => models.map((e) => e.toEntity()).toList());
   }
+
+  @override
+  Future<void> deleteSingle(String id) async {
+    await dataSource.deleteQuestionById(id);
+  }
 }
