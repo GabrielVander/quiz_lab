@@ -42,6 +42,11 @@ void setupInjections() {
         questionRepository: dependencyInjection.get<QuestionRepository>(),
       ),
     )
+    ..registerBuilder<DeleteQuestionUseCase>(
+      () => DeleteQuestionUseCase(
+        questionRepository: dependencyInjection.get<QuestionRepository>(),
+      ),
+    )
     ..registerBuilder<BottomNavigationCubit>(BottomNavigationCubit.new)
     ..registerBuilder<AssessmentsOverviewCubit>(AssessmentsOverviewCubit.new)
     ..registerBuilder<QuestionsOverviewCubit>(
