@@ -16,7 +16,7 @@ void main() {
 
   test('Should call data source correctly', () {
     when(() => dummyDataSource.fetchPublicQuestions())
-        .thenAnswer((_) => const Stream<QuestionModel>.empty());
+        .thenAnswer((_) => const Stream<List<QuestionModel>>.empty());
 
     repository.fetchAll();
 
@@ -25,23 +25,27 @@ void main() {
 
   group('Should handle data source result', () {
     for (final stream in [
-      const Stream<QuestionModel>.empty(),
-      Stream<QuestionModel>.fromIterable([DummyQuestionModel()]),
+      const Stream<List<QuestionModel>>.empty(),
+      Stream<List<QuestionModel>>.fromIterable([
+        [DummyQuestionModel()]
+      ]),
     ]) {
       test(stream, () {
         final dummyQuestionEntity = DummyQuestion();
 
-        final dummyModelsStream = stream.map((model) {
-          when(() => model.toEntity()).thenReturn(dummyQuestionEntity);
+        final dummyModelsStream = stream.map((models) {
+          for (final model in models) {
+            when(model.toEntity).thenReturn(dummyQuestionEntity);
+          }
 
-          return model;
+          return models;
         });
 
         when(() => dummyDataSource.fetchPublicQuestions())
             .thenAnswer((_) => dummyModelsStream);
 
         repository.fetchAll().forEach((question) {
-          expect(question, dummyQuestionEntity);
+          expect(question, [dummyQuestionEntity]);
         });
       });
     }

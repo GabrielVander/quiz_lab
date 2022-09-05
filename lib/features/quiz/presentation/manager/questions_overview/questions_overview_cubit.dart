@@ -3,17 +3,48 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_lab/features/quiz/domain/entities/question.dart';
+import 'package:quiz_lab/features/quiz/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/quiz/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/quiz/domain/use_cases/fetch_questions_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_overview.dart';
 
 part 'questions_overview_state.dart';
 
 class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
-  QuestionsOverviewCubit() : super(QuestionsOverviewInitial());
+  QuestionsOverviewCubit({
+    required this.fetchAllQuestionsUseCase,
+  }) : super(QuestionsOverviewInitial());
 
-  Future<void> getQuestions(BuildContext context) async {
+  final FetchAllQuestionsUseCase fetchAllQuestionsUseCase;
+
+  Stream<List<Question>>? questions;
+
+  void getQuestions(BuildContext context) {
     emit(QuestionsOverviewLoading());
+    questions = fetchAllQuestionsUseCase.execute();
 
-    await _loadQuestions();
+    questions?.listen((questions) {
+      emit(
+        QuestionsOverviewLoaded(
+          questions: questions
+              .map(
+                (question) => QuestionOverviewViewModel(
+                  shortDescription: question.shortDescription,
+                  categories: question.categories
+                      .map(
+                        (QuestionCategory c) =>
+                            QuestionCategoryViewModel(value: c.value),
+                      )
+                      .toList(),
+                  difficulty: _difficultyToString(context, question.difficulty),
+                  description: question.description,
+                ),
+              )
+              .toList(),
+        ),
+      );
+    });
   }
 
   Future<void> removeQuestion(QuestionOverviewViewModel question) async {
@@ -55,5 +86,21 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
       emit(QuestionsOverviewLoaded(questions: viewModels));
     });
+  }
+
+  QuestionDifficultyViewModel _difficultyToString(
+    BuildContext context,
+    QuestionDifficulty difficulty,
+  ) {
+    switch (difficulty) {
+      case QuestionDifficulty.easy:
+        return const QuestionDifficultyViewModel(value: 'Easy');
+      case QuestionDifficulty.medium:
+        return const QuestionDifficultyViewModel(value: 'Medium');
+      case QuestionDifficulty.hard:
+        return const QuestionDifficultyViewModel(value: 'Hard');
+      case QuestionDifficulty.unknown:
+        return const QuestionDifficultyViewModel(value: 'Unknown');
+    }
   }
 }

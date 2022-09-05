@@ -5,6 +5,7 @@ import 'package:quiz_lab/core/manager/network/network_cubit.dart';
 import 'package:quiz_lab/core/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/pages/question_view.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/main_scaffold.dart';
 
@@ -41,6 +42,8 @@ class QuizLabApplication extends StatelessWidget {
             return MainScaffold(
               bottomNavigationCubit: BottomNavigationCubit(),
               networkCubit: NetworkCubit(),
+              questionsOverviewCubit:
+                  dependencyInjection.get<QuestionsOverviewCubit>(),
             );
           },
         ),

@@ -1,1 +1,6 @@
-enum QuestionDifficulty { easy, medium, hard }
+enum QuestionDifficulty {
+  easy,
+  medium,
+  hard,
+  unknown,
+}

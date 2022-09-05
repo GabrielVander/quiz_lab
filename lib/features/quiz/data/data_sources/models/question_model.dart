@@ -1,25 +1,29 @@
 import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question.dart';
+import 'package:quiz_lab/features/quiz/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_difficulty.dart';
 
 @immutable
 class QuestionModel {
   const QuestionModel({
+    required this.id,
     required this.shortDescription,
     required this.description,
     required this.difficulty,
     required this.categories,
   });
 
-  factory QuestionModel.fromMap(Map<String, dynamic> map) {
+  factory QuestionModel.fromMap(String id, Map<String, dynamic> map) {
     return QuestionModel(
+      id: id,
       shortDescription: map['shortDescription'] as String,
       description: map['description'] as String,
       difficulty: map['difficulty'] as String,
-      categories: map['categories'] as List<String>,
+      categories: List<String>.from(map['categories'] as List<dynamic>),
     );
   }
 
+  final String id;
   final String shortDescription;
   final String description;
   final String difficulty;
@@ -32,6 +36,7 @@ class QuestionModel {
       identical(this, other) ||
       (other is QuestionModel &&
           runtimeType == other.runtimeType &&
+          id == other.id &&
           shortDescription == other.shortDescription &&
           description == other.description &&
           difficulty == other.difficulty &&
@@ -39,6 +44,7 @@ class QuestionModel {
 
   @override
   int get hashCode =>
+      id.hashCode ^
       shortDescription.hashCode ^
       description.hashCode ^
       difficulty.hashCode ^
@@ -47,6 +53,7 @@ class QuestionModel {
   @override
   String toString() {
     return 'QuestionModel{ '
+        'id: $id, '
         'shortDescription: $shortDescription, '
         'description: $description, '
         'difficulty: $difficulty, '
@@ -55,12 +62,14 @@ class QuestionModel {
   }
 
   QuestionModel copyWith({
+    String? id,
     String? shortDescription,
     String? description,
     String? difficulty,
     List<String>? categories,
   }) {
     return QuestionModel(
+      id: id ?? this.id,
       shortDescription: shortDescription ?? this.shortDescription,
       description: description ?? this.description,
       difficulty: difficulty ?? this.difficulty,
@@ -70,6 +79,7 @@ class QuestionModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'shortDescription': shortDescription,
       'description': description,
       'difficulty': difficulty,
@@ -80,13 +90,27 @@ class QuestionModel {
 //</editor-fold>
 
   Question toEntity() {
-    return const Question(
-      id: 'id',
-      shortDescription: 'shortDescription',
-      description: 'description',
+    return Question(
+      id: id,
+      shortDescription: shortDescription,
+      description: description,
       answerOptions: [],
-      difficulty: QuestionDifficulty.medium,
-      categories: [],
+      difficulty: _difficultyFromStr(),
+      categories: categories.map((c) => QuestionCategory(value: c)).toList(),
     );
+  }
+
+  QuestionDifficulty _difficultyFromStr() {
+    if (difficulty == 'easy') {
+      return QuestionDifficulty.easy;
+    }
+    if (difficulty == 'medium') {
+      return QuestionDifficulty.medium;
+    }
+    if (difficulty == 'hard') {
+      return QuestionDifficulty.hard;
+    }
+
+    return QuestionDifficulty.unknown;
   }
 }
