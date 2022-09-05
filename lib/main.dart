@@ -5,6 +5,7 @@ import 'package:quiz_lab/core/utils/constants.dart';
 import 'package:quiz_lab/features/quiz/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/quiz/data/repositories/question_repository_firebase_impl.dart';
 import 'package:quiz_lab/features/quiz/domain/repositories/question_repository.dart';
+import 'package:quiz_lab/features/quiz/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/fetch_questions_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
@@ -47,6 +48,9 @@ void setupInjections() {
         questionRepository: dependencyInjection.get<QuestionRepository>(),
       ),
     )
+    ..registerBuilder<CreateQuestionUseCase>(
+      CreateQuestionUseCase.new,
+    )
     ..registerBuilder<BottomNavigationCubit>(BottomNavigationCubit.new)
     ..registerBuilder<AssessmentsOverviewCubit>(AssessmentsOverviewCubit.new)
     ..registerBuilder<QuestionsOverviewCubit>(
@@ -56,7 +60,11 @@ void setupInjections() {
         deleteQuestionUseCase: dependencyInjection.get<DeleteQuestionUseCase>(),
       ),
     )
-    ..registerBuilder<QuestionCreationCubit>(QuestionCreationCubit.new);
+    ..registerBuilder<QuestionCreationCubit>(
+      () => QuestionCreationCubit(
+        createQuestionUseCase: dependencyInjection.get<CreateQuestionUseCase>(),
+      ),
+    );
 }
 
 Future<void> initializeFirebase() async {

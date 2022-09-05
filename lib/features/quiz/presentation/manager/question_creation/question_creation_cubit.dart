@@ -1,13 +1,20 @@
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:quiz_lab/features/quiz/domain/entities/question.dart';
+import 'package:quiz_lab/features/quiz/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/quiz/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/quiz/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_creation.dart';
 
 part 'question_creation_state.dart';
 
 class QuestionCreationCubit extends Cubit<QuestionCreationState> {
-  QuestionCreationCubit() : super(QuestionCreationInitial());
+  QuestionCreationCubit({
+    required this.createQuestionUseCase,
+  }) : super(QuestionCreationInitial());
+
+  final CreateQuestionUseCase createQuestionUseCase;
 
   bool _isValid = false;
 
@@ -74,15 +81,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     _emitValidatedFields();
 
     if (_isValid) {
-      final db = FirebaseFirestore.instance;
-      final difficulties = ['Hard', 'Medium', 'Easy']..shuffle();
-
-      await db.collection('questions').add({
-        'shortDescription': _viewModel.shortDescription.value,
-        'description': _viewModel.description.value,
-        'categories': ['Math', 'Algebra'],
-        'difficulty': difficulties.first,
-      }).then((_) => emit(QuestionCreationInitial()));
+      await _createQuestion();
     }
   }
 
@@ -176,5 +175,26 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
         hasError: false,
       ),
     );
+  }
+
+  Future<void> _createQuestion() async {
+    final difficulties =
+        List<QuestionDifficulty>.from(QuestionDifficulty.values)..shuffle();
+    final randomDifficulty = difficulties.first;
+
+    await createQuestionUseCase
+        .execute(
+          Question(
+            shortDescription: _viewModel.shortDescription.value,
+            description: _viewModel.description.value,
+            answerOptions: [],
+            difficulty: randomDifficulty,
+            categories: [
+              const QuestionCategory(value: 'Math'),
+              const QuestionCategory(value: 'Algebra')
+            ],
+          ),
+        )
+        .then((_) => emit(QuestionCreationInitial()));
   }
 }
