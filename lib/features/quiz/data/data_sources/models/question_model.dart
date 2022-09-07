@@ -71,7 +71,6 @@ class QuestionModel extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'shortDescription': shortDescription,
       'description': description,
       'difficulty': difficulty,

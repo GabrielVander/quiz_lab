@@ -16,13 +16,17 @@ class FirebaseDataSource {
         );
   }
 
-  Future<void> deleteQuestionById(String id) async {
+  Future<void> deletePublicQuestionById(String id) async {
     final collectionPath = PublicQuestions().getFirebasePath();
 
     await _firestore.collection(collectionPath).doc(id).delete();
   }
 
-  Future<void> createQuestion(QuestionModel question) async {}
+  Future<void> createPublicQuestion(QuestionModel question) async {
+    final collectionPath = PublicQuestions().getFirebasePath();
+
+    await _firestore.collection(collectionPath).add(question.toMap());
+  }
 }
 
 mixin FirebaseCollection {

@@ -19,11 +19,11 @@ class QuestionRepositoryFirebaseImpl implements QuestionRepository {
 
   @override
   Future<void> deleteSingle(String id) async {
-    await dataSource.deleteQuestionById(id);
+    await dataSource.deletePublicQuestionById(id);
   }
 
   @override
   Future<void> createSingle(Question question) async {
-    await dataSource.createQuestion(QuestionModel.fromEntity(question));
+    await dataSource.createPublicQuestion(QuestionModel.fromEntity(question));
   }
 }

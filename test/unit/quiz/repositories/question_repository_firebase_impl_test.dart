@@ -58,12 +58,12 @@ void main() {
   group('Single question deletion', () {
     for (final id in ['', 'P9!^34', '%AFAXy7F']) {
       test('Question id: $id', () async {
-        when(() => dummyDataSource.deleteQuestionById(any()))
+        when(() => dummyDataSource.deletePublicQuestionById(any()))
             .thenAnswer((_) async {});
 
         await repository.deleteSingle(id);
 
-        verify(() => dummyDataSource.deleteQuestionById(id)).called(1);
+        verify(() => dummyDataSource.deletePublicQuestionById(id)).called(1);
       });
     }
   });
@@ -114,12 +114,12 @@ void main() {
       final expected = testCase[1] as QuestionModel;
 
       test('$input -> $expected', () async {
-        when(() => dummyDataSource.createQuestion(any()))
+        when(() => dummyDataSource.createPublicQuestion(any()))
             .thenAnswer((_) async {});
 
         await repository.createSingle(input);
 
-        verify(() => dummyDataSource.createQuestion(expected)).called(1);
+        verify(() => dummyDataSource.createPublicQuestion(expected)).called(1);
       });
     }
   });
