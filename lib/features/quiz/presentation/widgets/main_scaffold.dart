@@ -19,10 +19,12 @@ class MainScaffold extends StatelessWidget {
     super.key,
     required this.bottomNavigationCubit,
     required this.networkCubit,
+    required this.questionsOverviewCubit,
   });
 
   final BottomNavigationCubit bottomNavigationCubit;
   final NetworkCubit networkCubit;
+  final QuestionsOverviewCubit questionsOverviewCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,7 @@ class MainScaffold extends StatelessWidget {
               cubit: networkCubit,
               child: Pager(
                 bottomNavigationCubit: bottomNavigationCubit,
+                questionsOverviewCubit: questionsOverviewCubit,
               ),
             ),
           );
@@ -76,9 +79,11 @@ class Pager extends HookWidget {
   const Pager({
     super.key,
     required this.bottomNavigationCubit,
+    required this.questionsOverviewCubit,
   });
 
   final BottomNavigationCubit bottomNavigationCubit;
+  final QuestionsOverviewCubit questionsOverviewCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +93,7 @@ class Pager extends HookWidget {
       case BottomNavigationIndexChangedState:
         return Page(
           bottomNavigationCubit: bottomNavigationCubit,
+          questionsOverviewCubit: questionsOverviewCubit,
           index: (state as BottomNavigationIndexChangedState).newIndex,
         );
     }
@@ -101,9 +107,11 @@ class Page extends StatelessWidget {
     super.key,
     required this.index,
     required this.bottomNavigationCubit,
+    required this.questionsOverviewCubit,
   });
 
   final BottomNavigationCubit bottomNavigationCubit;
+  final QuestionsOverviewCubit questionsOverviewCubit;
   final int index;
 
   @override
@@ -115,7 +123,7 @@ class Page extends StatelessWidget {
         );
       case 1:
         return QuestionsPage(
-          questionsOverviewCubit: QuestionsOverviewCubit(),
+          questionsOverviewCubit: questionsOverviewCubit,
         );
       case 2:
         return const ResultsPage();
