@@ -1,4 +1,5 @@
 import 'package:quiz_lab/features/quiz/data/data_sources/firebase_data_source.dart';
+import 'package:quiz_lab/features/quiz/data/data_sources/models/question_model.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question.dart';
 import 'package:quiz_lab/features/quiz/domain/repositories/question_repository.dart';
 
@@ -22,8 +23,7 @@ class QuestionRepositoryFirebaseImpl implements QuestionRepository {
   }
 
   @override
-  Future<void> createSingle(Question question) {
-    // TODO: implement createSingle
-    throw UnimplementedError();
+  Future<void> createSingle(Question question) async {
+    await dataSource.createQuestion(QuestionModel.fromEntity(question));
   }
 }

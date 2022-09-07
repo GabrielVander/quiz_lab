@@ -21,6 +21,8 @@ class FirebaseDataSource {
 
     await _firestore.collection(collectionPath).doc(id).delete();
   }
+
+  Future<void> createQuestion(QuestionModel question) async {}
 }
 
 mixin FirebaseCollection {

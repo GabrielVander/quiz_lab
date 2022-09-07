@@ -1,10 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_difficulty.dart';
 
 @immutable
-class QuestionModel {
+class QuestionModel extends Equatable {
   const QuestionModel({
     required this.id,
     required this.shortDescription,
@@ -23,32 +24,23 @@ class QuestionModel {
     );
   }
 
-  final String id;
+  factory QuestionModel.fromEntity(Question entity) {
+    return QuestionModel(
+      id: entity.id,
+      shortDescription: entity.shortDescription,
+      description: entity.description,
+      difficulty: entity.difficulty.name,
+      categories: entity.categories.map((e) => e.value).toList(),
+    );
+  }
+
+  final String? id;
   final String shortDescription;
   final String description;
   final String difficulty;
   final List<String> categories;
 
   //<editor-fold desc="Data Methods">
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is QuestionModel &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          shortDescription == other.shortDescription &&
-          description == other.description &&
-          difficulty == other.difficulty &&
-          categories == other.categories);
-
-  @override
-  int get hashCode =>
-      id.hashCode ^
-      shortDescription.hashCode ^
-      description.hashCode ^
-      difficulty.hashCode ^
-      categories.hashCode;
 
   @override
   String toString() {
@@ -94,7 +86,7 @@ class QuestionModel {
       id: id,
       shortDescription: shortDescription,
       description: description,
-      answerOptions: [],
+      answerOptions: const [],
       difficulty: _difficultyFromStr(),
       categories: categories.map((c) => QuestionCategory(value: c)).toList(),
     );
@@ -113,4 +105,13 @@ class QuestionModel {
 
     return QuestionDifficulty.unknown;
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        shortDescription,
+        description,
+        difficulty,
+        categories,
+      ];
 }
