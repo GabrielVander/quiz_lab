@@ -20,4 +20,10 @@ class QuestionRepositoryFirebaseImpl implements QuestionRepository {
   Future<void> deleteSingle(String id) async {
     await dataSource.deleteQuestionById(id);
   }
+
+  @override
+  Future<void> createSingle(Question question) {
+    // TODO: implement createSingle
+    throw UnimplementedError();
+  }
 }

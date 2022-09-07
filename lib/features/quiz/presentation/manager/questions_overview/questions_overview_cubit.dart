@@ -36,7 +36,6 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
   Future<void> createNew(BuildContext context) async {
     GoRouter.of(context).go('/question');
-    emit(QuestionsOverviewInitial());
   }
 
   void _onQuestionsUpdate(BuildContext context, List<Question> questions) {

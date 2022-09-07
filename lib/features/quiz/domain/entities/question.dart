@@ -1,8 +1,9 @@
+import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_difficulty.dart';
 
-class Question {
+class Question extends Equatable {
   const Question({
     this.id,
     required this.shortDescription,
@@ -48,4 +49,14 @@ class Question {
       categories: categories ?? this.categories,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        shortDescription,
+        description,
+        answerOptions,
+        difficulty,
+        categories,
+      ];
 }

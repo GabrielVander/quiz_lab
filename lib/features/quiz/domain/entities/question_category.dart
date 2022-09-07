@@ -1,4 +1,6 @@
-class QuestionCategory {
+import 'package:equatable/equatable.dart';
+
+class QuestionCategory extends Equatable {
   const QuestionCategory({
     required this.value,
   });
@@ -19,4 +21,9 @@ class QuestionCategory {
       value: value ?? this.value,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        value,
+      ];
 }

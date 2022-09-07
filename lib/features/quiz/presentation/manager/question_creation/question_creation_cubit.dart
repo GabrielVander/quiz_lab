@@ -1,9 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/features/quiz/domain/entities/question.dart';
-import 'package:quiz_lab/features/quiz/domain/entities/question_category.dart';
-import 'package:quiz_lab/features/quiz/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_creation.dart';
 
@@ -179,20 +176,19 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
 
   Future<void> _createQuestion() async {
     final difficulties =
-        List<QuestionDifficulty>.from(QuestionDifficulty.values)..shuffle();
+        List<QuestionDifficultyInput>.from(QuestionDifficultyInput.values)
+          ..shuffle();
     final randomDifficulty = difficulties.first;
 
     await createQuestionUseCase
         .execute(
-          Question(
+          QuestionCreationInput(
             shortDescription: _viewModel.shortDescription.value,
             description: _viewModel.description.value,
-            answerOptions: [],
             difficulty: randomDifficulty,
-            categories: [
-              const QuestionCategory(value: 'Math'),
-              const QuestionCategory(value: 'Algebra')
-            ],
+            categories: const QuestionCategoryInput(
+              values: ['Math', 'Algebra'],
+            ),
           ),
         )
         .then((_) => emit(QuestionCreationInitial()));

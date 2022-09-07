@@ -1,4 +1,6 @@
-class AnswerOption {
+import 'package:equatable/equatable.dart';
+
+class AnswerOption extends Equatable {
   const AnswerOption({
     required this.description,
     required this.isCorrect,
@@ -24,4 +26,10 @@ class AnswerOption {
       isCorrect: isCorrect ?? this.isCorrect,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        description,
+        isCorrect,
+      ];
 }
