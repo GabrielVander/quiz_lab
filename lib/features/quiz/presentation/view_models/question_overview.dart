@@ -97,3 +97,37 @@ class OptionViewModel extends Equatable {
         isCorrect,
       ];
 }
+
+class ShowShortDescriptionViewModel extends Equatable {
+  const ShowShortDescriptionViewModel({
+    required this.id,
+    required this.shortDescription,
+  });
+
+  final String id;
+  final String shortDescription;
+
+  @override
+  String toString() {
+    return 'ShowShortDescriptionViewModel{ '
+        'id: $id, '
+        'shortDescription: $shortDescription, '
+        '}';
+  }
+
+  ShowShortDescriptionViewModel copyWith({
+    String? id,
+    String? shortDescription,
+  }) {
+    return ShowShortDescriptionViewModel(
+      id: id ?? this.id,
+      shortDescription: shortDescription ?? this.shortDescription,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        shortDescription,
+      ];
+}
