@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -36,6 +37,20 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
   Future<void> createNew(BuildContext context) async {
     GoRouter.of(context).go('/question');
+  }
+
+  Future<void> saveShortDescription(String id, String newValue) async {
+    if (newValue.isNotEmpty) {
+      emit(QuestionsOverviewLoading());
+      final db = FirebaseFirestore.instance;
+
+      await db
+          .collection('questions')
+          .doc(id)
+          .update({'shortDescription': newValue});
+
+      emit(QuestionsOverviewInitial());
+    }
   }
 
   void _onQuestionsUpdate(BuildContext context, List<Question> questions) {

@@ -26,3 +26,16 @@ class QuestionsOverviewLoaded extends QuestionsOverviewState {
         questions,
       ];
 }
+
+class QuestionsOverviewShowShortDescription extends QuestionsOverviewState {
+  const QuestionsOverviewShowShortDescription({
+    required this.viewModel,
+  });
+
+  final ShowShortDescriptionViewModel viewModel;
+
+  @override
+  List<Object> get props => [
+        viewModel,
+      ];
+}

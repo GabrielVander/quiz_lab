@@ -139,6 +139,10 @@ class Content extends HookWidget {
       cubit.getQuestions(context);
     }
 
+    // if (state is QuestionsOverviewShowShortDescription) {
+    //   bottomSheetController.
+    // }
+
     if (state is QuestionsOverviewLoading) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -155,6 +159,46 @@ class Content extends HookWidget {
           return QuestionOverview(
             question: question,
             onDelete: cubit.removeQuestion,
+            onClick: (viewModel) {
+              final controller = TextEditingController()
+                ..text = viewModel.shortDescription;
+
+              showModalBottomSheet<String>(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) => SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: SizedBox(
+                      height: 200,
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextField(
+                              controller: controller,
+                              decoration: const InputDecoration(
+                                label: Text('Short Description'),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => cubit.saveShortDescription(
+                                viewModel.id,
+                                controller.text,
+                              ),
+                              child: const Text('Save'),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
         separatorBuilder: (BuildContext _, int __) => const SizedBox(
@@ -172,10 +216,12 @@ class QuestionOverview extends StatelessWidget {
     super.key,
     required this.question,
     required this.onDelete,
+    required this.onClick,
   });
 
   final QuestionOverviewViewModel question;
   final void Function(QuestionOverviewViewModel viewModel) onDelete;
+  final void Function(QuestionOverviewViewModel viewModel) onClick;
 
   @override
   Widget build(BuildContext context) {
@@ -193,21 +239,24 @@ class QuestionOverview extends StatelessWidget {
         background: const ItemBackground(),
         child: Padding(
           padding: const EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Title(title: question.shortDescription),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Categories(categories: question.categories),
-                ],
-              ),
-              Difficulty(difficulty: question.difficulty),
-            ],
+          child: InkWell(
+            onTap: () => onClick(question),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Title(title: question.shortDescription),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Categories(categories: question.categories),
+                  ],
+                ),
+                Difficulty(difficulty: question.difficulty),
+              ],
+            ),
           ),
         ),
       ),
