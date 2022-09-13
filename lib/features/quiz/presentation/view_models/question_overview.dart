@@ -1,5 +1,33 @@
 import 'package:equatable/equatable.dart';
 
+class QuestionListViewModel extends Equatable {
+  const QuestionListViewModel({
+    required this.questions,
+  });
+
+  final List<QuestionOverviewViewModel> questions;
+
+  @override
+  String toString() {
+    return 'QuestionListViewModel{ '
+        'questions: $questions, '
+        '}';
+  }
+
+  QuestionListViewModel copyWith({
+    List<QuestionOverviewViewModel>? questions,
+  }) {
+    return QuestionListViewModel(
+      questions: questions ?? this.questions,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        questions,
+      ];
+}
+
 class QuestionOverviewViewModel extends Equatable {
   const QuestionOverviewViewModel({
     required this.id,

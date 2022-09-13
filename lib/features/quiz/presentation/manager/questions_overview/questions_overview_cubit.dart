@@ -21,14 +21,14 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   final WatchAllQuestionsUseCase watchAllQuestionsUseCase;
   final DeleteQuestionUseCase deleteQuestionUseCase;
 
-  Stream<List<Question>>? _questions;
+  Stream<List<Question>>? _questionsStream;
 
-  void getQuestions(BuildContext context) {
+  void watchQuestions(BuildContext context) {
     emit(QuestionsOverviewLoading());
 
-    _questions = watchAllQuestionsUseCase.execute();
+    _questionsStream = watchAllQuestionsUseCase.execute();
 
-    _questions?.listen((questions) => _onQuestionsUpdate(context, questions));
+    _questionsStream?.listen((questions) => _onQuestionsUpdate(context, questions));
   }
 
   Future<void> removeQuestion(QuestionOverviewViewModel question) async {
@@ -55,8 +55,10 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
   void _onQuestionsUpdate(BuildContext context, List<Question> questions) {
     emit(
-      QuestionsOverviewLoaded(
-        questions: _mapQuestionsToViewModels(questions, context),
+      QuestionsOverviewListUpdated(
+        viewModel: QuestionListViewModel(
+          questions: _mapQuestionsToViewModels(questions, context),
+        ),
       ),
     );
   }

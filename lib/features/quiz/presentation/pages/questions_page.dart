@@ -136,12 +136,8 @@ class Content extends HookWidget {
     final state = useBlocBuilder(cubit);
 
     if (state is QuestionsOverviewInitial) {
-      cubit.getQuestions(context);
+      cubit.watchQuestions(context);
     }
-
-    // if (state is QuestionsOverviewShowShortDescription) {
-    //   bottomSheetController.
-    // }
 
     if (state is QuestionsOverviewLoading) {
       return const Center(
@@ -149,8 +145,8 @@ class Content extends HookWidget {
       );
     }
 
-    if (state is QuestionsOverviewLoaded) {
-      final questions = state.questions;
+    if (state is QuestionsOverviewListUpdated) {
+      final questions = state.viewModel.questions;
 
       return ListView.separated(
         itemCount: questions.length,
