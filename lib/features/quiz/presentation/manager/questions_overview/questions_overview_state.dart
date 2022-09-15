@@ -14,16 +14,16 @@ class QuestionsOverviewLoading extends QuestionsOverviewState {
   List<Object> get props => [];
 }
 
-class QuestionsOverviewLoaded extends QuestionsOverviewState {
-  const QuestionsOverviewLoaded({
-    required this.questions,
+class QuestionsOverviewListUpdated extends QuestionsOverviewState {
+  const QuestionsOverviewListUpdated({
+    required this.viewModel,
   });
 
-  final List<QuestionOverviewViewModel> questions;
+  final QuestionListViewModel viewModel;
 
   @override
   List<Object> get props => [
-        questions,
+        viewModel,
       ];
 }
 

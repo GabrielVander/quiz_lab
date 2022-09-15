@@ -30,7 +30,7 @@ class QuestionsPage extends HookWidget {
             ),
           ),
           Expanded(
-            child: Content(
+            child: MainContent(
               cubit: questionsOverviewCubit,
             ),
           ),
@@ -54,7 +54,7 @@ class Header extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const PageSubtitle(title: 'Questions'),
-        AddButton(
+        QuestionAddButton(
           onAddQuestion: onAddQuestion,
         ),
       ],
@@ -62,8 +62,8 @@ class Header extends StatelessWidget {
   }
 }
 
-class AddButton extends StatelessWidget {
-  const AddButton({
+class QuestionAddButton extends StatelessWidget {
+  const QuestionAddButton({
     super.key,
     required this.onAddQuestion,
   });
@@ -123,8 +123,8 @@ class AddButton extends StatelessWidget {
   }
 }
 
-class Content extends HookWidget {
-  const Content({
+class MainContent extends HookWidget {
+  const MainContent({
     super.key,
     required this.cubit,
   });
@@ -136,12 +136,8 @@ class Content extends HookWidget {
     final state = useBlocBuilder(cubit);
 
     if (state is QuestionsOverviewInitial) {
-      cubit.getQuestions(context);
+      cubit.watchQuestions(context);
     }
-
-    // if (state is QuestionsOverviewShowShortDescription) {
-    //   bottomSheetController.
-    // }
 
     if (state is QuestionsOverviewLoading) {
       return const Center(
@@ -149,70 +145,109 @@ class Content extends HookWidget {
       );
     }
 
-    if (state is QuestionsOverviewLoaded) {
-      final questions = state.questions;
+    if (state is QuestionsOverviewListUpdated) {
+      final questions = state.viewModel.questions;
 
-      return ListView.separated(
-        itemCount: questions.length,
-        itemBuilder: (BuildContext context, int index) {
-          final question = questions[index];
-          return QuestionOverview(
-            question: question,
-            onDelete: cubit.removeQuestion,
-            onClick: (viewModel) {
-              final controller = TextEditingController()
-                ..text = viewModel.shortDescription;
-
-              showModalBottomSheet<String>(
-                context: context,
-                isScrollControlled: true,
-                builder: (context) => SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom,
-                    ),
-                    child: SizedBox(
-                      height: 200,
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextField(
-                              controller: controller,
-                              decoration: const InputDecoration(
-                                label: Text('Short Description'),
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => cubit.saveShortDescription(
-                                viewModel.id,
-                                controller.text,
-                              ),
-                              child: const Text('Save'),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        },
-        separatorBuilder: (BuildContext _, int __) => const SizedBox(
-          height: 10,
-        ),
-      );
+      return QuestionList(questions: questions, cubit: cubit);
     }
 
     return Container();
   }
 }
 
-class QuestionOverview extends StatelessWidget {
-  const QuestionOverview({
+class QuestionList extends StatelessWidget {
+  const QuestionList({
+    super.key,
+    required this.questions,
+    required this.cubit,
+  });
+
+  final List<QuestionOverviewViewModel> questions;
+  final QuestionsOverviewCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      itemCount: questions.length,
+      itemBuilder: (BuildContext context, int index) {
+        final question = questions[index];
+        return QuestionItem(
+          question: question,
+          onDelete: cubit.removeQuestion,
+          onClick: (viewModel) {
+            showModalBottomSheet<String>(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) => QuestionEditBottomSheet(
+                viewModel: viewModel,
+                onSave: cubit.updateQuestion,
+              ),
+            );
+          },
+        );
+      },
+      separatorBuilder: (BuildContext _, int __) => const SizedBox(
+        height: 10,
+      ),
+    );
+  }
+}
+
+class QuestionEditBottomSheet extends StatelessWidget {
+  const QuestionEditBottomSheet({
+    super.key,
+    required this.viewModel,
+    required this.onSave,
+  });
+
+  final QuestionOverviewViewModel viewModel;
+  final void Function(QuestionOverviewViewModel updatedViewModel) onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = TextEditingController()
+      ..text = viewModel.shortDescription;
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: SizedBox(
+          height: 200,
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(
+                    label: Text('Short Description'),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => _saveQuestion(controller.text),
+                  child: const Text('Save'),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _saveQuestion(String updatedShortDescription) {
+    final updatedViewModel =
+        viewModel.copyWith(shortDescription: updatedShortDescription);
+
+    onSave(updatedViewModel);
+  }
+}
+
+class QuestionItem extends StatelessWidget {
+  const QuestionItem({
     super.key,
     required this.question,
     required this.onDelete,
@@ -247,7 +282,7 @@ class QuestionOverview extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Title(title: question.shortDescription),
+                    QuestionTitle(title: question.shortDescription),
                     const SizedBox(
                       height: 15,
                     ),
@@ -264,8 +299,8 @@ class QuestionOverview extends StatelessWidget {
   }
 }
 
-class Title extends StatelessWidget {
-  const Title({
+class QuestionTitle extends StatelessWidget {
+  const QuestionTitle({
     super.key,
     required this.title,
   });
@@ -280,7 +315,7 @@ class Title extends StatelessWidget {
     return Row(
       children: [
         Icon(
-          MdiIcons.noteTextOutline,
+          MdiIcons.ballotOutline,
           color: textColor,
         ),
         Text(
@@ -326,7 +361,7 @@ class Categories extends StatelessWidget {
     required this.categories,
   });
 
-  final List<QuestionCategoryViewModel> categories;
+  final List<String> categories;
 
   @override
   Widget build(BuildContext context) {
@@ -355,7 +390,7 @@ class Categories extends StatelessWidget {
         Row(
           children: categories
               .map(
-                (e) => Container(
+                (c) => Container(
                   margin: const EdgeInsets.only(right: 10),
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
@@ -365,7 +400,7 @@ class Categories extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    e.value,
+                    c,
                     style: TextStyle(
                       color: textColor,
                       fontSize: categoryFontSize,
@@ -429,7 +464,7 @@ class Difficulty extends StatelessWidget {
     required this.difficulty,
   });
 
-  final QuestionDifficultyViewModel difficulty;
+  final String difficulty;
 
   @override
   Widget build(BuildContext context) {
@@ -456,7 +491,7 @@ class Difficulty extends StatelessWidget {
           ),
         ),
         Text(
-          difficulty.value,
+          difficulty,
           style: TextStyle(
             color: textColor,
             fontSize: fontSize,
@@ -470,7 +505,7 @@ class Difficulty extends StatelessWidget {
     final themeColors = Theme.of(context).extension<ThemeColors>();
     final difficultyColors = themeColors!.difficultyColors;
 
-    switch (difficulty.value) {
+    switch (difficulty) {
       case 'Easy':
         return difficultyColors.easy;
       case 'Medium':

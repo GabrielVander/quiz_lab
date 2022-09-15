@@ -26,4 +26,9 @@ class QuestionRepositoryFirebaseImpl implements QuestionRepository {
   Future<void> createSingle(Question question) async {
     await dataSource.createPublicQuestion(QuestionModel.fromEntity(question));
   }
+
+  @override
+  Future<void> updateSingle(Question question) async {
+    await dataSource.updateQuestion(QuestionModel.fromEntity(question));
+  }
 }

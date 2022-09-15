@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +7,7 @@ import 'package:quiz_lab/features/quiz/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/fetch_questions_use_case.dart';
+import 'package:quiz_lab/features/quiz/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_overview.dart';
 
 part 'questions_overview_state.dart';
@@ -16,14 +16,16 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   QuestionsOverviewCubit({
     required this.watchAllQuestionsUseCase,
     required this.deleteQuestionUseCase,
+    required this.updateQuestionUseCase,
   }) : super(QuestionsOverviewInitial());
 
   final WatchAllQuestionsUseCase watchAllQuestionsUseCase;
   final DeleteQuestionUseCase deleteQuestionUseCase;
+  final UpdateQuestionUseCase updateQuestionUseCase;
 
   Stream<List<Question>>? _questions;
 
-  void getQuestions(BuildContext context) {
+  void watchQuestions(BuildContext context) {
     emit(QuestionsOverviewLoading());
 
     _questions = watchAllQuestionsUseCase.execute();
@@ -39,31 +41,29 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     GoRouter.of(context).go('/question');
   }
 
-  Future<void> saveShortDescription(String id, String newValue) async {
-    if (newValue.isNotEmpty) {
+  Future<void> updateQuestion(QuestionOverviewViewModel viewModel) async {
+    if (viewModel.shortDescription.isNotEmpty) {
       emit(QuestionsOverviewLoading());
-      final db = FirebaseFirestore.instance;
 
-      await db
-          .collection('questions')
-          .doc(id)
-          .update({'shortDescription': newValue});
-
-      emit(QuestionsOverviewInitial());
+      await updateQuestionUseCase.execute(
+        _overviewViewModelToEntity(viewModel),
+      );
     }
   }
 
   void _onQuestionsUpdate(BuildContext context, List<Question> questions) {
     emit(
-      QuestionsOverviewLoaded(
-        questions: _mapQuestionsToViewModels(questions, context),
+      QuestionsOverviewListUpdated(
+        viewModel: QuestionListViewModel(
+          questions: _mapQuestionsToViewModels(context, questions),
+        ),
       ),
     );
   }
 
   List<QuestionOverviewViewModel> _mapQuestionsToViewModels(
-    List<Question> questions,
     BuildContext context,
+    List<Question> questions,
   ) {
     return questions
         .map((question) => _questionToViewModel(context, question))
@@ -77,34 +77,59 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     return QuestionOverviewViewModel(
       id: question.id!,
       shortDescription: question.shortDescription,
-      categories: _categoriesToViewModels(question.categories),
-      difficulty: _difficultyToViewModel(context, question.difficulty),
+      categories: _categoriesToStrings(question.categories),
+      difficulty: _difficultyToString(context, question.difficulty),
       description: question.description,
     );
   }
 
-  List<QuestionCategoryViewModel> _categoriesToViewModels(
+  List<String> _categoriesToStrings(
     List<QuestionCategory> categories,
   ) {
-    return categories.map(_categoryToViewModel).toList();
+    return categories.map(_categoryToString).toList();
   }
 
-  QuestionCategoryViewModel _categoryToViewModel(QuestionCategory c) =>
-      QuestionCategoryViewModel(value: c.value);
+  String _categoryToString(QuestionCategory c) => c.value;
 
-  QuestionDifficultyViewModel _difficultyToViewModel(
+  String _difficultyToString(
     BuildContext context,
     QuestionDifficulty difficulty,
   ) {
     switch (difficulty) {
       case QuestionDifficulty.easy:
-        return const QuestionDifficultyViewModel(value: 'Easy');
+        return 'Easy';
       case QuestionDifficulty.medium:
-        return const QuestionDifficultyViewModel(value: 'Medium');
+        return 'Medium';
       case QuestionDifficulty.hard:
-        return const QuestionDifficultyViewModel(value: 'Hard');
+        return 'Hard';
       case QuestionDifficulty.unknown:
-        return const QuestionDifficultyViewModel(value: 'Unknown');
+        return 'Unknown';
     }
   }
+
+  Question _overviewViewModelToEntity(QuestionOverviewViewModel viewModel) =>
+      Question(
+        id: viewModel.id,
+        shortDescription: viewModel.shortDescription,
+        description: viewModel.description,
+        answerOptions: const [],
+        difficulty: _difficultyStringToEntity(viewModel.difficulty),
+        categories: viewModel.categories.map(_categoryToEntity).toList(),
+      );
+
+  QuestionDifficulty _difficultyStringToEntity(String difficulty) {
+    switch (difficulty) {
+      case 'Easy':
+        return QuestionDifficulty.easy;
+      case 'Medium':
+        return QuestionDifficulty.medium;
+      case 'Hard':
+        return QuestionDifficulty.hard;
+    }
+
+    return QuestionDifficulty.unknown;
+  }
+
+  QuestionCategory _categoryToEntity(String category) =>
+      QuestionCategory(value: category);
 }

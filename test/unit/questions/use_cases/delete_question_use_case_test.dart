@@ -12,6 +12,8 @@ void main() {
     useCase = DeleteQuestionUseCase(questionRepository: dummyRepository);
   });
 
+  tearDown(resetMocktailState);
+
   group('Should call repository correctly', () {
     for (final id in ['', '!ocOs9d', '*k^rVV']) {
       test('Question id $id', () async {
