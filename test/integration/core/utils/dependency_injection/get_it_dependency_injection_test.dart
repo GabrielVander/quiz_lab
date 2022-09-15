@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/get_it_dependency_injection.dart';
+import 'package:quiz_lab/core/utils/dependency_injection/impl/dependency_injection_get_it_impl.dart';
 
 void main() {
   late DependencyInjection dependencyInjection;
 
   setUp(() {
-    dependencyInjection = GetItDependencyInjection();
+    dependencyInjection = DependencyInjectionGetItImpl();
   });
 
   tearDown(() async {

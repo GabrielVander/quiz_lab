@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 
-class GetItDependencyInjection implements DependencyInjection {
+class DependencyInjectionGetItImpl implements DependencyInjection {
   final GetIt _getItInstance = GetIt.instance;
 
   @override
