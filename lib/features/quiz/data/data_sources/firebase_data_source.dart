@@ -28,7 +28,14 @@ class FirebaseDataSource {
     await _firestore.collection(collectionPath).add(question.toMap());
   }
 
-  Future<void> updateQuestion(QuestionModel question) async {}
+  Future<void> updateQuestion(QuestionModel question) async {
+    final collectionPath = PublicQuestions().getFirebasePath();
+
+    await _firestore
+        .collection(collectionPath)
+        .doc(question.id)
+        .update(question.toMap());
+  }
 }
 
 mixin FirebaseCollection {
