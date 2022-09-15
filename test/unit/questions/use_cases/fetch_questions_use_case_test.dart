@@ -15,6 +15,8 @@ void main() {
         WatchAllQuestionsUseCase(questionRepository: dummyQuestionRepository);
   });
 
+  tearDown(resetMocktailState);
+
   test('Use case should use repository correctly', () {
     when(() => dummyQuestionRepository.watchAll())
         .thenAnswer((_) => const Stream<List<Question>>.empty());
