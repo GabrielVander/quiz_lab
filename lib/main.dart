@@ -8,6 +8,7 @@ import 'package:quiz_lab/features/quiz/domain/repositories/question_repository.d
 import 'package:quiz_lab/features/quiz/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/fetch_questions_use_case.dart';
+import 'package:quiz_lab/features/quiz/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/question_creation/question_creation_cubit.dart';
@@ -53,6 +54,11 @@ void setupInjections() {
         questionRepository: dependencyInjection.get<QuestionRepository>(),
       ),
     )
+    ..registerBuilder<UpdateQuestionUseCase>(
+      () => UpdateQuestionUseCase(
+        questionRepository: dependencyInjection.get<QuestionRepository>(),
+      ),
+    )
     ..registerBuilder<BottomNavigationCubit>(BottomNavigationCubit.new)
     ..registerBuilder<AssessmentsOverviewCubit>(AssessmentsOverviewCubit.new)
     ..registerBuilder<QuestionsOverviewCubit>(
@@ -60,6 +66,7 @@ void setupInjections() {
         watchAllQuestionsUseCase:
             dependencyInjection.get<WatchAllQuestionsUseCase>(),
         deleteQuestionUseCase: dependencyInjection.get<DeleteQuestionUseCase>(),
+        updateQuestionUseCase: dependencyInjection.get<UpdateQuestionUseCase>(),
       ),
     )
     ..registerBuilder<QuestionCreationCubit>(

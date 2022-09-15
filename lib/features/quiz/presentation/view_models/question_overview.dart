@@ -25,8 +25,34 @@ class QuestionOverviewViewModel extends Equatable {
   final String id;
   final String shortDescription;
   final String description;
-  final List<QuestionCategoryViewModel> categories;
-  final QuestionDifficultyViewModel difficulty;
+  final List<String> categories;
+  final String difficulty;
+
+  QuestionOverviewViewModel copyWith({
+    String? id,
+    String? shortDescription,
+    String? description,
+    List<String>? categories,
+    String? difficulty,
+  }) {
+    return QuestionOverviewViewModel(
+      id: id ?? this.id,
+      shortDescription: shortDescription ?? this.shortDescription,
+      description: description ?? this.description,
+      categories: categories ?? this.categories,
+      difficulty: difficulty ?? this.difficulty,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'QuestionOverviewViewModel{ '
+        'id: $id, shortDescription: $shortDescription, '
+        'description: $description, '
+        'categories: $categories, '
+        'difficulty: $difficulty, '
+        '}';
+  }
 
   @override
   List<Object?> get props => [
@@ -36,18 +62,6 @@ class QuestionOverviewViewModel extends Equatable {
         categories,
         difficulty,
       ];
-}
-
-class QuestionCategoryViewModel {
-  const QuestionCategoryViewModel({required this.value});
-
-  final String value;
-}
-
-class QuestionDifficultyViewModel {
-  const QuestionDifficultyViewModel({required this.value});
-
-  final String value;
 }
 
 class OptionViewModel extends Equatable {

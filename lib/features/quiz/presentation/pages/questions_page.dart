@@ -178,8 +178,10 @@ class QuestionList extends StatelessWidget {
             showModalBottomSheet<String>(
               context: context,
               isScrollControlled: true,
-              builder: (context) =>
-                  QuestionEditBottomSheet(viewModel: viewModel, cubit: cubit),
+              builder: (context) => QuestionEditBottomSheet(
+                viewModel: viewModel,
+                onSave: cubit.updateQuestion,
+              ),
             );
           },
         );
@@ -195,11 +197,11 @@ class QuestionEditBottomSheet extends StatelessWidget {
   const QuestionEditBottomSheet({
     super.key,
     required this.viewModel,
-    required this.cubit,
+    required this.onSave,
   });
 
   final QuestionOverviewViewModel viewModel;
-  final QuestionsOverviewCubit cubit;
+  final void Function(QuestionOverviewViewModel updatedViewModel) onSave;
 
   @override
   Widget build(BuildContext context) {
@@ -225,10 +227,7 @@ class QuestionEditBottomSheet extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () => cubit.saveShortDescription(
-                    viewModel.id,
-                    controller.text,
-                  ),
+                  onPressed: () => _saveQuestion(controller.text),
                   child: const Text('Save'),
                 )
               ],
@@ -237,6 +236,13 @@ class QuestionEditBottomSheet extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _saveQuestion(String updatedShortDescription) {
+    final updatedViewModel =
+        viewModel.copyWith(shortDescription: updatedShortDescription);
+
+    onSave(updatedViewModel);
   }
 }
 
@@ -355,7 +361,7 @@ class Categories extends StatelessWidget {
     required this.categories,
   });
 
-  final List<QuestionCategoryViewModel> categories;
+  final List<String> categories;
 
   @override
   Widget build(BuildContext context) {
@@ -384,7 +390,7 @@ class Categories extends StatelessWidget {
         Row(
           children: categories
               .map(
-                (e) => Container(
+                (c) => Container(
                   margin: const EdgeInsets.only(right: 10),
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
@@ -394,7 +400,7 @@ class Categories extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    e.value,
+                    c,
                     style: TextStyle(
                       color: textColor,
                       fontSize: categoryFontSize,
@@ -458,7 +464,7 @@ class Difficulty extends StatelessWidget {
     required this.difficulty,
   });
 
-  final QuestionDifficultyViewModel difficulty;
+  final String difficulty;
 
   @override
   Widget build(BuildContext context) {
@@ -485,7 +491,7 @@ class Difficulty extends StatelessWidget {
           ),
         ),
         Text(
-          difficulty.value,
+          difficulty,
           style: TextStyle(
             color: textColor,
             fontSize: fontSize,
@@ -499,7 +505,7 @@ class Difficulty extends StatelessWidget {
     final themeColors = Theme.of(context).extension<ThemeColors>();
     final difficultyColors = themeColors!.difficultyColors;
 
-    switch (difficulty.value) {
+    switch (difficulty) {
       case 'Easy':
         return difficultyColors.easy;
       case 'Medium':
