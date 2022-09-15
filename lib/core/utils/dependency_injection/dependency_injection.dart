@@ -1,11 +1,17 @@
 abstract class DependencyInjection {
   T get<T extends Object>();
 
-  void registerInstance<T extends Object>(T value);
+  void registerInstance<T extends Object>(
+    T Function(DependencyInjection di) getter,
+  );
 
-  void registerBuilder<T extends Object>(T Function() builder);
+  void registerBuilder<T extends Object>(
+    T Function(DependencyInjection di) builder,
+  );
 
-  void registerFactory<T extends Object>(T Function() factory);
+  void registerFactory<T extends Object>(
+    T Function(DependencyInjection di) factory,
+  );
 
   Future<void> unregisterAll();
 }

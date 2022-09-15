@@ -17,9 +17,9 @@ void main() {
     test('unregisters', () async {
       final instance = DummyInstance();
 
-      dependencyInjection.registerInstance<DummyInstance>(instance);
+      dependencyInjection.registerInstance<DummyInstance>((_) => instance);
       await dependencyInjection.unregisterAll();
-      dependencyInjection.registerInstance<DummyInstance>(instance);
+      dependencyInjection.registerInstance<DummyInstance>((_) => instance);
     });
   });
 
@@ -27,10 +27,11 @@ void main() {
     test('raises', () {
       final instance = DummyInstance();
 
-      dependencyInjection.registerInstance<DummyInstance>(instance);
+      dependencyInjection.registerInstance<DummyInstance>((_) => instance);
 
       expect(
-        () => dependencyInjection.registerInstance<DummyInstance>(instance),
+        () => dependencyInjection
+            .registerInstance<DummyInstance>((_) => instance),
         throwsA(const TypeMatcher<KeyAlreadyRegisteredException>()),
       );
     });
@@ -38,7 +39,7 @@ void main() {
     test('registers', () {
       final instance = DummyInstance();
 
-      dependencyInjection.registerInstance<DummyInstance>(instance);
+      dependencyInjection.registerInstance<DummyInstance>((_) => instance);
 
       final actualResult = dependencyInjection.get<DummyInstance>();
 
@@ -50,11 +51,11 @@ void main() {
     test('raises', () {
       final instance = DummyInstance();
 
-      dependencyInjection.registerBuilder<DummyInstance>(() => instance);
+      dependencyInjection.registerBuilder<DummyInstance>((_) => instance);
 
       expect(
         () =>
-            dependencyInjection.registerBuilder<DummyInstance>(() => instance),
+            dependencyInjection.registerBuilder<DummyInstance>((_) => instance),
         throwsA(const TypeMatcher<KeyAlreadyRegisteredException>()),
       );
     });
@@ -62,7 +63,7 @@ void main() {
     test('registers', () {
       final instance = DummyInstance();
 
-      dependencyInjection.registerInstance<DummyInstance>(instance);
+      dependencyInjection.registerInstance<DummyInstance>((_) => instance);
 
       final actualResult = dependencyInjection.get<DummyInstance>();
 
@@ -74,11 +75,11 @@ void main() {
     test('raises', () {
       final instance = DummyInstance();
 
-      dependencyInjection.registerFactory<DummyInstance>(() => instance);
+      dependencyInjection.registerFactory<DummyInstance>((_) => instance);
 
       expect(
         () =>
-            dependencyInjection.registerFactory<DummyInstance>(() => instance),
+            dependencyInjection.registerFactory<DummyInstance>((_) => instance),
         throwsA(const TypeMatcher<KeyAlreadyRegisteredException>()),
       );
     });
@@ -86,7 +87,7 @@ void main() {
     test('registers', () {
       final instance = DummyInstance();
 
-      dependencyInjection.registerInstance<DummyInstance>(instance);
+      dependencyInjection.registerInstance<DummyInstance>((_) => instance);
 
       final actualResult = dependencyInjection.get<DummyInstance>();
 

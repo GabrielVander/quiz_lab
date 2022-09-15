@@ -10,29 +10,38 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
   }
 
   @override
-  void registerInstance<T extends Object>(T value) {
+  void registerInstance<T extends Object>(
+    T Function(DependencyInjection di) getter,
+  ) {
     try {
-      _getItInstance.registerSingleton<T>(value);
+      _getItInstance.registerSingleton<T>(getter(this));
+      // ignore: avoid_catching_errors
     } on ArgumentError catch (_) {
-      throw KeyAlreadyRegisteredException(key: value);
+      throw KeyAlreadyRegisteredException(key: T);
     }
   }
 
   @override
-  void registerBuilder<T extends Object>(T Function() builder) {
+  void registerBuilder<T extends Object>(
+    T Function(DependencyInjection di) builder,
+  ) {
     try {
-      _getItInstance.registerLazySingleton<T>(builder);
+      _getItInstance.registerLazySingleton<T>(() => builder(this));
+      // ignore: avoid_catching_errors
     } on ArgumentError catch (_) {
-      throw KeyAlreadyRegisteredException(key: builder());
+      throw KeyAlreadyRegisteredException(key: T);
     }
   }
 
   @override
-  void registerFactory<T extends Object>(T Function() factory) {
+  void registerFactory<T extends Object>(
+    T Function(DependencyInjection di) factory,
+  ) {
     try {
-      _getItInstance.registerFactory<T>(factory);
+      _getItInstance.registerFactory<T>(() => factory(this));
+      // ignore: avoid_catching_errors
     } on ArgumentError catch (_) {
-      throw KeyAlreadyRegisteredException(key: factory());
+      throw KeyAlreadyRegisteredException(key: T);
     }
   }
 

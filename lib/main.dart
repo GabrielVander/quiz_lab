@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/quiz_lab_application.dart';
 import 'package:quiz_lab/core/utils/constants.dart';
+import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/features/quiz/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/quiz/data/repositories/question_repository_firebase_impl.dart';
 import 'package:quiz_lab/features/quiz/domain/repositories/question_repository.dart';
@@ -33,45 +34,46 @@ Future<void> setUp() async {
 
 void setupInjections() {
   dependencyInjection
-    ..registerBuilder<FirebaseDataSource>(FirebaseDataSource.new)
+    ..registerBuilder<FirebaseDataSource>((_) => FirebaseDataSource())
     ..registerBuilder<QuestionRepository>(
-      () => QuestionRepositoryFirebaseImpl(
-        dataSource: dependencyInjection.get<FirebaseDataSource>(),
+      (DependencyInjection di) => QuestionRepositoryFirebaseImpl(
+        dataSource: di.get<FirebaseDataSource>(),
       ),
     )
     ..registerBuilder<WatchAllQuestionsUseCase>(
-      () => WatchAllQuestionsUseCase(
-        questionRepository: dependencyInjection.get<QuestionRepository>(),
+      (DependencyInjection di) => WatchAllQuestionsUseCase(
+        questionRepository: di.get<QuestionRepository>(),
       ),
     )
     ..registerBuilder<DeleteQuestionUseCase>(
-      () => DeleteQuestionUseCase(
-        questionRepository: dependencyInjection.get<QuestionRepository>(),
+      (DependencyInjection di) => DeleteQuestionUseCase(
+        questionRepository: di.get<QuestionRepository>(),
       ),
     )
     ..registerBuilder<CreateQuestionUseCase>(
-      () => CreateQuestionUseCase(
-        questionRepository: dependencyInjection.get<QuestionRepository>(),
+      (DependencyInjection di) => CreateQuestionUseCase(
+        questionRepository: di.get<QuestionRepository>(),
       ),
     )
     ..registerBuilder<UpdateQuestionUseCase>(
-      () => UpdateQuestionUseCase(
-        questionRepository: dependencyInjection.get<QuestionRepository>(),
+      (DependencyInjection di) => UpdateQuestionUseCase(
+        questionRepository: di.get<QuestionRepository>(),
       ),
     )
-    ..registerBuilder<BottomNavigationCubit>(BottomNavigationCubit.new)
-    ..registerBuilder<AssessmentsOverviewCubit>(AssessmentsOverviewCubit.new)
+    ..registerBuilder<BottomNavigationCubit>(
+        (DependencyInjection di) => BottomNavigationCubit())
+    ..registerBuilder<AssessmentsOverviewCubit>(
+        (DependencyInjection di) => AssessmentsOverviewCubit())
     ..registerBuilder<QuestionsOverviewCubit>(
-      () => QuestionsOverviewCubit(
-        watchAllQuestionsUseCase:
-            dependencyInjection.get<WatchAllQuestionsUseCase>(),
-        deleteQuestionUseCase: dependencyInjection.get<DeleteQuestionUseCase>(),
-        updateQuestionUseCase: dependencyInjection.get<UpdateQuestionUseCase>(),
+      (DependencyInjection di) => QuestionsOverviewCubit(
+        watchAllQuestionsUseCase: di.get<WatchAllQuestionsUseCase>(),
+        deleteQuestionUseCase: di.get<DeleteQuestionUseCase>(),
+        updateQuestionUseCase: di.get<UpdateQuestionUseCase>(),
       ),
     )
     ..registerBuilder<QuestionCreationCubit>(
-      () => QuestionCreationCubit(
-        createQuestionUseCase: dependencyInjection.get<CreateQuestionUseCase>(),
+      (DependencyInjection di) => QuestionCreationCubit(
+        createQuestionUseCase: di.get<CreateQuestionUseCase>(),
       ),
     );
 }
