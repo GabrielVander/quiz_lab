@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/impl/dependency_injection_get_it_impl.dart';
 
@@ -23,16 +24,57 @@ void main() {
     });
   });
 
-  group('registerInstance', () {
-    test('raises', () {
-      final instance = DummyInstance();
-
-      dependencyInjection.registerInstance<DummyInstance>((_) => instance);
+  group('get', () {
+    test('returns failure when key is not registered', () {
+      final instanceResult = dependencyInjection.get<DummyInstance>();
 
       expect(
-        () => dependencyInjection
-            .registerInstance<DummyInstance>((_) => instance),
-        throwsA(const TypeMatcher<KeyAlreadyRegisteredException>()),
+        instanceResult.isErrAnd(
+          (error) =>
+              error is KeyNotRegisteredFailure && error.key == DummyInstance,
+        ),
+        true,
+      );
+    });
+
+    test('returns correct instance', () {
+      final instance = DummyInstance();
+
+      final registrationResult =
+          dependencyInjection.registerInstance<DummyInstance>((_) => instance);
+
+      expect(registrationResult.isOk, true);
+
+      final instanceResult = dependencyInjection.get<DummyInstance>();
+
+      expect(
+        instanceResult.isOkAnd(
+          (value) => value == instance,
+        ),
+        true,
+      );
+    });
+  });
+
+  group('registerInstance', () {
+    test('returns failure when key is already registered', () {
+      final instance = DummyInstance();
+
+      final firstRegistrationResult =
+          dependencyInjection.registerInstance<DummyInstance>((_) => instance);
+
+      expect(firstRegistrationResult.isOk, true);
+
+      final secondRegistrationResult =
+          dependencyInjection.registerInstance<DummyInstance>((_) => instance);
+
+      expect(
+        secondRegistrationResult.isErrAnd(
+          (error) =>
+              error is KeyAlreadyRegisteredFailure &&
+              error.key == DummyInstance,
+        ),
+        true,
       );
     });
 
@@ -43,20 +85,29 @@ void main() {
 
       final actualResult = dependencyInjection.get<DummyInstance>();
 
-      expect(actualResult, instance);
+      expect(actualResult.isOkAnd((value) => value == instance), true);
     });
   });
 
   group('registerBuilder', () {
-    test('raises', () {
+    test('returns failure when key is already registered', () {
       final instance = DummyInstance();
 
-      dependencyInjection.registerBuilder<DummyInstance>((_) => instance);
+      final firstRegistrationResult =
+          dependencyInjection.registerBuilder<DummyInstance>((_) => instance);
+
+      expect(firstRegistrationResult.isOk, true);
+
+      final secondRegistrationResult =
+          dependencyInjection.registerBuilder<DummyInstance>((_) => instance);
 
       expect(
-        () =>
-            dependencyInjection.registerBuilder<DummyInstance>((_) => instance),
-        throwsA(const TypeMatcher<KeyAlreadyRegisteredException>()),
+        secondRegistrationResult.isErrAnd(
+          (error) =>
+              error is KeyAlreadyRegisteredFailure &&
+              error.key == DummyInstance,
+        ),
+        true,
       );
     });
 
@@ -67,20 +118,29 @@ void main() {
 
       final actualResult = dependencyInjection.get<DummyInstance>();
 
-      expect(actualResult, instance);
+      expect(actualResult.isOkAnd((value) => value == instance), true);
     });
   });
 
   group('registerFactory', () {
-    test('raises', () {
+    test('returns failure when key is already registered', () {
       final instance = DummyInstance();
 
-      dependencyInjection.registerFactory<DummyInstance>((_) => instance);
+      final firstRegistration =
+          dependencyInjection.registerFactory<DummyInstance>((_) => instance);
+
+      expect(firstRegistration.isOk, true);
+
+      final secondRegistration =
+          dependencyInjection.registerFactory<DummyInstance>((_) => instance);
 
       expect(
-        () =>
-            dependencyInjection.registerFactory<DummyInstance>((_) => instance),
-        throwsA(const TypeMatcher<KeyAlreadyRegisteredException>()),
+        secondRegistration.isErrAnd(
+          (error) =>
+              error is KeyAlreadyRegisteredFailure &&
+              error.key == DummyInstance,
+        ),
+        true,
       );
     });
 
@@ -91,7 +151,7 @@ void main() {
 
       final actualResult = dependencyInjection.get<DummyInstance>();
 
-      expect(actualResult, instance);
+      expect(actualResult.isOkAnd((value) => value == instance), true);
     });
   });
 }

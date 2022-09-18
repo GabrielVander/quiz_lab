@@ -1,23 +1,30 @@
-abstract class DependencyInjection {
-  T get<T extends Object>();
+import 'package:equatable/equatable.dart';
+import 'package:okay/okay.dart';
 
-  void registerInstance<T extends Object>(
+abstract class DependencyInjection {
+  Result<T, DiFailure> get<T extends Object>();
+
+  Result<void, DiFailure> registerInstance<T extends Object>(
     T Function(DependencyInjection di) getter,
   );
 
-  void registerBuilder<T extends Object>(
+  Result<void, DiFailure> registerBuilder<T extends Object>(
     T Function(DependencyInjection di) builder,
   );
 
-  void registerFactory<T extends Object>(
+  Result<void, DiFailure> registerFactory<T extends Object>(
     T Function(DependencyInjection di) factory,
   );
 
-  Future<void> unregisterAll();
+  Future<Result<void, DiFailure>> unregisterAll();
 }
 
-class KeyAlreadyRegisteredException implements Exception {
-  const KeyAlreadyRegisteredException({
+abstract class DiSetup {}
+
+abstract class DiFailure extends Equatable {}
+
+class KeyAlreadyRegisteredFailure implements DiFailure {
+  const KeyAlreadyRegisteredFailure({
     required this.key,
   });
 
@@ -37,4 +44,43 @@ class KeyAlreadyRegisteredException implements Exception {
 
     return key.toString();
   }
+
+  @override
+  List<Object?> get props => [
+        key,
+      ];
+
+  @override
+  bool? get stringify => true;
+}
+
+class KeyNotRegisteredFailure implements DiFailure {
+  const KeyNotRegisteredFailure({
+    required this.key,
+  });
+
+  final Object key;
+
+  @override
+  String toString() {
+    final keyName = _buildKeyName();
+
+    return 'Unable to get instance for key $keyName as it is not registered';
+  }
+
+  String _buildKeyName() {
+    if (key is String) {
+      return key as String;
+    }
+
+    return key.toString();
+  }
+
+  @override
+  List<Object?> get props => [
+        key,
+      ];
+
+  @override
+  bool? get stringify => true;
 }

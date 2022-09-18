@@ -22,7 +22,6 @@ class QuizLabApplication extends StatelessWidget {
     final router = _getGoRouter();
 
     return HookedBlocConfigProvider(
-      injector: dependencyInjection.get,
       child: MaterialApp.router(
         title: 'Quiz Lab',
         theme: lightTheme,
