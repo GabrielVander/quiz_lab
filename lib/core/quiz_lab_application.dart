@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/manager/network/network_cubit.dart';
-import 'package:quiz_lab/core/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/pages/question_view.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/main_scaffold.dart';
+
+import 'presentation/themes/light_theme.dart';
 
 class QuizLabApplication extends StatelessWidget {
   const QuizLabApplication({

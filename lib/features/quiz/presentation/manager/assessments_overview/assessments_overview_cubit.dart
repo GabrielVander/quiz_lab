@@ -1,11 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:quiz_lab/core/presentation/manager/manager.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/assessment_overview.dart';
 
 part 'assessments_overview_state.dart';
 
-class AssessmentsOverviewCubit extends Cubit<AssessmentsOverviewState> {
+class AssessmentsOverviewCubit extends Cubit<AssessmentsOverviewState>
+    implements Manager {
   AssessmentsOverviewCubit() : super(AssessmentsOverviewInitial());
 
   final List<AssessmentOverviewViewModel> _dummyAssessments = [

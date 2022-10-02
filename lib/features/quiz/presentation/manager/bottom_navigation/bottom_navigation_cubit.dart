@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:quiz_lab/core/presentation/manager/manager.dart';
 
 part 'bottom_navigation_state.dart';
 
-class BottomNavigationCubit extends Cubit<BottomNavigationState> {
+class BottomNavigationCubit extends Cubit<BottomNavigationState>
+    implements Manager {
   BottomNavigationCubit()
       : super(
           BottomNavigationIndexChangedState(

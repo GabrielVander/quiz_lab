@@ -9,6 +9,7 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
   Result<T, DiFailure> get<T extends Object>() {
     try {
       return ok(_getItInstance<T>());
+      // ignore: avoid_catching_errors
     } on AssertionError {
       return err(KeyNotRegisteredFailure(key: T));
     }
