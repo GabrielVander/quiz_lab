@@ -1,9 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 
 class DependencyInjectionGetItImpl implements DependencyInjection {
   final GetIt _getItInstance = GetIt.instance;
+  final List<DiSetup> _setups = [];
 
   @override
   Result<T, DiFailure> get<T extends Object>() {
@@ -16,11 +18,17 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
   }
 
   @override
-  Result<void, DiFailure> registerInstance<T extends Object>(
-    T Function(DependencyInjection di) getter,
+  Result<Unit, DiFailure> registerInstance<T extends Object>(
+    T? Function(DependencyInjection di) getter,
   ) {
     try {
-      return ok(_getItInstance.registerSingleton<T>(getter(this)));
+      final instance = getter(this);
+
+      if (instance != null) {
+        _getItInstance.registerSingleton<T>(instance);
+      }
+
+      return ok(Unit());
       // ignore: avoid_catching_errors
     } on ArgumentError catch (_) {
       return err(KeyAlreadyRegisteredFailure(key: T));
@@ -28,11 +36,17 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
   }
 
   @override
-  Result<void, DiFailure> registerBuilder<T extends Object>(
-    T Function(DependencyInjection di) builder,
+  Result<Unit, DiFailure> registerBuilder<T extends Object>(
+    T? Function(DependencyInjection di) builder,
   ) {
     try {
-      return ok(_getItInstance.registerLazySingleton<T>(() => builder(this)));
+      final instance = builder(this);
+
+      if (instance != null) {
+        _getItInstance.registerLazySingleton<T>(() => instance);
+      }
+
+      return ok(Unit());
       // ignore: avoid_catching_errors
     } on ArgumentError catch (_) {
       return err(KeyAlreadyRegisteredFailure(key: T));
@@ -40,11 +54,17 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
   }
 
   @override
-  Result<void, DiFailure> registerFactory<T extends Object>(
-    T Function(DependencyInjection di) factory,
+  Result<Unit, DiFailure> registerFactory<T extends Object>(
+    T? Function(DependencyInjection di) factory,
   ) {
     try {
-      return ok(_getItInstance.registerFactory<T>(() => factory(this)));
+      final instance = factory(this);
+
+      if (instance != null) {
+        _getItInstance.registerFactory<T>(() => instance);
+      }
+
+      return ok(Unit());
       // ignore: avoid_catching_errors
     } on ArgumentError catch (_) {
       return err(KeyAlreadyRegisteredFailure(key: T));
@@ -52,7 +72,21 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
   }
 
   @override
-  Future<Result<void, DiFailure>> unregisterAll() async {
-    return ok(await _getItInstance.reset());
+  Future<Result<Unit, DiFailure>> unregisterAll() async {
+    await _getItInstance.reset();
+
+    return ok(Unit());
+  }
+
+  @override
+  void addSetup(DiSetup setup) {
+    _setups.add(setup);
+  }
+
+  @override
+  void setUp() {
+    for (final setup in _setups) {
+      setup.execute(this);
+    }
   }
 }

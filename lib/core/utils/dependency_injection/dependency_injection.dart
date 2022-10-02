@@ -1,25 +1,28 @@
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 
 abstract class DependencyInjection {
+  void addSetup(DiSetup setup);
+
+  void setUp();
+
   Result<T, DiFailure> get<T extends Object>();
 
-  Result<void, DiFailure> registerInstance<T extends Object>(
-    T Function(DependencyInjection di) getter,
+  Result<Unit, DiFailure> registerInstance<T extends Object>(
+    T? Function(DependencyInjection di) getter,
   );
 
-  Result<void, DiFailure> registerBuilder<T extends Object>(
-    T Function(DependencyInjection di) builder,
+  Result<Unit, DiFailure> registerBuilder<T extends Object>(
+    T? Function(DependencyInjection di) builder,
   );
 
-  Result<void, DiFailure> registerFactory<T extends Object>(
-    T Function(DependencyInjection di) factory,
+  Result<Unit, DiFailure> registerFactory<T extends Object>(
+    T? Function(DependencyInjection di) factory,
   );
 
-  Future<Result<void, DiFailure>> unregisterAll();
+  Future<Result<Unit, DiFailure>> unregisterAll();
 }
-
-abstract class DiSetup {}
 
 abstract class DiFailure extends Equatable {}
 
@@ -83,4 +86,8 @@ class KeyNotRegisteredFailure implements DiFailure {
 
   @override
   bool? get stringify => true;
+}
+
+abstract class DiSetup {
+  void execute(DependencyInjection di);
 }
