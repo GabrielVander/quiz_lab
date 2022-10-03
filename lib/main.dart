@@ -2,7 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/quiz_lab_application.dart';
 import 'package:quiz_lab/core/utils/constants.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/impl/setups_overview_cubit.dart';
+import 'package:quiz_lab/core/utils/dependency_injection/impl/setup.dart';
+import 'package:quiz_lab/features/quiz/utils/setup.dart';
 import 'package:quiz_lab/firebase_options.dart';
 
 void main() async {
@@ -22,7 +23,10 @@ Future<void> setUp() async {
 }
 
 void setupInjections() {
-  dependencyInjection.addSetup(CoreDiSetup());
+  dependencyInjection
+    ..addSetup(CoreDiSetup())
+    ..addSetup(QuizDiSetup())
+    ..setUp();
 }
 
 Future<void> initializeFirebase() async {

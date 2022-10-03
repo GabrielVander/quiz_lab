@@ -1,4 +1,5 @@
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/presentation/manager/manager_factory.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/features/quiz/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/quiz/data/repositories/question_repository_firebase_impl.dart';
@@ -120,6 +121,9 @@ class QuizDiSetup implements DiSetup {
             createQuestionUseCase: createQuestionUseCaseResult.unwrap(),
           );
         },
+      )
+      ..registerBuilder<ManagerFactory>(
+        (DependencyInjection di) => ManagerFactory(dependencyInjection: di),
       );
   }
 }

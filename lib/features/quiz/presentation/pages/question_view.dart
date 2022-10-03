@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/presentation/manager/manager_factory.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/question_creation/question_creation_cubit.dart';
@@ -11,19 +12,28 @@ import 'package:quiz_lab/features/quiz/presentation/view_models/question_creatio
 class QuestionView extends StatelessWidget {
   const QuestionView({
     super.key,
-    required this.dependencyInjection,
+    required this.managerFactory,
   });
 
-  final DependencyInjection dependencyInjection;
+  final ManagerFactory managerFactory;
 
   @override
   Widget build(BuildContext context) {
+    final questionCreationCubitResult = managerFactory.make(
+      desiredManager: AvailableManagers.questionCreationCubit,
+    );
+
+    if (questionCreationCubitResult.isErr) {
+      return Container();
+    }
+
     return SafeArea(
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(10),
           child: Body(
-            cubit: dependencyInjection.get<QuestionCreationCubit>(),
+            cubit:
+                questionCreationCubitResult.unwrap() as QuestionCreationCubit,
           ),
         ),
       ),
