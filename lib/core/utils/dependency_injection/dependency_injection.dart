@@ -1,17 +1,33 @@
+import 'package:equatable/equatable.dart';
+import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
+
 abstract class DependencyInjection {
-  T get<T extends Object>();
+  void addSetup(DiSetup setup);
 
-  void registerInstance<T extends Object>(T value);
+  void setUp();
 
-  void registerBuilder<T extends Object>(T Function() builder);
+  Result<T, DiFailure> get<T extends Object>();
 
-  void registerFactory<T extends Object>(T Function() factory);
+  Result<Unit, DiFailure> registerInstance<T extends Object>(
+    T? Function(DependencyInjection di) getter,
+  );
 
-  Future<void> unregisterAll();
+  Result<Unit, DiFailure> registerBuilder<T extends Object>(
+    T? Function(DependencyInjection di) builder,
+  );
+
+  Result<Unit, DiFailure> registerFactory<T extends Object>(
+    T? Function(DependencyInjection di) factory,
+  );
+
+  Future<Result<Unit, DiFailure>> unregisterAll();
 }
 
-class KeyAlreadyRegisteredException implements Exception {
-  const KeyAlreadyRegisteredException({
+abstract class DiFailure extends Equatable {}
+
+class KeyAlreadyRegisteredFailure implements DiFailure {
+  const KeyAlreadyRegisteredFailure({
     required this.key,
   });
 
@@ -31,4 +47,47 @@ class KeyAlreadyRegisteredException implements Exception {
 
     return key.toString();
   }
+
+  @override
+  List<Object?> get props => [
+        key,
+      ];
+
+  @override
+  bool? get stringify => true;
+}
+
+class KeyNotRegisteredFailure implements DiFailure {
+  const KeyNotRegisteredFailure({
+    required this.key,
+  });
+
+  final Object key;
+
+  @override
+  String toString() {
+    final keyName = _buildKeyName();
+
+    return 'Unable to get instance for key $keyName as it is not registered';
+  }
+
+  String _buildKeyName() {
+    if (key is String) {
+      return key as String;
+    }
+
+    return key.toString();
+  }
+
+  @override
+  List<Object?> get props => [
+        key,
+      ];
+
+  @override
+  bool? get stringify => true;
+}
+
+abstract class DiSetup {
+  void execute(DependencyInjection di);
 }

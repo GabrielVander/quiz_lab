@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_lab/core/presentation/manager/manager.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/quiz/domain/entities/question_difficulty.dart';
@@ -12,7 +13,8 @@ import 'package:quiz_lab/features/quiz/presentation/view_models/question_overvie
 
 part 'questions_overview_state.dart';
 
-class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
+class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
+    implements Manager {
   QuestionsOverviewCubit({
     required this.watchAllQuestionsUseCase,
     required this.deleteQuestionUseCase,

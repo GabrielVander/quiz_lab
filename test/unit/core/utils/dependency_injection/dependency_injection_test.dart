@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 
 void main() {
-  group('KeyAlreadyRegisteredException', () {
+  group('KeyAlreadyRegisteredFailure', () {
     group('toString', () {
       <Object, String>{
         'SomeKey': 'Unable to register key SomeKey as it is already registered',
@@ -11,7 +11,7 @@ void main() {
             'already registered',
       }.forEach(
         (Object key, String value) => test('$key -> $value', () {
-          expect(KeyAlreadyRegisteredException(key: key).toString(), value);
+          expect(KeyAlreadyRegisteredFailure(key: key).toString(), value);
         }),
       );
     });

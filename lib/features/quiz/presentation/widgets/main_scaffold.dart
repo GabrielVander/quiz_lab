@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/manager/network/network_cubit.dart';
+import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/presentation/manager/manager_factory.dart';
+import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
+import 'package:quiz_lab/core/presentation/widgets/network_checker.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
-import 'package:quiz_lab/core/widgets/network_checker.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
@@ -17,17 +19,29 @@ import 'package:quiz_lab/features/quiz/presentation/widgets/quiz_lab_nav_bar.dar
 class MainScaffold extends StatelessWidget {
   const MainScaffold({
     super.key,
-    required this.bottomNavigationCubit,
-    required this.networkCubit,
-    required this.questionsOverviewCubit,
+    required this.managerFactory,
   });
 
-  final BottomNavigationCubit bottomNavigationCubit;
-  final NetworkCubit networkCubit;
-  final QuestionsOverviewCubit questionsOverviewCubit;
+  final ManagerFactory managerFactory;
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavigationCubit = managerFactory.make(
+      desiredManager: AvailableManagers.bottomNavigationCubit,
+    );
+    final networkCubit = managerFactory.make(
+      desiredManager: AvailableManagers.networkCubit,
+    );
+    final questionsOverviewCubit = managerFactory.make(
+      desiredManager: AvailableManagers.questionsOverviewCubit,
+    );
+
+    if (bottomNavigationCubit.isErr ||
+        networkCubit.isErr ||
+        questionsOverviewCubit.isErr) {
+      return Container();
+    }
+
     return SafeArea(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -41,13 +55,16 @@ class MainScaffold extends StatelessWidget {
             ),
             bottomNavigationBar: QuizLabNavBar(
               key: const ValueKey<String>('navBar'),
-              bottomNavigationCubit: bottomNavigationCubit,
+              bottomNavigationCubit:
+                  bottomNavigationCubit.unwrap() as BottomNavigationCubit,
             ),
             body: NetworkChecker(
-              cubit: networkCubit,
+              cubit: networkCubit.unwrap() as NetworkCubit,
               child: Pager(
-                bottomNavigationCubit: bottomNavigationCubit,
-                questionsOverviewCubit: questionsOverviewCubit,
+                bottomNavigationCubit:
+                    bottomNavigationCubit.unwrap() as BottomNavigationCubit,
+                questionsOverviewCubit:
+                    questionsOverviewCubit.unwrap() as QuestionsOverviewCubit,
               ),
             ),
           );

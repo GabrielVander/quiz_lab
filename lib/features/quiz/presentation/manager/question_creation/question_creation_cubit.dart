@@ -1,12 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:quiz_lab/core/presentation/manager/manager.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_creation.dart';
 
 part 'question_creation_state.dart';
 
-class QuestionCreationCubit extends Cubit<QuestionCreationState> {
+class QuestionCreationCubit extends Cubit<QuestionCreationState>
+    implements Manager {
   QuestionCreationCubit({
     required this.createQuestionUseCase,
   }) : super(QuestionCreationInitial());

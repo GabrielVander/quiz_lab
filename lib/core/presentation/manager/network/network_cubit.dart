@@ -4,14 +4,15 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
+import 'package:quiz_lab/core/presentation/manager/manager.dart';
 
 part 'network_state.dart';
 
-class NetworkCubit extends Cubit<NetworkState> {
+class NetworkCubit extends Cubit<NetworkState> implements Manager {
   NetworkCubit() : super(NetworkInitial());
 
   final _connectivity = Connectivity();
-  var _wasOnline = null;
+  bool? _wasOnline;
 
   Future<void> update() async {
     final result = await _connectivity.checkConnectivity();
