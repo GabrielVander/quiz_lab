@@ -4,6 +4,7 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class QuizLabNavBar extends HookWidget {
   const QuizLabNavBar({
@@ -26,21 +27,21 @@ class QuizLabNavBar extends HookWidget {
       selectedIconTheme: const IconThemeData(size: 30),
       onTap: (int newIndex) =>
           bottomNavigationCubit.transitionTo(newIndex: newIndex),
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          label: 'Assessments',
-          icon: Icon(MdiIcons.schoolOutline),
-          activeIcon: Icon(MdiIcons.school),
+          label: S.of(context).assessmentsSectionDisplayName,
+          icon: const Icon(MdiIcons.schoolOutline),
+          activeIcon: const Icon(MdiIcons.school),
         ),
         BottomNavigationBarItem(
-          label: 'Questions',
-          icon: Icon(MdiIcons.databaseOutline),
-          activeIcon: Icon(MdiIcons.database),
+          label: S.of(context).questionsSectionDisplayName,
+          icon: const Icon(MdiIcons.databaseOutline),
+          activeIcon: const Icon(MdiIcons.database),
         ),
         BottomNavigationBarItem(
-          label: 'Results',
-          icon: Icon(MdiIcons.cardBulletedOutline),
-          activeIcon: Icon(MdiIcons.cardBulleted),
+          label: S.of(context).resultsSectionDisplayName,
+          icon: const Icon(MdiIcons.cardBulletedOutline),
+          activeIcon: const Icon(MdiIcons.cardBulleted),
         ),
       ],
     );

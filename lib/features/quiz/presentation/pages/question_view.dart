@@ -8,6 +8,7 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_creation.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionView extends StatelessWidget {
   const QuestionView({
@@ -72,8 +73,10 @@ class Body extends HookWidget {
           Expanded(
             child: Form(
               viewModel: state.viewModel,
-              onShortDescriptionChange: cubit.onShortDescriptionUpdate,
-              onDescriptionChange: cubit.onDescriptionUpdate,
+              onShortDescriptionChange: (value) =>
+                  cubit.onShortDescriptionUpdate(context, value),
+              onDescriptionChange: (value) =>
+                  cubit.onDescriptionUpdate(context, value),
               onCreateQuestion: () => cubit.createQuestion(context),
               onAddOption: cubit.addOption,
               onIsCorrect: cubit.optionIsCorrect,
@@ -97,7 +100,7 @@ class PageTitle extends StatelessWidget {
     final fontSize = _getFontSize(context);
 
     return Text(
-      'Create Question',
+      S.of(context).createQuestionTitle,
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: FontWeight.bold,
@@ -193,14 +196,14 @@ class Form extends StatelessWidget {
             children: [
               OutlinedButton(
                 onPressed: () => GoRouter.of(context).go('/'),
-                child: const Text('Back'),
+                child: Text(S.of(context).goBackLabel),
               ),
               const SizedBox(
                 width: 15,
               ),
               ElevatedButton(
                 onPressed: onCreateQuestion,
-                child: const Text('Create'),
+                child: Text(S.of(context).createLabel),
               ),
             ],
           )
@@ -224,7 +227,7 @@ class ShortDescriptionField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       decoration: InputDecoration(
-        labelText: 'Short Description',
+        labelText: S.of(context).questionShortDescriptionLabel,
         border: const OutlineInputBorder(),
         errorText: viewModel.hasError ? viewModel.errorMessage : null,
       ),
@@ -248,7 +251,7 @@ class DescriptionField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       decoration: InputDecoration(
-        labelText: 'Description',
+        labelText: S.of(context).questionDescriptionLabel,
         border: const OutlineInputBorder(),
         errorText: viewModel.hasError ? viewModel.errorMessage : null,
       ),
@@ -315,7 +318,7 @@ class Options extends StatelessWidget {
             ),
             OutlinedButton(
               onPressed: onAddOption,
-              child: const Text('Add Option'),
+              child: Text(S.of(context).addOptionLabel),
             ),
           ],
         ),
@@ -339,11 +342,11 @@ class Option extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Expanded(
+        Expanded(
           child: TextField(
             decoration: InputDecoration(
-              labelText: 'Option',
-              border: OutlineInputBorder(),
+              labelText: S.of(context).optionInputLabel,
+              border: const OutlineInputBorder(),
             ),
           ),
         ),
@@ -353,7 +356,7 @@ class Option extends StatelessWidget {
               value: viewModel.isCorrect,
               onChanged: (bool? value) => onIsCorrect(value ?? false),
             ),
-            const Text('Is Correct'),
+            Text(S.of(context).isOptionCorrectLabel),
           ],
         )
       ],
@@ -371,7 +374,7 @@ class Subtitle extends StatelessWidget {
     final fontSize = _getFontSize(context);
 
     return Text(
-      'Options',
+      S.of(context).optionsTitle,
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: FontWeight.bold,

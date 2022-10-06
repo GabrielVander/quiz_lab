@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/assets/images.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class UnderConstruction extends StatelessWidget {
   const UnderConstruction({
@@ -54,7 +55,7 @@ class Description extends StatelessWidget {
     final fontSize = _getFontSize(context);
 
     return Text(
-      "We're still working on that!",
+      S.of(context).workInProgressMessage,
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: FontWeight.bold,

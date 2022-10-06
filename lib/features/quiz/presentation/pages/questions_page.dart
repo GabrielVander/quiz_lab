@@ -8,6 +8,7 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_overview.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/page_subtitle.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionsPage extends HookWidget {
   const QuestionsPage({
@@ -53,7 +54,7 @@ class Header extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const PageSubtitle(title: 'Questions'),
+        PageSubtitle(title: S.of(context).questionsSectionDisplayName),
         QuestionAddButton(
           onAddQuestion: onAddQuestion,
         ),
@@ -222,13 +223,13 @@ class QuestionEditBottomSheet extends StatelessWidget {
               children: [
                 TextField(
                   controller: controller,
-                  decoration: const InputDecoration(
-                    label: Text('Short Description'),
+                  decoration: InputDecoration(
+                    label: Text(S.of(context).questionShortDescriptionLabel),
                   ),
                 ),
                 ElevatedButton(
                   onPressed: () => _saveQuestion(controller.text),
-                  child: const Text('Save'),
+                  child: Text(S.of(context).saveLabel),
                 )
               ],
             ),
@@ -377,7 +378,7 @@ class Categories extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Categories',
+                S.of(context).questionCategoriesLabel,
                 style: TextStyle(
                   color: textColor,
                   fontSize: fontSize,
@@ -475,7 +476,7 @@ class Difficulty extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'Difficulty',
+          S.of(context).questionDifficultyLabel,
           style: TextStyle(
             color: textColor,
             fontSize: fontSize,
@@ -491,7 +492,7 @@ class Difficulty extends StatelessWidget {
           ),
         ),
         Text(
-          difficulty,
+          S.of(context).questionDifficultyValue(difficulty),
           style: TextStyle(
             color: textColor,
             fontSize: fontSize,
@@ -506,11 +507,11 @@ class Difficulty extends StatelessWidget {
     final difficultyColors = themeColors!.difficultyColors;
 
     switch (difficulty) {
-      case 'Easy':
+      case 'easy':
         return difficultyColors.easy;
-      case 'Medium':
+      case 'medium':
         return difficultyColors.medium;
-      case 'Hard':
+      case 'hard':
         return difficultyColors.hard;
       default:
         return difficultyColors.hard;

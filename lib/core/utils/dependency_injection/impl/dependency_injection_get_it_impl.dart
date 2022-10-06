@@ -86,7 +86,7 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
   @override
   void setUp() {
     for (final setup in _setups) {
-      setup.execute(this);
+      setup(this);
     }
   }
 }

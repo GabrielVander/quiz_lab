@@ -1,0 +1,127 @@
+{
+  "@@locale": "en_US",
+  "noConnection": "No Connection",
+  "@noConnection": {
+    "description": "No connection message"
+  },
+  "workInProgressMessage": "We're still working on that!",
+  "@workInProgressMessage": {
+    "description": "Work-In-Progress message"
+  },
+  "assessmentsSectionDisplayName": "Assessments",
+  "@assessmentsSectionDisplayName": {
+    "description": "Title display regarding assessments"
+  },
+  "questionsSectionDisplayName": "Questions",
+  "@questionsSectionDisplayName": {
+    "description": "Title display regarding questions"
+  },
+  "resultsSectionDisplayName": "Result",
+  "@resultsSectionDisplayName": {
+    "description": "Title display regarding results"
+  },
+  "questionAmountLabel": "{count, plural, zero {No Questions} one {1 Question} other {{count} Questions}}",
+  "@questionAmountLabel": {
+    "description": "Question count",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "answerAmountWithLimitLabel": "{count, plural, zero {0 Answers} one {1 Answer} other {{count} Answers}} Out Of {limit}",
+  "@answerAmountWithLimitLabel": {
+    "description": "Answer count with limit",
+    "placeholders": {
+      "count": {},
+      "limit": {
+        "type": "num",
+        "example": "15",
+        "description": "Maximum amount of answers"
+      }
+    }
+  },
+  "answerAmountWithoutLimitLabel": "{count, plural, zero {0 Answers} one {1 Answer} other {{count} Answers}}",
+  "@answerAmountWithoutLimitLabel": {
+    "description": "Answer count without limit",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "noDueDateLabel": "No Due Date",
+  "@noDueDate": {
+    "description": "Label for assessment with no due date set"
+  },
+  "dueDateLabel": "Due Date",
+  "@dueDate": {
+    "description": "Assessment's due date label"
+  },
+  "dueDateValue": "{date}",
+  "@dueDateValue": {
+    "description": "Assessment's actual due date value",
+    "placeholders": {
+      "date": {
+        "type": "DateTime"
+      }
+    }
+  },
+  "questionCategoriesLabel": "Categories",
+  "@questionCategoriesLabel": {
+    "description": "Question categories label"
+  },
+  "questionDifficultyLabel": "Difficulty",
+  "@questionDifficultyLabel": {
+    "description": "Question difficulty label"
+  },
+  "questionDifficultyValue": "{difficulty, select, easy {Easy} medium {Medium} hard {Hard} other {Unknown}}",
+  "@questionDifficultyValue": {
+    "description": "Question's difficulty value",
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "createQuestionTitle": "Create Question",
+  "@createQuestionTitle": {
+    "description": "Question creation page's title"
+  },
+  "questionShortDescriptionLabel": "Short Description",
+  "@questionShortDescriptionLabel": {
+    "description": "Question's short description label"
+  },
+  "questionDescriptionLabel": "Description",
+  "@questionDescriptionLabel": {
+    "description": "Question's description label"
+  },
+  "goBackLabel": "Go Back",
+  "@goBackLabel": {
+    "description": "Generic go back label"
+  },
+  "createLabel": "Create",
+  "@createLabel": {
+    "description": "Generic create label"
+  },
+  "saveLabel": "Save",
+  "@saveLabel": {
+    "description": "Generic save label"
+  },
+  "optionsTitle": "Options",
+  "@optionsTitle": {
+    "description": "Options title"
+  },
+  "optionInputLabel": "Option",
+  "@optionInputLabel": {
+    "description": "Option input label"
+  },
+  "isOptionCorrectLabel": "Is Correct",
+  "@isOptionCorrectLabel": {
+    "description": "Is the current option correct label"
+  },
+  "addOptionLabel": "Add Option",
+  "@addOptionLabel": {
+    "description": "Add option label"
+  },
+  "mustBeSetMessage": "Must Be Set",
+  "@mustBeSetMessage": {
+    "description": "Generic message for required fields"
+  }
+}
