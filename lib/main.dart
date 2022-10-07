@@ -24,8 +24,8 @@ Future<void> setUp() async {
 
 void setupInjections() {
   dependencyInjection
-    ..addSetup(CoreDiSetup())
-    ..addSetup(QuizDiSetup())
+    ..addSetup(coreDiSetup)
+    ..addSetup(quizDiSetup)
     ..setUp();
 }
 

@@ -4,6 +4,7 @@ import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/assessment_overview.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class AssessmentOverview extends StatelessWidget {
   const AssessmentOverview({
@@ -34,6 +35,7 @@ class AssessmentOverview extends StatelessWidget {
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Questions(amount: assessment.amountOfQuestions),
                   const SizedBox(
@@ -123,15 +125,7 @@ class Questions extends StatelessWidget {
     return Row(
       children: [
         Text(
-          amount.toString(),
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.bold,
-            fontSize: fontSize,
-          ),
-        ),
-        Text(
-          ' Questions',
+          S.of(context).questionAmountLabel(amount),
           style: TextStyle(
             color: textColor,
             fontSize: fontSize,
@@ -194,13 +188,6 @@ class Answers extends StatelessWidget {
             textColor: textColor,
             fontSize: fontSize,
           ),
-        Text(
-          ' Answers',
-          style: TextStyle(
-            color: textColor,
-            fontSize: fontSize,
-          ),
-        ),
       ],
     );
   }
@@ -245,10 +232,9 @@ class AnswersAmountNoLimit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      '$amount',
+      S.of(context).answerAmountWithoutLimitLabel(amount),
       style: TextStyle(
         color: textColor,
-        fontWeight: FontWeight.bold,
         fontSize: fontSize,
       ),
     );
@@ -272,10 +258,9 @@ class AnswersAmountWithLimit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      '$amount/$limit',
+      S.of(context).answerAmountWithLimitLabel(amount, limit),
       style: TextStyle(
         color: textColor,
-        fontWeight: FontWeight.bold,
         fontSize: fontSize,
       ),
     );
@@ -345,7 +330,7 @@ class NoDueDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'No Due Date',
+      S.of(context).noDueDateLabel,
       style: TextStyle(
         color: textColor,
         fontWeight: FontWeight.bold,
@@ -373,7 +358,7 @@ class DueDateWithValue extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Due Date',
+          S.of(context).dueDateLabel,
           style: TextStyle(
             color: textColor,
             fontWeight: FontWeight.bold,

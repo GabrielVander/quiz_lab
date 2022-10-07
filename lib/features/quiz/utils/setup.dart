@@ -13,117 +13,114 @@ import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bo
 import 'package:quiz_lab/features/quiz/presentation/manager/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
 
-class QuizDiSetup implements DiSetup {
-  @override
-  void execute(DependencyInjection di) {
-    di
-      ..registerBuilder<FirebaseDataSource>((_) => FirebaseDataSource())
-      ..registerBuilder<QuestionRepository>(
-        (DependencyInjection di) {
-          final dataSourceResult = di.get<FirebaseDataSource>();
+void quizDiSetup(DependencyInjection di) {
+  di
+    ..registerBuilder<FirebaseDataSource>((_) => FirebaseDataSource())
+    ..registerBuilder<QuestionRepository>(
+      (DependencyInjection di) {
+        final dataSourceResult = di.get<FirebaseDataSource>();
 
-          if (dataSourceResult.isErr) {
-            return null;
-          }
+        if (dataSourceResult.isErr) {
+          return null;
+        }
 
-          return QuestionRepositoryFirebaseImpl(
-            dataSource: dataSourceResult.unwrap(),
-          );
-        },
-      )
-      ..registerBuilder<WatchAllQuestionsUseCase>(
-        (DependencyInjection di) {
-          final repositoryResult = di.get<QuestionRepository>();
+        return QuestionRepositoryFirebaseImpl(
+          dataSource: dataSourceResult.unwrap(),
+        );
+      },
+    )
+    ..registerBuilder<WatchAllQuestionsUseCase>(
+      (DependencyInjection di) {
+        final repositoryResult = di.get<QuestionRepository>();
 
-          if (repositoryResult.isErr) {
-            return null;
-          }
+        if (repositoryResult.isErr) {
+          return null;
+        }
 
-          return WatchAllQuestionsUseCase(
-            questionRepository: repositoryResult.unwrap(),
-          );
-        },
-      )
-      ..registerBuilder<DeleteQuestionUseCase>(
-        (DependencyInjection di) {
-          final repositoryResult = di.get<QuestionRepository>();
+        return WatchAllQuestionsUseCase(
+          questionRepository: repositoryResult.unwrap(),
+        );
+      },
+    )
+    ..registerBuilder<DeleteQuestionUseCase>(
+      (DependencyInjection di) {
+        final repositoryResult = di.get<QuestionRepository>();
 
-          if (repositoryResult.isErr) {
-            return null;
-          }
+        if (repositoryResult.isErr) {
+          return null;
+        }
 
-          return DeleteQuestionUseCase(
-            questionRepository: repositoryResult.unwrap(),
-          );
-        },
-      )
-      ..registerBuilder<CreateQuestionUseCase>(
-        (DependencyInjection di) {
-          final repositoryResult = di.get<QuestionRepository>();
+        return DeleteQuestionUseCase(
+          questionRepository: repositoryResult.unwrap(),
+        );
+      },
+    )
+    ..registerBuilder<CreateQuestionUseCase>(
+      (DependencyInjection di) {
+        final repositoryResult = di.get<QuestionRepository>();
 
-          if (repositoryResult.isErr) {
-            return null;
-          }
+        if (repositoryResult.isErr) {
+          return null;
+        }
 
-          return CreateQuestionUseCase(
-            questionRepository: repositoryResult.unwrap(),
-          );
-        },
-      )
-      ..registerBuilder<UpdateQuestionUseCase>(
-        (DependencyInjection di) {
-          final repositoryResult = di.get<QuestionRepository>();
+        return CreateQuestionUseCase(
+          questionRepository: repositoryResult.unwrap(),
+        );
+      },
+    )
+    ..registerBuilder<UpdateQuestionUseCase>(
+      (DependencyInjection di) {
+        final repositoryResult = di.get<QuestionRepository>();
 
-          if (repositoryResult.isErr) {
-            return null;
-          }
+        if (repositoryResult.isErr) {
+          return null;
+        }
 
-          return UpdateQuestionUseCase(
-            questionRepository: repositoryResult.unwrap(),
-          );
-        },
-      )
-      ..registerBuilder<BottomNavigationCubit>(
-        (DependencyInjection di) => BottomNavigationCubit(),
-      )
-      ..registerBuilder<AssessmentsOverviewCubit>(
-        (DependencyInjection di) => AssessmentsOverviewCubit(),
-      )
-      ..registerBuilder<QuestionsOverviewCubit>(
-        (DependencyInjection di) {
-          final watchAllQuestionsUseCaseResult =
-              di.get<WatchAllQuestionsUseCase>();
-          final deleteQuestionUseCaseResult = di.get<DeleteQuestionUseCase>();
-          final updateQuestionUseCaseResult = di.get<UpdateQuestionUseCase>();
+        return UpdateQuestionUseCase(
+          questionRepository: repositoryResult.unwrap(),
+        );
+      },
+    )
+    ..registerBuilder<BottomNavigationCubit>(
+      (DependencyInjection di) => BottomNavigationCubit(),
+    )
+    ..registerBuilder<AssessmentsOverviewCubit>(
+      (DependencyInjection di) => AssessmentsOverviewCubit(),
+    )
+    ..registerBuilder<QuestionsOverviewCubit>(
+      (DependencyInjection di) {
+        final watchAllQuestionsUseCaseResult =
+            di.get<WatchAllQuestionsUseCase>();
+        final deleteQuestionUseCaseResult = di.get<DeleteQuestionUseCase>();
+        final updateQuestionUseCaseResult = di.get<UpdateQuestionUseCase>();
 
-          if (watchAllQuestionsUseCaseResult.isErr ||
-              deleteQuestionUseCaseResult.isErr ||
-              updateQuestionUseCaseResult.isErr) {
-            return null;
-          }
+        if (watchAllQuestionsUseCaseResult.isErr ||
+            deleteQuestionUseCaseResult.isErr ||
+            updateQuestionUseCaseResult.isErr) {
+          return null;
+        }
 
-          return QuestionsOverviewCubit(
-            watchAllQuestionsUseCase: watchAllQuestionsUseCaseResult.unwrap(),
-            deleteQuestionUseCase: deleteQuestionUseCaseResult.unwrap(),
-            updateQuestionUseCase: updateQuestionUseCaseResult.unwrap(),
-          );
-        },
-      )
-      ..registerBuilder<QuestionCreationCubit>(
-        (DependencyInjection di) {
-          final createQuestionUseCaseResult = di.get<CreateQuestionUseCase>();
+        return QuestionsOverviewCubit(
+          watchAllQuestionsUseCase: watchAllQuestionsUseCaseResult.unwrap(),
+          deleteQuestionUseCase: deleteQuestionUseCaseResult.unwrap(),
+          updateQuestionUseCase: updateQuestionUseCaseResult.unwrap(),
+        );
+      },
+    )
+    ..registerBuilder<QuestionCreationCubit>(
+      (DependencyInjection di) {
+        final createQuestionUseCaseResult = di.get<CreateQuestionUseCase>();
 
-          if (createQuestionUseCaseResult.isErr) {
-            return null;
-          }
+        if (createQuestionUseCaseResult.isErr) {
+          return null;
+        }
 
-          return QuestionCreationCubit(
-            createQuestionUseCase: createQuestionUseCaseResult.unwrap(),
-          );
-        },
-      )
-      ..registerBuilder<ManagerFactory>(
-        (DependencyInjection di) => ManagerFactory(dependencyInjection: di),
-      );
-  }
+        return QuestionCreationCubit(
+          createQuestionUseCase: createQuestionUseCaseResult.unwrap(),
+        );
+      },
+    )
+    ..registerBuilder<ManagerFactory>(
+      (DependencyInjection di) => ManagerFactory(dependencyInjection: di),
+    );
 }

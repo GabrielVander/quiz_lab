@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class NetworkChecker extends HookWidget {
   const NetworkChecker({
@@ -25,7 +26,7 @@ class NetworkChecker extends HookWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!state.connected) {
           ScaffoldMessenger.of(context)
-              .showMaterialBanner(_buildNoConnectionBanner());
+              .showMaterialBanner(_buildNoConnectionBanner(context));
         } else {
           ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
         }
@@ -35,7 +36,7 @@ class NetworkChecker extends HookWidget {
     return child;
   }
 
-  MaterialBanner _buildNoConnectionBanner() {
+  MaterialBanner _buildNoConnectionBanner(BuildContext context) {
     return MaterialBanner(
       content: DecoratedBox(
         decoration: const BoxDecoration(
@@ -45,10 +46,10 @@ class NetworkChecker extends HookWidget {
           padding: const EdgeInsets.all(5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Text(
-                'No Connection',
-                style: TextStyle(
+                S.of(context).noConnection,
+                style: const TextStyle(
                   color: Colors.white,
                 ),
               ),

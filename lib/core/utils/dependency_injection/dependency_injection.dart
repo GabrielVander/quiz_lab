@@ -88,6 +88,4 @@ class KeyNotRegisteredFailure implements DiFailure {
   bool? get stringify => true;
 }
 
-abstract class DiSetup {
-  void execute(DependencyInjection di);
-}
+typedef DiSetup = void Function(DependencyInjection di);

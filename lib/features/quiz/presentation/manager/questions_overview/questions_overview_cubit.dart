@@ -99,13 +99,13 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
   ) {
     switch (difficulty) {
       case QuestionDifficulty.easy:
-        return 'Easy';
+        return 'easy';
       case QuestionDifficulty.medium:
-        return 'Medium';
+        return 'medium';
       case QuestionDifficulty.hard:
-        return 'Hard';
+        return 'hard';
       case QuestionDifficulty.unknown:
-        return 'Unknown';
+        return 'unknown';
     }
   }
 

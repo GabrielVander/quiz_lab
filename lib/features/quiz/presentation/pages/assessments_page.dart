@@ -4,6 +4,7 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/assessment_overview.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/page_subtitle.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class AssessmentsPage extends HookWidget {
   const AssessmentsPage({
@@ -28,8 +29,10 @@ class AssessmentsPage extends HookWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Row(
-              children: const [
-                PageSubtitle(title: 'Assessments'),
+              children: [
+                PageSubtitle(
+                  title: S.of(context).assessmentsSectionDisplayName,
+                ),
               ],
             ),
           ),

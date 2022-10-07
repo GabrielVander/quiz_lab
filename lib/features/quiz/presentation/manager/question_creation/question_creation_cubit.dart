@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/presentation/manager/manager.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_creation.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 part 'question_creation_state.dart';
 
@@ -48,11 +49,12 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
-  Future<void> onShortDescriptionUpdate(String newValue) async {
+  Future<void> onShortDescriptionUpdate(
+      BuildContext context, String newValue) async {
     _viewModel = _viewModel.copyWith(
       shortDescription: _viewModel.shortDescription.copyWith(value: newValue),
     );
-    _viewModel = _validateShortDescription(_viewModel);
+    _viewModel = _validateShortDescription(context, _viewModel);
 
     emit(
       QuestionCreationDisplayUpdate(
@@ -61,13 +63,14 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     );
   }
 
-  Future<void> onDescriptionUpdate(String newValue) async {
+  Future<void> onDescriptionUpdate(
+      BuildContext context, String newValue) async {
     _viewModel = _viewModel.copyWith(
       description: _viewModel.description.copyWith(
         value: newValue,
       ),
     );
-    _viewModel = _validateDescription(_viewModel);
+    _viewModel = _validateDescription(context, _viewModel);
 
     emit(
       QuestionCreationDisplayUpdate(
@@ -77,7 +80,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   Future<void> createQuestion(BuildContext context) async {
-    _emitValidatedFields();
+    _emitValidatedFields(context);
 
     if (_isValid) {
       await _createQuestion();
@@ -119,19 +122,22 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
-  void _emitValidatedFields() {
-    final newViewModel = _validateFields(_viewModel);
+  void _emitValidatedFields(
+    BuildContext context,
+  ) {
+    final newViewModel = _validateFields(context, _viewModel);
 
     emit(QuestionCreationDisplayUpdate(viewModel: newViewModel));
   }
 
   QuestionCreationViewModel _validateFields(
+    BuildContext context,
     QuestionCreationViewModel viewModel,
   ) {
     var copy = viewModel;
 
-    copy = _validateShortDescription(copy);
-    copy = _validateDescription(copy);
+    copy = _validateShortDescription(context, copy);
+    copy = _validateDescription(context, copy);
 
     _isValid = copy == viewModel;
 
@@ -139,13 +145,14 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   QuestionCreationViewModel _validateDescription(
+    BuildContext context,
     QuestionCreationViewModel viewModel,
   ) {
     if (_viewModel.description.value == '') {
       return viewModel.copyWith(
         description: viewModel.description.copyWith(
           hasError: true,
-          errorMessage: 'Must Be Set',
+          errorMessage: S.of(context).mustBeSetMessage,
         ),
       );
     }
@@ -158,13 +165,14 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   QuestionCreationViewModel _validateShortDescription(
+    BuildContext context,
     QuestionCreationViewModel viewModel,
   ) {
     if (viewModel.shortDescription.value == '') {
       return viewModel.copyWith(
         shortDescription: viewModel.shortDescription.copyWith(
           hasError: true,
-          errorMessage: 'Must Be Set',
+          errorMessage: S.of(context).mustBeSetMessage,
         ),
       );
     }
