@@ -16,7 +16,7 @@
   "@questionsSectionDisplayName": {
     "description": "Title display regarding questions"
   },
-  "resultsSectionDisplayName": "Result",
+  "resultsSectionDisplayName": "Results",
   "@resultsSectionDisplayName": {
     "description": "Title display regarding results"
   },

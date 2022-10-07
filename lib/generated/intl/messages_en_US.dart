@@ -71,7 +71,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "questionsSectionDisplayName":
             MessageLookupByLibrary.simpleMessage("Questions"),
         "resultsSectionDisplayName":
-            MessageLookupByLibrary.simpleMessage("Result"),
+            MessageLookupByLibrary.simpleMessage("Results"),
         "saveLabel": MessageLookupByLibrary.simpleMessage("Save"),
         "workInProgressMessage": MessageLookupByLibrary.simpleMessage(
             "We\'re still working on that!")
