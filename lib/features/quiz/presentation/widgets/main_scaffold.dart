@@ -9,12 +9,12 @@ import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/quiz/presentation/pages/assessments_page.dart';
-import 'package:quiz_lab/features/quiz/presentation/pages/questions_page.dart';
-import 'package:quiz_lab/features/quiz/presentation/pages/results_page.dart';
+import 'package:quiz_lab/features/quiz/presentation/widgets/assessments_page.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/network_checker.dart';
+import 'package:quiz_lab/features/quiz/presentation/widgets/questions_page.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/quiz_lab_app_bar.dart';
 import 'package:quiz_lab/features/quiz/presentation/widgets/quiz_lab_nav_bar.dart';
+import 'package:quiz_lab/features/quiz/presentation/widgets/results_page.dart';
 
 class MainScaffold extends StatelessWidget {
   const MainScaffold({
