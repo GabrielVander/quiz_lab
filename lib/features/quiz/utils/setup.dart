@@ -1,6 +1,6 @@
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/presentation/manager/manager_factory.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/common/manager_factory.dart';
+import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/features/quiz/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/quiz/data/repositories/question_repository_firebase_impl.dart';
 import 'package:quiz_lab/features/quiz/domain/repositories/question_repository.dart';
@@ -10,6 +10,7 @@ import 'package:quiz_lab/features/quiz/domain/use_cases/fetch_questions_use_case
 import 'package:quiz_lab/features/quiz/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/features/quiz/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
 
@@ -120,6 +121,7 @@ void quizDiSetup(DependencyInjection di) {
         );
       },
     )
+    ..registerBuilder<NetworkCubit>((DependencyInjection di) => NetworkCubit())
     ..registerBuilder<ManagerFactory>(
       (DependencyInjection di) => ManagerFactory(dependencyInjection: di),
     );

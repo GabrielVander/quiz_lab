@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:quiz_lab/core/presentation/manager/manager.dart';
+import 'package:quiz_lab/core/common/manager.dart';
 
 part 'bottom_navigation_state.dart';
 

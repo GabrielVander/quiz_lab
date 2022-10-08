@@ -1,9 +1,9 @@
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/presentation/manager/manager.dart';
-import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/common/manager.dart';
+import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/features/quiz/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/questions_overview_cubit.dart';
 

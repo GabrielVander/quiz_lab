@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/presentation/manager/manager_factory.dart';
+import 'package:quiz_lab/core/common/manager_factory.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/quiz/presentation/manager/question_creation/question_creation_cubit.dart';

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/manager/manager.dart';
+import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/quiz/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/quiz/presentation/view_models/question_creation.dart';
 import 'package:quiz_lab/generated/l10n.dart';

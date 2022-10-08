@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/impl/dependency_injection_get_it_impl.dart';
+import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/dependency_injection/impl/dependency_injection_get_it_impl.dart';
 
 void main() {
   late DependencyInjection dependencyInjection;

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
 
 void main() {
   group('KeyAlreadyRegisteredFailure', () {
