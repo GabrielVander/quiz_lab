@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration name="Unit Tests (Coverage)" default="false" factoryName="Flutter Test"
+        type="FlutterTestConfigType">
+        <option name="testDir" value="C:\Users\gabsv\Projects\Academic\quiz_lab\test" />
+        <option name="useRegexp" value="false" />
+        <option name="additionalArgs" value="--coverage" />
+        <method v="2" />
+    </configuration>
+</component>
