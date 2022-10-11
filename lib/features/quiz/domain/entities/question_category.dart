@@ -17,9 +17,7 @@ class QuestionCategory extends Equatable {
   QuestionCategory copyWith({
     String? value,
   }) {
-    return QuestionCategory(
-      value: value ?? this.value,
-    );
+    return QuestionCategory(value: value ?? this.value);
   }
 
   @override
