@@ -33,7 +33,6 @@ class Question extends Equatable {
   }
 
   Question copyWith({
-    String? id,
     String? shortDescription,
     String? description,
     List<AnswerOption>? answerOptions,
@@ -41,7 +40,6 @@ class Question extends Equatable {
     List<QuestionCategory>? categories,
   }) {
     return Question(
-      id: id ?? this.id,
       shortDescription: shortDescription ?? this.shortDescription,
       description: description ?? this.description,
       answerOptions: answerOptions ?? this.answerOptions,
