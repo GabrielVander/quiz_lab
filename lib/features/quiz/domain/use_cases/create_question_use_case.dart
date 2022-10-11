@@ -66,23 +66,6 @@ class QuestionCreationInput {
   final QuestionCategoryInput categories;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is QuestionCreationInput &&
-          runtimeType == other.runtimeType &&
-          shortDescription == other.shortDescription &&
-          description == other.description &&
-          difficulty == other.difficulty &&
-          categories == other.categories);
-
-  @override
-  int get hashCode =>
-      shortDescription.hashCode ^
-      description.hashCode ^
-      difficulty.hashCode ^
-      categories.hashCode;
-
-  @override
   String toString() {
     return 'QuestionCreationInput{ '
         'shortDescription: $shortDescription, '
@@ -90,20 +73,6 @@ class QuestionCreationInput {
         'difficulty: $difficulty, '
         'categories: $categories, '
         '}';
-  }
-
-  QuestionCreationInput copyWith({
-    String? shortDescription,
-    String? description,
-    QuestionDifficultyInput? difficulty,
-    QuestionCategoryInput? categories,
-  }) {
-    return QuestionCreationInput(
-      shortDescription: shortDescription ?? this.shortDescription,
-      description: description ?? this.description,
-      difficulty: difficulty ?? this.difficulty,
-      categories: categories ?? this.categories,
-    );
   }
 }
 
@@ -118,27 +87,9 @@ class QuestionCategoryInput {
   final List<String> values;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is QuestionCategoryInput &&
-          runtimeType == other.runtimeType &&
-          values == other.values);
-
-  @override
-  int get hashCode => values.hashCode;
-
-  @override
   String toString() {
     return 'CategoriesInput{ '
         'values: $values, '
         '}';
-  }
-
-  QuestionCategoryInput copyWith({
-    List<String>? values,
-  }) {
-    return QuestionCategoryInput(
-      values: values ?? this.values,
-    );
   }
 }
