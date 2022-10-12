@@ -349,6 +349,40 @@ void main() {
       }
     });
   });
+
+  group('deletePublicQuestionById', () {
+    late CollectionReference<Map<String, dynamic>> dummyCollectionReference;
+
+    setUp(() {
+      dummyCollectionReference = _CollectionReferenceMock();
+    });
+
+    group('should call Firestore correctly', () {
+      for (final id in ['id', 'BRu81Y']) {
+        test(id, () async {
+          final dummyDocReference = _DocumentReferenceMock();
+
+          mocktail.when(dummyDocReference.delete).thenAnswer((_) async {});
+
+          mocktail
+              .when(() => dummyCollectionReference.doc(mocktail.any()))
+              .thenReturn(dummyDocReference);
+
+          mocktail
+              .when(() => firebaseFirestore.collection(mocktail.any()))
+              .thenReturn(dummyCollectionReference);
+
+          await dataSource.deletePublicQuestionById(id);
+
+          mocktail.verifyInOrder([
+            () => firebaseFirestore.collection('questions'),
+            () => dummyCollectionReference.doc(id),
+            dummyDocReference.delete
+          ]);
+        });
+      }
+    });
+  });
 }
 
 List<QuerySnapshot<Map<String, dynamic>>> _buildMockSnapshots(
@@ -434,3 +468,7 @@ class _QuerySnapshotMock extends mocktail.Mock
 // ignore: subtype_of_sealed_class
 class _QueryDocumentSnapshotMock extends mocktail.Mock
     implements QueryDocumentSnapshot<Map<String, dynamic>> {}
+
+// ignore: subtype_of_sealed_class
+class _DocumentReferenceMock extends mocktail.Mock
+    implements DocumentReference<Map<String, dynamic>> {}
