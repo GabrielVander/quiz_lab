@@ -4,7 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:quiz_lab/features/quiz/data/data_sources/models/question_model.dart';
 
 class FirebaseDataSource {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseDataSource({
+    required FirebaseFirestore firestore,
+  }) {
+    _firestore = firestore;
+  }
+
+  late FirebaseFirestore _firestore;
 
   Stream<List<QuestionModel>> watchPublicQuestions() {
     final collectionPath = PublicQuestions().getFirebasePath();

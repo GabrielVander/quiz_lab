@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/common/manager_factory.dart';
 import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
@@ -16,7 +17,9 @@ import 'package:quiz_lab/features/quiz/presentation/manager/questions_overview/q
 
 void quizDiSetup(DependencyInjection di) {
   di
-    ..registerBuilder<FirebaseDataSource>((_) => FirebaseDataSource())
+    ..registerBuilder<FirebaseDataSource>(
+      (_) => FirebaseDataSource(firestore: FirebaseFirestore.instance),
+    )
     ..registerBuilder<QuestionRepository>(
       (DependencyInjection di) {
         final dataSourceResult = di.get<FirebaseDataSource>();

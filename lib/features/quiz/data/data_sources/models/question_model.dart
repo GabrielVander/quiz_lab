@@ -17,10 +17,10 @@ class QuestionModel extends Equatable {
   factory QuestionModel.fromMap(String id, Map<String, dynamic> map) {
     return QuestionModel(
       id: id,
-      shortDescription: map['shortDescription'] as String,
-      description: map['description'] as String,
-      difficulty: map['difficulty'] as String,
-      categories: List<String>.from(map['categories'] as List<dynamic>),
+      shortDescription: map['shortDescription'] as String? ?? '',
+      description: map['description'] as String? ?? '',
+      difficulty: map['difficulty'] as String? ?? '',
+      categories: List<String>.from(map['categories'] as List<dynamic>? ?? []),
     );
   }
 
