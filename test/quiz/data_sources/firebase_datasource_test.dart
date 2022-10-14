@@ -383,6 +383,36 @@ void main() {
       }
     });
   });
+
+  group('createPublicQuestion', () {
+    late CollectionReference<Map<String, dynamic>> dummyCollectionReference;
+
+    setUp(() {
+      dummyCollectionReference = _CollectionReferenceMock();
+    });
+
+    test('should call Firestore correctly', () async {
+      final modelMock = _QuestionModelMock();
+      final dummyMap = _FakeMap();
+
+      mocktail.when(modelMock.toMap).thenReturn(dummyMap);
+
+      mocktail
+          .when(() => dummyCollectionReference.add(mocktail.any()))
+          .thenAnswer((_) async => _DocumentReferenceMock());
+
+      mocktail
+          .when(() => firebaseFirestore.collection(mocktail.any()))
+          .thenReturn(dummyCollectionReference);
+
+      await dataSource.createPublicQuestion(modelMock);
+
+      mocktail.verifyInOrder([
+        () => firebaseFirestore.collection('questions'),
+        () => dummyCollectionReference.add(dummyMap),
+      ]);
+    });
+  });
 }
 
 List<QuerySnapshot<Map<String, dynamic>>> _buildMockSnapshots(
@@ -472,3 +502,7 @@ class _QueryDocumentSnapshotMock extends mocktail.Mock
 // ignore: subtype_of_sealed_class
 class _DocumentReferenceMock extends mocktail.Mock
     implements DocumentReference<Map<String, dynamic>> {}
+
+class _QuestionModelMock extends mocktail.Mock implements QuestionModel {}
+
+class _FakeMap extends mocktail.Fake implements Map<String, dynamic> {}
