@@ -413,6 +413,46 @@ void main() {
       ]);
     });
   });
+
+  group('updateQuestion', () {
+    late CollectionReference<Map<String, dynamic>> dummyCollectionReference;
+
+    setUp(() {
+      dummyCollectionReference = _CollectionReferenceMock();
+    });
+
+    test('should call Firestore correctly', () async {
+      final modelMock = _QuestionModelMock();
+      const dummyId = 'rnop1suS';
+      final dummyMap = _FakeMap();
+      final dummyDocumentReference = _DocumentReferenceMock();
+
+      mocktail.when(modelMock.toMap).thenReturn(dummyMap);
+      mocktail.when(() => modelMock.id).thenReturn(dummyId);
+
+      mocktail
+          .when(() => dummyDocumentReference.update(mocktail.any()))
+          .thenAnswer((_) async {});
+
+      mocktail
+          .when(() => dummyCollectionReference.doc(mocktail.any()))
+          .thenReturn(dummyDocumentReference);
+
+      mocktail
+          .when(() => firebaseFirestore.collection(mocktail.any()))
+          .thenReturn(dummyCollectionReference);
+
+      await dataSource.updateQuestion(modelMock);
+
+      mocktail.verifyInOrder([
+        () => firebaseFirestore.collection('questions'),
+        () => modelMock.id,
+        () => dummyCollectionReference.doc(dummyId),
+        modelMock.toMap,
+        () => dummyDocumentReference.update(dummyMap),
+      ]);
+    });
+  });
 }
 
 List<QuerySnapshot<Map<String, dynamic>>> _buildMockSnapshots(
