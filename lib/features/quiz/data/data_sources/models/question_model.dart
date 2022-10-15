@@ -40,8 +40,6 @@ class QuestionModel extends Equatable {
   final String difficulty;
   final List<String> categories;
 
-  //<editor-fold desc="Data Methods">
-
   @override
   String toString() {
     return 'QuestionModel{ '
@@ -53,22 +51,6 @@ class QuestionModel extends Equatable {
         '}';
   }
 
-  QuestionModel copyWith({
-    String? id,
-    String? shortDescription,
-    String? description,
-    String? difficulty,
-    List<String>? categories,
-  }) {
-    return QuestionModel(
-      id: id ?? this.id,
-      shortDescription: shortDescription ?? this.shortDescription,
-      description: description ?? this.description,
-      difficulty: difficulty ?? this.difficulty,
-      categories: categories ?? this.categories,
-    );
-  }
-
   Map<String, dynamic> toMap() {
     return {
       'shortDescription': shortDescription,
@@ -77,8 +59,6 @@ class QuestionModel extends Equatable {
       'categories': categories,
     };
   }
-
-//</editor-fold>
 
   Question toEntity() {
     return Question(
