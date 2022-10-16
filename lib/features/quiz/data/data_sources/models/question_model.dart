@@ -47,8 +47,7 @@ class QuestionModel extends Equatable {
         'shortDescription: $shortDescription, '
         'description: $description, '
         'difficulty: $difficulty, '
-        'categories: $categories, '
-        '}';
+        'categories: $categories, }';
   }
 
   Map<String, dynamic> toMap() {
@@ -56,7 +55,7 @@ class QuestionModel extends Equatable {
       'shortDescription': shortDescription,
       'description': description,
       'difficulty': difficulty,
-      'categories': categories,
+      'categories': categories
     };
   }
 

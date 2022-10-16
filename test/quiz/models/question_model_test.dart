@@ -6,13 +6,14 @@ void main() {
     for (final testCase in [
       const _ToStringTestCase(
         model: QuestionModel(
-          id: 'id',
+          id: null,
           description: 'description',
           shortDescription: 'shortDescription',
           difficulty: 'difficulty',
           categories: [],
         ),
-        expected: 'QuestionModel{ id: id, shortDescription: shortDescription, '
+        expected:
+            'QuestionModel{ id: null, shortDescription: shortDescription, '
             'description: description, difficulty: difficulty, '
             'categories: [], }',
       ),
@@ -34,6 +35,49 @@ void main() {
       });
     }
   });
+
+  group('toMap', () {
+    for (final testCase in [
+      const _ToMapTestCase(
+        model: QuestionModel(
+          id: 'id',
+          description: 'description',
+          shortDescription: 'shortDescription',
+          difficulty: 'difficulty',
+          categories: [],
+        ),
+        expected: <String, dynamic>{
+          'description': 'description',
+          'shortDescription': 'shortDescription',
+          'difficulty': 'difficulty',
+          'categories': <String>[],
+        },
+      ),
+      const _ToMapTestCase(
+        model: QuestionModel(
+          id: null,
+          description: 'upright',
+          shortDescription: 'end',
+          difficulty: 'lighten',
+          categories: ['lead', 'pint', 'success'],
+        ),
+        expected: <String, dynamic>{
+          'description': 'upright',
+          'shortDescription': 'end',
+          'difficulty': 'lighten',
+          'categories': <String>[
+            'lead',
+            'pint',
+            'success',
+          ],
+        },
+      ), // const _ToStringTestCase(
+    ]) {
+      test(testCase.expected.toString(), () {
+        expect(testCase.model.toMap(), testCase.expected);
+      });
+    }
+  });
 }
 
 class _ToStringTestCase {
@@ -44,4 +88,14 @@ class _ToStringTestCase {
 
   final QuestionModel model;
   final String expected;
+}
+
+class _ToMapTestCase {
+  const _ToMapTestCase({
+    required this.model,
+    required this.expected,
+  });
+
+  final QuestionModel model;
+  final Map<String, dynamic> expected;
 }
