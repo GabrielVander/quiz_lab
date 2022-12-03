@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/themes/colors.dart';
+
+import 'colors.dart';
 
 class ThemeColors extends ThemeExtension<ThemeColors> {
   const ThemeColors({

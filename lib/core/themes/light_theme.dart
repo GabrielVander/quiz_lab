@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/themes/colors.dart';
-import 'package:quiz_lab/core/themes/extensions.dart';
+
+import 'colors.dart';
+import 'extensions.dart';
 
 final ThemeData lightTheme = ThemeData.light().copyWith(
   extensions: <ThemeExtension<dynamic>>[

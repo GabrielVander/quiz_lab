@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/common/manager_factory.dart';
-import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
-import 'package:quiz_lab/core/themes/light_theme.dart';
-import 'package:quiz_lab/features/quiz/presentation/widgets/main_scaffold.dart';
-import 'package:quiz_lab/features/quiz/presentation/widgets/question_view.dart';
-import 'package:quiz_lab/generated/l10n.dart';
+
+import '../generated/l10n.dart';
+import 'common/manager_factory.dart';
+import 'dependency_injection/dependency_injection.dart';
+import 'presentation/widgets/main_scaffold.dart';
+import 'presentation/widgets/question_view.dart';
+import 'themes/light_theme.dart';
 
 class QuizLabApplication extends StatelessWidget {
   const QuizLabApplication({
