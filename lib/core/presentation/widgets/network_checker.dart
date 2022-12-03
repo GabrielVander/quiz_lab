@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
-import 'package:quiz_lab/generated/l10n.dart';
+
+import '../../../generated/l10n.dart';
+import '../manager/network/network_cubit.dart';
 
 class NetworkChecker extends HookWidget {
   const NetworkChecker({

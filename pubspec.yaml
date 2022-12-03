@@ -33,16 +33,16 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.5
   sizer: ^2.0.15
-  material_design_icons_flutter: ^5.0.6996
+  material_design_icons_flutter: ^6.0.7096
   equatable: ^2.0.5
   get_it: ^7.2.0
   flutter_hooks: ^0.18.5+1
-  hooked_bloc: ^1.2.0
-  go_router: ^5.0.5
-  firebase_core: ^1.24.0
-  cloud_firestore: ^3.5.0
-  connectivity_plus: ^2.3.8
-  okay: ^1.2.1
+  hooked_bloc: ^1.2.1
+  go_router: ^5.2.1
+  firebase_core: ^2.3.0
+  cloud_firestore: ^4.1.0
+  connectivity_plus: ^3.0.2
+  okay: ^1.3.2
   intl: ^0.17.0
   bloc: ^8.1.0
 

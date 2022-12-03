@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
+
+import 'breakpoint.dart';
 
 class ScreenBreakpoints {
   static final List<Breakpoint> breakpoints = [

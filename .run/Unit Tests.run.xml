@@ -1,9 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-    <configuration name="Unit Tests" default="false" factoryName="Flutter Test"
-        type="FlutterTestConfigType">
-        <option name="testDir" value="C:\Users\gabsv\Projects\Academic\quiz_lab\test" />
-        <option name="useRegexp" value="false" />
-        <option name="additionalArgs" value="" />
-        <method v="2" />
-    </configuration>
-</component>
