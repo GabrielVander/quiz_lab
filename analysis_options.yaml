@@ -31,6 +31,8 @@ linter:
     always_use_package_imports: false
     public_member_api_docs: false
     sort_pub_dependencies: false
+    no_adjacent_strings_in_list: false
+    avoid_catching_errors: false
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
