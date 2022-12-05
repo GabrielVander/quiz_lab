@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/question_model.dart';
@@ -16,7 +16,7 @@ void main() {
   tearDown(mocktail.resetMocktailState);
 
   group('saveQuestion', () {
-    group('should return success when saving question', () {
+    group('should return success', () {
       for (final testCase in <List<dynamic>>[
         [
           const QuestionModel(
@@ -36,17 +36,16 @@ void main() {
         [
           const QuestionModel(
             id: '@!5qIE',
-            shortDescription: 'Sausages combines greatly with quartered eggs?',
-            description: 'Stutter calmly like a stormy rum.',
+            shortDescription: 'ezVdUXg',
+            description: '*4h3B6',
             difficulty: '5a#3*xeB',
-            categories: ['homework', 'asleep', 'native'],
+            categories: ['f09@q', 'f0C*^6', r'^$Wj3he'],
           ),
           '{'
-              '"shortDescription":"Sausages combines greatly with quartered '
-              'eggs?",'
-              '"description":"Stutter calmly like a stormy rum.",'
+              '"shortDescription":"ezVdUXg",'
+              '"description":"*4h3B6",'
               '"difficulty":"5a#3*xeB",'
-              '"categories":["homework","asleep","native"]'
+              r'"categories":["f09@q","f0C*^6","^$Wj3he"]'
               '}',
         ],
       ]) {
@@ -236,7 +235,7 @@ void main() {
     });
 
     group(
-      'should return success when saving question',
+      'should return success',
       () {
         for (final expectedId in <String>[
           '#y0C^5W*',
@@ -258,6 +257,121 @@ void main() {
 
             expect(result.isOk, isTrue);
             mocktail.verify(() => questionsBox.delete(expectedId)).called(1);
+          });
+        }
+      },
+    );
+  });
+
+  group('getAllQuestions', () {
+    group('should return LibraryFailure if HiveError occurs', () {
+      for (final testCase in <List<dynamic>>[
+        [
+          HiveError(''),
+          '',
+        ],
+        [
+          HiveError('1b@'),
+          '1b@',
+        ],
+      ]) {
+        final hiveError = testCase[0] as HiveError;
+        final expectedFailureMessage = testCase[1] as String;
+
+        test(hiveError, () async {
+          mocktail
+              .when(
+                () => questionsBox.watch(),
+              )
+              .thenThrow(hiveError);
+
+          final result = await dataSource.watchAllQuestions();
+
+          expect(result.isErr, isTrue);
+
+          final failure = result.err!;
+          expect(failure, isA<HiveDataSourceLibraryFailure>());
+
+          expect(
+            (failure as HiveDataSourceLibraryFailure).message,
+            equals(expectedFailureMessage),
+          );
+        });
+      }
+    });
+
+    group(
+      'should return expected questions',
+      () {
+        for (final testCase in <List<dynamic>>[
+          [
+            <BoxEvent>[],
+            <QuestionModel>[],
+          ],
+          [
+            <BoxEvent>[
+              BoxEvent('someDeletedKey', null, true),
+              BoxEvent('someOtherDeletedKey', null, true),
+              BoxEvent('evenAnotherDeletedKey', null, true),
+            ],
+            <QuestionModel>[],
+          ],
+          [
+            <BoxEvent>[
+              BoxEvent(
+                'someKey',
+                '{'
+                    '"shortDescription":"",'
+                    '"description":"",'
+                    '"difficulty":"",'
+                    '"categories":[]'
+                    '}',
+                false,
+              ),
+              BoxEvent('someDeletedKey', null, true),
+              BoxEvent(
+                'anotherKey',
+                '{'
+                    '"shortDescription":"F40jWP%",'
+                    '"description":"#y5shHtX",'
+                    '"difficulty":"ry@@E",'
+                    '"categories":["%84!#y","uhx%x","15#"]'
+                    '}',
+                false,
+              ),
+            ],
+            <QuestionModel>[
+              const QuestionModel(
+                id: 'someKey',
+                shortDescription: '',
+                description: '',
+                difficulty: '',
+                categories: [],
+              ),
+              const QuestionModel(
+                id: 'anotherKey',
+                shortDescription: 'F40jWP%',
+                description: '#y5shHtX',
+                difficulty: 'ry@@E',
+                categories: ['%84!#y', 'uhx%x', '15#'],
+              )
+            ],
+          ],
+        ]) {
+          test(testCase, () async {
+            final boxEvents = testCase[0] as List<BoxEvent>;
+            final expectedQuestions = testCase[1] as List<QuestionModel>;
+
+            mocktail
+                .when(
+                  () => questionsBox.watch(),
+                )
+                .thenAnswer((_) => Stream.fromIterable(boxEvents));
+
+            final result = await dataSource.watchAllQuestions();
+
+            expect(result.isOk, isTrue);
+            expect(await result.ok!.toList(), equals(expectedQuestions));
           });
         }
       },

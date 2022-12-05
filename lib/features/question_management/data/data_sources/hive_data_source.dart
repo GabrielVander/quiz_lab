@@ -43,9 +43,13 @@ class HiveDataSource {
     }
   }
 
-  Future<Result<List<QuestionModel>, HiveDataSourceFailure>>
-      getAllQuestions() async {
-    throw UnimplementedError();
+  Future<Result<Stream<QuestionModel>, HiveDataSourceFailure>>
+      watchAllQuestions() async {
+    try {
+      return Result.ok(await _getAllQuestionsFromBox());
+    } on HiveError catch (e) {
+      return Result.err(HiveDataSourceLibraryFailure(message: e.message));
+    }
   }
 
   Result<Unit, HiveDataSourceInvalidIdFailure> _validateId(
@@ -63,7 +67,8 @@ class HiveDataSource {
   Future<Unit> _putQuestionInBox(
     QuestionModel question,
   ) async {
-    await questionsBox.put(question.id, jsonEncode(question.toMap()));
+    final questionAsMap = question.toMap();
+    await questionsBox.put(question.id, _encodeMap(questionAsMap));
 
     return unit;
   }
@@ -73,6 +78,26 @@ class HiveDataSource {
 
     return unit;
   }
+
+  Future<Stream<QuestionModel>> _getAllQuestionsFromBox() async {
+    return questionsBox
+        .watch()
+        .where((event) => !event.deleted)
+        .map(_mapBoxEventToQuestion);
+  }
+
+  QuestionModel _mapBoxEventToQuestion(BoxEvent event) {
+    final key = event.key as String;
+    final encodedMapString = event.value! as String;
+
+    return QuestionModel.fromMap(key, _decodeMapFromString(encodedMapString));
+  }
+
+  String _encodeMap(Map<String, dynamic> questionAsMap) =>
+      jsonEncode(questionAsMap);
+
+  Map<String, dynamic> _decodeMapFromString(String encodedMapString) =>
+      jsonDecode(encodedMapString) as Map<String, dynamic>;
 }
 
 abstract class HiveDataSourceFailure {}
