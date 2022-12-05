@@ -14,10 +14,10 @@ class HiveDataSource {
   Future<Result<Unit, HiveDataSourceFailure>> saveQuestion(
     QuestionModel question,
   ) async {
-    if (question.id == '') {
-      return Result.err(
-        HiveDataSourceInvalidKeyFailure(message: 'Empty key is not allowed'),
-      );
+    final idValidationResult = _validateId(question);
+
+    if (idValidationResult.isErr) {
+      return Result.err(idValidationResult.expectErr('Invalid question id'));
     }
 
     try {
@@ -25,6 +25,18 @@ class HiveDataSource {
     } on HiveError catch (e) {
       return Result.err(HiveDataSourceHiveFailure(message: e.message));
     }
+  }
+
+  Result<Unit, HiveDataSourceInvalidIdFailure> _validateId(
+    QuestionModel question,
+  ) {
+    if (question.id == null || question.id == '') {
+      return Result.err(
+        HiveDataSourceInvalidIdFailure(message: 'Empty id is not allowed'),
+      );
+    }
+
+    return const Result.ok(unit);
   }
 
   Future<Result<void, HiveDataSourceFailure>> deleteQuestion(
@@ -55,8 +67,8 @@ class HiveDataSourceHiveFailure implements HiveDataSourceFailure {
   final String message;
 }
 
-class HiveDataSourceInvalidKeyFailure implements HiveDataSourceFailure {
-  HiveDataSourceInvalidKeyFailure({required this.message});
+class HiveDataSourceInvalidIdFailure implements HiveDataSourceFailure {
+  HiveDataSourceInvalidIdFailure({required this.message});
 
   final String message;
 }

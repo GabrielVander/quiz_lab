@@ -130,7 +130,17 @@ void main() {
             difficulty: 'difficulty',
             categories: [],
           ),
-          'Empty key is not allowed',
+          'Empty id is not allowed',
+        ],
+        [
+          const QuestionModel(
+            id: null,
+            shortDescription: '*ryCy#cc',
+            description: 'Opt6ghyA',
+            difficulty: '!2&P!^',
+            categories: ['#NiQ%*', '1@', '2@'],
+          ),
+          'Empty id is not allowed',
         ],
       ]) {
         final question = testCase[0] as QuestionModel;
@@ -142,7 +152,7 @@ void main() {
           expect(result.isErr, isTrue);
 
           final failure = result.expectErr('Expected error')
-              as HiveDataSourceInvalidKeyFailure;
+              as HiveDataSourceInvalidIdFailure;
           expect(failure.message, equals(expectedFailureMessage));
         });
       }
