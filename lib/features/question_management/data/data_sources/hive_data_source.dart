@@ -17,14 +17,35 @@ class HiveDataSource {
     final idValidationResult = _validateId(question);
 
     if (idValidationResult.isErr) {
-      return Result.err(idValidationResult.expectErr('Invalid question id'));
+      return Result.err(idValidationResult.err!);
     }
 
     try {
-      return await _putQuestionInBox(question);
+      return Result.ok(await _putQuestionInBox(question));
     } on HiveError catch (e) {
-      return Result.err(HiveDataSourceHiveFailure(message: e.message));
+      return Result.err(HiveDataSourceLibraryFailure(message: e.message));
     }
+  }
+
+  Future<Result<Unit, HiveDataSourceFailure>> deleteQuestion(
+    QuestionModel question,
+  ) async {
+    final idValidationResult = _validateId(question);
+
+    if (idValidationResult.isErr) {
+      return Result.err(idValidationResult.err!);
+    }
+
+    try {
+      return Result.ok(await _deleteQuestionFromBox(question));
+    } on HiveError catch (e) {
+      return Result.err(HiveDataSourceLibraryFailure(message: e.message));
+    }
+  }
+
+  Future<Result<List<QuestionModel>, HiveDataSourceFailure>>
+      getAllQuestions() async {
+    throw UnimplementedError();
   }
 
   Result<Unit, HiveDataSourceInvalidIdFailure> _validateId(
@@ -39,30 +60,25 @@ class HiveDataSource {
     return const Result.ok(unit);
   }
 
-  Future<Result<void, HiveDataSourceFailure>> deleteQuestion(
-    QuestionModel question,
-  ) async {
-    throw UnimplementedError();
-  }
-
-  Future<Result<List<QuestionModel>, HiveDataSourceFailure>>
-      getAllQuestions() async {
-    throw UnimplementedError();
-  }
-
-  Future<Result<Unit, HiveDataSourceFailure>> _putQuestionInBox(
+  Future<Unit> _putQuestionInBox(
     QuestionModel question,
   ) async {
     await questionsBox.put(question.id, jsonEncode(question.toMap()));
 
-    return const Result.ok(unit);
+    return unit;
+  }
+
+  Future<Unit> _deleteQuestionFromBox(QuestionModel question) async {
+    await questionsBox.delete(question.id);
+
+    return unit;
   }
 }
 
 abstract class HiveDataSourceFailure {}
 
-class HiveDataSourceHiveFailure implements HiveDataSourceFailure {
-  HiveDataSourceHiveFailure({required this.message});
+class HiveDataSourceLibraryFailure implements HiveDataSourceFailure {
+  HiveDataSourceLibraryFailure({required this.message});
 
   final String message;
 }

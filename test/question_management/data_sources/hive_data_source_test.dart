@@ -75,7 +75,7 @@ void main() {
       }
     });
 
-    group('should return HiveDataSourceHiveFailure if HiveError occurs', () {
+    group('should return LibraryFailure if HiveError occurs', () {
       for (final testCase in <List<dynamic>>[
         [
           HiveError(''),
@@ -111,16 +111,14 @@ void main() {
 
           expect(result.isErr, isTrue);
 
-          final failure =
-              result.expectErr('Expected error') as HiveDataSourceHiveFailure;
+          final failure = result.expectErr('Expected error')
+              as HiveDataSourceLibraryFailure;
           expect(failure.message, equals(expectedFailureMessage));
         });
       }
     });
 
-    group(
-        'should return HiveDataSourceInvalidKeyFailure if invalid id is given',
-        () {
+    group('should return InvalidKeyFailure if invalid id is given', () {
       for (final testCase in <List<dynamic>>[
         [
           const QuestionModel(
@@ -158,6 +156,138 @@ void main() {
       }
     });
   });
+
+  group('deleteQuestion', () {
+    group('should return InvalidKeyFailure if invalid id is given', () {
+      for (final question in <QuestionModel>[
+        const QuestionModel(
+          id: '',
+          shortDescription: 'shortDescription',
+          description: 'description',
+          difficulty: 'difficulty',
+          categories: [],
+        ),
+        const QuestionModel(
+          id: null,
+          shortDescription: '*ryCy#cc',
+          description: 'Opt6ghyA',
+          difficulty: '!2&P!^',
+          categories: ['#NiQ%*', '1@', '2@'],
+        ),
+      ]) {
+        const expectedFailureMessage = 'Empty id is not allowed';
+
+        test(expectedFailureMessage, () async {
+          final result = await dataSource.deleteQuestion(question);
+
+          expect(result.isErr, isTrue);
+
+          final failure = result.expectErr('Expected error')
+              as HiveDataSourceInvalidIdFailure;
+          expect(failure.message, equals(expectedFailureMessage));
+        });
+      }
+    });
+
+    group('should return LibraryFailure if HiveError occurs', () {
+      for (final testCase in <List<dynamic>>[
+        [
+          HiveError(''),
+          '',
+        ],
+        [
+          HiveError('1b@'),
+          '1b@',
+        ],
+      ]) {
+        final hiveError = testCase[0] as HiveError;
+        final expectedFailureMessage = testCase[1] as String;
+
+        test(hiveError, () async {
+          mocktail
+              .when(
+                () => questionsBox.delete(
+                  mocktail.any<String>(),
+                ),
+              )
+              .thenThrow(hiveError);
+
+          final result = await dataSource.deleteQuestion(
+            const QuestionModel(
+              id: 'id',
+              shortDescription: 'shortDescription',
+              description: 'description',
+              difficulty: 'difficulty',
+              categories: [],
+            ),
+          );
+
+          expect(result.isErr, isTrue);
+
+          final failure = result.err!;
+          expect(failure, isA<HiveDataSourceLibraryFailure>());
+
+          expect(
+            (failure as HiveDataSourceLibraryFailure).message,
+            equals(expectedFailureMessage),
+          );
+        });
+      }
+    });
+
+    group(
+      'should return success when saving question',
+      () {
+        for (final expectedId in <String>[
+          '#y0C^5W*',
+          '@!5qIE',
+        ]) {
+          test(expectedId, () async {
+            expect(expectedId, isNotNull);
+            expect(expectedId, isNotEmpty);
+
+            final dummyQuestion = _QuestionModelMock(id: expectedId);
+
+            mocktail
+                .when(
+                  () => questionsBox.delete(mocktail.any<String>()),
+                )
+                .thenAnswer((_) async {});
+
+            final result = await dataSource.deleteQuestion(dummyQuestion);
+
+            expect(result.isOk, isTrue);
+            mocktail.verify(() => questionsBox.delete(expectedId)).called(1);
+          });
+        }
+      },
+    );
+  });
 }
 
 class _HiveBoxMock extends mocktail.Mock implements Box<String> {}
+
+class _QuestionModelMock extends mocktail.Mock implements QuestionModel {
+  _QuestionModelMock({
+    required this.id,
+  });
+
+  @override
+  final String id;
+
+  @override
+  final String shortDescription = r'#U$*Z';
+
+  @override
+  final String description = '#k0hi';
+
+  @override
+  final String difficulty = 'Tbp';
+
+  @override
+  final List<String> categories = [
+    '1@',
+    '2@',
+    '3@',
+  ];
+}
