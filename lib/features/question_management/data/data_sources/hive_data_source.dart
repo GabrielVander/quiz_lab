@@ -7,9 +7,10 @@ import '../../../../core/utils/unit.dart';
 import 'models/question_model.dart';
 
 class HiveDataSource {
-  HiveDataSource({required this.questionsBox});
+  HiveDataSource({required Box<String> questionsBox})
+      : _questionsBox = questionsBox;
 
-  final Box<String> questionsBox;
+  final Box<String> _questionsBox;
 
   Future<Result<Unit, HiveDataSourceFailure>> saveQuestion(
     QuestionModel question,
@@ -43,7 +44,7 @@ class HiveDataSource {
     }
   }
 
-  Future<Result<Stream<QuestionModel>, HiveDataSourceFailure>>
+  Future<Result<Stream<QuestionModel>, HiveDataSourceLibraryFailure>>
       watchAllQuestions() async {
     try {
       return Result.ok(await _getAllQuestionsFromBox());
@@ -68,19 +69,19 @@ class HiveDataSource {
     QuestionModel question,
   ) async {
     final questionAsMap = question.toMap();
-    await questionsBox.put(question.id, _encodeMap(questionAsMap));
+    await _questionsBox.put(question.id, _encodeMap(questionAsMap));
 
     return unit;
   }
 
   Future<Unit> _deleteQuestionFromBox(QuestionModel question) async {
-    await questionsBox.delete(question.id);
+    await _questionsBox.delete(question.id);
 
     return unit;
   }
 
   Future<Stream<QuestionModel>> _getAllQuestionsFromBox() async {
-    return questionsBox
+    return _questionsBox
         .watch()
         .where((event) => !event.deleted)
         .map(_mapBoxEventToQuestion);
