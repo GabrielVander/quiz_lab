@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:okay/okay.dart';
 
@@ -13,7 +14,7 @@ class HiveDataSource {
   final Box<String> _questionsBox;
 
   Future<Result<Unit, HiveDataSourceFailure>> saveQuestion(
-    QuestionModel question,
+    HiveQuestionModel question,
   ) async {
     final idValidationResult = _validateId(question);
 
@@ -24,12 +25,14 @@ class HiveDataSource {
     try {
       return Result.ok(await _putQuestionInBox(question));
     } on HiveError catch (e) {
-      return Result.err(HiveDataSourceLibraryFailure(message: e.message));
+      return Result.err(
+        HiveDataSourceFailure.libraryFailure(message: e.message),
+      );
     }
   }
 
   Future<Result<Unit, HiveDataSourceFailure>> deleteQuestion(
-    QuestionModel question,
+    HiveQuestionModel question,
   ) async {
     final idValidationResult = _validateId(question);
 
@@ -40,25 +43,29 @@ class HiveDataSource {
     try {
       return Result.ok(await _deleteQuestionFromBox(question));
     } on HiveError catch (e) {
-      return Result.err(HiveDataSourceLibraryFailure(message: e.message));
+      return Result.err(
+        HiveDataSourceFailure.libraryFailure(message: e.message),
+      );
     }
   }
 
-  Future<Result<Stream<QuestionModel>, HiveDataSourceLibraryFailure>>
+  Future<Result<Stream<HiveQuestionModel>, HiveDataSourceFailure>>
       watchAllQuestions() async {
     try {
       return Result.ok(await _getAllQuestionsFromBox());
     } on HiveError catch (e) {
-      return Result.err(HiveDataSourceLibraryFailure(message: e.message));
+      return Result.err(
+        HiveDataSourceFailure.libraryFailure(message: e.message),
+      );
     }
   }
 
-  Result<Unit, HiveDataSourceInvalidIdFailure> _validateId(
-    QuestionModel question,
+  Result<Unit, HiveDataSourceFailure> _validateId(
+    HiveQuestionModel question,
   ) {
     if (question.id == null || question.id == '') {
       return Result.err(
-        HiveDataSourceInvalidIdFailure(message: 'Empty id is not allowed'),
+        HiveDataSourceFailure.invalidId(message: 'Empty id is not allowed'),
       );
     }
 
@@ -66,7 +73,7 @@ class HiveDataSource {
   }
 
   Future<Unit> _putQuestionInBox(
-    QuestionModel question,
+    HiveQuestionModel question,
   ) async {
     final questionAsMap = question.toMap();
     await _questionsBox.put(question.id, _encodeMap(questionAsMap));
@@ -74,24 +81,27 @@ class HiveDataSource {
     return unit;
   }
 
-  Future<Unit> _deleteQuestionFromBox(QuestionModel question) async {
+  Future<Unit> _deleteQuestionFromBox(HiveQuestionModel question) async {
     await _questionsBox.delete(question.id);
 
     return unit;
   }
 
-  Future<Stream<QuestionModel>> _getAllQuestionsFromBox() async {
+  Future<Stream<HiveQuestionModel>> _getAllQuestionsFromBox() async {
     return _questionsBox
         .watch()
         .where((event) => !event.deleted)
         .map(_mapBoxEventToQuestion);
   }
 
-  QuestionModel _mapBoxEventToQuestion(BoxEvent event) {
+  HiveQuestionModel _mapBoxEventToQuestion(BoxEvent event) {
     final key = event.key as String;
     final encodedMapString = event.value! as String;
 
-    return QuestionModel.fromMap(key, _decodeMapFromString(encodedMapString));
+    return HiveQuestionModel.fromMap(
+      key,
+      _decodeMapFromString(encodedMapString),
+    );
   }
 
   String _encodeMap(Map<String, dynamic> questionAsMap) =>
@@ -101,16 +111,27 @@ class HiveDataSource {
       jsonDecode(encodedMapString) as Map<String, dynamic>;
 }
 
-abstract class HiveDataSourceFailure {}
+@immutable
+abstract class HiveDataSourceFailure {
+  const HiveDataSourceFailure._({required this.message});
 
-class HiveDataSourceLibraryFailure implements HiveDataSourceFailure {
-  HiveDataSourceLibraryFailure({required this.message});
+  factory HiveDataSourceFailure.libraryFailure({
+    required String message,
+  }) =>
+      HiveDataSourceLibraryFailure._(message: message);
+
+  factory HiveDataSourceFailure.invalidId({
+    required String message,
+  }) =>
+      HiveDataSourceInvalidIdFailure._(message: message);
 
   final String message;
 }
 
-class HiveDataSourceInvalidIdFailure implements HiveDataSourceFailure {
-  HiveDataSourceInvalidIdFailure({required this.message});
+class HiveDataSourceLibraryFailure extends HiveDataSourceFailure {
+  const HiveDataSourceLibraryFailure._({required super.message}) : super._();
+}
 
-  final String message;
+class HiveDataSourceInvalidIdFailure extends HiveDataSourceFailure {
+  const HiveDataSourceInvalidIdFailure._({required super.message}) : super._();
 }

@@ -5,7 +5,7 @@ void main() {
   group('toString', () {
     for (final testCase in [
       const _ToStringTestCase(
-        model: QuestionModel(
+        model: HiveQuestionModel(
           id: null,
           description: 'description',
           shortDescription: 'shortDescription',
@@ -18,7 +18,7 @@ void main() {
             'categories: [], }',
       ),
       const _ToStringTestCase(
-        model: QuestionModel(
+        model: HiveQuestionModel(
           id: 'PJ4',
           description: 'affair',
           shortDescription: 'exercise',
@@ -39,7 +39,7 @@ void main() {
   group('toMap', () {
     for (final testCase in [
       const _ToMapTestCase(
-        model: QuestionModel(
+        model: HiveQuestionModel(
           id: 'id',
           description: 'description',
           shortDescription: 'shortDescription',
@@ -54,7 +54,7 @@ void main() {
         },
       ),
       const _ToMapTestCase(
-        model: QuestionModel(
+        model: HiveQuestionModel(
           id: null,
           description: 'upright',
           shortDescription: 'end',
@@ -86,7 +86,7 @@ class _ToStringTestCase {
     required this.expected,
   });
 
-  final QuestionModel model;
+  final HiveQuestionModel model;
   final String expected;
 }
 
@@ -96,6 +96,6 @@ class _ToMapTestCase {
     required this.expected,
   });
 
-  final QuestionModel model;
+  final HiveQuestionModel model;
   final Map<String, dynamic> expected;
 }

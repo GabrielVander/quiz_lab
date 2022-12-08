@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
 
@@ -5,56 +6,96 @@ import '../../../../core/utils/unit.dart';
 import '../entities/question.dart';
 
 abstract class QuestionRepository {
-  Future<Result<Stream<Question>, QuestionRepositoryFailure>> watchAll();
-
-  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(String id);
-
   Future<Result<Unit, QuestionRepositoryFailure>> createSingle(
     Question question,
   );
 
+  Future<Result<Stream<Question>, QuestionRepositoryFailure>> watchAll();
+
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,
   );
+
+  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(String id);
 }
 
 @immutable
-abstract class QuestionRepositoryFailure {}
+abstract class QuestionRepositoryFailure extends Equatable {
+  const QuestionRepositoryFailure._({required this.message});
 
-@immutable
-class QuestionRepositoryLibraryFailure implements QuestionRepositoryFailure {
-  const QuestionRepositoryLibraryFailure({
-    required this.message,
-  });
+  factory QuestionRepositoryFailure.unableToParseEntity({
+    required String message,
+  }) =>
+      UnableToParseEntity._(message: message);
+
+  factory QuestionRepositoryFailure.unableToCreate({
+    required Question question,
+  }) =>
+      UnableToCreateQuestion._(question: question);
+
+  factory QuestionRepositoryFailure.unableToWatchAll({
+    required String message,
+  }) =>
+      UnableToWatchAllQuestions._(message: message);
+
+  factory QuestionRepositoryFailure.unableToUpdate({
+    required Question question,
+  }) =>
+      UnableToUpdateQuestion._(question: question);
+
+  factory QuestionRepositoryFailure.unableToDelete({
+    required String id,
+  }) =>
+      UnableToDelete._(id: id);
 
   final String message;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is QuestionRepositoryLibraryFailure &&
-          runtimeType == other.runtimeType;
+  List<Object> get props => [message];
 
   @override
-  int get hashCode => 0;
+  bool get stringify => true;
 }
 
 @immutable
-class QuestionRepositoryInvalidQuestionFailure
-    implements QuestionRepositoryFailure {
-  const QuestionRepositoryInvalidQuestionFailure({
-    required this.message,
-  });
+class UnableToParseEntity extends QuestionRepositoryFailure {
+  const UnableToParseEntity._({required super.message}) : super._();
+}
 
-  final String message;
+@immutable
+class UnableToCreateQuestion extends QuestionRepositoryFailure {
+  const UnableToCreateQuestion._({required this.question})
+      : super._(message: 'Unable to create question');
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is QuestionRepositoryInvalidQuestionFailure &&
-          runtimeType == other.runtimeType &&
-          message == other.message;
+  final Question question;
 
   @override
-  int get hashCode => message.hashCode;
+  List<Object> get props => super.props..addAll([question]);
+}
+
+@immutable
+class UnableToWatchAllQuestions extends QuestionRepositoryFailure {
+  const UnableToWatchAllQuestions._({required super.message}) : super._();
+}
+
+@immutable
+class UnableToUpdateQuestion extends QuestionRepositoryFailure {
+  const UnableToUpdateQuestion._({required this.question})
+      : super._(message: 'Unable to create question');
+
+  final Question question;
+
+  @override
+  List<Object> get props => super.props..addAll([question]);
+}
+
+@immutable
+class UnableToDelete extends QuestionRepositoryFailure {
+  const UnableToDelete._({required this.id})
+      : super._(message: 'Unable to delete question with id: $id');
+
+  final String id;
+
+  @override
+  List<Object> get props => super.props..addAll([id]);
 }

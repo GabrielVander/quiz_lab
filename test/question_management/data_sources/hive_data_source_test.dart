@@ -19,7 +19,7 @@ void main() {
     group('should return success', () {
       for (final testCase in <List<dynamic>>[
         [
-          const QuestionModel(
+          const HiveQuestionModel(
             id: '#y0C^5W*',
             shortDescription: '',
             description: '',
@@ -34,7 +34,7 @@ void main() {
               '}',
         ],
         [
-          const QuestionModel(
+          const HiveQuestionModel(
             id: '@!5qIE',
             shortDescription: 'ezVdUXg',
             description: '*4h3B6',
@@ -49,7 +49,7 @@ void main() {
               '}',
         ],
       ]) {
-        final question = testCase[0] as QuestionModel;
+        final question = testCase[0] as HiveQuestionModel;
         final expectedJson = testCase[1] as String;
 
         test(question, () async {
@@ -99,7 +99,7 @@ void main() {
               .thenThrow(hiveError);
 
           final result = await dataSource.saveQuestion(
-            const QuestionModel(
+            const HiveQuestionModel(
               id: 'id',
               shortDescription: 'shortDescription',
               description: 'description',
@@ -120,7 +120,7 @@ void main() {
     group('should return InvalidKeyFailure if invalid id is given', () {
       for (final testCase in <List<dynamic>>[
         [
-          const QuestionModel(
+          const HiveQuestionModel(
             id: '',
             shortDescription: 'shortDescription',
             description: 'description',
@@ -130,7 +130,7 @@ void main() {
           'Empty id is not allowed',
         ],
         [
-          const QuestionModel(
+          const HiveQuestionModel(
             id: null,
             shortDescription: '*ryCy#cc',
             description: 'Opt6ghyA',
@@ -140,7 +140,7 @@ void main() {
           'Empty id is not allowed',
         ],
       ]) {
-        final question = testCase[0] as QuestionModel;
+        final question = testCase[0] as HiveQuestionModel;
         final expectedFailureMessage = testCase[1] as String;
 
         test(expectedFailureMessage, () async {
@@ -158,15 +158,15 @@ void main() {
 
   group('deleteQuestion', () {
     group('should return InvalidKeyFailure if invalid id is given', () {
-      for (final question in <QuestionModel>[
-        const QuestionModel(
+      for (final question in <HiveQuestionModel>[
+        const HiveQuestionModel(
           id: '',
           shortDescription: 'shortDescription',
           description: 'description',
           difficulty: 'difficulty',
           categories: [],
         ),
-        const QuestionModel(
+        const HiveQuestionModel(
           id: null,
           shortDescription: '*ryCy#cc',
           description: 'Opt6ghyA',
@@ -212,7 +212,7 @@ void main() {
               .thenThrow(hiveError);
 
           final result = await dataSource.deleteQuestion(
-            const QuestionModel(
+            const HiveQuestionModel(
               id: 'id',
               shortDescription: 'shortDescription',
               description: 'description',
@@ -293,7 +293,7 @@ void main() {
           expect(failure, isA<HiveDataSourceLibraryFailure>());
 
           expect(
-            (failure as HiveDataSourceLibraryFailure).message,
+            failure.message,
             equals(expectedFailureMessage),
           );
         });
@@ -306,7 +306,7 @@ void main() {
         for (final testCase in <List<dynamic>>[
           [
             <BoxEvent>[],
-            <QuestionModel>[],
+            <HiveQuestionModel>[],
           ],
           [
             <BoxEvent>[
@@ -314,7 +314,7 @@ void main() {
               BoxEvent('someOtherDeletedKey', null, true),
               BoxEvent('evenAnotherDeletedKey', null, true),
             ],
-            <QuestionModel>[],
+            <HiveQuestionModel>[],
           ],
           [
             <BoxEvent>[
@@ -340,15 +340,15 @@ void main() {
                 false,
               ),
             ],
-            <QuestionModel>[
-              const QuestionModel(
+            <HiveQuestionModel>[
+              const HiveQuestionModel(
                 id: 'someKey',
                 shortDescription: '',
                 description: '',
                 difficulty: '',
                 categories: [],
               ),
-              const QuestionModel(
+              const HiveQuestionModel(
                 id: 'anotherKey',
                 shortDescription: 'F40jWP%',
                 description: '#y5shHtX',
@@ -360,7 +360,7 @@ void main() {
         ]) {
           test(testCase, () async {
             final boxEvents = testCase[0] as List<BoxEvent>;
-            final expectedQuestions = testCase[1] as List<QuestionModel>;
+            final expectedQuestions = testCase[1] as List<HiveQuestionModel>;
 
             mocktail
                 .when(
@@ -381,7 +381,7 @@ void main() {
 
 class _HiveBoxMock extends mocktail.Mock implements Box<String> {}
 
-class _QuestionModelMock extends mocktail.Mock implements QuestionModel {
+class _QuestionModelMock extends mocktail.Mock implements HiveQuestionModel {
   _QuestionModelMock({
     required this.id,
   });

@@ -6,8 +6,8 @@ import '../../../domain/entities/question_category.dart';
 import '../../../domain/entities/question_difficulty.dart';
 
 @immutable
-class QuestionModel extends Equatable {
-  const QuestionModel({
+class HiveQuestionModel extends Equatable {
+  const HiveQuestionModel({
     required this.id,
     required this.shortDescription,
     required this.description,
@@ -15,8 +15,8 @@ class QuestionModel extends Equatable {
     required this.categories,
   });
 
-  factory QuestionModel.fromMap(String id, Map<String, dynamic> map) {
-    return QuestionModel(
+  factory HiveQuestionModel.fromMap(String id, Map<String, dynamic> map) {
+    return HiveQuestionModel(
       id: id,
       shortDescription: map['shortDescription'] as String? ?? '',
       description: map['description'] as String? ?? '',
@@ -25,8 +25,8 @@ class QuestionModel extends Equatable {
     );
   }
 
-  factory QuestionModel.fromEntity(Question entity) {
-    return QuestionModel(
+  factory HiveQuestionModel.fromEntity(Question entity) {
+    return HiveQuestionModel(
       id: entity.id,
       shortDescription: entity.shortDescription,
       description: entity.description,
