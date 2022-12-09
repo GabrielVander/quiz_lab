@@ -15,8 +15,8 @@ import '../data/repositories/question_repository_impl.dart';
 import '../domain/repositories/question_repository.dart';
 import '../domain/use_cases/create_question_use_case.dart';
 import '../domain/use_cases/delete_question_use_case.dart';
-import '../domain/use_cases/fetch_questions_use_case.dart';
 import '../domain/use_cases/update_question_use_case.dart';
+import '../domain/use_cases/watch_all_questions_use_case.dart';
 
 void quizDiSetup(DependencyInjection di) {
   di
