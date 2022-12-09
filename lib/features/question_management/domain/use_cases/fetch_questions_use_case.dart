@@ -8,7 +8,8 @@ class WatchAllQuestionsUseCase {
 
   final QuestionRepository _questionRepository;
 
-  Stream<List<Question>> execute() {
-    return _questionRepository.watchAll();
+  Future<Stream<Question>> execute() async {
+    final streamResult = await _questionRepository.watchAll();
+    return streamResult.ok!;
   }
 }

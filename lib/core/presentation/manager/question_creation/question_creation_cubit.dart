@@ -190,9 +190,11 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   Future<void> _createQuestion() async {
-    final difficulties =
-        List<QuestionDifficultyInput>.from(QuestionDifficultyInput.values)
-          ..shuffle();
+    final difficulties = [
+      'easy',
+      'medium',
+      'hard',
+    ]..shuffle();
     final randomDifficulty = difficulties.first;
 
     await createQuestionUseCase
@@ -201,9 +203,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
             shortDescription: _viewModel.shortDescription.value,
             description: _viewModel.description.value,
             difficulty: randomDifficulty,
-            categories: const QuestionCategoryInput(
-              values: ['Math', 'Algebra'],
-            ),
+            categories: const ['Math', 'Algebra'],
           ),
         )
         .then((_) => emit(QuestionCreationInitial()));

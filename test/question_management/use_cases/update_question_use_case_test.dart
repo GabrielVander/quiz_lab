@@ -1,6 +1,8 @@
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
@@ -50,7 +52,8 @@ void main() {
     (values) async {
       final input = values[0] as Question;
 
-      when(() => dummyRepository.updateSingle(input)).thenAnswer((_) async {});
+      when(() => dummyRepository.updateSingle(input))
+          .thenAnswer((_) async => const Result.ok(unit));
 
       await useCase.execute(input);
 
