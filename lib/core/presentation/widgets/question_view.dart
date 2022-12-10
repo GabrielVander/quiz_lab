@@ -86,6 +86,45 @@ class Body extends HookWidget {
       );
     }
 
+    if (state is Loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (state is Success || state is CreationError) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showMaterialBanner(
+          MaterialBanner(
+            content: DecoratedBox(
+              decoration: BoxDecoration(
+                color: state is Success ? Colors.green : Colors.red,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      state is Success
+                          ? S.of(context).noConnection
+                          : (state as CreationError).message,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              Container(),
+            ],
+          ),
+        );
+      });
+    }
+
     return Container();
   }
 }

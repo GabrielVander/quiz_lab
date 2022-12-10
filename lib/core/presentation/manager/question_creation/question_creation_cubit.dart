@@ -85,6 +85,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   Future<void> createQuestion(BuildContext context) async {
+    emit(QuestionCreationState.loading());
     _emitValidatedFields(context);
 
     if (_isValid) {
@@ -127,9 +128,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
-  void _emitValidatedFields(
-    BuildContext context,
-  ) {
+  void _emitValidatedFields(BuildContext context) {
     final newViewModel = _validateFields(context, _viewModel);
 
     emit(QuestionCreationDisplayUpdate(viewModel: newViewModel));
@@ -197,15 +196,20 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     ]..shuffle();
     final randomDifficulty = difficulties.first;
 
-    await createQuestionUseCase
-        .execute(
-          QuestionCreationInput(
-            shortDescription: _viewModel.shortDescription.value,
-            description: _viewModel.description.value,
-            difficulty: randomDifficulty,
-            categories: const ['Math', 'Algebra'],
-          ),
-        )
-        .then((_) => emit(QuestionCreationInitial()));
+    final creationResult = await createQuestionUseCase.execute(
+      QuestionCreationInput(
+        shortDescription: _viewModel.shortDescription.value,
+        description: _viewModel.description.value,
+        difficulty: randomDifficulty,
+        categories: const ['Math', 'Algebra'],
+      ),
+    );
+
+    if (creationResult.isErr) {
+      emit(QuestionCreationState.failure(message: creationResult.err!.message));
+      return;
+    }
+
+    emit(QuestionCreationState.success());
   }
 }
