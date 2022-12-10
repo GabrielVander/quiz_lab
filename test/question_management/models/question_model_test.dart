@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 void main() {
   group('toString', () {
@@ -13,9 +13,8 @@ void main() {
           categories: [],
         ),
         expected:
-            'QuestionModel{ id: null, shortDescription: shortDescription, '
-            'description: description, difficulty: difficulty, '
-            'categories: [], }',
+            'HiveQuestionModel(null, shortDescription, description, difficulty,'
+            ' [])',
       ),
       const _ToStringTestCase(
         model: HiveQuestionModel(
@@ -25,9 +24,9 @@ void main() {
           difficulty: 'unless',
           categories: ['black', 'robbery', 'crown'],
         ),
-        expected: 'QuestionModel{ id: PJ4, shortDescription: exercise, '
-            'description: affair, difficulty: unless, '
-            'categories: [black, robbery, crown], }',
+        expected:
+            'HiveQuestionModel(PJ4, exercise, affair, unless, [black, robbery, '
+            'crown])',
       )
     ]) {
       test(testCase.expected, () {

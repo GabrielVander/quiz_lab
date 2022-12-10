@@ -2,24 +2,28 @@ import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 
 import '../../domain/entities/question.dart';
-import '../data_sources/models/question_model.dart';
+import '../data_sources/models/hive_question_model.dart';
 
 class QuestionMapper {
   Result<HiveQuestionModel, QuestionMapperFailure> mapEntityToHiveModel(
     Question question,
   ) {
-    throw UnimplementedError();
+    return Result.err(QuestionMapperFailure.unimplemented());
   }
 
   Result<Question, QuestionMapperFailure> mapHiveModelToEntity(
     HiveQuestionModel hiveModel,
   ) {
-    throw UnimplementedError();
+    return Result.err(QuestionMapperFailure.unimplemented());
   }
 }
 
 abstract class QuestionMapperFailure extends Equatable {
   const QuestionMapperFailure._({required this.message});
+
+  factory QuestionMapperFailure.unimplemented() {
+    return const _UnimplementedFailure._();
+  }
 
   factory QuestionMapperFailure.unableToMapToHiveModel({
     required String message,
@@ -52,4 +56,8 @@ class UnableToMapHiveModelToEntity extends QuestionMapperFailure {
 
   @override
   List<Object> get props => super.props..addAll([model]);
+}
+
+class _UnimplementedFailure extends QuestionMapperFailure {
+  const _UnimplementedFailure._() : super._(message: 'Unimplemented');
 }

@@ -1,17 +1,20 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:okay/okay.dart';
 
 import '../../../../core/utils/unit.dart';
-import 'models/question_model.dart';
+import 'models/hive_question_model.dart';
 
 class HiveDataSource {
   HiveDataSource({required Box<String> questionsBox})
       : _questionsBox = questionsBox;
 
   final Box<String> _questionsBox;
+  final _questionsStreamController =
+      StreamController<List<HiveQuestionModel>>();
 
   Future<Result<Unit, HiveDataSourceFailure>> saveQuestion(
     HiveQuestionModel question,
@@ -49,10 +52,10 @@ class HiveDataSource {
     }
   }
 
-  Future<Result<Stream<HiveQuestionModel>, HiveDataSourceFailure>>
-      watchAllQuestions() async {
+  Result<Stream<List<HiveQuestionModel>>, HiveDataSourceFailure>
+      watchAllQuestions() {
     try {
-      return Result.ok(await _getAllQuestionsFromBox());
+      return Result.ok(_getAllQuestionsFromBox());
     } on HiveError catch (e) {
       return Result.err(
         HiveDataSourceFailure.libraryFailure(message: e.message),
@@ -87,21 +90,21 @@ class HiveDataSource {
     return unit;
   }
 
-  Future<Stream<HiveQuestionModel>> _getAllQuestionsFromBox() async {
-    return _questionsBox
-        .watch()
-        .where((event) => !event.deleted)
-        .map(_mapBoxEventToQuestion);
-  }
+  Stream<List<HiveQuestionModel>> _getAllQuestionsFromBox() {
+    _questionsBox.watch().listen((_) {
+      final questions = _questionsBox.keys
+          .map(
+            (key) => HiveQuestionModel.fromMap(
+              key as String,
+              _decodeMapFromString(_questionsBox.get(key)!),
+            ),
+          )
+          .toList();
 
-  HiveQuestionModel _mapBoxEventToQuestion(BoxEvent event) {
-    final key = event.key as String;
-    final encodedMapString = event.value! as String;
+      _questionsStreamController.add(questions);
+    });
 
-    return HiveQuestionModel.fromMap(
-      key,
-      _decodeMapFromString(encodedMapString),
-    );
+    return _questionsStreamController.stream;
   }
 
   String _encodeMap(Map<String, dynamic> questionAsMap) =>

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'models/question_model.dart';
+import 'models/hive_question_model.dart';
 
 class FirebaseDataSource {
   FirebaseDataSource({

@@ -147,10 +147,17 @@ class MainContent extends HookWidget {
       );
     }
 
-    if (state is QuestionsOverviewListUpdated) {
-      final questions = state.viewModel.questions;
+    if (state is QuestionOverviewListUpdated) {
+      return QuestionList(
+        list: state.questions,
+        cubit: cubit,
+      );
+    }
 
-      return QuestionList(questions: questions, cubit: cubit);
+    if (state is QuestionsOverviewError) {
+      return Center(
+        child: Text(state.message),
+      );
     }
 
     return Container();
@@ -160,21 +167,20 @@ class MainContent extends HookWidget {
 class QuestionList extends StatelessWidget {
   const QuestionList({
     super.key,
-    required this.questions,
+    required this.list,
     required this.cubit,
   });
 
-  final List<QuestionOverviewViewModel> questions;
+  final List<QuestionOverviewViewModel> list;
   final QuestionsOverviewCubit cubit;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemCount: questions.length,
+      itemCount: list.length,
       itemBuilder: (BuildContext context, int index) {
-        final question = questions[index];
         return QuestionItem(
-          question: question,
+          question: list[index],
           onDelete: cubit.removeQuestion,
           onClick: (viewModel) {
             showModalBottomSheet<String>(

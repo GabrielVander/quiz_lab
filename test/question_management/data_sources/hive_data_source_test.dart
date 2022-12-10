@@ -1,8 +1,9 @@
+import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 void main() {
   late Box<String> questionsBox;
@@ -264,57 +265,49 @@ void main() {
   });
 
   group('getAllQuestions', () {
-    group('should return LibraryFailure if HiveError occurs', () {
-      for (final testCase in <List<dynamic>>[
-        [
-          HiveError(''),
-          '',
-        ],
-        [
-          HiveError('1b@'),
-          '1b@',
-        ],
-      ]) {
-        final hiveError = testCase[0] as HiveError;
-        final expectedFailureMessage = testCase[1] as String;
+    group('Err flow', () {
+      parameterizedTest(
+        'should return LibraryFailure if HiveError occurs',
+        ParameterizedSource.values([
+          [
+            HiveError(''),
+            '',
+          ],
+          [
+            HiveError('1b@'),
+            '1b@',
+          ],
+        ]),
+        (values) {
+          final hiveError = values[0] as HiveError;
+          final expectedFailureMessage = values[1] as String;
 
-        test(hiveError, () async {
-          mocktail
-              .when(
-                () => questionsBox.watch(),
-              )
-              .thenThrow(hiveError);
+          mocktail.when(() => questionsBox.watch()).thenThrow(hiveError);
 
-          final result = await dataSource.watchAllQuestions();
+          final result = dataSource.watchAllQuestions();
 
           expect(result.isErr, isTrue);
 
           final failure = result.err!;
-          expect(failure, isA<HiveDataSourceLibraryFailure>());
 
-          expect(
-            failure.message,
-            equals(expectedFailureMessage),
-          );
-        });
-      }
+          expect(failure, isA<HiveDataSourceLibraryFailure>());
+          expect(failure.message, equals(expectedFailureMessage));
+        },
+      );
     });
 
-    group(
-      'should return expected questions',
-      () {
-        for (final testCase in <List<dynamic>>[
-          [
-            <BoxEvent>[],
-            <HiveQuestionModel>[],
-          ],
+    group('Ok flow', () {
+      parameterizedTest(
+        'should return expected questions',
+        ParameterizedSource.values([
           [
             <BoxEvent>[
               BoxEvent('someDeletedKey', null, true),
               BoxEvent('someOtherDeletedKey', null, true),
               BoxEvent('evenAnotherDeletedKey', null, true),
             ],
-            <HiveQuestionModel>[],
+            <List<String>>[[], [], []],
+            <List<HiveQuestionModel>>[[], [], []],
           ],
           [
             <BoxEvent>[
@@ -340,42 +333,79 @@ void main() {
                 false,
               ),
             ],
-            <HiveQuestionModel>[
-              const HiveQuestionModel(
-                id: 'someKey',
-                shortDescription: '',
-                description: '',
-                difficulty: '',
-                categories: [],
-              ),
-              const HiveQuestionModel(
-                id: 'anotherKey',
-                shortDescription: 'F40jWP%',
-                description: '#y5shHtX',
-                difficulty: 'ry@@E',
-                categories: ['%84!#y', 'uhx%x', '15#'],
-              )
+            <List<String>>[
+              ['someKey'],
+              ['someKey'],
+              ['someKey', 'anotherKey'],
+            ],
+            <List<HiveQuestionModel>>[
+              [
+                const HiveQuestionModel(
+                  id: 'someKey',
+                  shortDescription: '',
+                  description: '',
+                  difficulty: '',
+                  categories: [],
+                )
+              ],
+              [
+                const HiveQuestionModel(
+                  id: 'someKey',
+                  shortDescription: '',
+                  description: '',
+                  difficulty: '',
+                  categories: [],
+                )
+              ],
+              [
+                const HiveQuestionModel(
+                  id: 'someKey',
+                  shortDescription: '',
+                  description: '',
+                  difficulty: '',
+                  categories: [],
+                ),
+                const HiveQuestionModel(
+                  id: 'anotherKey',
+                  shortDescription: 'F40jWP%',
+                  description: '#y5shHtX',
+                  difficulty: 'ry@@E',
+                  categories: ['%84!#y', 'uhx%x', '15#'],
+                )
+              ],
             ],
           ],
-        ]) {
-          test(testCase, () async {
-            final boxEvents = testCase[0] as List<BoxEvent>;
-            final expectedQuestions = testCase[1] as List<HiveQuestionModel>;
+        ]),
+        (values) async {
+          final boxEvents = values[0] as List<BoxEvent>;
+          final keysToEmit = values[1] as List<List<String>>;
+          final expectedEmissions = values[2] as List<List<HiveQuestionModel>>;
 
-            mocktail
-                .when(
-                  () => questionsBox.watch(),
-                )
-                .thenAnswer((_) => Stream.fromIterable(boxEvents));
+          mocktail.when(() => questionsBox.keys).thenAnswer((_) {
+            final keys = keysToEmit.removeAt(0);
 
-            final result = await dataSource.watchAllQuestions();
+            for (final k in keys) {
+              mocktail.when(() => questionsBox.get(k)).thenReturn(
+                    boxEvents.firstWhere((e) => e.key == k).value as String?,
+                  );
+            }
 
-            expect(result.isOk, isTrue);
-            expect(await result.ok!.toList(), equals(expectedQuestions));
+            return keys;
           });
-        }
-      },
-    );
+
+          mocktail
+              .when(() => questionsBox.watch())
+              .thenAnswer((_) => Stream.fromIterable(boxEvents));
+
+          final result = dataSource.watchAllQuestions();
+
+          expect(result.isOk, isTrue);
+
+          await expectLater(result.ok, emitsInAnyOrder(expectedEmissions));
+        },
+        // skip: true,
+      );
+    });
   });
 }
 

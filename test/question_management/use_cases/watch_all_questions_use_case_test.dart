@@ -32,14 +32,14 @@ void main() {
           WatchAllQuestionsFailure.generic(message: 'f9T')
         ],
       ]),
-      (values) async {
+      (values) {
         final repositoryFailure = values[0] as QuestionRepositoryFailure;
         final expectedFailure = values[1] as WatchAllQuestionsFailure;
 
         when(() => dummyQuestionRepository.watchAll())
-            .thenAnswer((_) async => Result.err(repositoryFailure));
+            .thenReturn(Result.err(repositoryFailure));
 
-        final result = await useCase.execute();
+        final result = useCase.execute();
 
         expect(result.isErr, true);
         expect(result.err, expectedFailure);
@@ -51,51 +51,55 @@ void main() {
     parameterizedTest(
       'Use case should return stream from repository',
       ParameterizedSource.value([
-        const Stream<Question>.empty(),
+        const Stream<List<Question>>.empty(),
         Stream.fromIterable([
-          const Question(
-            id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
-            shortDescription: 'shortDescription',
-            description: 'description',
-            answerOptions: [],
-            difficulty: QuestionDifficulty.hard,
-            categories: [],
-          ),
+          [
+            const Question(
+              id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.hard,
+              categories: [],
+            )
+          ]
         ]),
         Stream.fromIterable([
-          const Question(
-            id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
-            shortDescription: 'shortDescription',
-            description: 'description',
-            answerOptions: [],
-            difficulty: QuestionDifficulty.hard,
-            categories: [],
-          ),
-          const Question(
-            id: '56d6a3c9-ebd5-4572-9c86-da328b986927',
-            shortDescription: 'shortDescription',
-            description: 'description',
-            answerOptions: [],
-            difficulty: QuestionDifficulty.hard,
-            categories: [],
-          ),
-          const Question(
-            id: 'd377713b-dfb7-4c22-88a4-3f6d340285dc',
-            shortDescription: 'shortDescription',
-            description: 'description',
-            answerOptions: [],
-            difficulty: QuestionDifficulty.hard,
-            categories: [],
-          ),
+          [
+            const Question(
+              id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.hard,
+              categories: [],
+            ),
+            const Question(
+              id: '56d6a3c9-ebd5-4572-9c86-da328b986927',
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.hard,
+              categories: [],
+            ),
+            const Question(
+              id: 'd377713b-dfb7-4c22-88a4-3f6d340285dc',
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.hard,
+              categories: [],
+            ),
+          ]
         ]),
       ]),
-      (values) async {
-        final stream = values[0] as Stream<Question>;
+      (values) {
+        final stream = values[0] as Stream<List<Question>>;
 
         when(() => dummyQuestionRepository.watchAll())
-            .thenAnswer((_) async => Result.ok(stream));
+            .thenReturn(Result.ok(stream));
 
-        final result = await useCase.execute();
+        final result = useCase.execute();
 
         expect(result.isOk, isTrue);
         expect(result.ok, stream);

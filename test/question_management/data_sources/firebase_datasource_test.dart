@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 void main() {
   late FirebaseFirestore firebaseFirestore;

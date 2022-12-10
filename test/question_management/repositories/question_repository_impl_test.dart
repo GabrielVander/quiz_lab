@@ -6,7 +6,7 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 import 'package:quiz_lab/features/question_management/data/mappers/question_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
@@ -139,14 +139,14 @@ void main() {
               HiveDataSourceFailure.libraryFailure(message: '%ae'),
               QuestionRepositoryFailure.unableToWatchAll(message: '%ae'),
             ],
-          ]), (values) async {
+          ]), (values) {
         final failure = values[0] as HiveDataSourceLibraryFailure;
         final expectedFailure = values[1] as QuestionRepositoryFailure;
 
         when(() => dummyHiveDataSource.watchAllQuestions())
-            .thenAnswer((_) async => Result.err(failure));
+            .thenReturn(Result.err(failure));
 
-        final result = await repository.watchAll();
+        final result = repository.watchAll();
         expect(result.isErr, isTrue);
 
         expect(result.err, expectedFailure);
@@ -156,53 +156,99 @@ void main() {
           'Mapper failure',
           ParameterizedSource.values([
             [
-              (HiveQuestionModel model) =>
+              <HiveQuestionModel>[_FakeQuestionModel()],
+              <Result<Question, QuestionMapperFailure>>[
+                Result.err(
                   QuestionMapperFailure.unableToMapHiveModelToEntity(
-                    model: model,
+                    model: _FakeQuestionModel(),
                   ),
-              QuestionRepositoryFailure.unableToWatchAll(
-                message: 'Unable to map hive model to entity',
-              ),
+                ),
+              ],
+              <Question>[],
             ],
-          ]), (values) async {
-        final mapperFailureBuilder =
-            values[0] as QuestionMapperFailure Function(HiveQuestionModel);
-        final expectedFailure = values[1] as QuestionRepositoryFailure;
-
-        final fakeHiveModel = _FakeQuestionModel();
+            [
+              <HiveQuestionModel>[
+                _FakeQuestionModel(),
+                _FakeQuestionModel(),
+                _FakeQuestionModel(),
+              ],
+              <Result<Question, QuestionMapperFailure>>[
+                Result.err(
+                  QuestionMapperFailure.unableToMapHiveModelToEntity(
+                    model: _FakeQuestionModel(),
+                  ),
+                ),
+                Result.err(
+                  QuestionMapperFailure.unableToMapHiveModelToEntity(
+                    model: _FakeQuestionModel(),
+                  ),
+                ),
+                Result.err(
+                  QuestionMapperFailure.unableToMapHiveModelToEntity(
+                    model: _FakeQuestionModel(),
+                  ),
+                ),
+              ],
+              <Question>[],
+            ],
+            [
+              <HiveQuestionModel>[
+                _FakeQuestionModel(),
+                _FakeQuestionModel(),
+                _FakeQuestionModel(),
+              ],
+              <Result<Question, QuestionMapperFailure>>[
+                Result.ok(_FakeQuestion()),
+                Result.err(
+                  QuestionMapperFailure.unableToMapHiveModelToEntity(
+                    model: _FakeQuestionModel(),
+                  ),
+                ),
+                Result.ok(_FakeQuestion()),
+              ],
+              <Question>[_FakeQuestion(), _FakeQuestion()],
+            ],
+          ]), (values) {
+        final hiveModels = values[0] as List<HiveQuestionModel>;
+        final mapperResults =
+            values[1] as List<Result<Question, QuestionMapperFailure>>;
+        final expectedQuestions = values[2] as List<Question>;
 
         when(() => dummyHiveDataSource.watchAllQuestions())
-            .thenAnswer((_) async => Result.ok(Stream.value(fakeHiveModel)));
+            .thenReturn(Result.ok(Stream.value(hiveModels)));
 
         when(() => dummyQuestionMapper.mapHiveModelToEntity(any()))
-            .thenAnswer((_) => Result.err(mapperFailureBuilder(fakeHiveModel)));
+            .thenAnswer((_) => mapperResults.removeAt(0));
 
-        final result = await repository.watchAll();
-        expect(result.isErr, isTrue);
+        final result = repository.watchAll();
+        expect(result.isOk, isTrue);
 
-        expect(result.err, expectedFailure);
+        expect(result.ok, emits(expectedQuestions));
       });
     });
 
     group('Ok flow', () {
-      test('Should call hive data source correctly', () async {
-        when(() => dummyHiveDataSource.watchAllQuestions()).thenAnswer(
-          (_) async => const Result.ok(Stream<HiveQuestionModel>.empty()),
+      test('Should call hive data source correctly', () {
+        when(() => dummyHiveDataSource.watchAllQuestions()).thenReturn(
+          const Result.ok(Stream<List<HiveQuestionModel>>.empty()),
         );
 
-        await repository.watchAll();
+        repository.watchAll();
 
         verify(() => dummyHiveDataSource.watchAllQuestions()).called(1);
       });
 
       group('Should handle hive data source ok result', () {
         for (final stream in [
-          const Stream<HiveQuestionModel>.empty(),
-          Stream<HiveQuestionModel>.fromIterable([_FakeQuestionModel()]),
-          Stream<HiveQuestionModel>.fromIterable([
-            _FakeQuestionModel(),
-            _FakeQuestionModel(),
-            _FakeQuestionModel(),
+          const Stream<List<HiveQuestionModel>>.empty(),
+          Stream<List<HiveQuestionModel>>.fromIterable([[]]),
+          Stream<List<HiveQuestionModel>>.fromIterable([
+            [_FakeQuestionModel()]
+          ]),
+          Stream<List<HiveQuestionModel>>.fromIterable([
+            [_FakeQuestionModel()],
+            [_FakeQuestionModel(), _FakeQuestionModel()],
+            [_FakeQuestionModel(), _FakeQuestionModel(), _FakeQuestionModel()],
           ]),
         ]) {
           test(stream, () async {
@@ -210,15 +256,19 @@ void main() {
                 .thenReturn(Result.ok(_FakeQuestion()));
 
             when(() => dummyHiveDataSource.watchAllQuestions())
-                .thenAnswer((_) async => Result.ok(stream));
+                .thenReturn(Result.ok(stream));
 
-            final result = await repository.watchAll();
+            final result = repository.watchAll();
             expect(result.isOk, isTrue);
 
             await expectLater(
               result.ok,
               emitsInOrder(
-                await stream.map((model) => _FakeQuestion()).toList(),
+                await stream
+                    .map(
+                      (models) => models.map((_) => _FakeQuestion()).toList(),
+                    )
+                    .toList(),
               ),
             );
           });

@@ -5,7 +5,7 @@ import '../../domain/entities/question.dart';
 import '../../domain/repositories/question_repository.dart';
 import '../data_sources/firebase_data_source.dart';
 import '../data_sources/hive_data_source.dart';
-import '../data_sources/models/question_model.dart';
+import '../data_sources/models/hive_question_model.dart';
 import '../mappers/question_mapper.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {
@@ -49,8 +49,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
   }
 
   @override
-  Future<Result<Stream<Question>, QuestionRepositoryFailure>> watchAll() async {
-    final localQuestionsResult = await _hiveDataSource.watchAllQuestions();
+  Result<Stream<List<Question>>, QuestionRepositoryFailure> watchAll() {
+    final localQuestionsResult = _hiveDataSource.watchAllQuestions();
 
     if (localQuestionsResult.isErr) {
       return Result.err(
@@ -60,13 +60,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
       );
     }
 
-    try {
-      return Result.ok(await _parseToEntityStream(localQuestionsResult));
-    } on _ParseException catch (e) {
-      return Result.err(
-        QuestionRepositoryFailure.unableToWatchAll(message: e.message),
-      );
-    }
+    return Result.ok(_parseToEntityStream(localQuestionsResult.ok!));
   }
 
   @override
@@ -114,28 +108,15 @@ class QuestionRepositoryImpl implements QuestionRepository {
     );
   }
 
-  Future<Stream<Question>> _parseToEntityStream(
-    Result<Stream<HiveQuestionModel>, HiveDataSourceFailure>
-        localQuestionsResult,
-  ) async {
-    return Stream.fromIterable(
-      await localQuestionsResult.ok!
+  Stream<List<Question>> _parseToEntityStream(
+    Stream<List<HiveQuestionModel>> stream,
+  ) {
+    return stream.map(
+      (m) => m
           .map(_questionMapper.mapHiveModelToEntity)
-          .map(
-            (mapperResult) => mapperResult.when(
-              ok: (question) => question,
-              err: (failure) => throw _ParseException(message: failure.message),
-            ),
-          )
+          .where((result) => result.isOk)
+          .map((result) => result.ok!)
           .toList(),
     );
   }
-}
-
-class _ParseException implements Exception {
-  const _ParseException({
-    required this.message,
-  });
-
-  final String message;
 }

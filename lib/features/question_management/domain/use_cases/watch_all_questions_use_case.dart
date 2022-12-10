@@ -12,8 +12,8 @@ class WatchAllQuestionsUseCase {
 
   final QuestionRepository _questionRepository;
 
-  Future<Result<Stream<Question>, WatchAllQuestionsFailure>> execute() async {
-    final streamResult = await _questionRepository.watchAll();
+  Result<Stream<List<Question>>, WatchAllQuestionsFailure> execute() {
+    final streamResult = _questionRepository.watchAll();
 
     if (streamResult.isErr) {
       return Result.err(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -26,15 +28,28 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
   final DeleteQuestionUseCase deleteQuestionUseCase;
   final UpdateQuestionUseCase updateQuestionUseCase;
 
-  Stream<Question>? _questions;
-
   Future<void> watchQuestions(BuildContext context) async {
     emit(QuestionsOverviewLoading());
 
-    final questionsResult = await watchAllQuestionsUseCase.execute();
-    _questions = questionsResult;
+    watchAllQuestionsUseCase.execute().when(
+      ok: (stream) {
+        stream.listen((q) {
+          emit(
+            QuestionsOverviewState.listUpdated(
+              questions:
+                  q.map((e) => _questionToViewModel(context, e)).toList(),
+            ),
+          );
+        });
 
-    _questions?.listen((questions) => _onQuestionsUpdate(context, [questions]));
+        emit(
+          QuestionsOverviewState.listUpdated(questions: const []),
+        );
+      },
+      err: (err) {
+        emit(QuestionsOverviewState.error(message: err.message));
+      },
+    );
   }
 
   Future<void> removeQuestion(QuestionOverviewViewModel question) async {
@@ -53,25 +68,6 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
         _overviewViewModelToEntity(viewModel),
       );
     }
-  }
-
-  void _onQuestionsUpdate(BuildContext context, List<Question> questions) {
-    emit(
-      QuestionsOverviewListUpdated(
-        viewModel: QuestionListViewModel(
-          questions: _mapQuestionsToViewModels(context, questions),
-        ),
-      ),
-    );
-  }
-
-  List<QuestionOverviewViewModel> _mapQuestionsToViewModels(
-    BuildContext context,
-    List<Question> questions,
-  ) {
-    return questions
-        .map((question) => _questionToViewModel(context, question))
-        .toList();
   }
 
   QuestionOverviewViewModel _questionToViewModel(
