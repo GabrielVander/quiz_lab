@@ -1,17 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 
-import '../../domain/entities/question.dart';
-import '../data_sources/models/hive_question_model.dart';
+import '../../../domain/entities/question.dart';
+import '../../data_sources/models/hive_question_model.dart';
 
 class QuestionMapper {
-  Result<HiveQuestionModel, QuestionMapperFailure> mapEntityToHiveModel(
-    Question question,
-  ) {
-    return Result.err(QuestionMapperFailure.unimplemented());
-  }
-
-  Result<Question, QuestionMapperFailure> mapHiveModelToEntity(
+  Result<Question, QuestionMapperFailure> fromHiveModel(
     HiveQuestionModel hiveModel,
   ) {
     return Result.err(QuestionMapperFailure.unimplemented());

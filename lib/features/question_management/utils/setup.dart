@@ -10,7 +10,8 @@ import '../../../core/presentation/manager/question_creation/question_creation_c
 import '../../../core/presentation/manager/questions_overview/questions_overview_cubit.dart';
 import '../data/data_sources/firebase_data_source.dart';
 import '../data/data_sources/hive_data_source.dart';
-import '../data/mappers/question_mapper.dart';
+import '../data/data_sources/mappers/hive_question_model_mapper.dart';
+import '../data/repositories/mappers/question_mapper.dart';
 import '../data/repositories/question_repository_impl.dart';
 import '../domain/repositories/question_repository.dart';
 import '../domain/use_cases/create_question_use_case.dart';
@@ -35,6 +36,7 @@ void quizDiSetup(DependencyInjection di) {
           firebaseDataSource: dataSourceResult.unwrap(),
           hiveDataSource: HiveDataSource(questionsBox: Hive.box('questions')),
           questionMapper: QuestionMapper(),
+          hiveQuestionModelMapper: HiveQuestionModelMapper(),
         );
       },
     )

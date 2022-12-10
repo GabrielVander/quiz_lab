@@ -5,27 +5,31 @@ import '../../domain/entities/question.dart';
 import '../../domain/repositories/question_repository.dart';
 import '../data_sources/firebase_data_source.dart';
 import '../data_sources/hive_data_source.dart';
+import '../data_sources/mappers/hive_question_model_mapper.dart';
 import '../data_sources/models/hive_question_model.dart';
-import '../mappers/question_mapper.dart';
+import 'mappers/question_mapper.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {
   const QuestionRepositoryImpl({
     required FirebaseDataSource firebaseDataSource,
     required HiveDataSource hiveDataSource,
     required QuestionMapper questionMapper,
+    required HiveQuestionModelMapper hiveQuestionModelMapper,
   })  : _hiveDataSource = hiveDataSource,
         _firebaseDataSource = firebaseDataSource,
-        _questionMapper = questionMapper;
+        _questionMapper = questionMapper,
+        _hiveQuestionModelMapper = hiveQuestionModelMapper;
 
   final FirebaseDataSource _firebaseDataSource;
   final HiveDataSource _hiveDataSource;
   final QuestionMapper _questionMapper;
+  final HiveQuestionModelMapper _hiveQuestionModelMapper;
 
   @override
   Future<Result<Unit, QuestionRepositoryFailure>> createSingle(
     Question question,
   ) async {
-    final mappingResult = _questionMapper.mapEntityToHiveModel(question);
+    final mappingResult = _hiveQuestionModelMapper.fromQuestion(question);
 
     if (mappingResult.isErr) {
       return Result.err(
@@ -67,7 +71,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,
   ) async {
-    final mappingResult = _questionMapper.mapEntityToHiveModel(question);
+    final mappingResult = _hiveQuestionModelMapper.fromQuestion(question);
 
     if (mappingResult.isErr) {
       return Result.err(
@@ -113,7 +117,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
   ) {
     return stream.map(
       (m) => m
-          .map(_questionMapper.mapHiveModelToEntity)
+          .map(_questionMapper.fromHiveModel)
           .where((result) => result.isOk)
           .map((result) => result.ok!)
           .toList(),

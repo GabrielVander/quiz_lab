@@ -6,8 +6,9 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/mappers/hive_question_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
-import 'package:quiz_lab/features/question_management/data/mappers/question_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
@@ -16,6 +17,7 @@ void main() {
   late FirebaseDataSource dummyFirestoreDataSource;
   late HiveDataSource dummyHiveDataSource;
   late QuestionMapper dummyQuestionMapper;
+  late HiveQuestionModelMapper dummyHiveQuestionModelMapper;
   late QuestionRepositoryImpl repository;
 
   setUp(() {
@@ -24,11 +26,13 @@ void main() {
     dummyFirestoreDataSource = _MockFirebaseDataSource();
     dummyHiveDataSource = _MockHiveDataSource();
     dummyQuestionMapper = _MockQuestionMapper();
+    dummyHiveQuestionModelMapper = _MockHiveQuestionModelMapper();
 
     repository = QuestionRepositoryImpl(
       firebaseDataSource: dummyFirestoreDataSource,
       hiveDataSource: dummyHiveDataSource,
       questionMapper: dummyQuestionMapper,
+      hiveQuestionModelMapper: dummyHiveQuestionModelMapper,
     );
   });
 
@@ -38,7 +42,7 @@ void main() {
         final fakeEntity = _FakeQuestion();
         final fakeHiveModel = _FakeQuestionModel();
 
-        when(() => dummyQuestionMapper.mapEntityToHiveModel(fakeEntity))
+        when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(Result.ok(fakeHiveModel));
 
         when(() => dummyHiveDataSource.saveQuestion(any()))
@@ -53,7 +57,7 @@ void main() {
         final fakeEntity = _FakeQuestion();
         final fakeHiveModel = _FakeQuestionModel();
 
-        when(() => dummyQuestionMapper.mapEntityToHiveModel(fakeEntity))
+        when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(Result.ok(fakeHiveModel));
 
         when(() => dummyHiveDataSource.saveQuestion(fakeHiveModel))
@@ -70,21 +74,21 @@ void main() {
           'Mapper failure',
           ParameterizedSource.values([
             [
-              QuestionMapperFailure.unableToMapToHiveModel(message: ''),
-              QuestionRepositoryFailure.unableToParseEntity(message: ''),
-            ],
-            [
-              QuestionMapperFailure.unableToMapToHiveModel(message: 'ctCI4#A'),
-              QuestionRepositoryFailure.unableToParseEntity(message: 'ctCI4#A'),
+              HiveQuestionModelMapperFailure.unableToParseQuestion(
+                question: _FakeQuestion(),
+              ),
+              QuestionRepositoryFailure.unableToParseEntity(
+                message: 'Unable to parse question',
+              ),
             ],
           ]), (values) async {
-        final mapperFailure = values[0] as QuestionMapperFailure;
+        final mapperFailure = values[0] as HiveQuestionModelMapperFailure;
         final expectedRepositoryFailure =
             values[1] as QuestionRepositoryFailure;
 
         final fakeEntity = _FakeQuestion();
 
-        when(() => dummyQuestionMapper.mapEntityToHiveModel(fakeEntity))
+        when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(Result.err(mapperFailure));
 
         final result = await repository.createSingle(fakeEntity);
@@ -109,7 +113,7 @@ void main() {
         final fakeEntity = _FakeQuestion();
         final fakeModel = _FakeQuestionModel();
 
-        when(() => dummyQuestionMapper.mapEntityToHiveModel(fakeEntity))
+        when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(Result.ok(fakeModel));
 
         when(() => dummyHiveDataSource.saveQuestion(fakeModel))
@@ -217,7 +221,7 @@ void main() {
         when(() => dummyHiveDataSource.watchAllQuestions())
             .thenReturn(Result.ok(Stream.value(hiveModels)));
 
-        when(() => dummyQuestionMapper.mapHiveModelToEntity(any()))
+        when(() => dummyQuestionMapper.fromHiveModel(any()))
             .thenAnswer((_) => mapperResults.removeAt(0));
 
         final result = repository.watchAll();
@@ -252,7 +256,7 @@ void main() {
           ]),
         ]) {
           test(stream, () async {
-            when(() => dummyQuestionMapper.mapHiveModelToEntity(any()))
+            when(() => dummyQuestionMapper.fromHiveModel(any()))
                 .thenReturn(Result.ok(_FakeQuestion()));
 
             when(() => dummyHiveDataSource.watchAllQuestions())
@@ -283,22 +287,22 @@ void main() {
         'Mapper failure',
         ParameterizedSource.values([
           [
-            QuestionMapperFailure.unableToMapToHiveModel(message: ''),
-            QuestionRepositoryFailure.unableToParseEntity(message: ''),
-          ],
-          [
-            QuestionMapperFailure.unableToMapToHiveModel(message: 'Ayrl35S'),
-            QuestionRepositoryFailure.unableToParseEntity(message: 'Ayrl35S'),
+            HiveQuestionModelMapperFailure.unableToParseQuestion(
+              question: _FakeQuestion(),
+            ),
+            QuestionRepositoryFailure.unableToParseEntity(
+              message: 'Unable to parse question',
+            ),
           ],
         ]),
         (values) async {
-          final mapperFailure = values[0] as QuestionMapperFailure;
+          final mapperFailure = values[0] as HiveQuestionModelMapperFailure;
           final expectedRepositoryFailure =
               values[1] as QuestionRepositoryFailure;
 
           final fakeEntity = _FakeQuestion();
 
-          when(() => dummyQuestionMapper.mapEntityToHiveModel(fakeEntity))
+          when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
               .thenReturn(Result.err(mapperFailure));
 
           final result = await repository.updateSingle(fakeEntity);
@@ -330,7 +334,7 @@ void main() {
           final fakeEntity = _FakeQuestion();
           final fakeModel = _FakeQuestionModel();
 
-          when(() => dummyQuestionMapper.mapEntityToHiveModel(fakeEntity))
+          when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
               .thenReturn(Result.ok(fakeModel));
 
           when(() => dummyHiveDataSource.saveQuestion(fakeModel))
@@ -352,7 +356,7 @@ void main() {
         final fakeEntity = _FakeQuestion();
         final fakeModel = _FakeQuestionModel();
 
-        when(() => dummyQuestionMapper.mapEntityToHiveModel(fakeEntity))
+        when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(Result.ok(fakeModel));
 
         when(() => dummyHiveDataSource.saveQuestion(fakeModel))
@@ -362,7 +366,7 @@ void main() {
 
         expect(result.isOk, isTrue);
 
-        verify(() => dummyQuestionMapper.mapEntityToHiveModel(fakeEntity))
+        verify(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .called(1);
         verify(() => dummyHiveDataSource.saveQuestion(fakeModel)).called(1);
       });
@@ -448,6 +452,9 @@ class _MockFirebaseDataSource extends Mock implements FirebaseDataSource {}
 class _MockHiveDataSource extends Mock implements HiveDataSource {}
 
 class _MockQuestionMapper extends Mock implements QuestionMapper {}
+
+class _MockHiveQuestionModelMapper extends Mock
+    implements HiveQuestionModelMapper {}
 
 class _FakeQuestionModel extends Fake implements HiveQuestionModel {}
 
