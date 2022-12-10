@@ -29,19 +29,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<Result<Unit, QuestionRepositoryFailure>> createSingle(
     Question question,
   ) async {
-    final mappingResult = _hiveQuestionModelMapper.fromQuestion(question);
-
-    if (mappingResult.isErr) {
-      return Result.err(
-        QuestionRepositoryFailure.unableToParseEntity(
-          message: mappingResult.err!.message,
-        ),
-      );
-    }
-
-    final creationResult = await _hiveDataSource.saveQuestion(
-      mappingResult.ok!,
-    );
+    final hiveModel = _hiveQuestionModelMapper.fromQuestion(question);
+    final creationResult = await _hiveDataSource.saveQuestion(hiveModel);
 
     if (creationResult.isErr) {
       return Result.err(
@@ -71,17 +60,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,
   ) async {
-    final mappingResult = _hiveQuestionModelMapper.fromQuestion(question);
-
-    if (mappingResult.isErr) {
-      return Result.err(
-        QuestionRepositoryFailure.unableToParseEntity(
-          message: mappingResult.err!.message,
-        ),
-      );
-    }
-
-    final updateResult = await _hiveDataSource.saveQuestion(mappingResult.ok!);
+    final hiveModel = _hiveQuestionModelMapper.fromQuestion(question);
+    final updateResult = await _hiveDataSource.saveQuestion(hiveModel);
 
     if (updateResult.isErr) {
       return Result.err(
@@ -97,13 +77,12 @@ class QuestionRepositoryImpl implements QuestionRepository {
     String id,
   ) async {
     final deletionResult = await _hiveDataSource.deleteQuestion(
-      // TODO: All HiveQuestionModel fields should be nullable
       HiveQuestionModel(
         id: id,
-        shortDescription: 'shortDescription',
-        description: 'description',
-        difficulty: 'difficulty',
-        categories: const [],
+        shortDescription: null,
+        description: null,
+        difficulty: null,
+        categories: null,
       ),
     );
 

@@ -43,7 +43,7 @@ void main() {
         final fakeHiveModel = _FakeQuestionModel();
 
         when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(Result.ok(fakeHiveModel));
+            .thenReturn(fakeHiveModel);
 
         when(() => dummyHiveDataSource.saveQuestion(any()))
             .thenAnswer((_) async => const Result.ok(unit));
@@ -58,7 +58,7 @@ void main() {
         final fakeHiveModel = _FakeQuestionModel();
 
         when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(Result.ok(fakeHiveModel));
+            .thenReturn(fakeHiveModel);
 
         when(() => dummyHiveDataSource.saveQuestion(fakeHiveModel))
             .thenAnswer((_) async => const Result.ok(unit));
@@ -70,33 +70,6 @@ void main() {
     });
 
     group('Err flow', () {
-      parameterizedTest(
-          'Mapper failure',
-          ParameterizedSource.values([
-            [
-              HiveQuestionModelMapperFailure.unableToParseQuestion(
-                question: _FakeQuestion(),
-              ),
-              QuestionRepositoryFailure.unableToParseEntity(
-                message: 'Unable to parse question',
-              ),
-            ],
-          ]), (values) async {
-        final mapperFailure = values[0] as HiveQuestionModelMapperFailure;
-        final expectedRepositoryFailure =
-            values[1] as QuestionRepositoryFailure;
-
-        final fakeEntity = _FakeQuestion();
-
-        when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(Result.err(mapperFailure));
-
-        final result = await repository.createSingle(fakeEntity);
-
-        expect(result.isErr, isTrue);
-        expect(result.err, equals(expectedRepositoryFailure));
-      });
-
       parameterizedTest(
           'Hive data source failure',
           ParameterizedSource.values([
@@ -114,7 +87,7 @@ void main() {
         final fakeModel = _FakeQuestionModel();
 
         when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(Result.ok(fakeModel));
+            .thenReturn(fakeModel);
 
         when(() => dummyHiveDataSource.saveQuestion(fakeModel))
             .thenAnswer((_) async => Result.err(dataSourceFailure));
@@ -277,35 +250,6 @@ void main() {
   group('updateSingle', () {
     group('Err flow', () {
       parameterizedTest(
-        'Mapper failure',
-        ParameterizedSource.values([
-          [
-            HiveQuestionModelMapperFailure.unableToParseQuestion(
-              question: _FakeQuestion(),
-            ),
-            QuestionRepositoryFailure.unableToParseEntity(
-              message: 'Unable to parse question',
-            ),
-          ],
-        ]),
-        (values) async {
-          final mapperFailure = values[0] as HiveQuestionModelMapperFailure;
-          final expectedRepositoryFailure =
-              values[1] as QuestionRepositoryFailure;
-
-          final fakeEntity = _FakeQuestion();
-
-          when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
-              .thenReturn(Result.err(mapperFailure));
-
-          final result = await repository.updateSingle(fakeEntity);
-
-          expect(result.isErr, isTrue);
-          expect(result.err, equals(expectedRepositoryFailure));
-        },
-      );
-
-      parameterizedTest(
         'Hive data source failure',
         ParameterizedSource.values([
           [
@@ -328,7 +272,7 @@ void main() {
           final fakeModel = _FakeQuestionModel();
 
           when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
-              .thenReturn(Result.ok(fakeModel));
+              .thenReturn(fakeModel);
 
           when(() => dummyHiveDataSource.saveQuestion(fakeModel))
               .thenAnswer((_) async => Result.err(dataSourceFailure));
@@ -350,7 +294,7 @@ void main() {
         final fakeModel = _FakeQuestionModel();
 
         when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(Result.ok(fakeModel));
+            .thenReturn(fakeModel);
 
         when(() => dummyHiveDataSource.saveQuestion(fakeModel))
             .thenAnswer((_) async => const Result.ok(unit));

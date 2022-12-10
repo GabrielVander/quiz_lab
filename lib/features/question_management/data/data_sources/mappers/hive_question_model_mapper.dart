@@ -1,48 +1,29 @@
-import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
-
 import '../../../domain/entities/question.dart';
 import '../models/hive_question_model.dart';
 
 class HiveQuestionModelMapper {
-  Result<HiveQuestionModel, HiveQuestionModelMapperFailure> fromQuestion(
+  HiveQuestionModel fromQuestion(
     Question question,
-  ) {
-    return Result.err(HiveQuestionModelMapperFailure.unimplemented());
-  }
-}
+  ) =>
+      HiveQuestionModel(
+        id: _parseIdFromQuestion(question),
+        shortDescription: _parseShortDescriptionFromQuestion(question),
+        description: _parseDescriptionFromQuestion(question),
+        difficulty: _parseDifficultyFromQuestion(question),
+        categories: _parseCategoriesFromQuestion(question),
+      );
 
-abstract class HiveQuestionModelMapperFailure extends Equatable {
-  const HiveQuestionModelMapperFailure._({required this.message});
+  String? _parseIdFromQuestion(Question question) => question.id;
 
-  factory HiveQuestionModelMapperFailure.unimplemented() {
-    return const _UnimplementedFailure._();
-  }
+  String _parseDescriptionFromQuestion(Question question) =>
+      question.description;
 
-  factory HiveQuestionModelMapperFailure.unableToParseQuestion({
-    required Question question,
-  }) =>
-      _UnableToParseQuestion._(question: question);
+  String _parseShortDescriptionFromQuestion(Question question) =>
+      question.shortDescription;
 
-  final String message;
+  String _parseDifficultyFromQuestion(Question question) =>
+      question.difficulty.name;
 
-  @override
-  List<Object> get props => [message];
-
-  @override
-  bool get stringify => true;
-}
-
-class _UnimplementedFailure extends HiveQuestionModelMapperFailure {
-  const _UnimplementedFailure._() : super._(message: 'Unimplemented');
-}
-
-class _UnableToParseQuestion extends HiveQuestionModelMapperFailure {
-  const _UnableToParseQuestion._({required this.question})
-      : super._(message: 'Unable to parse question');
-
-  final Question question;
-
-  @override
-  List<Object> get props => super.props..addAll([question]);
+  List<String> _parseCategoriesFromQuestion(Question question) =>
+      question.categories.map((e) => e.value).toList();
 }
