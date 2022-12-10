@@ -22,10 +22,10 @@ class HiveQuestionModel extends Equatable {
   }
 
   final String? id;
-  final String shortDescription;
-  final String description;
-  final String difficulty;
-  final List<String> categories;
+  final String? shortDescription;
+  final String? description;
+  final String? difficulty;
+  final List<String>? categories;
 
   Map<String, dynamic> toMap() {
     return {

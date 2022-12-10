@@ -163,9 +163,7 @@ void main() {
               <HiveQuestionModel>[_FakeQuestionModel()],
               <Result<Question, QuestionMapperFailure>>[
                 Result.err(
-                  QuestionMapperFailure.unableToMapHiveModelToEntity(
-                    model: _FakeQuestionModel(),
-                  ),
+                  QuestionMapperFailure.missingId(),
                 ),
               ],
               <Question>[],
@@ -178,19 +176,13 @@ void main() {
               ],
               <Result<Question, QuestionMapperFailure>>[
                 Result.err(
-                  QuestionMapperFailure.unableToMapHiveModelToEntity(
-                    model: _FakeQuestionModel(),
-                  ),
+                  QuestionMapperFailure.missingCategories(),
                 ),
                 Result.err(
-                  QuestionMapperFailure.unableToMapHiveModelToEntity(
-                    model: _FakeQuestionModel(),
-                  ),
+                  QuestionMapperFailure.missingDifficulty(),
                 ),
                 Result.err(
-                  QuestionMapperFailure.unableToMapHiveModelToEntity(
-                    model: _FakeQuestionModel(),
-                  ),
+                  QuestionMapperFailure.missingDescription(),
                 ),
               ],
               <Question>[],
@@ -204,8 +196,9 @@ void main() {
               <Result<Question, QuestionMapperFailure>>[
                 Result.ok(_FakeQuestion()),
                 Result.err(
-                  QuestionMapperFailure.unableToMapHiveModelToEntity(
-                    model: _FakeQuestionModel(),
+                  QuestionMapperFailure.unableToParseDifficulty(
+                    receivedValue: r'$uqO8n5',
+                    possibleValues: const [],
                   ),
                 ),
                 Result.ok(_FakeQuestion()),
