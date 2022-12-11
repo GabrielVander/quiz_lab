@@ -32,7 +32,7 @@ class QuestionView extends StatelessWidget {
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(10),
-          child: Body(
+          child: _Body(
             cubit:
                 questionCreationCubitResult.unwrap() as QuestionCreationCubit,
           ),
@@ -42,8 +42,8 @@ class QuestionView extends StatelessWidget {
   }
 }
 
-class Body extends HookWidget {
-  const Body({
+class _Body extends HookWidget {
+  const _Body({
     super.key,
     required this.cubit,
   });
@@ -56,40 +56,6 @@ class Body extends HookWidget {
 
     if (state is QuestionCreationInitial) {
       cubit.update();
-    }
-
-    if (state is QuestionCreationDisplayUpdate) {
-      return Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              PageTitle(),
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: Form(
-              viewModel: state.viewModel,
-              onShortDescriptionChange: (value) =>
-                  cubit.onShortDescriptionUpdate(context, value),
-              onDescriptionChange: (value) =>
-                  cubit.onDescriptionUpdate(context, value),
-              onCreateQuestion: () => cubit.createQuestion(context),
-              onAddOption: cubit.addOption,
-              onIsCorrect: cubit.optionIsCorrect,
-            ),
-          ),
-        ],
-      );
-    }
-
-    if (state is Loading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
     }
 
     if (state is Success || state is CreationError) {
@@ -123,16 +89,52 @@ class Body extends HookWidget {
           ),
         );
       });
+
+      cubit.update();
+    }
+
+    if (state is QuestionCreationDisplayUpdate) {
+      // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+
+      return Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              _PageTitle(),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: _Form(
+              viewModel: state.viewModel,
+              onShortDescriptionChange: (value) =>
+                  cubit.onShortDescriptionUpdate(context, value),
+              onDescriptionChange: (value) =>
+                  cubit.onDescriptionUpdate(context, value),
+              onCreateQuestion: () => cubit.createQuestion(context),
+              onAddOption: cubit.addOption,
+              onIsCorrect: cubit.optionIsCorrect,
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (state is Loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
 
     return Container();
   }
 }
 
-class PageTitle extends StatelessWidget {
-  const PageTitle({
-    super.key,
-  });
+class _PageTitle extends StatelessWidget {
+  const _PageTitle();
 
   @override
   Widget build(BuildContext context) {
@@ -166,8 +168,8 @@ class PageTitle extends StatelessWidget {
   }
 }
 
-class Form extends StatelessWidget {
-  const Form({
+class _Form extends StatelessWidget {
+  const _Form({
     super.key,
     required this.viewModel,
     required this.onShortDescriptionChange,
@@ -195,7 +197,7 @@ class Form extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: ShortDescriptionField(
+                  child: _ShortDescriptionField(
                     viewModel: viewModel.shortDescription,
                     onChanged: onShortDescriptionChange,
                   ),
@@ -208,7 +210,7 @@ class Form extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: DescriptionField(
+                  child: _DescriptionField(
                     viewModel: viewModel.description,
                     onChange: onDescriptionChange,
                   ),
@@ -221,7 +223,7 @@ class Form extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Options(
+                  child: _Options(
                     viewModel: viewModel.options,
                     onAddOption: onAddOption,
                     onIsCorrect: onIsCorrect,
@@ -252,8 +254,8 @@ class Form extends StatelessWidget {
   }
 }
 
-class ShortDescriptionField extends StatelessWidget {
-  const ShortDescriptionField({
+class _ShortDescriptionField extends StatelessWidget {
+  const _ShortDescriptionField({
     super.key,
     required this.viewModel,
     required this.onChanged,
@@ -276,8 +278,8 @@ class ShortDescriptionField extends StatelessWidget {
   }
 }
 
-class DescriptionField extends StatelessWidget {
-  const DescriptionField({
+class _DescriptionField extends StatelessWidget {
+  const _DescriptionField({
     super.key,
     required this.viewModel,
     required this.onChange,
@@ -301,8 +303,8 @@ class DescriptionField extends StatelessWidget {
   }
 }
 
-class Options extends StatelessWidget {
-  const Options({
+class _Options extends StatelessWidget {
+  const _Options({
     super.key,
     required this.viewModel,
     required this.onAddOption,
@@ -331,7 +333,7 @@ class Options extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  Subtitle(),
+                  _Subtitle(),
                 ],
               ),
             ),
@@ -343,7 +345,7 @@ class Options extends StatelessWidget {
                         .map(
                           (e) => Padding(
                             padding: const EdgeInsets.only(bottom: 5),
-                            child: Option(
+                            child: _Option(
                               key: e.id,
                               viewModel: e,
                               onIsCorrect: (bool _) => onIsCorrect(e),
@@ -366,8 +368,8 @@ class Options extends StatelessWidget {
   }
 }
 
-class Option extends StatelessWidget {
-  const Option({
+class _Option extends StatelessWidget {
+  const _Option({
     super.key,
     required this.viewModel,
     required this.onIsCorrect,
@@ -403,8 +405,8 @@ class Option extends StatelessWidget {
   }
 }
 
-class Subtitle extends StatelessWidget {
-  const Subtitle({
+class _Subtitle extends StatelessWidget {
+  const _Subtitle({
     super.key,
   });
 

@@ -35,7 +35,7 @@ class CreateQuestionUseCase {
     );
   }
 
-  Result<Question, InputParseFailure> _parseInputToEntity(
+  Result<Question, _InputParseFailure> _parseInputToEntity(
     QuestionCreationInput input,
   ) {
     final difficultyParseResult = _difficultyFromInput(input);
@@ -56,7 +56,7 @@ class CreateQuestionUseCase {
     );
   }
 
-  Result<QuestionDifficulty, InputParseFailure> _difficultyFromInput(
+  Result<QuestionDifficulty, _InputParseFailure> _difficultyFromInput(
     QuestionCreationInput input,
   ) {
     final mappings = {
@@ -69,7 +69,7 @@ class CreateQuestionUseCase {
       return Result.ok(mappings[input.difficulty]!);
     } else {
       return Result.err(
-        InputParseFailure.difficulty(receivedValue: input.difficulty),
+        _InputParseFailure.difficulty(receivedValue: input.difficulty),
       );
     }
   }
@@ -114,7 +114,7 @@ abstract class CreateQuestionUseCaseFailure extends Equatable {
   factory CreateQuestionUseCaseFailure.unableToParseDifficulty({
     required String value,
   }) =>
-      InputParseFailure.difficulty(receivedValue: value);
+      _InputParseFailure.difficulty(receivedValue: value);
 
   final String message;
 
@@ -139,13 +139,13 @@ class UnableToCreateQuestion extends CreateQuestionUseCaseFailure {
 }
 
 @immutable
-abstract class InputParseFailure extends CreateQuestionUseCaseFailure {
-  const InputParseFailure._({
+abstract class _InputParseFailure extends CreateQuestionUseCaseFailure {
+  const _InputParseFailure._({
     required this.fieldName,
     required this.receivedValue,
   }) : super._(message: 'Unable to parse $fieldName from $receivedValue');
 
-  factory InputParseFailure.difficulty({
+  factory _InputParseFailure.difficulty({
     required String receivedValue,
   }) =>
       DifficultyParseFailure._(receivedValue: receivedValue);
@@ -158,7 +158,7 @@ abstract class InputParseFailure extends CreateQuestionUseCaseFailure {
 }
 
 @immutable
-class DifficultyParseFailure extends InputParseFailure {
+class DifficultyParseFailure extends _InputParseFailure {
   const DifficultyParseFailure._({required super.receivedValue})
       : super._(fieldName: 'difficulty');
 }

@@ -30,8 +30,9 @@ abstract class QuestionRepositoryFailure extends Equatable {
 
   factory QuestionRepositoryFailure.unableToCreate({
     required Question question,
+    required String message,
   }) =>
-      UnableToCreateQuestion._(question: question);
+      UnableToCreateQuestion._(question: question, message: message);
 
   factory QuestionRepositoryFailure.unableToWatchAll({
     required String message,
@@ -64,8 +65,10 @@ class UnableToParseEntity extends QuestionRepositoryFailure {
 
 @immutable
 class UnableToCreateQuestion extends QuestionRepositoryFailure {
-  const UnableToCreateQuestion._({required this.question})
-      : super._(message: 'Unable to create question');
+  const UnableToCreateQuestion._({
+    required this.question,
+    required super.message,
+  }) : super._();
 
   final Question question;
 

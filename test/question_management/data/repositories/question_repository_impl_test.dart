@@ -75,8 +75,10 @@ void main() {
           ParameterizedSource.values([
             [
               HiveDataSourceFailure.libraryFailure(message: ''),
-              (Question question) =>
-                  QuestionRepositoryFailure.unableToCreate(question: question),
+              (Question question) => QuestionRepositoryFailure.unableToCreate(
+                    question: question,
+                    message: '',
+                  ),
             ],
           ]), (values) async {
         final dataSourceFailure = values[0] as HiveDataSourceFailure;

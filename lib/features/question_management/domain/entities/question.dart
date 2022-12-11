@@ -1,20 +1,23 @@
 import 'package:equatable/equatable.dart';
+import 'package:uuid/uuid.dart';
 
 import 'answer_option.dart';
 import 'question_category.dart';
 import 'question_difficulty.dart';
 
 class Question extends Equatable {
-  const Question({
-    this.id,
+  Question({
+    String? id,
     required this.shortDescription,
     required this.description,
     required this.answerOptions,
     required this.difficulty,
     required this.categories,
-  });
+  }) {
+    this.id = id ?? const Uuid().v4();
+  }
 
-  final String? id;
+  late final String id;
   final String shortDescription;
   final String description;
   final List<AnswerOption> answerOptions;

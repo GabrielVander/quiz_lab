@@ -68,7 +68,10 @@ void main() {
             difficulty: 'medium',
             categories: [],
           ),
-          QuestionRepositoryFailure.unableToCreate(question: _FakeQuestion()),
+          QuestionRepositoryFailure.unableToCreate(
+            question: _FakeQuestion(),
+            message: '8&tL6xjE',
+          ),
           CreateQuestionUseCaseFailure.unableToCreate(
             receivedInput: const QuestionCreationInput(
               shortDescription: '',

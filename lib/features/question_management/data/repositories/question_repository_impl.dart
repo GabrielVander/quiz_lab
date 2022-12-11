@@ -34,7 +34,10 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
     if (creationResult.isErr) {
       return Result.err(
-        QuestionRepositoryFailure.unableToCreate(question: question),
+        QuestionRepositoryFailure.unableToCreate(
+          question: question,
+          message: creationResult.err!.message,
+        ),
       );
     }
 
