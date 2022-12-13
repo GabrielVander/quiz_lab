@@ -21,13 +21,13 @@ void main() {
         'should parse question correctly',
         ParameterizedSource.values([
           [
-            Question(
+            const Question(
               id: 'Nd3t!fjX',
               shortDescription: '',
               description: '',
-              answerOptions: const [],
+              answerOptions: [],
               difficulty: QuestionDifficulty.easy,
-              categories: const [],
+              categories: [],
             ),
             const HiveQuestionModel(
               id: 'Nd3t!fjX',
@@ -38,13 +38,13 @@ void main() {
             ),
           ],
           [
-            Question(
+            const Question(
               id: '@mWpWvZ',
               shortDescription: 'wcS',
               description: 'ML9ZGlsr',
-              answerOptions: const [],
+              answerOptions: [],
               difficulty: QuestionDifficulty.medium,
-              categories: const [QuestionCategory(value: 'jQ@wco')],
+              categories: [QuestionCategory(value: 'jQ@wco')],
             ),
             const HiveQuestionModel(
               id: '@mWpWvZ',

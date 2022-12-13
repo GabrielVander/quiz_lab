@@ -24,25 +24,25 @@ void main() {
   parameterizedTest(
     'Should delegate to repository',
     ParameterizedSource.value([
-      Question(
+      const Question(
         id: '',
         shortDescription: '',
         description: '',
-        categories: const [],
+        categories: [],
         difficulty: QuestionDifficulty.unknown,
-        answerOptions: const [],
+        answerOptions: [],
       ),
-      Question(
+      const Question(
         id: 'a019cc50-db0b-42e2-895a-ac5a37a79faa',
         shortDescription: 'hunger',
         description: 'Nuptias ire, tanquam superbus hippotoxota.',
-        categories: const [
+        categories: [
           QuestionCategory(value: 'sail'),
           QuestionCategory(value: 'pen'),
           QuestionCategory(value: 'station'),
         ],
         difficulty: QuestionDifficulty.hard,
-        answerOptions: const [
+        answerOptions: [
           AnswerOption(description: 'fort charles ', isCorrect: false),
           AnswerOption(description: 'yardarm ', isCorrect: true),
           AnswerOption(description: 'fortune ', isCorrect: false),

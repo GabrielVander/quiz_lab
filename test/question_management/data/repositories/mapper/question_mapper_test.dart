@@ -119,17 +119,17 @@ void main() {
               difficulty: 'easy',
               categories: ['a', 'b', 'c'],
             ),
-            Question(
+            const Question(
               id: 'dtBn',
               shortDescription: 'n3Y2HS',
               description: 'c7c',
               difficulty: QuestionDifficulty.easy,
-              categories: const [
+              categories: [
                 QuestionCategory(value: 'a'),
                 QuestionCategory(value: 'b'),
                 QuestionCategory(value: 'c')
               ],
-              answerOptions: const [],
+              answerOptions: [],
             ),
           ],
           [
@@ -140,17 +140,17 @@ void main() {
               difficulty: 'medium',
               categories: ['tagPaD', 'wkF5', '#s1ZIz#'],
             ),
-            Question(
+            const Question(
               id: '!!LY',
               shortDescription: 'W7*',
               description: r'7$N8XGnF',
               difficulty: QuestionDifficulty.medium,
-              categories: const [
+              categories: [
                 QuestionCategory(value: 'tagPaD'),
                 QuestionCategory(value: 'wkF5'),
                 QuestionCategory(value: '#s1ZIz#')
               ],
-              answerOptions: const [],
+              answerOptions: [],
             ),
           ],
           [
@@ -161,17 +161,17 @@ void main() {
               difficulty: 'hard',
               categories: ['7D%&P2', 'TPAB', '3JB6^o'],
             ),
-            Question(
+            const Question(
               id: 'd%6*k^',
               shortDescription: '*ANk0',
               description: r'&$^@eZA3',
               difficulty: QuestionDifficulty.hard,
-              categories: const [
+              categories: [
                 QuestionCategory(value: '7D%&P2'),
                 QuestionCategory(value: 'TPAB'),
                 QuestionCategory(value: '3JB6^o')
               ],
-              answerOptions: const [],
+              answerOptions: [],
             ),
           ],
         ]),

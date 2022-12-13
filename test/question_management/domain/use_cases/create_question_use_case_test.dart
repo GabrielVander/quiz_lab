@@ -159,13 +159,13 @@ void main() {
             categories: [],
           ),
           '',
-          Question(
+          const Question(
             id: '',
             shortDescription: 'shortDescription',
             description: 'description',
-            answerOptions: const [],
+            answerOptions: [],
             difficulty: QuestionDifficulty.easy,
-            categories: const [],
+            categories: [],
           )
         ],
         [
@@ -176,13 +176,13 @@ void main() {
             categories: ['3@0lv*ip', '@1H7'],
           ),
           'LO^*8O*4',
-          Question(
+          const Question(
             id: 'LO^*8O*4',
             shortDescription: 'nkl!',
             description: 'oaK',
-            answerOptions: const [],
+            answerOptions: [],
             difficulty: QuestionDifficulty.medium,
-            categories: const [
+            categories: [
               QuestionCategory(value: '3@0lv*ip'),
               QuestionCategory(value: '@1H7')
             ],
