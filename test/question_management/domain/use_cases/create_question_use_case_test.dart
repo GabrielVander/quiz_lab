@@ -79,7 +79,7 @@ void main() {
               difficulty: 'medium',
               categories: [],
             ),
-            message: 'Unable to create question',
+            message: '8&tL6xjE',
           ),
         ],
         [
@@ -146,12 +146,12 @@ void main() {
             difficulty: 'easy',
             categories: [],
           ),
-          const Question(
+          Question(
             shortDescription: 'shortDescription',
             description: 'description',
-            answerOptions: [],
+            answerOptions: const [],
             difficulty: QuestionDifficulty.easy,
-            categories: [],
+            categories: const [],
           )
         ],
         [
@@ -161,12 +161,12 @@ void main() {
             difficulty: 'medium',
             categories: ['3@0lv*ip', '@1H7'],
           ),
-          const Question(
+          Question(
             shortDescription: 'nkl!',
             description: 'oaK',
-            answerOptions: [],
+            answerOptions: const [],
             difficulty: QuestionDifficulty.medium,
-            categories: [
+            categories: const [
               QuestionCategory(value: '3@0lv*ip'),
               QuestionCategory(value: '@1H7')
             ],

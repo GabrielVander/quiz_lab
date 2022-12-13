@@ -44,7 +44,6 @@ class QuestionView extends StatelessWidget {
 
 class _Body extends HookWidget {
   const _Body({
-    super.key,
     required this.cubit,
   });
 
@@ -170,7 +169,6 @@ class _PageTitle extends StatelessWidget {
 
 class _Form extends StatelessWidget {
   const _Form({
-    super.key,
     required this.viewModel,
     required this.onShortDescriptionChange,
     required this.onDescriptionChange,
@@ -256,7 +254,6 @@ class _Form extends StatelessWidget {
 
 class _ShortDescriptionField extends StatelessWidget {
   const _ShortDescriptionField({
-    super.key,
     required this.viewModel,
     required this.onChanged,
   });
@@ -280,7 +277,6 @@ class _ShortDescriptionField extends StatelessWidget {
 
 class _DescriptionField extends StatelessWidget {
   const _DescriptionField({
-    super.key,
     required this.viewModel,
     required this.onChange,
   });
@@ -305,7 +301,6 @@ class _DescriptionField extends StatelessWidget {
 
 class _Options extends StatelessWidget {
   const _Options({
-    super.key,
     required this.viewModel,
     required this.onAddOption,
     required this.onIsCorrect,
@@ -406,9 +401,7 @@ class _Option extends StatelessWidget {
 }
 
 class _Subtitle extends StatelessWidget {
-  const _Subtitle({
-    super.key,
-  });
+  const _Subtitle();
 
   @override
   Widget build(BuildContext context) {

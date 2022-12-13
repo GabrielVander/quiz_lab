@@ -119,17 +119,17 @@ void main() {
               difficulty: 'easy',
               categories: ['a', 'b', 'c'],
             ),
-            const Question(
+            Question(
               id: 'dtBn',
               shortDescription: 'n3Y2HS',
               description: 'c7c',
               difficulty: QuestionDifficulty.easy,
-              categories: [
+              categories: const [
                 QuestionCategory(value: 'a'),
                 QuestionCategory(value: 'b'),
                 QuestionCategory(value: 'c')
               ],
-              answerOptions: [],
+              answerOptions: const [],
             ),
           ],
           [
@@ -140,17 +140,17 @@ void main() {
               difficulty: 'medium',
               categories: ['tagPaD', 'wkF5', '#s1ZIz#'],
             ),
-            const Question(
+            Question(
               id: '!!LY',
               shortDescription: 'W7*',
               description: r'7$N8XGnF',
               difficulty: QuestionDifficulty.medium,
-              categories: [
+              categories: const [
                 QuestionCategory(value: 'tagPaD'),
                 QuestionCategory(value: 'wkF5'),
                 QuestionCategory(value: '#s1ZIz#')
               ],
-              answerOptions: [],
+              answerOptions: const [],
             ),
           ],
           [
@@ -161,17 +161,17 @@ void main() {
               difficulty: 'hard',
               categories: ['7D%&P2', 'TPAB', '3JB6^o'],
             ),
-            const Question(
+            Question(
               id: 'd%6*k^',
               shortDescription: '*ANk0',
               description: r'&$^@eZA3',
               difficulty: QuestionDifficulty.hard,
-              categories: [
+              categories: const [
                 QuestionCategory(value: '7D%&P2'),
                 QuestionCategory(value: 'TPAB'),
                 QuestionCategory(value: '3JB6^o')
               ],
-              answerOptions: [],
+              answerOptions: const [],
             ),
           ],
         ]),

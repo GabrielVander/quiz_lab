@@ -75,7 +75,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     Question question,
   ) {
     return QuestionOverviewViewModel(
-      id: question.id!,
+      id: question.id,
       shortDescription: question.shortDescription,
       categories: _categoriesToStrings(question.categories),
       difficulty: _difficultyToString(context, question.difficulty),

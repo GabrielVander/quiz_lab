@@ -5,56 +5,16 @@ import 'package:quiz_lab/features/question_management/domain/entities/question_c
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 
 void main() {
-  group('toString', () {
-    for (final testCase in [
-      const _ToStringTestCase(
-        entity: Question(
-          shortDescription: 'shortDescription',
-          description: 'description',
-          answerOptions: [],
-          difficulty: QuestionDifficulty.medium,
-          categories: [],
-        ),
-        expectedResult: 'Question{ id: null, '
-            'shortDescription: shortDescription, '
-            'description: description, answerOptions: [], '
-            'difficulty: QuestionDifficulty.medium, categories: [], }',
-      ),
-      const _ToStringTestCase(
-        entity: Question(
-          shortDescription: 'moral',
-          description: 'ornament',
-          answerOptions: [
-            AnswerOption(description: 'father', isCorrect: false)
-          ],
-          difficulty: QuestionDifficulty.easy,
-          categories: [QuestionCategory(value: 'ball')],
-        ),
-        expectedResult: 'Question{ id: null, '
-            'shortDescription: moral, '
-            'description: ornament, '
-            'answerOptions: [AnswerOption{ description: father, '
-            'isCorrect: false, }], '
-            'difficulty: QuestionDifficulty.easy, '
-            'categories: [QuestionCategory{ value: ball, }], }',
-      )
-    ]) {
-      test(testCase.expectedResult, () {
-        expect(testCase.entity.toString(), testCase.expectedResult);
-      });
-    }
-  });
-
   group('copyWith', () {
     group('shortDescription', () {
       for (final value in ['gift', 'prompt']) {
         test(value, () {
-          const entity = Question(
+          final entity = Question(
             shortDescription: 'shortDescription',
             description: 'description',
-            answerOptions: <AnswerOption>[],
+            answerOptions: const <AnswerOption>[],
             difficulty: QuestionDifficulty.easy,
-            categories: <QuestionCategory>[],
+            categories: const <QuestionCategory>[],
           );
 
           final copy = entity.copyWith(shortDescription: value);
@@ -71,12 +31,12 @@ void main() {
     group('description', () {
       for (final value in ['customer', 'aside']) {
         test(value, () {
-          const entity = Question(
+          final entity = Question(
             shortDescription: 'shortDescription',
             description: 'description',
-            answerOptions: <AnswerOption>[],
+            answerOptions: const <AnswerOption>[],
             difficulty: QuestionDifficulty.easy,
-            categories: <QuestionCategory>[],
+            categories: const <QuestionCategory>[],
           );
 
           final copy = entity.copyWith(description: value);
@@ -96,12 +56,12 @@ void main() {
         [const AnswerOption(description: 'feel', isCorrect: true)]
       ]) {
         test(value, () {
-          const entity = Question(
+          final entity = Question(
             shortDescription: 'shortDescription',
             description: 'description',
-            answerOptions: <AnswerOption>[],
+            answerOptions: const <AnswerOption>[],
             difficulty: QuestionDifficulty.easy,
-            categories: <QuestionCategory>[],
+            categories: const <QuestionCategory>[],
           );
 
           final copy = entity.copyWith(answerOptions: value);
@@ -123,12 +83,12 @@ void main() {
         QuestionDifficulty.hard,
       ]) {
         test(value, () {
-          const entity = Question(
+          final entity = Question(
             shortDescription: 'shortDescription',
             description: 'description',
-            answerOptions: <AnswerOption>[],
+            answerOptions: const <AnswerOption>[],
             difficulty: QuestionDifficulty.easy,
-            categories: <QuestionCategory>[],
+            categories: const <QuestionCategory>[],
           );
 
           final copy = entity.copyWith(difficulty: value);
@@ -148,12 +108,12 @@ void main() {
         [const QuestionCategory(value: 'dot')]
       ]) {
         test(value, () {
-          const entity = Question(
+          final entity = Question(
             shortDescription: 'shortDescription',
             description: 'description',
-            answerOptions: <AnswerOption>[],
+            answerOptions: const <AnswerOption>[],
             difficulty: QuestionDifficulty.easy,
-            categories: <QuestionCategory>[],
+            categories: const <QuestionCategory>[],
           );
 
           final copy = entity.copyWith(categories: value);
@@ -170,12 +130,12 @@ void main() {
 
   group('props', () {
     for (final entity in [
-      const Question(
+      Question(
         shortDescription: 'shortDescription',
         description: 'description',
-        answerOptions: <AnswerOption>[],
+        answerOptions: const <AnswerOption>[],
         difficulty: QuestionDifficulty.unknown,
-        categories: <QuestionCategory>[],
+        categories: const <QuestionCategory>[],
       ),
     ]) {
       test(entity.toString(), () {

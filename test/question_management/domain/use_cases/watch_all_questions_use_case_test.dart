@@ -54,41 +54,41 @@ void main() {
         const Stream<List<Question>>.empty(),
         Stream.fromIterable([
           [
-            const Question(
+            Question(
               id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
               shortDescription: 'shortDescription',
               description: 'description',
-              answerOptions: [],
+              answerOptions: const [],
               difficulty: QuestionDifficulty.hard,
-              categories: [],
+              categories: const [],
             )
           ]
         ]),
         Stream.fromIterable([
           [
-            const Question(
+            Question(
               id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
               shortDescription: 'shortDescription',
               description: 'description',
-              answerOptions: [],
+              answerOptions: const [],
               difficulty: QuestionDifficulty.hard,
-              categories: [],
+              categories: const [],
             ),
-            const Question(
+            Question(
               id: '56d6a3c9-ebd5-4572-9c86-da328b986927',
               shortDescription: 'shortDescription',
               description: 'description',
-              answerOptions: [],
+              answerOptions: const [],
               difficulty: QuestionDifficulty.hard,
-              categories: [],
+              categories: const [],
             ),
-            const Question(
+            Question(
               id: 'd377713b-dfb7-4c22-88a4-3f6d340285dc',
               shortDescription: 'shortDescription',
               description: 'description',
-              answerOptions: [],
+              answerOptions: const [],
               difficulty: QuestionDifficulty.hard,
-              categories: [],
+              categories: const [],
             ),
           ]
         ]),
