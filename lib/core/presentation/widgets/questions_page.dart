@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import '../../../generated/l10n.dart';
-import '../../themes/extensions.dart';
-import '../../utils/responsiveness_utils/breakpoint.dart';
-import '../../utils/responsiveness_utils/screen_breakpoints.dart';
-import '../manager/questions_overview/questions_overview_cubit.dart';
-import '../view_models/question_overview.dart';
-import 'page_subtitle.dart';
+import 'package:quiz_lab/core/presentation/manager/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/core/presentation/view_models/question_overview.dart';
+import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
+import 'package:quiz_lab/core/themes/extensions.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionsPage extends HookWidget {
   const QuestionsPage({

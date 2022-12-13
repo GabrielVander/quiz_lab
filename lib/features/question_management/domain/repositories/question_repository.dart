@@ -1,9 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
-
-import '../../../../core/utils/unit.dart';
-import '../entities/question.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 
 abstract class QuestionRepository {
   Future<Result<Unit, QuestionRepositoryFailure>> createSingle(

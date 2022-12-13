@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 class FirebaseDataSource {
   FirebaseDataSource({

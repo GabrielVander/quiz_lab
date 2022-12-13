@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
-
-import '../../../domain/entities/question.dart';
-import '../../../domain/entities/question_category.dart';
-import '../../../domain/entities/question_difficulty.dart';
-import '../../data_sources/models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 
 class QuestionMapper {
   Result<Question, QuestionMapperFailure> fromHiveModel(

@@ -1,13 +1,12 @@
 import 'package:okay/okay.dart';
-
-import '../../../../core/utils/unit.dart';
-import '../../domain/entities/question.dart';
-import '../../domain/repositories/question_repository.dart';
-import '../data_sources/firebase_data_source.dart';
-import '../data_sources/hive_data_source.dart';
-import '../data_sources/mappers/hive_question_model_mapper.dart';
-import '../data_sources/models/hive_question_model.dart';
-import 'mappers/question_mapper.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/mappers/hive_question_model_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_mapper.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {
   const QuestionRepositoryImpl({

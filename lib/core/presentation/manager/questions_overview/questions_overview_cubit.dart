@@ -4,15 +4,14 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../../features/question_management/domain/entities/question.dart';
-import '../../../../features/question_management/domain/entities/question_category.dart';
-import '../../../../features/question_management/domain/entities/question_difficulty.dart';
-import '../../../../features/question_management/domain/use_cases/delete_question_use_case.dart';
-import '../../../../features/question_management/domain/use_cases/update_question_use_case.dart';
-import '../../../../features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
-import '../../../common/manager.dart';
-import '../../view_models/question_overview.dart';
+import 'package:quiz_lab/core/common/manager.dart';
+import 'package:quiz_lab/core/presentation/view_models/question_overview.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
 part 'questions_overview_state.dart';
 

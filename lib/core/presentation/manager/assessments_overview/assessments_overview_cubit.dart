@@ -1,9 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-
-import '../../../common/manager.dart';
-import '../../view_models/assessment_overview.dart';
+import 'package:quiz_lab/core/common/manager.dart';
+import 'package:quiz_lab/core/presentation/view_models/assessment_overview.dart';
 
 part 'assessments_overview_state.dart';
 

@@ -1,4 +1,4 @@
-import '../repositories/question_repository.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class DeleteQuestionUseCase {
   const DeleteQuestionUseCase({

@@ -1,11 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-
-import 'core/constants.dart';
-import 'core/firebase_options.dart';
-import 'core/quiz_lab_application.dart';
-import 'features/question_management/utils/setup.dart';
+import 'package:quiz_lab/core/constants.dart';
+import 'package:quiz_lab/core/firebase_options.dart';
+import 'package:quiz_lab/core/quiz_lab_application.dart';
+import 'package:quiz_lab/features/question_management/utils/setup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -151,13 +151,3 @@ void main() {
     }
   });
 }
-
-class _ToStringTestCase {
-  const _ToStringTestCase({
-    required this.entity,
-    required this.expectedResult,
-  });
-
-  final Question entity;
-  final String expectedResult;
-}

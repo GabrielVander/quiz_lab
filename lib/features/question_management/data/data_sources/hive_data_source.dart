@@ -4,9 +4,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:okay/okay.dart';
-
-import '../../../../core/utils/unit.dart';
-import 'models/hive_question_model.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 class HiveDataSource {
   HiveDataSource({required Box<String> questionsBox})
@@ -27,6 +26,7 @@ class HiveDataSource {
 
     try {
       return Result.ok(await _putQuestionInBox(question));
+      // ignore: avoid_catching_errors
     } on HiveError catch (e) {
       return Result.err(
         HiveDataSourceFailure.libraryFailure(message: e.message),
@@ -45,6 +45,7 @@ class HiveDataSource {
 
     try {
       return Result.ok(await _deleteQuestionFromBox(question));
+      // ignore: avoid_catching_errors
     } on HiveError catch (e) {
       return Result.err(
         HiveDataSourceFailure.libraryFailure(message: e.message),
@@ -56,6 +57,7 @@ class HiveDataSource {
       watchAllQuestions() {
     try {
       return Result.ok(_getAllQuestionsFromBox());
+      // ignore: avoid_catching_errors
     } on HiveError catch (e) {
       return Result.err(
         HiveDataSourceFailure.libraryFailure(message: e.message),

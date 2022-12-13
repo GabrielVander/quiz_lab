@@ -1,12 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:okay/okay.dart';
-
-import '../../../../core/utils/unit.dart';
-import '../entities/question.dart';
-import '../entities/question_category.dart';
-import '../entities/question_difficulty.dart';
-import '../repositories/question_repository.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class CreateQuestionUseCase {
   const CreateQuestionUseCase({

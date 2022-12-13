@@ -1,5 +1,5 @@
-import '../../../domain/entities/question.dart';
-import '../models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 
 class HiveQuestionModelMapper {
   HiveQuestionModel fromQuestion(

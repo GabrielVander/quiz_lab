@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import '../../../generated/l10n.dart';
-import '../../themes/extensions.dart';
-import '../../utils/responsiveness_utils/breakpoint.dart';
-import '../../utils/responsiveness_utils/screen_breakpoints.dart';
-import '../view_models/assessment_overview.dart';
+import 'package:quiz_lab/core/presentation/view_models/assessment_overview.dart';
+import 'package:quiz_lab/core/themes/extensions.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class AssessmentOverview extends StatelessWidget {
   const AssessmentOverview({

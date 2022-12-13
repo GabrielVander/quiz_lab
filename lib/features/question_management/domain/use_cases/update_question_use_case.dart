@@ -1,5 +1,5 @@
-import '../entities/question.dart';
-import '../repositories/question_repository.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class UpdateQuestionUseCase {
   const UpdateQuestionUseCase({
