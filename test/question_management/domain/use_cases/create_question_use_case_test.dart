@@ -4,6 +4,7 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
@@ -12,12 +13,17 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 
 void main() {
-  late QuestionRepository dummyRepository;
+  late QuestionRepository mockRepository;
+  late ResourceUuidGenerator mockUuidGenerator;
   late CreateQuestionUseCase useCase;
 
   setUp(() {
-    dummyRepository = DummyQuestionRepository();
-    useCase = CreateQuestionUseCase(questionRepository: dummyRepository);
+    mockRepository = _MockQuestionRepository();
+    mockUuidGenerator = _MockResourceUuidGenerator();
+    useCase = CreateQuestionUseCase(
+      questionRepository: mockRepository,
+      uuidGenerator: mockUuidGenerator,
+    );
   });
 
   tearDown(resetMocktailState);
@@ -60,7 +66,7 @@ void main() {
 
     parameterizedTest(
       'Question repository fails',
-      ParameterizedSource.values(<List<dynamic>>[
+      ParameterizedSource.values([
         [
           const QuestionCreationInput(
             shortDescription: '',
@@ -68,6 +74,7 @@ void main() {
             difficulty: 'medium',
             categories: [],
           ),
+          '',
           QuestionRepositoryFailure.unableToCreate(
             question: _FakeQuestion(),
             message: '8&tL6xjE',
@@ -89,6 +96,7 @@ void main() {
             difficulty: 'easy',
             categories: ['category'],
           ),
+          'uuid',
           QuestionRepositoryFailure.unableToParseEntity(message: ''),
           CreateQuestionUseCaseFailure.unableToCreate(
             receivedInput: const QuestionCreationInput(
@@ -107,6 +115,7 @@ void main() {
             difficulty: 'hard',
             categories: ['y6q729L', '3^*#Z'],
           ),
+          'pvx',
           QuestionRepositoryFailure.unableToParseEntity(message: '4p&'),
           CreateQuestionUseCaseFailure.unableToCreate(
             receivedInput: const QuestionCreationInput(
@@ -121,10 +130,13 @@ void main() {
       ]),
       (values) async {
         final input = values[0] as QuestionCreationInput;
-        final repositoryFailure = values[1] as QuestionRepositoryFailure;
-        final expectedFailure = values[2] as CreateQuestionUseCaseFailure;
+        final uuid = values[1] as String;
+        final repositoryFailure = values[2] as QuestionRepositoryFailure;
+        final expectedFailure = values[3] as CreateQuestionUseCaseFailure;
 
-        when(() => dummyRepository.createSingle(any()))
+        when(() => mockUuidGenerator.generate()).thenReturn(uuid);
+
+        when(() => mockRepository.createSingle(any()))
             .thenAnswer((_) async => Result.err(repositoryFailure));
 
         final result = await useCase.execute(input);
@@ -146,7 +158,9 @@ void main() {
             difficulty: 'easy',
             categories: [],
           ),
+          '',
           Question(
+            id: '',
             shortDescription: 'shortDescription',
             description: 'description',
             answerOptions: const [],
@@ -161,7 +175,9 @@ void main() {
             difficulty: 'medium',
             categories: ['3@0lv*ip', '@1H7'],
           ),
+          'LO^*8O*4',
           Question(
+            id: 'LO^*8O*4',
             shortDescription: 'nkl!',
             description: 'oaK',
             answerOptions: const [],
@@ -175,14 +191,17 @@ void main() {
       ]),
       (values) async {
         final input = values[0] as QuestionCreationInput;
-        final expected = values[1] as Question;
+        final uuid = values[1] as String;
+        final expected = values[2] as Question;
 
-        when(() => dummyRepository.createSingle(any()))
+        when(() => mockUuidGenerator.generate()).thenReturn(uuid);
+
+        when(() => mockRepository.createSingle(any()))
             .thenAnswer((_) async => const Result.ok(unit));
 
         await useCase.execute(input);
 
-        verify(() => dummyRepository.createSingle(expected)).called(1);
+        verify(() => mockRepository.createSingle(expected)).called(1);
       },
     );
   });
@@ -194,4 +213,7 @@ class _FakeQuestion extends Fake with EquatableMixin implements Question {
   List<Object> get props => [];
 }
 
-class DummyQuestionRepository extends Mock implements QuestionRepository {}
+class _MockQuestionRepository extends Mock implements QuestionRepository {}
+
+class _MockResourceUuidGenerator extends Mock
+    implements ResourceUuidGenerator {}

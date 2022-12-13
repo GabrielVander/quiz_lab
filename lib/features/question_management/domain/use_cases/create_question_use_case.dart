@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
@@ -10,9 +11,11 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 class CreateQuestionUseCase {
   const CreateQuestionUseCase({
     required this.questionRepository,
+    required this.uuidGenerator,
   });
 
   final QuestionRepository questionRepository;
+  final ResourceUuidGenerator uuidGenerator;
 
   Future<Result<Unit, CreateQuestionUseCaseFailure>> execute(
     QuestionCreationInput input,
@@ -45,6 +48,7 @@ class CreateQuestionUseCase {
 
     return Result.ok(
       Question(
+        id: uuidGenerator.generate(),
         shortDescription: input.shortDescription,
         description: input.description,
         answerOptions: const [],
