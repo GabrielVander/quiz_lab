@@ -1,17 +1,23 @@
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/json_parser.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 class HiveDataSource {
-  HiveDataSource({required Box<String> questionsBox})
-      : _questionsBox = questionsBox;
+  HiveDataSource({
+    required Box<String> questionsBox,
+    required JsonParser<Map<String, dynamic>> jsonParser,
+  })  : _jsonParser = jsonParser,
+        _questionsBox = questionsBox;
 
   final Box<String> _questionsBox;
+  final JsonParser<Map<String, dynamic>> _jsonParser;
+
   final _questionsStreamController =
       StreamController<List<HiveQuestionModel>>();
 
@@ -29,7 +35,11 @@ class HiveDataSource {
       // ignore: avoid_catching_errors
     } on HiveError catch (e) {
       return Result.err(
-        HiveDataSourceFailure.libraryFailure(message: e.message),
+        HiveDataSourceFailure.hiveError(message: e.message),
+      );
+    } on _JsonEncodeException catch (e) {
+      return Result.err(
+        HiveDataSourceFailure.jsonEncoding(message: e.details),
       );
     }
   }
@@ -48,7 +58,7 @@ class HiveDataSource {
       // ignore: avoid_catching_errors
     } on HiveError catch (e) {
       return Result.err(
-        HiveDataSourceFailure.libraryFailure(message: e.message),
+        HiveDataSourceFailure.hiveError(message: e.message),
       );
     }
   }
@@ -60,7 +70,11 @@ class HiveDataSource {
       // ignore: avoid_catching_errors
     } on HiveError catch (e) {
       return Result.err(
-        HiveDataSourceFailure.libraryFailure(message: e.message),
+        HiveDataSourceFailure.hiveError(message: e.message),
+      );
+    } on _JsonDecodeException catch (e) {
+      return Result.err(
+        HiveDataSourceFailure.jsonDecoding(message: e.details),
       );
     }
   }
@@ -70,7 +84,7 @@ class HiveDataSource {
   ) {
     if (question.id == null || question.id == '') {
       return Result.err(
-        HiveDataSourceFailure.invalidId(message: 'Empty id is not allowed'),
+        HiveDataSourceFailure.emptyId(),
       );
     }
 
@@ -93,50 +107,94 @@ class HiveDataSource {
   }
 
   Stream<List<HiveQuestionModel>> _getAllQuestionsFromBox() {
-    _questionsBox.watch().listen((_) {
-      final questions = _questionsBox.keys
-          .map(
-            (key) => HiveQuestionModel.fromMap(
-              key as String,
-              _decodeMapFromString(_questionsBox.get(key)!),
-            ),
-          )
-          .toList();
+    _updateQuestionStream();
 
-      _questionsStreamController.add(questions);
-    });
+    _questionsBox.watch().listen((_) => _updateQuestionStream());
 
     return _questionsStreamController.stream;
   }
 
-  String _encodeMap(Map<String, dynamic> questionAsMap) =>
-      jsonEncode(questionAsMap);
+  void _updateQuestionStream() {
+    final questions = _getCurrentQuestions();
+
+    _questionsStreamController.add(questions);
+  }
+
+  List<HiveQuestionModel> _getCurrentQuestions() {
+    return _questionsBox.keys
+        .map(
+          (key) => HiveQuestionModel.fromMap(
+            key as String,
+            _decodeMapFromString(_questionsBox.get(key)!),
+          ),
+        )
+        .toList();
+  }
+
+  String _encodeMap(Map<String, dynamic> questionAsMap) {
+    return _jsonParser.encode(questionAsMap).when(
+          ok: (s) => s,
+          err: (err) => throw _JsonEncodeException(err.message),
+        );
+  }
 
   Map<String, dynamic> _decodeMapFromString(String encodedMapString) =>
-      jsonDecode(encodedMapString) as Map<String, dynamic>;
+      _jsonParser.decode(encodedMapString).when(
+            ok: (m) => m,
+            err: (err) => throw _JsonDecodeException(err.message),
+          );
+}
+
+class _JsonEncodeException implements Exception {
+  const _JsonEncodeException(this.details);
+
+  final String details;
+}
+
+class _JsonDecodeException implements Exception {
+  const _JsonDecodeException(this.details);
+
+  final String details;
 }
 
 @immutable
-abstract class HiveDataSourceFailure {
+abstract class HiveDataSourceFailure extends Equatable {
   const HiveDataSourceFailure._({required this.message});
 
-  factory HiveDataSourceFailure.libraryFailure({
+  factory HiveDataSourceFailure.hiveError({
     required String message,
   }) =>
-      HiveDataSourceLibraryFailure._(message: message);
+      _HiveLibraryFailure._(message: message);
 
-  factory HiveDataSourceFailure.invalidId({
-    required String message,
-  }) =>
-      HiveDataSourceInvalidIdFailure._(message: message);
+  factory HiveDataSourceFailure.emptyId() => const _EmptyIdFailure._();
+
+  factory HiveDataSourceFailure.jsonEncoding({required String message}) =>
+      _JsonEncodingFailure._(message: message);
+
+  factory HiveDataSourceFailure.jsonDecoding({required String message}) =>
+      _JsonDecodingFailure._(message: message);
 
   final String message;
+
+  @override
+  List<Object> get props => [message];
+
+  @override
+  bool get stringify => true;
 }
 
-class HiveDataSourceLibraryFailure extends HiveDataSourceFailure {
-  const HiveDataSourceLibraryFailure._({required super.message}) : super._();
+class _HiveLibraryFailure extends HiveDataSourceFailure {
+  const _HiveLibraryFailure._({required super.message}) : super._();
 }
 
-class HiveDataSourceInvalidIdFailure extends HiveDataSourceFailure {
-  const HiveDataSourceInvalidIdFailure._({required super.message}) : super._();
+class _EmptyIdFailure extends HiveDataSourceFailure {
+  const _EmptyIdFailure._() : super._(message: 'Empty id is not allowed');
+}
+
+class _JsonEncodingFailure extends HiveDataSourceFailure {
+  const _JsonEncodingFailure._({required super.message}) : super._();
+}
+
+class _JsonDecodingFailure extends HiveDataSourceFailure {
+  const _JsonDecodingFailure._({required super.message}) : super._();
 }

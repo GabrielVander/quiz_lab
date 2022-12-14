@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 import 'package:quiz_lab/core/common/manager_factory.dart';
@@ -7,6 +9,7 @@ import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navi
 import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/core/utils/json_parser.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
@@ -35,7 +38,13 @@ void quizDiSetup(DependencyInjection di) {
 
         return QuestionRepositoryImpl(
           firebaseDataSource: dataSourceResult.unwrap(),
-          hiveDataSource: HiveDataSource(questionsBox: Hive.box('questions')),
+          hiveDataSource: HiveDataSource(
+            questionsBox: Hive.box('questions'),
+            jsonParser: JsonParser<Map<String, dynamic>>(
+              encoder: jsonEncode,
+              decoder: jsonDecode,
+            ),
+          ),
           questionMapper: QuestionMapper(),
           hiveQuestionModelMapper: HiveQuestionModelMapper(),
         );

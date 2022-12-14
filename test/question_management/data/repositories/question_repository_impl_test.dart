@@ -74,7 +74,7 @@ void main() {
           'Hive data source failure',
           ParameterizedSource.values([
             [
-              HiveDataSourceFailure.libraryFailure(message: ''),
+              HiveDataSourceFailure.hiveError(message: ''),
               (Question question) => QuestionRepositoryFailure.unableToCreate(
                     question: question,
                     message: '',
@@ -111,15 +111,15 @@ void main() {
           'Hive data source failure',
           ParameterizedSource.values([
             [
-              HiveDataSourceFailure.libraryFailure(message: ''),
+              HiveDataSourceFailure.hiveError(message: ''),
               QuestionRepositoryFailure.unableToWatchAll(message: ''),
             ],
             [
-              HiveDataSourceFailure.libraryFailure(message: '%ae'),
+              HiveDataSourceFailure.hiveError(message: '%ae'),
               QuestionRepositoryFailure.unableToWatchAll(message: '%ae'),
             ],
           ]), (values) {
-        final failure = values[0] as HiveDataSourceLibraryFailure;
+        final failure = values[0] as HiveDataSourceFailure;
         final expectedFailure = values[1] as QuestionRepositoryFailure;
 
         when(() => dummyHiveDataSource.watchAllQuestions())
@@ -255,12 +255,12 @@ void main() {
         'Hive data source failure',
         ParameterizedSource.values([
           [
-            HiveDataSourceFailure.libraryFailure(message: ''),
+            HiveDataSourceFailure.hiveError(message: ''),
             (Question question) =>
                 QuestionRepositoryFailure.unableToUpdate(question: question),
           ],
           [
-            HiveDataSourceFailure.libraryFailure(message: '2xWvVjk'),
+            HiveDataSourceFailure.hiveError(message: '2xWvVjk'),
             (Question question) =>
                 QuestionRepositoryFailure.unableToUpdate(question: question),
           ],
@@ -344,27 +344,27 @@ void main() {
         ParameterizedSource.values([
           [
             '',
-            HiveDataSourceFailure.invalidId(message: ''),
+            HiveDataSourceFailure.emptyId(),
             QuestionRepositoryFailure.unableToDelete(id: '')
           ],
           [
             'UT8^',
-            HiveDataSourceFailure.invalidId(message: ''),
+            HiveDataSourceFailure.emptyId(),
             QuestionRepositoryFailure.unableToDelete(id: 'UT8^')
           ],
           [
             'UT8^',
-            HiveDataSourceFailure.invalidId(message: 'hpWnuo@'),
+            HiveDataSourceFailure.emptyId(),
             QuestionRepositoryFailure.unableToDelete(id: 'UT8^')
           ],
           [
             'jn&@',
-            HiveDataSourceFailure.libraryFailure(message: ''),
+            HiveDataSourceFailure.hiveError(message: ''),
             QuestionRepositoryFailure.unableToDelete(id: 'jn&@')
           ],
           [
             'jn&@',
-            HiveDataSourceFailure.libraryFailure(message: 'WOwT%'),
+            HiveDataSourceFailure.hiveError(message: 'WOwT%'),
             QuestionRepositoryFailure.unableToDelete(id: 'jn&@')
           ],
         ]),

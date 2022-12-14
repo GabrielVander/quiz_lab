@@ -1,437 +1,657 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
+import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/json_parser.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 void main() {
-  late Box<String> questionsBox;
+  late Box<String> mockQuestionsBox;
+  late JsonParser<Map<String, dynamic>> mockJsonParser;
   late HiveDataSource dataSource;
 
   setUp(() {
-    questionsBox = _HiveBoxMock();
-    dataSource = HiveDataSource(questionsBox: questionsBox);
+    mockQuestionsBox = _MockHiveBox();
+    mockJsonParser = _MockJsonParser();
+    dataSource = HiveDataSource(
+      questionsBox: mockQuestionsBox,
+      jsonParser: mockJsonParser,
+    );
   });
 
-  tearDown(mocktail.resetMocktailState);
+  tearDown(resetMocktailState);
 
   group('saveQuestion', () {
-    group('should return success', () {
-      for (final testCase in <List<dynamic>>[
-        [
-          const HiveQuestionModel(
-            id: '#y0C^5W*',
-            shortDescription: '',
-            description: '',
-            difficulty: '',
-            categories: [],
-          ),
-          '{'
-              '"shortDescription":"",'
-              '"description":"",'
-              '"difficulty":"",'
-              '"categories":[]'
-              '}',
-        ],
-        [
-          const HiveQuestionModel(
-            id: '@!5qIE',
-            shortDescription: 'ezVdUXg',
-            description: '*4h3B6',
-            difficulty: '5a#3*xeB',
-            categories: ['f09@q', 'f0C*^6', r'^$Wj3he'],
-          ),
-          '{'
-              '"shortDescription":"ezVdUXg",'
-              '"description":"*4h3B6",'
-              '"difficulty":"5a#3*xeB",'
-              r'"categories":["f09@q","f0C*^6","^$Wj3he"]'
-              '}',
-        ],
-      ]) {
-        final question = testCase[0] as HiveQuestionModel;
-        final expectedJson = testCase[1] as String;
+    group(
+      'err flow',
+      () {
+        parameterizedTest(
+          'should return failure when json encoding fails',
+          ParameterizedSource.values([
+            [
+              EncodeFailure.exception(message: ''),
+              HiveDataSourceFailure.jsonEncoding(message: 'Unable to encode: '),
+            ],
+            [
+              EncodeFailure.exception(message: 'Hu%C%!8'),
+              HiveDataSourceFailure.jsonEncoding(
+                message: 'Unable to encode: Hu%C%!8',
+              ),
+            ],
+          ]),
+          (values) async {
+            final parserFailure = values[0] as EncodeFailure;
+            final expectedFailure = values[1] as HiveDataSourceFailure;
 
-        test(question, () async {
-          expect(question.id, isNotNull);
+            when(() => mockJsonParser.encode(any()))
+                .thenReturn(Result.err(parserFailure));
 
-          mocktail
-              .when(
-                () => questionsBox.put(
-                  mocktail.any<String>(),
-                  mocktail.any<String>(),
-                ),
-              )
-              .thenAnswer((_) async {});
+            final result =
+                await dataSource.saveQuestion(_FakeHiveQuestionModel());
 
-          final result = await dataSource.saveQuestion(question);
+            expect(result.isErr, isTrue);
+            expect(result.err, expectedFailure);
+          },
+        );
 
-          expect(result.isOk, isTrue);
-          mocktail
-              .verify(() => questionsBox.put(question.id, expectedJson))
-              .called(1);
-        });
-      }
-    });
+        parameterizedTest(
+          'should return failure if invalid id is given',
+          ParameterizedSource.values([
+            [
+              const HiveQuestionModel(
+                id: '',
+                shortDescription: null,
+                description: null,
+                difficulty: null,
+                categories: null,
+              ),
+              HiveDataSourceFailure.emptyId(),
+            ],
+            [
+              const HiveQuestionModel(
+                id: null,
+                shortDescription: null,
+                description: null,
+                difficulty: null,
+                categories: null,
+              ),
+              HiveDataSourceFailure.emptyId(),
+            ],
+          ]),
+          (values) async {
+            final question = values[0] as HiveQuestionModel;
+            final expectedFailure = values[1] as HiveDataSourceFailure;
 
-    group('should return LibraryFailure if HiveError occurs', () {
-      for (final testCase in <List<dynamic>>[
-        [
-          HiveError(''),
-          '',
-        ],
-        [
-          HiveError('1b@'),
-          '1b@',
-        ],
-      ]) {
-        final hiveError = testCase[0] as HiveError;
-        final expectedFailureMessage = testCase[1] as String;
+            final result = await dataSource.saveQuestion(question);
 
-        test(hiveError, () async {
-          mocktail
-              .when(
-                () => questionsBox.put(
-                  mocktail.any<String>(),
-                  mocktail.any<String>(),
-                ),
-              )
-              .thenThrow(hiveError);
+            expect(result.isErr, isTrue);
 
-          final result = await dataSource.saveQuestion(
-            const HiveQuestionModel(
-              id: 'id',
-              shortDescription: 'shortDescription',
-              description: 'description',
-              difficulty: 'difficulty',
-              categories: [],
-            ),
-          );
+            expect(result.err, expectedFailure);
+          },
+        );
 
-          expect(result.isErr, isTrue);
+        parameterizedTest(
+          'should return expected failure if HiveError occurs',
+          ParameterizedSource.values([
+            [
+              HiveError(''),
+              HiveDataSourceFailure.hiveError(message: ''),
+            ],
+            [
+              HiveError('1b@'),
+              HiveDataSourceFailure.hiveError(message: '1b@'),
+            ],
+          ]),
+          (values) async {
+            final hiveError = values[0] as HiveError;
+            final expectedFailure = values[1] as HiveDataSourceFailure;
 
-          final failure = result.expectErr('Expected error')
-              as HiveDataSourceLibraryFailure;
-          expect(failure.message, equals(expectedFailureMessage));
-        });
-      }
-    });
+            const dummyEncodedJsonString = 'X1Tt';
+            final fakeModel = _FakeHiveQuestionModel();
 
-    group('should return InvalidKeyFailure if invalid id is given', () {
-      for (final testCase in <List<dynamic>>[
-        [
-          const HiveQuestionModel(
-            id: '',
-            shortDescription: 'shortDescription',
-            description: 'description',
-            difficulty: 'difficulty',
-            categories: [],
-          ),
-          'Empty id is not allowed',
-        ],
-        [
-          const HiveQuestionModel(
-            id: null,
-            shortDescription: '*ryCy#cc',
-            description: 'Opt6ghyA',
-            difficulty: '!2&P!^',
-            categories: ['#NiQ%*', '1@', '2@'],
-          ),
-          'Empty id is not allowed',
-        ],
-      ]) {
-        final question = testCase[0] as HiveQuestionModel;
-        final expectedFailureMessage = testCase[1] as String;
+            when(() => mockJsonParser.encode(any()))
+                .thenReturn(const Result.ok(dummyEncodedJsonString));
 
-        test(expectedFailureMessage, () async {
-          final result = await dataSource.saveQuestion(question);
+            when(
+              () => mockQuestionsBox.put(fakeModel.id, dummyEncodedJsonString),
+            ).thenThrow(hiveError);
 
-          expect(result.isErr, isTrue);
+            final result = await dataSource.saveQuestion(fakeModel);
 
-          final failure = result.expectErr('Expected error')
-              as HiveDataSourceInvalidIdFailure;
-          expect(failure.message, equals(expectedFailureMessage));
-        });
-      }
-    });
-  });
-
-  group('deleteQuestion', () {
-    group('should return InvalidKeyFailure if invalid id is given', () {
-      for (final question in <HiveQuestionModel>[
-        const HiveQuestionModel(
-          id: '',
-          shortDescription: 'shortDescription',
-          description: 'description',
-          difficulty: 'difficulty',
-          categories: [],
-        ),
-        const HiveQuestionModel(
-          id: null,
-          shortDescription: '*ryCy#cc',
-          description: 'Opt6ghyA',
-          difficulty: '!2&P!^',
-          categories: ['#NiQ%*', '1@', '2@'],
-        ),
-      ]) {
-        const expectedFailureMessage = 'Empty id is not allowed';
-
-        test(expectedFailureMessage, () async {
-          final result = await dataSource.deleteQuestion(question);
-
-          expect(result.isErr, isTrue);
-
-          final failure = result.expectErr('Expected error')
-              as HiveDataSourceInvalidIdFailure;
-          expect(failure.message, equals(expectedFailureMessage));
-        });
-      }
-    });
-
-    group('should return LibraryFailure if HiveError occurs', () {
-      for (final testCase in <List<dynamic>>[
-        [
-          HiveError(''),
-          '',
-        ],
-        [
-          HiveError('1b@'),
-          '1b@',
-        ],
-      ]) {
-        final hiveError = testCase[0] as HiveError;
-        final expectedFailureMessage = testCase[1] as String;
-
-        test(hiveError, () async {
-          mocktail
-              .when(
-                () => questionsBox.delete(
-                  mocktail.any<String>(),
-                ),
-              )
-              .thenThrow(hiveError);
-
-          final result = await dataSource.deleteQuestion(
-            const HiveQuestionModel(
-              id: 'id',
-              shortDescription: 'shortDescription',
-              description: 'description',
-              difficulty: 'difficulty',
-              categories: [],
-            ),
-          );
-
-          expect(result.isErr, isTrue);
-
-          final failure = result.err!;
-          expect(failure, isA<HiveDataSourceLibraryFailure>());
-
-          expect(
-            (failure as HiveDataSourceLibraryFailure).message,
-            equals(expectedFailureMessage),
-          );
-        });
-      }
-    });
+            expect(result.isErr, isTrue);
+            expect(result.err, expectedFailure);
+          },
+        );
+      },
+    );
 
     group(
-      'should return success',
+      'ok flow',
       () {
-        for (final expectedId in <String>[
-          '#y0C^5W*',
-          '@!5qIE',
-        ]) {
-          test(expectedId, () async {
-            expect(expectedId, isNotNull);
-            expect(expectedId, isNotEmpty);
+        parameterizedTest(
+          'should return success',
+          ParameterizedSource.value([
+            const HiveQuestionModel(
+              id: '#y0C^5W*',
+              shortDescription: '',
+              description: '',
+              difficulty: '',
+              categories: [],
+            ),
+            const HiveQuestionModel(
+              id: '@!5qIE',
+              shortDescription: 'ezVdUXg',
+              description: '*4h3B6',
+              difficulty: '5a#3*xeB',
+              categories: ['f09@q', 'f0C*^6', r'^$Wj3he'],
+            ),
+          ]),
+          (values) async {
+            final model = values[0] as HiveQuestionModel;
 
-            final dummyQuestion = _QuestionModelMock(id: expectedId);
+            const dummyJsonEncodedString = 'Qld';
 
-            mocktail
-                .when(
-                  () => questionsBox.delete(mocktail.any<String>()),
-                )
+            expect(model.id, isNotNull);
+            expect(model.id, isNotEmpty);
+
+            when(() => mockJsonParser.encode(model.toMap()))
+                .thenReturn(const Result.ok(dummyJsonEncodedString));
+
+            when(() => mockQuestionsBox.put(model.id, dummyJsonEncodedString))
                 .thenAnswer((_) async {});
 
-            final result = await dataSource.deleteQuestion(dummyQuestion);
+            final result = await dataSource.saveQuestion(model);
 
             expect(result.isOk, isTrue);
-            mocktail.verify(() => questionsBox.delete(expectedId)).called(1);
-          });
-        }
+            verify(() => mockQuestionsBox.put(model.id, dummyJsonEncodedString))
+                .called(1);
+          },
+        );
       },
     );
   });
 
-  group('getAllQuestions', () {
-    group('Err flow', () {
+  group('deleteQuestion', () {
+    group('err flow', () {
       parameterizedTest(
-        'should return LibraryFailure if HiveError occurs',
+        'should return failure if empty id is given',
+        ParameterizedSource.value([
+          const HiveQuestionModel(
+            id: '',
+            shortDescription: null,
+            description: null,
+            difficulty: null,
+            categories: null,
+          ),
+          const HiveQuestionModel(
+            id: null,
+            shortDescription: null,
+            description: null,
+            difficulty: null,
+            categories: null,
+          ),
+        ]),
+        (values) async {
+          final model = values[0] as HiveQuestionModel;
+
+          when(() => mockQuestionsBox.delete(model.id))
+              .thenAnswer((_) async {});
+
+          final result = await dataSource.deleteQuestion(model);
+
+          expect(result.isErr, isTrue);
+          expect(result.err, HiveDataSourceFailure.emptyId());
+        },
+      );
+
+      parameterizedTest(
+        'should return failure if HiveError occurs',
         ParameterizedSource.values([
           [
             HiveError(''),
-            '',
+            HiveDataSourceFailure.hiveError(message: ''),
           ],
           [
-            HiveError('1b@'),
-            '1b@',
-          ],
-        ]),
-        (values) {
-          final hiveError = values[0] as HiveError;
-          final expectedFailureMessage = values[1] as String;
-
-          mocktail.when(() => questionsBox.watch()).thenThrow(hiveError);
-
-          final result = dataSource.watchAllQuestions();
-
-          expect(result.isErr, isTrue);
-
-          final failure = result.err!;
-
-          expect(failure, isA<HiveDataSourceLibraryFailure>());
-          expect(failure.message, equals(expectedFailureMessage));
-        },
-      );
-    });
-
-    group('Ok flow', () {
-      parameterizedTest(
-        'should return expected questions',
-        ParameterizedSource.values([
-          [
-            <BoxEvent>[
-              BoxEvent('someDeletedKey', null, true),
-              BoxEvent('someOtherDeletedKey', null, true),
-              BoxEvent('evenAnotherDeletedKey', null, true),
-            ],
-            <List<String>>[[], [], []],
-            <List<HiveQuestionModel>>[[], [], []],
-          ],
-          [
-            <BoxEvent>[
-              BoxEvent(
-                'someKey',
-                '{'
-                    '"shortDescription":"",'
-                    '"description":"",'
-                    '"difficulty":"",'
-                    '"categories":[]'
-                    '}',
-                false,
-              ),
-              BoxEvent('someDeletedKey', null, true),
-              BoxEvent(
-                'anotherKey',
-                '{'
-                    '"shortDescription":"F40jWP%",'
-                    '"description":"#y5shHtX",'
-                    '"difficulty":"ry@@E",'
-                    '"categories":["%84!#y","uhx%x","15#"]'
-                    '}',
-                false,
-              ),
-            ],
-            <List<String>>[
-              ['someKey'],
-              ['someKey'],
-              ['someKey', 'anotherKey'],
-            ],
-            <List<HiveQuestionModel>>[
-              [
-                const HiveQuestionModel(
-                  id: 'someKey',
-                  shortDescription: '',
-                  description: '',
-                  difficulty: '',
-                  categories: [],
-                )
-              ],
-              [
-                const HiveQuestionModel(
-                  id: 'someKey',
-                  shortDescription: '',
-                  description: '',
-                  difficulty: '',
-                  categories: [],
-                )
-              ],
-              [
-                const HiveQuestionModel(
-                  id: 'someKey',
-                  shortDescription: '',
-                  description: '',
-                  difficulty: '',
-                  categories: [],
-                ),
-                const HiveQuestionModel(
-                  id: 'anotherKey',
-                  shortDescription: 'F40jWP%',
-                  description: '#y5shHtX',
-                  difficulty: 'ry@@E',
-                  categories: ['%84!#y', 'uhx%x', '15#'],
-                )
-              ],
-            ],
+            HiveError('@bD8KAz'),
+            HiveDataSourceFailure.hiveError(message: '@bD8KAz'),
           ],
         ]),
         (values) async {
-          final boxEvents = values[0] as List<BoxEvent>;
-          final keysToEmit = values[1] as List<List<String>>;
-          final expectedEmissions = values[2] as List<List<HiveQuestionModel>>;
+          final hiveError = values[0] as HiveError;
+          final expectedFailure = values[1] as HiveDataSourceFailure;
 
-          mocktail.when(() => questionsBox.keys).thenAnswer((_) {
-            final keys = keysToEmit.removeAt(0);
+          final fakeModel = _FakeHiveQuestionModel();
 
-            for (final k in keys) {
-              mocktail.when(() => questionsBox.get(k)).thenReturn(
-                    boxEvents.firstWhere((e) => e.key == k).value as String?,
-                  );
-            }
+          when(() => mockQuestionsBox.delete(fakeModel.id))
+              .thenThrow(hiveError);
 
-            return keys;
-          });
+          final result = await dataSource.deleteQuestion(fakeModel);
 
-          mocktail
-              .when(() => questionsBox.watch())
-              .thenAnswer((_) => Stream.fromIterable(boxEvents));
+          expect(result.isErr, isTrue);
+          expect(result.err, expectedFailure);
+        },
+      );
+    });
 
-          final result = dataSource.watchAllQuestions();
+    group('ok flow', () {
+      parameterizedTest(
+        'should return success',
+        ParameterizedSource.value([
+          '#y0C^5W*',
+          '@!5qIE',
+        ]),
+        (values) async {
+          final id = values[0] as String;
+
+          expect(id, isNotEmpty);
+
+          final dummyModel = HiveQuestionModel(
+            id: id,
+            shortDescription: null,
+            description: null,
+            difficulty: null,
+            categories: null,
+          );
+
+          when(() => mockQuestionsBox.delete(id)).thenAnswer((_) async {});
+
+          final result = await dataSource.deleteQuestion(dummyModel);
 
           expect(result.isOk, isTrue);
-
-          await expectLater(result.ok, emitsInAnyOrder(expectedEmissions));
+          verify(() => mockQuestionsBox.delete(id)).called(1);
         },
-        // skip: true,
       );
     });
   });
+
+  group(
+    'getAllQuestions',
+    () {
+      group('err flow', () {
+        group('first load failure', () {
+          parameterizedTest(
+            'should return failure if HiveError occurs when fetching keys on '
+            'first load',
+            ParameterizedSource.values([
+              [
+                HiveError(''),
+                HiveDataSourceFailure.hiveError(message: ''),
+              ],
+              [
+                HiveError('AesqhAfa'),
+                HiveDataSourceFailure.hiveError(message: 'AesqhAfa'),
+              ],
+            ]),
+            (values) {
+              final hiveError = values[0] as HiveError;
+              final expectedFailure = values[1] as HiveDataSourceFailure;
+
+              when(() => mockQuestionsBox.keys).thenThrow(hiveError);
+
+              final result = dataSource.watchAllQuestions();
+
+              expect(result.isErr, isTrue);
+              expect(result.err, expectedFailure);
+            },
+          );
+
+          parameterizedTest(
+            'should return failure if HiveError occurs when fetching value on '
+            'first load',
+            ParameterizedSource.values([
+              [
+                HiveError(''),
+                HiveDataSourceFailure.hiveError(message: ''),
+              ],
+              [
+                HiveError('1b@'),
+                HiveDataSourceFailure.hiveError(message: '1b@'),
+              ],
+            ]),
+            (values) {
+              final hiveError = values[0] as HiveError;
+              final expectedFailure = values[1] as HiveDataSourceFailure;
+
+              const dummySingleKey = 'mNzd5ew';
+
+              when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
+              when(() => mockQuestionsBox.get(dummySingleKey))
+                  .thenThrow(hiveError);
+
+              final result = dataSource.watchAllQuestions();
+
+              expect(result.isErr, isTrue);
+              expect(result.err, expectedFailure);
+            },
+          );
+
+          parameterizedTest(
+            'should return failure if json parsing fails during first load',
+            ParameterizedSource.values([
+              [
+                DecodeFailure.exception(message: ''),
+                HiveDataSourceFailure.jsonDecoding(
+                  message: 'Unable to decode: ',
+                ),
+              ],
+              [
+                DecodeFailure.exception(message: 'kcdd*k6%'),
+                HiveDataSourceFailure.jsonDecoding(
+                  message: 'Unable to decode: kcdd*k6%',
+                ),
+              ],
+            ]),
+            (values) {
+              final decodeFailure = values[0] as DecodeFailure;
+              final expectedFailure = values[1] as HiveDataSourceFailure;
+
+              const dummySingleKey = 'mNzd5ew';
+              const dummyJsonEncodedString = 'Aq1oZ';
+
+              when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
+
+              when(() => mockQuestionsBox.get(dummySingleKey))
+                  .thenReturn(dummyJsonEncodedString);
+
+              when(() => mockJsonParser.decode(dummyJsonEncodedString))
+                  .thenReturn(Result.err(decodeFailure));
+
+              final result = dataSource.watchAllQuestions();
+
+              expect(result.isErr, isTrue);
+              expect(result.err, expectedFailure);
+            },
+          );
+
+          parameterizedTest(
+            'should return failure if HiveError occurs when watching box',
+            ParameterizedSource.values([
+              [
+                HiveError(''),
+                HiveDataSourceFailure.hiveError(message: ''),
+              ],
+              [
+                HiveError('1b@'),
+                HiveDataSourceFailure.hiveError(message: '1b@'),
+              ],
+            ]),
+            (values) {
+              final hiveError = values[0] as HiveError;
+              final expectedFailure = values[1] as HiveDataSourceFailure;
+
+              const dummySingleKey = 'mNzd5ew';
+              const dummyJsonEncodedString = 'Aq1oZ';
+              const dummyJsonDecodedMap = <String, dynamic>{};
+
+              when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
+
+              when(() => mockJsonParser.decode(dummyJsonEncodedString))
+                  .thenReturn(const Result.ok(dummyJsonDecodedMap));
+
+              when(() => mockQuestionsBox.get(dummySingleKey))
+                  .thenReturn(dummyJsonEncodedString);
+
+              when(() => mockQuestionsBox.watch()).thenThrow(hiveError);
+
+              final result = dataSource.watchAllQuestions();
+
+              expect(result.isErr, isTrue);
+              expect(result.err, expectedFailure);
+            },
+          );
+        });
+
+        group('watch failure', () {
+          parameterizedTest(
+            'should return failure if HiveError occurs on watch',
+            ParameterizedSource.values([
+              [
+                HiveError(''),
+                HiveDataSourceFailure.hiveError(message: ''),
+              ],
+              [
+                HiveError('N&mu^s6'),
+                HiveDataSourceFailure.hiveError(message: 'N&mu^s6'),
+              ],
+            ]),
+            (values) {
+              final hiveError = values[0] as HiveError;
+              final expectedFailure = values[1] as HiveDataSourceFailure;
+
+              const dummyJsonEncodedString = 'Vhf5PGK';
+              const dummyJsonDecodedMap = <String, dynamic>{};
+              const dummySingleKey = '8TO#8C';
+
+              when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
+              when(() => mockQuestionsBox.get(dummySingleKey))
+                  .thenReturn(dummyJsonEncodedString);
+              when(() => mockJsonParser.decode(dummyJsonEncodedString))
+                  .thenReturn(const Result.ok(dummyJsonDecodedMap));
+              when(() => mockQuestionsBox.watch()).thenThrow(hiveError);
+
+              final result = dataSource.watchAllQuestions();
+
+              expect(result.isErr, isTrue);
+              expect(result.err, expectedFailure);
+            },
+          );
+        });
+      });
+
+      group('ok flow', () {
+        parameterizedTest(
+          'should return expected questions',
+          ParameterizedSource.values([
+            [
+              <BoxEvent>[
+                BoxEvent('someDeletedKey', null, true),
+                BoxEvent('someOtherDeletedKey', null, true),
+                BoxEvent('evenAnotherDeletedKey', null, true),
+              ],
+              <List<String>>[[], [], [], []],
+              <List<HiveQuestionModel>>[[], [], [], []],
+            ],
+            [
+              <BoxEvent>[
+                BoxEvent('someKey', '59VkA', false),
+                BoxEvent('someDeletedKey', null, true),
+                BoxEvent('anotherKey', '7*oj', false),
+              ],
+              <List<String>>[
+                [],
+                ['someKey'],
+                ['someKey'],
+                ['someKey', 'anotherKey']
+              ],
+              <List<HiveQuestionModel>>[
+                [],
+                [
+                  const HiveQuestionModel(
+                    id: 'someKey',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  )
+                ],
+                [
+                  const HiveQuestionModel(
+                    id: 'someKey',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  )
+                ],
+                [
+                  const HiveQuestionModel(
+                    id: 'someKey',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  ),
+                  const HiveQuestionModel(
+                    id: 'anotherKey',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  )
+                ],
+              ],
+            ],
+            [
+              <BoxEvent>[
+                BoxEvent('Rqh9r', 'z0uB', false),
+                BoxEvent(r'$9xvH', null, true),
+                BoxEvent('0Mth40', '7*oj', false),
+              ],
+              <List<String>>[
+                ['lke46'],
+                ['lke46', 'Rqh9r'],
+                ['lke46', 'Rqh9r'],
+                ['lke46', 'Rqh9r', '0Mth40']
+              ],
+              <List<HiveQuestionModel>>[
+                [
+                  const HiveQuestionModel(
+                    id: 'lke46',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  ),
+                ],
+                [
+                  const HiveQuestionModel(
+                    id: 'lke46',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  ),
+                  const HiveQuestionModel(
+                    id: 'Rqh9r',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  )
+                ],
+                [
+                  const HiveQuestionModel(
+                    id: 'lke46',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  ),
+                  const HiveQuestionModel(
+                    id: 'Rqh9r',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  )
+                ],
+                [
+                  const HiveQuestionModel(
+                    id: 'lke46',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  ),
+                  const HiveQuestionModel(
+                    id: 'Rqh9r',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  ),
+                  const HiveQuestionModel(
+                    id: '0Mth40',
+                    shortDescription: '',
+                    description: '',
+                    difficulty: '',
+                    categories: [],
+                  )
+                ],
+              ],
+            ],
+          ]),
+          (values) async {
+            final boxEvents = values[0] as List<BoxEvent>;
+            final keysToEmit = values[1] as List<List<String>>;
+            final expectedEmissions =
+                values[2] as List<List<HiveQuestionModel>>;
+
+            when(() => mockQuestionsBox.keys).thenAnswer((_) {
+              final keys = keysToEmit.removeAt(0);
+
+              for (final k in keys) {
+                final matchingBoxEvent = boxEvents.firstWhere(
+                  (e) => e.key == k,
+                  orElse: _FakeBoxEvent.new,
+                );
+
+                final jsonEncodedString = matchingBoxEvent.value;
+
+                when(() => mockQuestionsBox.get(k))
+                    .thenReturn(jsonEncodedString as String);
+
+                when(() => mockJsonParser.decode(jsonEncodedString))
+                    .thenReturn(const Result.ok({}));
+              }
+
+              return keys;
+            });
+
+            when(() => mockQuestionsBox.watch())
+                .thenAnswer((_) => Stream.fromIterable(boxEvents));
+
+            final result = dataSource.watchAllQuestions();
+
+            expect(result.isOk, isTrue);
+
+            await expectLater(result.ok, emitsInAnyOrder(expectedEmissions));
+          },
+          // skip: true,
+        );
+      });
+    },
+  );
 }
 
-class _HiveBoxMock extends mocktail.Mock implements Box<String> {}
-
-class _QuestionModelMock extends mocktail.Mock implements HiveQuestionModel {
-  _QuestionModelMock({
-    required this.id,
-  });
+class _FakeHiveQuestionModel extends Fake implements HiveQuestionModel {
+  @override
+  final String id = 'oBO5v';
 
   @override
-  final String id;
-
-  @override
-  final String shortDescription = r'#U$*Z';
-
-  @override
-  final String description = '#k0hi';
-
-  @override
-  final String difficulty = 'Tbp';
-
-  @override
-  final List<String> categories = [
-    '1@',
-    '2@',
-    '3@',
-  ];
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'shortDescription': 'shortDescription',
+        'description': 'description',
+        'difficulty': 'difficulty',
+        'categories': ['category1', 'category2'],
+      };
 }
+
+@immutable
+class _FakeBoxEvent extends Fake implements BoxEvent {
+  @override
+  final String value = 'p8Wv';
+
+  @override
+  // ignore: hash_and_equals
+  bool operator ==(dynamic other) => true;
+}
+
+class _MockHiveBox extends Mock implements Box<String> {}
+
+class _MockJsonParser extends Mock
+    implements JsonParser<Map<String, dynamic>> {}

@@ -70,7 +70,7 @@ class _EncodeExceptionFailure extends EncodeFailure {
 
 class _DecodeExceptionFailure extends DecodeFailure {
   const _DecodeExceptionFailure._({required this.exceptionMessage})
-      : super._(message: 'Unable to encode: $exceptionMessage');
+      : super._(message: 'Unable to decode: $exceptionMessage');
 
   final String exceptionMessage;
 }
