@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/mappers/hive_question_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
@@ -14,7 +13,6 @@ import 'package:quiz_lab/features/question_management/domain/entities/question.d
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 void main() {
-  late FirebaseDataSource dummyFirestoreDataSource;
   late HiveDataSource dummyHiveDataSource;
   late QuestionMapper dummyQuestionMapper;
   late HiveQuestionModelMapper dummyHiveQuestionModelMapper;
@@ -23,13 +21,11 @@ void main() {
   setUp(() {
     registerFallbackValue(_FakeQuestionModel());
 
-    dummyFirestoreDataSource = _MockFirebaseDataSource();
     dummyHiveDataSource = _MockHiveDataSource();
     dummyQuestionMapper = _MockQuestionMapper();
     dummyHiveQuestionModelMapper = _MockHiveQuestionModelMapper();
 
     repository = QuestionRepositoryImpl(
-      firebaseDataSource: dummyFirestoreDataSource,
       hiveDataSource: dummyHiveDataSource,
       questionMapper: dummyQuestionMapper,
       hiveQuestionModelMapper: dummyHiveQuestionModelMapper,
@@ -255,22 +251,27 @@ void main() {
         'Hive data source failure',
         ParameterizedSource.values([
           [
+            '',
             HiveDataSourceFailure.hiveError(message: ''),
             (Question question) =>
-                QuestionRepositoryFailure.unableToUpdate(question: question),
+                QuestionRepositoryFailure.unableToUpdate(id: '', details: ''),
           ],
           [
+            r'V$KkL',
             HiveDataSourceFailure.hiveError(message: '2xWvVjk'),
-            (Question question) =>
-                QuestionRepositoryFailure.unableToUpdate(question: question),
+            (Question question) => QuestionRepositoryFailure.unableToUpdate(
+                  id: r'V$KkL',
+                  details: '2xWvVjk',
+                ),
           ],
         ]),
         (values) async {
-          final dataSourceFailure = values[0] as HiveDataSourceFailure;
-          final expectedRepositoryFailureBuilder = values[1]
+          final id = values[0] as String;
+          final dataSourceFailure = values[1] as HiveDataSourceFailure;
+          final expectedRepositoryFailureBuilder = values[2]
               as QuestionRepositoryFailure Function(Question question);
 
-          final fakeEntity = _FakeQuestion();
+          final fakeEntity = _FakeQuestion.id(id);
           final fakeModel = _FakeQuestionModel();
 
           when(() => dummyHiveQuestionModelMapper.fromQuestion(fakeEntity))
@@ -386,8 +387,6 @@ void main() {
   });
 }
 
-class _MockFirebaseDataSource extends Mock implements FirebaseDataSource {}
-
 class _MockHiveDataSource extends Mock implements HiveDataSource {}
 
 class _MockQuestionMapper extends Mock implements QuestionMapper {}
@@ -398,6 +397,15 @@ class _MockHiveQuestionModelMapper extends Mock
 class _FakeQuestionModel extends Fake implements HiveQuestionModel {}
 
 class _FakeQuestion extends Fake with EquatableMixin implements Question {
+  factory _FakeQuestion() => _FakeQuestion._(id: 'F3w5L');
+
+  factory _FakeQuestion.id(String id) => _FakeQuestion._(id: id);
+
+  _FakeQuestion._({required this.id});
+
+  @override
+  final String id;
+
   @override
   List<Object> get props => [];
 }

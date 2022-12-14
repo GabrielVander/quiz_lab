@@ -39,9 +39,10 @@ abstract class QuestionRepositoryFailure extends Equatable {
       UnableToWatchAllQuestions._(message: message);
 
   factory QuestionRepositoryFailure.unableToUpdate({
-    required Question question,
+    required String id,
+    required String details,
   }) =>
-      UnableToUpdateQuestion._(question: question);
+      UnableToUpdateQuestion._(id: id, details: details);
 
   factory QuestionRepositoryFailure.unableToDelete({
     required String id,
@@ -82,13 +83,15 @@ class UnableToWatchAllQuestions extends QuestionRepositoryFailure {
 
 @immutable
 class UnableToUpdateQuestion extends QuestionRepositoryFailure {
-  const UnableToUpdateQuestion._({required this.question})
-      : super._(message: 'Unable to create question');
+  const UnableToUpdateQuestion._({required this.id, required String details})
+      : super._(
+          message: 'Unable to update question with id $id: $details',
+        );
 
-  final Question question;
+  final String id;
 
   @override
-  List<Object> get props => super.props..addAll([question]);
+  List<Object> get props => super.props..addAll([id]);
 }
 
 @immutable

@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,51 +16,107 @@ void main() {
   late UpdateQuestionUseCase useCase;
 
   setUp(() {
-    dummyRepository = MockQuestionRepository();
+    dummyRepository = _MockQuestionRepository();
     useCase = UpdateQuestionUseCase(questionRepository: dummyRepository);
   });
 
   tearDown(resetMocktailState);
 
-  parameterizedTest(
-    'Should delegate to repository',
-    ParameterizedSource.value([
-      const Question(
-        id: '',
-        shortDescription: '',
-        description: '',
-        categories: [],
-        difficulty: QuestionDifficulty.unknown,
-        answerOptions: [],
-      ),
-      const Question(
-        id: 'a019cc50-db0b-42e2-895a-ac5a37a79faa',
-        shortDescription: 'hunger',
-        description: 'Nuptias ire, tanquam superbus hippotoxota.',
-        categories: [
-          QuestionCategory(value: 'sail'),
-          QuestionCategory(value: 'pen'),
-          QuestionCategory(value: 'station'),
+  group('err flow', () {
+    parameterizedTest(
+      'should fail if repository fails',
+      ParameterizedSource.values([
+        [
+          _FakeQuestion.id(''),
+          QuestionRepositoryFailure.unableToUpdate(
+            id: '',
+            details: '',
+          ),
+          UpdateQuestionUseCaseFailure.repositoryFailure(
+            'Unable to update question with id : ',
+          ),
         ],
-        difficulty: QuestionDifficulty.hard,
-        answerOptions: [
-          AnswerOption(description: 'fort charles ', isCorrect: false),
-          AnswerOption(description: 'yardarm ', isCorrect: true),
-          AnswerOption(description: 'fortune ', isCorrect: false),
+        [
+          _FakeQuestion.id('&RV'),
+          QuestionRepositoryFailure.unableToUpdate(
+            id: '&RV',
+            details: 'eg3381',
+          ),
+          UpdateQuestionUseCaseFailure.repositoryFailure(
+            'Unable to update question with id &RV: eg3381',
+          ),
         ],
-      )
-    ]),
-    (values) async {
-      final input = values[0] as Question;
+      ]),
+      (values) async {
+        final question = values[0] as Question;
+        final repoFailure = values[1] as QuestionRepositoryFailure;
+        final expectedFailure = values[2] as UpdateQuestionUseCaseFailure;
 
-      when(() => dummyRepository.updateSingle(input))
-          .thenAnswer((_) async => const Result.ok(unit));
+        when(() => dummyRepository.updateSingle(question))
+            .thenAnswer((_) async => Result.err(repoFailure));
 
-      await useCase.execute(input);
+        final result = await useCase.execute(question);
 
-      verify(() => dummyRepository.updateSingle(input)).called(1);
-    },
-  );
+        expect(result.isErr, isTrue);
+        expect(result.err, expectedFailure);
+      },
+    );
+  });
+
+  group('ok flow', () {
+    parameterizedTest(
+      'should return ok',
+      ParameterizedSource.value([
+        const Question(
+          id: '',
+          shortDescription: '',
+          description: '',
+          categories: [],
+          difficulty: QuestionDifficulty.unknown,
+          answerOptions: [],
+        ),
+        const Question(
+          id: 'a019cc50-db0b-42e2-895a-ac5a37a79faa',
+          shortDescription: 'hunger',
+          description: 'Nuptias ire, tanquam superbus hippotoxota.',
+          categories: [
+            QuestionCategory(value: 'sail'),
+            QuestionCategory(value: 'pen'),
+            QuestionCategory(value: 'station'),
+          ],
+          difficulty: QuestionDifficulty.hard,
+          answerOptions: [
+            AnswerOption(description: 'fort charles ', isCorrect: false),
+            AnswerOption(description: 'yardarm ', isCorrect: true),
+            AnswerOption(description: 'fortune ', isCorrect: false),
+          ],
+        )
+      ]),
+      (values) async {
+        final input = values[0] as Question;
+
+        when(() => dummyRepository.updateSingle(input))
+            .thenAnswer((_) async => const Result.ok(unit));
+
+        final result = await useCase.execute(input);
+
+        expect(result.isOk, isTrue);
+        expect(result.ok, unit);
+      },
+    );
+  });
 }
 
-class MockQuestionRepository extends Mock implements QuestionRepository {}
+class _MockQuestionRepository extends Mock implements QuestionRepository {}
+
+class _FakeQuestion extends Fake with EquatableMixin implements Question {
+  factory _FakeQuestion.id(String id) => _FakeQuestion._(id: id);
+
+  _FakeQuestion._({required this.id});
+
+  @override
+  final String id;
+
+  @override
+  List<Object> get props => [id];
+}

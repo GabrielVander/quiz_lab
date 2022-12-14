@@ -1,6 +1,5 @@
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/mappers/hive_question_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
@@ -10,16 +9,13 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 
 class QuestionRepositoryImpl implements QuestionRepository {
   const QuestionRepositoryImpl({
-    required FirebaseDataSource firebaseDataSource,
     required HiveDataSource hiveDataSource,
     required QuestionMapper questionMapper,
     required HiveQuestionModelMapper hiveQuestionModelMapper,
   })  : _hiveDataSource = hiveDataSource,
-        _firebaseDataSource = firebaseDataSource,
         _questionMapper = questionMapper,
         _hiveQuestionModelMapper = hiveQuestionModelMapper;
 
-  final FirebaseDataSource _firebaseDataSource;
   final HiveDataSource _hiveDataSource;
   final QuestionMapper _questionMapper;
   final HiveQuestionModelMapper _hiveQuestionModelMapper;
@@ -67,7 +63,10 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
     if (updateResult.isErr) {
       return Result.err(
-        QuestionRepositoryFailure.unableToUpdate(question: question),
+        QuestionRepositoryFailure.unableToUpdate(
+          id: question.id,
+          details: updateResult.err!.message,
+        ),
       );
     }
 

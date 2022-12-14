@@ -37,7 +37,6 @@ void quizDiSetup(DependencyInjection di) {
         }
 
         return QuestionRepositoryImpl(
-          firebaseDataSource: dataSourceResult.unwrap(),
           hiveDataSource: HiveDataSource(
             questionsBox: Hive.box('questions'),
             jsonParser: JsonParser<Map<String, dynamic>>(
