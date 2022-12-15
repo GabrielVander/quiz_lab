@@ -38,6 +38,9 @@ class MessageLookup extends MessageLookupByLibrary {
             'other': 'Desconhecido',
           })}";
 
+  static String m5(failureReason) =>
+      "Problemas ao salvar questão: ${failureReason}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "addOptionLabel":
@@ -68,6 +71,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "questionDifficultyLabel":
             MessageLookupByLibrary.simpleMessage("Dificuldade"),
         "questionDifficultyValue": m4,
+        "questionSavedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Questão salva"),
+        "questionSavingFailure": m5,
         "questionShortDescriptionLabel":
             MessageLookupByLibrary.simpleMessage("Descrição Breve"),
         "questionsSectionDisplayName":

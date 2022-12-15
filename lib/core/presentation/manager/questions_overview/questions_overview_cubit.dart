@@ -63,8 +63,15 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     if (viewModel.shortDescription.isNotEmpty) {
       emit(QuestionsOverviewLoading());
 
-      await updateQuestionUseCase.execute(
+      final updateResult = await updateQuestionUseCase.execute(
         _overviewViewModelToEntity(viewModel),
+      );
+
+      updateResult.when(
+        ok: (question) {},
+        err: (err) {
+          emit(QuestionsOverviewState.error(message: err.message));
+        },
       );
     }
   }

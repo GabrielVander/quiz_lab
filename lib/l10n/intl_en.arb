@@ -123,5 +123,18 @@
   "mustBeSetMessage": "Must Be Set",
   "@mustBeSetMessage": {
     "description": "Generic message for required fields"
+  },
+  "questionSavedSuccessfully": "Question Saved",
+  "@questionCreated": {
+    "description": "Snack bar message for when a question is successfully saved"
+  },
+  "questionSavingFailure": "Unable to save question: {failureReason}",
+  "@questionSavingFailure": {
+    "description": "Snack bar message for when a failure occurs during question saving",
+    "placeholders": {
+      "failureReason": {
+        "type": "String"
+      }
+    }
   }
 }

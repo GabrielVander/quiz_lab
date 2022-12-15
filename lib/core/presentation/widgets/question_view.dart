@@ -71,8 +71,10 @@ class _Body extends HookWidget {
                   children: [
                     Text(
                       state is Success
-                          ? S.of(context).noConnection
-                          : (state as CreationError).message,
+                          ? S.of(context).questionSavedSuccessfully
+                          : S.of(context).questionSavingFailure(
+                                (state as CreationError).message,
+                              ),
                       style: const TextStyle(
                         color: Colors.white,
                       ),
