@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/core/themes/extensions.dart';
+import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuizLabNavBar extends HookWidget {
