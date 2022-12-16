@@ -78,27 +78,23 @@ class QuestionMapper {
   }
 
   QuestionDifficulty _parseDifficultyFromString(String s) {
-    const possibleDifficulties = [
-      'easy',
-      'medium',
-      'hard',
-    ];
+    const possibleDifficulties = <String, QuestionDifficulty>{
+      'easy': QuestionDifficulty.easy,
+      'medium': QuestionDifficulty.medium,
+      'hard': QuestionDifficulty.hard,
+      'unknown': QuestionDifficulty.unknown,
+    };
 
-    switch (s) {
-      case 'easy':
-        return QuestionDifficulty.easy;
-      case 'medium':
-        return QuestionDifficulty.medium;
-      case 'hard':
-        return QuestionDifficulty.hard;
-      default:
-        throw _FailureException(
-          failure: QuestionMapperFailure.unableToParseDifficulty(
-            receivedValue: s,
-            possibleValues: possibleDifficulties,
-          ),
-        );
+    if (!possibleDifficulties.containsKey(s)) {
+      throw _FailureException(
+        failure: QuestionMapperFailure.unableToParseDifficulty(
+          receivedValue: s,
+          possibleValues: possibleDifficulties.keys.toList(),
+        ),
+      );
     }
+
+    return possibleDifficulties[s]!;
   }
 }
 

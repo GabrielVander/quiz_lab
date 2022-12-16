@@ -40,10 +40,6 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
             ),
           );
         });
-
-        emit(
-          QuestionsOverviewState.listUpdated(questions: const []),
-        );
       },
       err: (err) {
         emit(QuestionsOverviewState.error(message: err.message));
@@ -114,6 +110,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
   }
 
   Question _overviewViewModelToEntity(QuestionOverviewViewModel viewModel) =>
+      // TODO: Mappers for the win!
       Question(
         id: viewModel.id,
         shortDescription: viewModel.shortDescription,
@@ -125,11 +122,11 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
 
   QuestionDifficulty _difficultyStringToEntity(String difficulty) {
     switch (difficulty) {
-      case 'Easy':
+      case 'easy':
         return QuestionDifficulty.easy;
-      case 'Medium':
+      case 'medium':
         return QuestionDifficulty.medium;
-      case 'Hard':
+      case 'hard':
         return QuestionDifficulty.hard;
     }
 

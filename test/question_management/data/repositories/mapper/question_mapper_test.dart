@@ -78,7 +78,7 @@ void main() {
             ),
             QuestionMapperFailure.unableToParseDifficulty(
               receivedValue: 'xYaH',
-              possibleValues: const ['easy', 'medium', 'hard'],
+              possibleValues: const ['easy', 'medium', 'hard', 'unknown'],
             ),
           ],
           [
@@ -91,7 +91,7 @@ void main() {
             ),
             QuestionMapperFailure.unableToParseDifficulty(
               receivedValue: 'lb6',
-              possibleValues: const ['easy', 'medium', 'hard'],
+              possibleValues: const ['easy', 'medium', 'hard', 'unknown'],
             ),
           ],
         ]),
@@ -166,6 +166,27 @@ void main() {
               shortDescription: '*ANk0',
               description: r'&$^@eZA3',
               difficulty: QuestionDifficulty.hard,
+              categories: [
+                QuestionCategory(value: '7D%&P2'),
+                QuestionCategory(value: 'TPAB'),
+                QuestionCategory(value: '3JB6^o')
+              ],
+              answerOptions: [],
+            ),
+          ],
+          [
+            const HiveQuestionModel(
+              id: 'd%6*k^',
+              shortDescription: '*ANk0',
+              description: r'&$^@eZA3',
+              difficulty: 'unknown',
+              categories: ['7D%&P2', 'TPAB', '3JB6^o'],
+            ),
+            const Question(
+              id: 'd%6*k^',
+              shortDescription: '*ANk0',
+              description: r'&$^@eZA3',
+              difficulty: QuestionDifficulty.unknown,
               categories: [
                 QuestionCategory(value: '7D%&P2'),
                 QuestionCategory(value: 'TPAB'),
