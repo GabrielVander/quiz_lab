@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/common/manager_factory.dart';
 import 'package:quiz_lab/core/presentation/widgets/main_scaffold.dart';
-import 'package:quiz_lab/core/presentation/widgets/question_view.dart';
 import 'package:quiz_lab/core/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/question_view.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuizLabApplication extends StatelessWidget {

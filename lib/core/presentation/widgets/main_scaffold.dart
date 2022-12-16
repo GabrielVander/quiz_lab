@@ -5,15 +5,15 @@ import 'package:quiz_lab/core/common/manager_factory.dart';
 import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
-import 'package:quiz_lab/core/presentation/manager/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/core/presentation/widgets/assessments_page.dart';
 import 'package:quiz_lab/core/presentation/widgets/network_checker.dart';
-import 'package:quiz_lab/core/presentation/widgets/questions_page.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_app_bar.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_nav_bar.dart';
 import 'package:quiz_lab/core/presentation/widgets/results_page.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/questions_page.dart';
 
 class MainScaffold extends StatelessWidget {
   const MainScaffold({
