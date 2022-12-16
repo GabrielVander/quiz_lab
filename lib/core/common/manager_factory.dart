@@ -1,12 +1,11 @@
 import 'package:okay/okay.dart';
-
-import '../dependency_injection/dependency_injection.dart';
-import '../presentation/manager/assessments_overview/assessments_overview_cubit.dart';
-import '../presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
-import '../presentation/manager/network/network_cubit.dart';
-import '../presentation/manager/question_creation/question_creation_cubit.dart';
-import '../presentation/manager/questions_overview/questions_overview_cubit.dart';
-import 'manager.dart';
+import 'package:quiz_lab/core/common/manager.dart';
+import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/questions_overview/questions_overview_cubit.dart';
 
 class ManagerFactory extends Manager {
   ManagerFactory({

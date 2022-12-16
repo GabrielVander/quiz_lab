@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-
-import '../../common/manager_factory.dart';
-import '../../utils/responsiveness_utils/breakpoint.dart';
-import '../../utils/responsiveness_utils/screen_breakpoints.dart';
-import '../manager/assessments_overview/assessments_overview_cubit.dart';
-import '../manager/bottom_navigation/bottom_navigation_cubit.dart';
-import '../manager/network/network_cubit.dart';
-import '../manager/questions_overview/questions_overview_cubit.dart';
-import 'assessments_page.dart';
-import 'network_checker.dart';
-import 'questions_page.dart';
-import 'quiz_lab_app_bar.dart';
-import 'quiz_lab_nav_bar.dart';
-import 'results_page.dart';
+import 'package:quiz_lab/core/common/manager_factory.dart';
+import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/core/presentation/widgets/assessments_page.dart';
+import 'package:quiz_lab/core/presentation/widgets/network_checker.dart';
+import 'package:quiz_lab/core/presentation/widgets/questions_page.dart';
+import 'package:quiz_lab/core/presentation/widgets/quiz_lab_app_bar.dart';
+import 'package:quiz_lab/core/presentation/widgets/quiz_lab_nav_bar.dart';
+import 'package:quiz_lab/core/presentation/widgets/results_page.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 
 class MainScaffold extends StatelessWidget {
   const MainScaffold({

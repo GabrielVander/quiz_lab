@@ -4,8 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../../common/manager.dart';
+import 'package:quiz_lab/core/common/manager.dart';
 
 part 'network_state.dart';
 

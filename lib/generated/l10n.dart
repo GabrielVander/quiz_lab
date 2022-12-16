@@ -1,7 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -310,6 +309,27 @@ class S {
       name: 'mustBeSetMessage',
       desc: 'Generic message for required fields',
       args: [],
+    );
+  }
+
+  /// `Question Saved`
+  String get questionSavedSuccessfully {
+    return Intl.message(
+      'Question Saved',
+      name: 'questionSavedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to save question: {failureReason}`
+  String questionSavingFailure(String failureReason) {
+    return Intl.message(
+      'Unable to save question: $failureReason',
+      name: 'questionSavingFailure',
+      desc:
+          'Snack bar message for when a failure occurs during question saving',
+      args: [failureReason],
     );
   }
 }

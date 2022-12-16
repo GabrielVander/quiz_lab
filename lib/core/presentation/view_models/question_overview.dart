@@ -8,9 +8,7 @@ class QuestionListViewModel extends Equatable {
   final List<QuestionOverviewViewModel> questions;
 
   @override
-  List<Object?> get props => [
-        questions,
-      ];
+  List<Object?> get props => [questions];
 }
 
 class QuestionOverviewViewModel extends Equatable {

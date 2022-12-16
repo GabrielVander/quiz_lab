@@ -24,5 +24,7 @@
   "optionInputLabel": "Opção",
   "isOptionCorrectLabel": "Correta",
   "addOptionLabel": "Adicionar Opção",
-  "mustBeSetMessage": "Deve Estar Preenchido"
+  "mustBeSetMessage": "Deve Estar Preenchido",
+  "questionSavedSuccessfully": "Questão salva",
+  "questionSavingFailure": "Problemas ao salvar questão: {failureReason}"
 }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../../generated/l10n.dart';
-import 'fork_lift_message.dart';
-import 'page_subtitle.dart';
+import 'package:quiz_lab/core/presentation/widgets/fork_lift_message.dart';
+import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class ResultsPage extends StatelessWidget {
   const ResultsPage({super.key});

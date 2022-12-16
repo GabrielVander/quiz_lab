@@ -1,19 +1,27 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
-import '../../../core/common/manager_factory.dart';
-import '../../../core/dependency_injection/dependency_injection.dart';
-import '../../../core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
-import '../../../core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
-import '../../../core/presentation/manager/network/network_cubit.dart';
-import '../../../core/presentation/manager/question_creation/question_creation_cubit.dart';
-import '../../../core/presentation/manager/questions_overview/questions_overview_cubit.dart';
-import '../data/data_sources/firebase_data_source.dart';
-import '../data/repositories/question_repository_firebase_impl.dart';
-import '../domain/repositories/question_repository.dart';
-import '../domain/use_cases/create_question_use_case.dart';
-import '../domain/use_cases/delete_question_use_case.dart';
-import '../domain/use_cases/fetch_questions_use_case.dart';
-import '../domain/use_cases/update_question_use_case.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive/hive.dart';
+import 'package:quiz_lab/core/common/manager_factory.dart';
+import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/core/utils/json_parser.dart';
+import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/mappers/hive_question_model_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
+import 'package:uuid/uuid.dart';
 
 void quizDiSetup(DependencyInjection di) {
   di
@@ -28,8 +36,16 @@ void quizDiSetup(DependencyInjection di) {
           return null;
         }
 
-        return QuestionRepositoryFirebaseImpl(
-          dataSource: dataSourceResult.unwrap(),
+        return QuestionRepositoryImpl(
+          hiveDataSource: HiveDataSource(
+            questionsBox: Hive.box('questions'),
+            jsonParser: JsonParser<Map<String, dynamic>>(
+              encoder: jsonEncode,
+              decoder: jsonDecode,
+            ),
+          ),
+          questionMapper: QuestionMapper(),
+          hiveQuestionModelMapper: HiveQuestionModelMapper(),
         );
       },
     )
@@ -69,6 +85,7 @@ void quizDiSetup(DependencyInjection di) {
 
         return CreateQuestionUseCase(
           questionRepository: repositoryResult.unwrap(),
+          uuidGenerator: const ResourceUuidGenerator(uuid: Uuid()),
         );
       },
     )

@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-
-import '../../../generated/l10n.dart';
-import '../../common/manager_factory.dart';
-import '../../utils/responsiveness_utils/breakpoint.dart';
-import '../../utils/responsiveness_utils/screen_breakpoints.dart';
-import '../manager/question_creation/question_creation_cubit.dart';
-import '../view_models/question_creation.dart';
+import 'package:quiz_lab/core/common/manager_factory.dart';
+import 'package:quiz_lab/core/presentation/manager/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/core/presentation/view_models/question_creation.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionView extends StatelessWidget {
   const QuestionView({
@@ -32,7 +31,7 @@ class QuestionView extends StatelessWidget {
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(10),
-          child: Body(
+          child: _Body(
             cubit:
                 questionCreationCubitResult.unwrap() as QuestionCreationCubit,
           ),
@@ -42,9 +41,8 @@ class QuestionView extends StatelessWidget {
   }
 }
 
-class Body extends HookWidget {
-  const Body({
-    super.key,
+class _Body extends HookWidget {
+  const _Body({
     required this.cubit,
   });
 
@@ -58,20 +56,59 @@ class Body extends HookWidget {
       cubit.update();
     }
 
+    if (state is Success || state is CreationError) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showMaterialBanner(
+          MaterialBanner(
+            content: DecoratedBox(
+              decoration: BoxDecoration(
+                color: state is Success ? Colors.green : Colors.red,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      state is Success
+                          ? S.of(context).questionSavedSuccessfully
+                          : S.of(context).questionSavingFailure(
+                                (state as CreationError).message,
+                              ),
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              Container(),
+            ],
+          ),
+        );
+      });
+
+      cubit.update();
+    }
+
     if (state is QuestionCreationDisplayUpdate) {
+      // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+
       return Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
-              PageTitle(),
+              _PageTitle(),
             ],
           ),
           const SizedBox(
             height: 20,
           ),
           Expanded(
-            child: Form(
+            child: _Form(
               viewModel: state.viewModel,
               onShortDescriptionChange: (value) =>
                   cubit.onShortDescriptionUpdate(context, value),
@@ -86,14 +123,18 @@ class Body extends HookWidget {
       );
     }
 
+    if (state is Loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return Container();
   }
 }
 
-class PageTitle extends StatelessWidget {
-  const PageTitle({
-    super.key,
-  });
+class _PageTitle extends StatelessWidget {
+  const _PageTitle();
 
   @override
   Widget build(BuildContext context) {
@@ -127,9 +168,8 @@ class PageTitle extends StatelessWidget {
   }
 }
 
-class Form extends StatelessWidget {
-  const Form({
-    super.key,
+class _Form extends StatelessWidget {
+  const _Form({
     required this.viewModel,
     required this.onShortDescriptionChange,
     required this.onDescriptionChange,
@@ -156,7 +196,7 @@ class Form extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: ShortDescriptionField(
+                  child: _ShortDescriptionField(
                     viewModel: viewModel.shortDescription,
                     onChanged: onShortDescriptionChange,
                   ),
@@ -169,7 +209,7 @@ class Form extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: DescriptionField(
+                  child: _DescriptionField(
                     viewModel: viewModel.description,
                     onChange: onDescriptionChange,
                   ),
@@ -182,7 +222,7 @@ class Form extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Options(
+                  child: _Options(
                     viewModel: viewModel.options,
                     onAddOption: onAddOption,
                     onIsCorrect: onIsCorrect,
@@ -213,9 +253,8 @@ class Form extends StatelessWidget {
   }
 }
 
-class ShortDescriptionField extends StatelessWidget {
-  const ShortDescriptionField({
-    super.key,
+class _ShortDescriptionField extends StatelessWidget {
+  const _ShortDescriptionField({
     required this.viewModel,
     required this.onChanged,
   });
@@ -237,9 +276,8 @@ class ShortDescriptionField extends StatelessWidget {
   }
 }
 
-class DescriptionField extends StatelessWidget {
-  const DescriptionField({
-    super.key,
+class _DescriptionField extends StatelessWidget {
+  const _DescriptionField({
     required this.viewModel,
     required this.onChange,
   });
@@ -262,9 +300,8 @@ class DescriptionField extends StatelessWidget {
   }
 }
 
-class Options extends StatelessWidget {
-  const Options({
-    super.key,
+class _Options extends StatelessWidget {
+  const _Options({
     required this.viewModel,
     required this.onAddOption,
     required this.onIsCorrect,
@@ -292,7 +329,7 @@ class Options extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  Subtitle(),
+                  _Subtitle(),
                 ],
               ),
             ),
@@ -304,7 +341,7 @@ class Options extends StatelessWidget {
                         .map(
                           (e) => Padding(
                             padding: const EdgeInsets.only(bottom: 5),
-                            child: Option(
+                            child: _Option(
                               key: e.id,
                               viewModel: e,
                               onIsCorrect: (bool _) => onIsCorrect(e),
@@ -327,8 +364,8 @@ class Options extends StatelessWidget {
   }
 }
 
-class Option extends StatelessWidget {
-  const Option({
+class _Option extends StatelessWidget {
+  const _Option({
     super.key,
     required this.viewModel,
     required this.onIsCorrect,
@@ -364,10 +401,8 @@ class Option extends StatelessWidget {
   }
 }
 
-class Subtitle extends StatelessWidget {
-  const Subtitle({
-    super.key,
-  });
+class _Subtitle extends StatelessWidget {
+  const _Subtitle();
 
   @override
   Widget build(BuildContext context) {

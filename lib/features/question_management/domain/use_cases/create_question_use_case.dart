@@ -1,59 +1,85 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-
-import '../entities/answer_option.dart';
-import '../entities/question.dart';
-import '../entities/question_category.dart';
-import '../entities/question_difficulty.dart';
-import '../repositories/question_repository.dart';
+import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class CreateQuestionUseCase {
   const CreateQuestionUseCase({
     required this.questionRepository,
+    required this.uuidGenerator,
   });
 
   final QuestionRepository questionRepository;
+  final ResourceUuidGenerator uuidGenerator;
 
-  Future<void> execute(QuestionCreationInput input) async {
-    return questionRepository.createSingle(_inputToQuestionEntity(input));
-  }
+  Future<Result<Unit, CreateQuestionUseCaseFailure>> execute(
+    QuestionCreationInput input,
+  ) async {
+    final inputParsingResult = _parseInputToEntity(input);
 
-  Question _inputToQuestionEntity(QuestionCreationInput input) {
-    return Question(
-      shortDescription: _shortDescriptionFromInput(input),
-      description: _descriptionFromInput(input),
-      answerOptions: _answerOptionsFromInput(input),
-      difficulty: _difficultyFromInput(input),
-      categories: _categoriesFromInput(input),
+    if (inputParsingResult.isErr) {
+      return Result.err(inputParsingResult.err!);
+    }
+
+    final creationResult =
+        await questionRepository.createSingle(inputParsingResult.ok!);
+
+    return creationResult.mapErr(
+      (error) => CreateQuestionUseCaseFailure.unableToCreate(
+        receivedInput: input,
+        message: error.message,
+      ),
     );
   }
 
-  String _shortDescriptionFromInput(QuestionCreationInput input) =>
-      input.shortDescription;
+  Result<Question, _InputParseFailure> _parseInputToEntity(
+    QuestionCreationInput input,
+  ) {
+    final difficultyParseResult = _difficultyFromInput(input);
 
-  String _descriptionFromInput(QuestionCreationInput input) =>
-      input.description;
+    if (difficultyParseResult.isErr) {
+      return Result.err(difficultyParseResult.err!);
+    }
 
-  List<AnswerOption> _answerOptionsFromInput(QuestionCreationInput input) => [];
-
-  QuestionDifficulty _difficultyFromInput(QuestionCreationInput input) {
-    final mappings = {
-      QuestionDifficultyInput.easy: QuestionDifficulty.easy,
-      QuestionDifficultyInput.medium: QuestionDifficulty.medium,
-      QuestionDifficultyInput.hard: QuestionDifficulty.hard,
-    };
-
-    return mappings[input.difficulty] ?? QuestionDifficulty.unknown;
+    return Result.ok(
+      Question(
+        id: uuidGenerator.generate(),
+        shortDescription: input.shortDescription,
+        description: input.description,
+        answerOptions: const [],
+        difficulty: difficultyParseResult.ok!,
+        categories:
+            input.categories.map((e) => QuestionCategory(value: e)).toList(),
+      ),
+    );
   }
 
-  List<QuestionCategory> _categoriesFromInput(QuestionCreationInput input) {
-    return input.categories.values
-        .map((e) => QuestionCategory(value: e))
-        .toList();
+  Result<QuestionDifficulty, _InputParseFailure> _difficultyFromInput(
+    QuestionCreationInput input,
+  ) {
+    final mappings = {
+      'easy': QuestionDifficulty.easy,
+      'medium': QuestionDifficulty.medium,
+      'hard': QuestionDifficulty.hard,
+    };
+
+    if (mappings.containsKey(input.difficulty)) {
+      return Result.ok(mappings[input.difficulty]!);
+    } else {
+      return Result.err(
+        _InputParseFailure.difficulty(receivedValue: input.difficulty),
+      );
+    }
   }
 }
 
 @immutable
-class QuestionCreationInput {
+class QuestionCreationInput extends Equatable {
   const QuestionCreationInput({
     required this.shortDescription,
     required this.description,
@@ -63,34 +89,79 @@ class QuestionCreationInput {
 
   final String shortDescription;
   final String description;
-  final QuestionDifficultyInput difficulty;
-  final QuestionCategoryInput categories;
+  final String difficulty;
+  final List<String> categories;
 
   @override
-  String toString() {
-    return 'QuestionCreationInput{ '
-        'shortDescription: $shortDescription, '
-        'description: $description, '
-        'difficulty: $difficulty, '
-        'categories: $categories, '
-        '}';
-  }
+  List<Object> get props => [
+        shortDescription,
+        description,
+        difficulty,
+        categories,
+      ];
+
+  @override
+  bool get stringify => true;
 }
 
-enum QuestionDifficultyInput { easy, medium, hard }
-
 @immutable
-class QuestionCategoryInput {
-  const QuestionCategoryInput({
-    required this.values,
-  });
+abstract class CreateQuestionUseCaseFailure extends Equatable {
+  const CreateQuestionUseCaseFailure._({required this.message});
 
-  final List<String> values;
+  factory CreateQuestionUseCaseFailure.unableToCreate({
+    required QuestionCreationInput receivedInput,
+    required String message,
+  }) =>
+      UnableToCreateQuestion._(receivedInput: receivedInput, message: message);
+
+  factory CreateQuestionUseCaseFailure.unableToParseDifficulty({
+    required String value,
+  }) =>
+      _InputParseFailure.difficulty(receivedValue: value);
+
+  final String message;
 
   @override
-  String toString() {
-    return 'CategoriesInput{ '
-        'values: $values, '
-        '}';
-  }
+  List<Object> get props => [message];
+
+  @override
+  bool get stringify => true;
+}
+
+@immutable
+class UnableToCreateQuestion extends CreateQuestionUseCaseFailure {
+  const UnableToCreateQuestion._({
+    required this.receivedInput,
+    required super.message,
+  }) : super._();
+
+  final QuestionCreationInput receivedInput;
+
+  @override
+  List<Object> get props => super.props..addAll([receivedInput]);
+}
+
+@immutable
+abstract class _InputParseFailure extends CreateQuestionUseCaseFailure {
+  const _InputParseFailure._({
+    required this.fieldName,
+    required this.receivedValue,
+  }) : super._(message: 'Unable to parse $fieldName from $receivedValue');
+
+  factory _InputParseFailure.difficulty({
+    required String receivedValue,
+  }) =>
+      DifficultyParseFailure._(receivedValue: receivedValue);
+
+  final String fieldName;
+  final String receivedValue;
+
+  @override
+  List<Object> get props => super.props..addAll([fieldName, receivedValue]);
+}
+
+@immutable
+class DifficultyParseFailure extends _InputParseFailure {
+  const DifficultyParseFailure._({required super.receivedValue})
+      : super._(fieldName: 'difficulty');
 }

@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
-
-import '../utils/unit.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 
 abstract class DependencyInjection {
   void addSetup(DiSetup setup);

@@ -1,8 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:okay/okay.dart';
-
-import '../../utils/unit.dart';
-import '../dependency_injection.dart';
+import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 
 class DependencyInjectionGetItImpl implements DependencyInjection {
   final GetIt _getItInstance = GetIt.instance;
@@ -29,7 +28,7 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
         _getItInstance.registerSingleton<T>(instance);
       }
 
-      return ok(Unit());
+      return ok(unit);
       // ignore: avoid_catching_errors
     } on ArgumentError catch (_) {
       return err(KeyAlreadyRegisteredFailure(key: T));
@@ -47,7 +46,7 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
         _getItInstance.registerLazySingleton<T>(() => instance);
       }
 
-      return ok(Unit());
+      return ok(unit);
       // ignore: avoid_catching_errors
     } on ArgumentError catch (_) {
       return err(KeyAlreadyRegisteredFailure(key: T));
@@ -65,7 +64,7 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
         _getItInstance.registerFactory<T>(() => instance);
       }
 
-      return ok(Unit());
+      return ok(unit);
       // ignore: avoid_catching_errors
     } on ArgumentError catch (_) {
       return err(KeyAlreadyRegisteredFailure(key: T));
@@ -76,7 +75,7 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
   Future<Result<Unit, DiFailure>> unregisterAll() async {
     await _getItInstance.reset();
 
-    return ok(Unit());
+    return ok(unit);
   }
 
   @override

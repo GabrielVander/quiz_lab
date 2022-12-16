@@ -1,11 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../features/question_management/domain/use_cases/create_question_use_case.dart';
-import '../../../../generated/l10n.dart';
-import '../../../common/manager.dart';
-import '../../view_models/question_creation.dart';
+import 'package:quiz_lab/core/common/manager.dart';
+import 'package:quiz_lab/core/presentation/view_models/question_creation.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 part 'question_creation_state.dart';
 
@@ -85,6 +84,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   Future<void> createQuestion(BuildContext context) async {
+    emit(QuestionCreationState.loading());
     _emitValidatedFields(context);
 
     if (_isValid) {
@@ -127,9 +127,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
-  void _emitValidatedFields(
-    BuildContext context,
-  ) {
+  void _emitValidatedFields(BuildContext context) {
     final newViewModel = _validateFields(context, _viewModel);
 
     emit(QuestionCreationDisplayUpdate(viewModel: newViewModel));
@@ -190,22 +188,27 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   Future<void> _createQuestion() async {
-    final difficulties =
-        List<QuestionDifficultyInput>.from(QuestionDifficultyInput.values)
-          ..shuffle();
+    final difficulties = [
+      'easy',
+      'medium',
+      'hard',
+    ]..shuffle();
     final randomDifficulty = difficulties.first;
 
-    await createQuestionUseCase
-        .execute(
-          QuestionCreationInput(
-            shortDescription: _viewModel.shortDescription.value,
-            description: _viewModel.description.value,
-            difficulty: randomDifficulty,
-            categories: const QuestionCategoryInput(
-              values: ['Math', 'Algebra'],
-            ),
-          ),
-        )
-        .then((_) => emit(QuestionCreationInitial()));
+    final creationResult = await createQuestionUseCase.execute(
+      QuestionCreationInput(
+        shortDescription: _viewModel.shortDescription.value,
+        description: _viewModel.description.value,
+        difficulty: randomDifficulty,
+        categories: const ['Math', 'Algebra'],
+      ),
+    );
+
+    if (creationResult.isErr) {
+      emit(QuestionCreationState.failure(message: creationResult.err!.message));
+      return;
+    }
+
+    emit(QuestionCreationState.success());
   }
 }

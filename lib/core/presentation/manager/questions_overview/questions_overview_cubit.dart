@@ -1,16 +1,17 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../../features/question_management/domain/entities/question.dart';
-import '../../../../features/question_management/domain/entities/question_category.dart';
-import '../../../../features/question_management/domain/entities/question_difficulty.dart';
-import '../../../../features/question_management/domain/use_cases/delete_question_use_case.dart';
-import '../../../../features/question_management/domain/use_cases/fetch_questions_use_case.dart';
-import '../../../../features/question_management/domain/use_cases/update_question_use_case.dart';
-import '../../../common/manager.dart';
-import '../../view_models/question_overview.dart';
+import 'package:quiz_lab/core/common/manager.dart';
+import 'package:quiz_lab/core/presentation/view_models/question_overview.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
 part 'questions_overview_state.dart';
 
@@ -26,14 +27,24 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
   final DeleteQuestionUseCase deleteQuestionUseCase;
   final UpdateQuestionUseCase updateQuestionUseCase;
 
-  Stream<List<Question>>? _questions;
-
-  void watchQuestions(BuildContext context) {
+  Future<void> watchQuestions(BuildContext context) async {
     emit(QuestionsOverviewLoading());
 
-    _questions = watchAllQuestionsUseCase.execute();
-
-    _questions?.listen((questions) => _onQuestionsUpdate(context, questions));
+    watchAllQuestionsUseCase.execute().when(
+      ok: (stream) {
+        stream.listen((q) {
+          emit(
+            QuestionsOverviewState.listUpdated(
+              questions:
+                  q.map((e) => _questionToViewModel(context, e)).toList(),
+            ),
+          );
+        });
+      },
+      err: (err) {
+        emit(QuestionsOverviewState.error(message: err.message));
+      },
+    );
   }
 
   Future<void> removeQuestion(QuestionOverviewViewModel question) async {
@@ -48,29 +59,17 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     if (viewModel.shortDescription.isNotEmpty) {
       emit(QuestionsOverviewLoading());
 
-      await updateQuestionUseCase.execute(
+      final updateResult = await updateQuestionUseCase.execute(
         _overviewViewModelToEntity(viewModel),
       );
+
+      updateResult.when(
+        ok: (question) {},
+        err: (err) {
+          emit(QuestionsOverviewState.error(message: err.message));
+        },
+      );
     }
-  }
-
-  void _onQuestionsUpdate(BuildContext context, List<Question> questions) {
-    emit(
-      QuestionsOverviewListUpdated(
-        viewModel: QuestionListViewModel(
-          questions: _mapQuestionsToViewModels(context, questions),
-        ),
-      ),
-    );
-  }
-
-  List<QuestionOverviewViewModel> _mapQuestionsToViewModels(
-    BuildContext context,
-    List<Question> questions,
-  ) {
-    return questions
-        .map((question) => _questionToViewModel(context, question))
-        .toList();
   }
 
   QuestionOverviewViewModel _questionToViewModel(
@@ -78,7 +77,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     Question question,
   ) {
     return QuestionOverviewViewModel(
-      id: question.id!,
+      id: question.id,
       shortDescription: question.shortDescription,
       categories: _categoriesToStrings(question.categories),
       difficulty: _difficultyToString(context, question.difficulty),
@@ -111,6 +110,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
   }
 
   Question _overviewViewModelToEntity(QuestionOverviewViewModel viewModel) =>
+      // TODO: Mappers for the win!
       Question(
         id: viewModel.id,
         shortDescription: viewModel.shortDescription,
@@ -122,11 +122,11 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
 
   QuestionDifficulty _difficultyStringToEntity(String difficulty) {
     switch (difficulty) {
-      case 'Easy':
+      case 'easy':
         return QuestionDifficulty.easy;
-      case 'Medium':
+      case 'medium':
         return QuestionDifficulty.medium;
-      case 'Hard':
+      case 'hard':
         return QuestionDifficulty.hard;
     }
 

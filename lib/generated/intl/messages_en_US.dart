@@ -38,6 +38,9 @@ class MessageLookup extends MessageLookupByLibrary {
             'other': 'Unknown',
           })}";
 
+  static String m5(failureReason) =>
+      "Unable to save question: ${failureReason}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "addOptionLabel": MessageLookupByLibrary.simpleMessage("Add Option"),
@@ -66,6 +69,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "questionDifficultyLabel":
             MessageLookupByLibrary.simpleMessage("Difficulty"),
         "questionDifficultyValue": m4,
+        "questionSavedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Question Saved"),
+        "questionSavingFailure": m5,
         "questionShortDescriptionLabel":
             MessageLookupByLibrary.simpleMessage("Short Description"),
         "questionsSectionDisplayName":

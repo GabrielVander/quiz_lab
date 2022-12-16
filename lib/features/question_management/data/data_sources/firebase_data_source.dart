@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'models/question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 class FirebaseDataSource {
   FirebaseDataSource({
@@ -13,12 +12,12 @@ class FirebaseDataSource {
 
   late FirebaseFirestore _firestore;
 
-  Stream<List<QuestionModel>> watchPublicQuestions() {
+  Stream<List<HiveQuestionModel>> watchPublicQuestions() {
     final collectionPath = PublicQuestions().getFirebasePath();
 
     return _firestore.collection(collectionPath).snapshots().map(
           (snapshot) => snapshot.docs
-              .map((e) => QuestionModel.fromMap(e.id, e.data()))
+              .map((e) => HiveQuestionModel.fromMap(e.id, e.data()))
               .toList(),
         );
   }
@@ -29,13 +28,13 @@ class FirebaseDataSource {
     await _firestore.collection(collectionPath).doc(id).delete();
   }
 
-  Future<void> createPublicQuestion(QuestionModel question) async {
+  Future<void> createPublicQuestion(HiveQuestionModel question) async {
     final collectionPath = PublicQuestions().getFirebasePath();
 
     await _firestore.collection(collectionPath).add(question.toMap());
   }
 
-  Future<void> updateQuestion(QuestionModel question) async {
+  Future<void> updateQuestion(HiveQuestionModel question) async {
     final collectionPath = PublicQuestions().getFirebasePath();
 
     await _firestore

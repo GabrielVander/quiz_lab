@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 void main() {
   late FirebaseFirestore firebaseFirestore;
@@ -59,7 +59,7 @@ void main() {
           ],
           expectedOutput: [
             [
-              QuestionModel(
+              HiveQuestionModel(
                 id: '*3G2g',
                 shortDescription: '',
                 description: '',
@@ -80,14 +80,14 @@ void main() {
           ],
           expectedOutput: [
             [
-              QuestionModel(
+              HiveQuestionModel(
                 id: '*3G2g',
                 shortDescription: '',
                 description: '',
                 difficulty: '',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: '@2sn',
                 shortDescription: '',
                 description: '',
@@ -140,28 +140,28 @@ void main() {
           ],
           expectedOutput: [
             [
-              QuestionModel(
+              HiveQuestionModel(
                 id: '*3G2g',
                 shortDescription: 'officer',
                 description: '',
                 difficulty: '',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: '67#',
                 shortDescription: 'toward',
                 description: 'post',
                 difficulty: '',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: 'ynh#',
                 shortDescription: 'nor',
                 description: 'voice',
                 difficulty: 'fast',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: 'Q&1iwed@',
                 shortDescription: 'might',
                 description: 'fan',
@@ -256,28 +256,28 @@ void main() {
           ],
           expectedOutput: [
             [
-              QuestionModel(
+              HiveQuestionModel(
                 id: '*3G2g',
                 shortDescription: 'officer',
                 description: '',
                 difficulty: '',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: '67#',
                 shortDescription: 'toward',
                 description: 'post',
                 difficulty: '',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: 'ynh#',
                 shortDescription: 'nor',
                 description: 'voice',
                 difficulty: 'fast',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: 'Q&1iwed@',
                 shortDescription: 'might',
                 description: 'fan',
@@ -290,28 +290,28 @@ void main() {
               ),
             ],
             [
-              QuestionModel(
+              HiveQuestionModel(
                 id: 'zS6',
                 shortDescription: 'religion',
                 description: '',
                 difficulty: '',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: 'LsH',
                 shortDescription: 'language',
                 description: 'death',
                 difficulty: '',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: '^35srT@',
                 shortDescription: 'quantity',
                 description: 'temple',
                 difficulty: 'limit',
                 categories: [],
               ),
-              QuestionModel(
+              HiveQuestionModel(
                 id: 'xS8',
                 shortDescription: 'wire',
                 description: 'mystery',
@@ -496,7 +496,7 @@ class _MappingTestCase {
   });
 
   final List<_DummySnapshotData> snapshots;
-  final List<List<QuestionModel>> expectedOutput;
+  final List<List<HiveQuestionModel>> expectedOutput;
 
   @override
   String toString() {
@@ -543,6 +543,6 @@ class _QueryDocumentSnapshotMock extends mocktail.Mock
 class _DocumentReferenceMock extends mocktail.Mock
     implements DocumentReference<Map<String, dynamic>> {}
 
-class _QuestionModelMock extends mocktail.Mock implements QuestionModel {}
+class _QuestionModelMock extends mocktail.Mock implements HiveQuestionModel {}
 
 class _FakeMap extends mocktail.Fake implements Map<String, dynamic> {}

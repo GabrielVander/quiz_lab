@@ -1,12 +1,11 @@
 import 'package:equatable/equatable.dart';
-
-import 'answer_option.dart';
-import 'question_category.dart';
-import 'question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 
 class Question extends Equatable {
   const Question({
-    this.id,
+    required this.id,
     required this.shortDescription,
     required this.description,
     required this.answerOptions,
@@ -14,7 +13,7 @@ class Question extends Equatable {
     required this.categories,
   });
 
-  final String? id;
+  final String id;
   final String shortDescription;
   final String description;
   final List<AnswerOption> answerOptions;
@@ -34,6 +33,7 @@ class Question extends Equatable {
   }
 
   Question copyWith({
+    String? id,
     String? shortDescription,
     String? description,
     List<AnswerOption>? answerOptions,
@@ -41,6 +41,7 @@ class Question extends Equatable {
     List<QuestionCategory>? categories,
   }) {
     return Question(
+      id: id ?? this.id,
       shortDescription: shortDescription ?? this.shortDescription,
       description: description ?? this.description,
       answerOptions: answerOptions ?? this.answerOptions,

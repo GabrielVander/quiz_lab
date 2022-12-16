@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import '../../../generated/l10n.dart';
-import '../../themes/extensions.dart';
-import '../../utils/responsiveness_utils/breakpoint.dart';
-import '../../utils/responsiveness_utils/screen_breakpoints.dart';
-import '../manager/questions_overview/questions_overview_cubit.dart';
-import '../view_models/question_overview.dart';
-import 'page_subtitle.dart';
+import 'package:quiz_lab/core/presentation/manager/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/core/presentation/view_models/question_overview.dart';
+import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
+import 'package:quiz_lab/core/themes/extensions.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionsPage extends HookWidget {
   const QuestionsPage({
@@ -147,10 +146,17 @@ class MainContent extends HookWidget {
       );
     }
 
-    if (state is QuestionsOverviewListUpdated) {
-      final questions = state.viewModel.questions;
+    if (state is QuestionOverviewListUpdated) {
+      return QuestionList(
+        list: state.questions,
+        cubit: cubit,
+      );
+    }
 
-      return QuestionList(questions: questions, cubit: cubit);
+    if (state is QuestionsOverviewError) {
+      return Center(
+        child: Text(state.message),
+      );
     }
 
     return Container();
@@ -160,21 +166,20 @@ class MainContent extends HookWidget {
 class QuestionList extends StatelessWidget {
   const QuestionList({
     super.key,
-    required this.questions,
+    required this.list,
     required this.cubit,
   });
 
-  final List<QuestionOverviewViewModel> questions;
+  final List<QuestionOverviewViewModel> list;
   final QuestionsOverviewCubit cubit;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemCount: questions.length,
+      itemCount: list.length,
       itemBuilder: (BuildContext context, int index) {
-        final question = questions[index];
         return QuestionItem(
-          question: question,
+          question: list[index],
           onDelete: cubit.removeQuestion,
           onClick: (viewModel) {
             showModalBottomSheet<String>(

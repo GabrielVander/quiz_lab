@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 void main() {
   group('toString', () {
     for (final testCase in [
       const _ToStringTestCase(
-        model: QuestionModel(
+        model: HiveQuestionModel(
           id: null,
           description: 'description',
           shortDescription: 'shortDescription',
@@ -13,21 +13,20 @@ void main() {
           categories: [],
         ),
         expected:
-            'QuestionModel{ id: null, shortDescription: shortDescription, '
-            'description: description, difficulty: difficulty, '
-            'categories: [], }',
+            'HiveQuestionModel(null, shortDescription, description, difficulty,'
+            ' [])',
       ),
       const _ToStringTestCase(
-        model: QuestionModel(
+        model: HiveQuestionModel(
           id: 'PJ4',
           description: 'affair',
           shortDescription: 'exercise',
           difficulty: 'unless',
           categories: ['black', 'robbery', 'crown'],
         ),
-        expected: 'QuestionModel{ id: PJ4, shortDescription: exercise, '
-            'description: affair, difficulty: unless, '
-            'categories: [black, robbery, crown], }',
+        expected:
+            'HiveQuestionModel(PJ4, exercise, affair, unless, [black, robbery, '
+            'crown])',
       )
     ]) {
       test(testCase.expected, () {
@@ -39,7 +38,7 @@ void main() {
   group('toMap', () {
     for (final testCase in [
       const _ToMapTestCase(
-        model: QuestionModel(
+        model: HiveQuestionModel(
           id: 'id',
           description: 'description',
           shortDescription: 'shortDescription',
@@ -54,7 +53,7 @@ void main() {
         },
       ),
       const _ToMapTestCase(
-        model: QuestionModel(
+        model: HiveQuestionModel(
           id: null,
           description: 'upright',
           shortDescription: 'end',
@@ -86,7 +85,7 @@ class _ToStringTestCase {
     required this.expected,
   });
 
-  final QuestionModel model;
+  final HiveQuestionModel model;
   final String expected;
 }
 
@@ -96,6 +95,6 @@ class _ToMapTestCase {
     required this.expected,
   });
 
-  final QuestionModel model;
+  final HiveQuestionModel model;
   final Map<String, dynamic> expected;
 }

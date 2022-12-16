@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
-import '../../assets/images.dart';
-import '../../utils/responsiveness_utils/breakpoint.dart';
-import '../../utils/responsiveness_utils/screen_breakpoints.dart';
-import 'image_message.dart';
+import 'package:quiz_lab/core/assets/images.dart';
+import 'package:quiz_lab/core/presentation/widgets/image_message.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
+import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 
 class ForkLiftMessage extends StatelessWidget {
   const ForkLiftMessage({
