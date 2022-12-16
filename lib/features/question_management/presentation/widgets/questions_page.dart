@@ -7,7 +7,7 @@ import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/view_models/question_overview.dart';
+import 'package:quiz_lab/features/question_management/presentation/view_models/question_overview_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionsPage extends HookWidget {
@@ -136,19 +136,19 @@ class MainContent extends HookWidget {
   Widget build(BuildContext context) {
     final state = useBlocBuilder(cubit);
 
-    if (state is QuestionsOverviewInitial) {
+    if (state is Initial) {
       cubit.watchQuestions(context);
     }
 
-    if (state is QuestionsOverviewLoading) {
+    if (state is Loading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
 
-    if (state is QuestionOverviewListUpdated) {
+    if (state is QuestionListUpdated) {
       return QuestionList(
-        list: state.questions,
+        questions: state.questions,
         cubit: cubit,
       );
     }
@@ -166,20 +166,20 @@ class MainContent extends HookWidget {
 class QuestionList extends StatelessWidget {
   const QuestionList({
     super.key,
-    required this.list,
+    required this.questions,
     required this.cubit,
   });
 
-  final List<QuestionOverviewViewModel> list;
+  final List<QuestionOverviewViewModel> questions;
   final QuestionsOverviewCubit cubit;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemCount: list.length,
+      itemCount: questions.length,
       itemBuilder: (BuildContext context, int index) {
         return QuestionItem(
-          question: list[index],
+          question: questions[index],
           onDelete: cubit.removeQuestion,
           onClick: (viewModel) {
             showModalBottomSheet<String>(
@@ -187,7 +187,7 @@ class QuestionList extends StatelessWidget {
               isScrollControlled: true,
               builder: (context) => QuestionEditBottomSheet(
                 viewModel: viewModel,
-                onSave: cubit.updateQuestion,
+                onSave: cubit.onQuestionSaved,
               ),
             );
           },

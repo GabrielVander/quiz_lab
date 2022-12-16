@@ -3,31 +3,35 @@ part of 'questions_overview_cubit.dart';
 abstract class QuestionsOverviewState extends Equatable {
   const QuestionsOverviewState();
 
-  factory QuestionsOverviewState.initial() => QuestionsOverviewInitial();
+  factory QuestionsOverviewState.initial() => const Initial._();
 
-  factory QuestionsOverviewState.loading() => QuestionsOverviewLoading();
+  factory QuestionsOverviewState.loading() => const Loading._();
 
-  factory QuestionsOverviewState.listUpdated({
+  factory QuestionsOverviewState.questionListUpdated({
     required List<QuestionOverviewViewModel> questions,
   }) =>
-      QuestionOverviewListUpdated._(questions: questions);
+      QuestionListUpdated._(questions: questions);
 
   factory QuestionsOverviewState.error({required String message}) =>
       QuestionsOverviewError._(message: message);
 }
 
-class QuestionsOverviewInitial extends QuestionsOverviewState {
+class Initial extends QuestionsOverviewState {
+  const Initial._();
+
   @override
   List<Object> get props => [];
 }
 
-class QuestionsOverviewLoading extends QuestionsOverviewState {
+class Loading extends QuestionsOverviewState {
+  const Loading._();
+
   @override
   List<Object> get props => [];
 }
 
-class QuestionOverviewListUpdated extends QuestionsOverviewState {
-  const QuestionOverviewListUpdated._({
+class QuestionListUpdated extends QuestionsOverviewState {
+  const QuestionListUpdated._({
     required this.questions,
   });
 
@@ -46,17 +50,4 @@ class QuestionsOverviewError extends QuestionsOverviewState {
 
   @override
   List<Object> get props => [message];
-}
-
-class QuestionsOverviewShowShortDescription extends QuestionsOverviewState {
-  const QuestionsOverviewShowShortDescription({
-    required this.viewModel,
-  });
-
-  final ShowShortDescriptionViewModel viewModel;
-
-  @override
-  List<Object> get props => [
-        viewModel,
-      ];
 }

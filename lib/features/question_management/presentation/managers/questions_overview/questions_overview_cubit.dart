@@ -11,7 +11,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/question_d
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/view_models/question_overview.dart';
+import 'package:quiz_lab/features/question_management/presentation/view_models/question_overview_view_model.dart';
 
 part 'questions_overview_state.dart';
 
@@ -21,30 +21,23 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     required this.watchAllQuestionsUseCase,
     required this.deleteQuestionUseCase,
     required this.updateQuestionUseCase,
-  }) : super(QuestionsOverviewInitial());
+  }) : super(QuestionsOverviewState.initial());
 
   final WatchAllQuestionsUseCase watchAllQuestionsUseCase;
   final DeleteQuestionUseCase deleteQuestionUseCase;
   final UpdateQuestionUseCase updateQuestionUseCase;
 
   Future<void> watchQuestions(BuildContext context) async {
-    emit(QuestionsOverviewLoading());
+    emit(QuestionsOverviewState.loading());
 
     watchAllQuestionsUseCase.execute().when(
-      ok: (stream) {
-        stream.listen((q) {
-          emit(
-            QuestionsOverviewState.listUpdated(
-              questions:
-                  q.map((e) => _questionToViewModel(context, e)).toList(),
-            ),
-          );
-        });
-      },
-      err: (err) {
-        emit(QuestionsOverviewState.error(message: err.message));
-      },
-    );
+          ok: (stream) => stream.listen(
+            (newQuestions) => _emitNewQuestions(newQuestions, context),
+          ),
+          err: (err) {
+            emit(QuestionsOverviewState.error(message: err.message));
+          },
+        );
   }
 
   Future<void> removeQuestion(QuestionOverviewViewModel question) async {
@@ -55,21 +48,27 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     GoRouter.of(context).go('/question');
   }
 
-  Future<void> updateQuestion(QuestionOverviewViewModel viewModel) async {
+  Future<void> onQuestionSaved(QuestionOverviewViewModel viewModel) async {
     if (viewModel.shortDescription.isNotEmpty) {
-      emit(QuestionsOverviewLoading());
+      emit(QuestionsOverviewState.loading());
 
       final updateResult = await updateQuestionUseCase.execute(
         _overviewViewModelToEntity(viewModel),
       );
 
-      updateResult.when(
-        ok: (question) {},
-        err: (err) {
-          emit(QuestionsOverviewState.error(message: err.message));
-        },
-      );
+      if (updateResult.isErr) {
+        emit(QuestionsOverviewState.error(message: updateResult.err!.message));
+      }
     }
+  }
+
+  void _emitNewQuestions(List<Question> newQuestions, BuildContext context) {
+    final questions =
+        newQuestions.map((e) => _questionToViewModel(context, e)).toList();
+
+    emit(
+      QuestionsOverviewState.questionListUpdated(questions: questions),
+    );
   }
 
   QuestionOverviewViewModel _questionToViewModel(
