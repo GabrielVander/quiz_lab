@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
@@ -10,8 +11,8 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 import 'package:quiz_lab/features/question_management/presentation/view_models/question_overview_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class QuestionsPage extends HookWidget {
-  const QuestionsPage({
+class QuestionsOverviewPage extends StatelessWidget {
+  const QuestionsOverviewPage({
     super.key,
     required this.questionsOverviewCubit,
   });
@@ -26,12 +27,12 @@ class QuestionsPage extends HookWidget {
         children: [
           Container(
             margin: const EdgeInsets.only(bottom: 15),
-            child: Header(
-              onAddQuestion: () => questionsOverviewCubit.createNew(context),
+            child: _Header(
+              onAddQuestion: () => GoRouter.of(context).go('/question'),
             ),
           ),
           Expanded(
-            child: MainContent(
+            child: _MainContent(
               cubit: questionsOverviewCubit,
             ),
           ),
@@ -41,9 +42,8 @@ class QuestionsPage extends HookWidget {
   }
 }
 
-class Header extends StatelessWidget {
-  const Header({
-    super.key,
+class _Header extends StatelessWidget {
+  const _Header({
     required this.onAddQuestion,
   });
 
@@ -55,7 +55,7 @@ class Header extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         PageSubtitle(title: S.of(context).questionsSectionDisplayName),
-        QuestionAddButton(
+        _QuestionAddButton(
           onAddQuestion: onAddQuestion,
         ),
       ],
@@ -63,9 +63,8 @@ class Header extends StatelessWidget {
   }
 }
 
-class QuestionAddButton extends StatelessWidget {
-  const QuestionAddButton({
-    super.key,
+class _QuestionAddButton extends StatelessWidget {
+  const _QuestionAddButton({
     required this.onAddQuestion,
   });
 
@@ -124,9 +123,8 @@ class QuestionAddButton extends StatelessWidget {
   }
 }
 
-class MainContent extends HookWidget {
-  const MainContent({
-    super.key,
+class _MainContent extends HookWidget {
+  const _MainContent({
     required this.cubit,
   });
 
@@ -137,19 +135,20 @@ class MainContent extends HookWidget {
     final state = useBlocBuilder(cubit);
 
     if (state is Initial) {
-      cubit.watchQuestions(context);
+      cubit.updateQuestions();
     }
 
-    if (state is Loading) {
+    if (state is Loading || state is Initial) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
 
     if (state is QuestionListUpdated) {
-      return QuestionList(
+      return _QuestionList(
         questions: state.questions,
-        cubit: cubit,
+        onDeleteQuestion: cubit.removeQuestion,
+        onSaveUpdatedQuestion: cubit.onQuestionSaved,
       );
     }
 
@@ -163,46 +162,51 @@ class MainContent extends HookWidget {
   }
 }
 
-class QuestionList extends StatelessWidget {
-  const QuestionList({
-    super.key,
+class _QuestionList extends StatelessWidget {
+  const _QuestionList({
     required this.questions,
-    required this.cubit,
+    required this.onDeleteQuestion,
+    required this.onSaveUpdatedQuestion,
   });
 
   final List<QuestionOverviewViewModel> questions;
-  final QuestionsOverviewCubit cubit;
+  final void Function(QuestionOverviewViewModel viewModel) onDeleteQuestion;
+  final void Function(QuestionOverviewViewModel viewModel)
+      onSaveUpdatedQuestion;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       itemCount: questions.length,
       itemBuilder: (BuildContext context, int index) {
-        return QuestionItem(
+        return _QuestionItem(
           question: questions[index],
-          onDelete: cubit.removeQuestion,
-          onClick: (viewModel) {
-            showModalBottomSheet<String>(
-              context: context,
-              isScrollControlled: true,
-              builder: (context) => QuestionEditBottomSheet(
-                viewModel: viewModel,
-                onSave: cubit.onQuestionSaved,
-              ),
-            );
-          },
+          onDelete: onDeleteQuestion,
+          onClick: (viewModel) =>
+              _showQuestionEditionBottomSheet(context, viewModel),
         );
       },
-      separatorBuilder: (BuildContext _, int __) => const SizedBox(
-        height: 10,
+      separatorBuilder: (BuildContext _, int __) => const SizedBox(height: 10),
+    );
+  }
+
+  void _showQuestionEditionBottomSheet(
+    BuildContext context,
+    QuestionOverviewViewModel viewModel,
+  ) {
+    showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => _QuestionEditBottomSheet(
+        viewModel: viewModel,
+        onSave: onSaveUpdatedQuestion,
       ),
     );
   }
 }
 
-class QuestionEditBottomSheet extends StatelessWidget {
-  const QuestionEditBottomSheet({
-    super.key,
+class _QuestionEditBottomSheet extends StatelessWidget {
+  const _QuestionEditBottomSheet({
     required this.viewModel,
     required this.onSave,
   });
@@ -253,9 +257,8 @@ class QuestionEditBottomSheet extends StatelessWidget {
   }
 }
 
-class QuestionItem extends StatelessWidget {
-  const QuestionItem({
-    super.key,
+class _QuestionItem extends StatelessWidget {
+  const _QuestionItem({
     required this.question,
     required this.onDelete,
     required this.onClick,
@@ -278,7 +281,7 @@ class QuestionItem extends StatelessWidget {
         key: ValueKey<String>(question.id),
         direction: DismissDirection.endToStart,
         onDismissed: (DismissDirection _) => onDelete(question),
-        background: const ItemBackground(),
+        background: const _QuestionItemBackground(),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: InkWell(
@@ -289,14 +292,14 @@ class QuestionItem extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    QuestionTitle(title: question.shortDescription),
+                    _QuestionItemTitle(title: question.shortDescription),
                     const SizedBox(
                       height: 15,
                     ),
-                    Categories(categories: question.categories),
+                    _QuestionItemCategories(categories: question.categories),
                   ],
                 ),
-                Difficulty(difficulty: question.difficulty),
+                _QuestionItemDifficulty(difficulty: question.difficulty),
               ],
             ),
           ),
@@ -306,9 +309,8 @@ class QuestionItem extends StatelessWidget {
   }
 }
 
-class QuestionTitle extends StatelessWidget {
-  const QuestionTitle({
-    super.key,
+class _QuestionItemTitle extends StatelessWidget {
+  const _QuestionItemTitle({
     required this.title,
   });
 
@@ -362,9 +364,8 @@ class QuestionTitle extends StatelessWidget {
   }
 }
 
-class Categories extends StatelessWidget {
-  const Categories({
-    super.key,
+class _QuestionItemCategories extends StatelessWidget {
+  const _QuestionItemCategories({
     required this.categories,
   });
 
@@ -465,9 +466,8 @@ class Categories extends StatelessWidget {
   }
 }
 
-class Difficulty extends StatelessWidget {
-  const Difficulty({
-    super.key,
+class _QuestionItemDifficulty extends StatelessWidget {
+  const _QuestionItemDifficulty({
     required this.difficulty,
   });
 
@@ -549,10 +549,8 @@ class Difficulty extends StatelessWidget {
   }
 }
 
-class ItemBackground extends StatelessWidget {
-  const ItemBackground({
-    super.key,
-  });
+class _QuestionItemBackground extends StatelessWidget {
+  const _QuestionItemBackground();
 
   @override
   Widget build(BuildContext context) {

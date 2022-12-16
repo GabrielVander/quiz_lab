@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
@@ -18,41 +16,33 @@ part 'questions_overview_state.dart';
 class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     implements Manager {
   QuestionsOverviewCubit({
-    required this.watchAllQuestionsUseCase,
-    required this.deleteQuestionUseCase,
-    required this.updateQuestionUseCase,
-  }) : super(QuestionsOverviewState.initial());
+    required WatchAllQuestionsUseCase watchAllQuestionsUseCase,
+    required DeleteQuestionUseCase deleteQuestionUseCase,
+    required UpdateQuestionUseCase updateQuestionUseCase,
+  })  : _updateQuestionUseCase = updateQuestionUseCase,
+        _deleteQuestionUseCase = deleteQuestionUseCase,
+        _watchAllQuestionsUseCase = watchAllQuestionsUseCase,
+        super(QuestionsOverviewState.initial());
 
-  final WatchAllQuestionsUseCase watchAllQuestionsUseCase;
-  final DeleteQuestionUseCase deleteQuestionUseCase;
-  final UpdateQuestionUseCase updateQuestionUseCase;
+  final WatchAllQuestionsUseCase _watchAllQuestionsUseCase;
+  final DeleteQuestionUseCase _deleteQuestionUseCase;
+  final UpdateQuestionUseCase _updateQuestionUseCase;
 
-  Future<void> watchQuestions(BuildContext context) async {
+  Future<void> updateQuestions() async {
     emit(QuestionsOverviewState.loading());
 
-    watchAllQuestionsUseCase.execute().when(
-          ok: (stream) => stream.listen(
-            (newQuestions) => _emitNewQuestions(newQuestions, context),
-          ),
-          err: (err) {
-            emit(QuestionsOverviewState.error(message: err.message));
-          },
-        );
+    _watchQuestions();
   }
 
   Future<void> removeQuestion(QuestionOverviewViewModel question) async {
-    await deleteQuestionUseCase.execute(question.id);
-  }
-
-  Future<void> createNew(BuildContext context) async {
-    GoRouter.of(context).go('/question');
+    await _deleteQuestionUseCase.execute(question.id);
   }
 
   Future<void> onQuestionSaved(QuestionOverviewViewModel viewModel) async {
     if (viewModel.shortDescription.isNotEmpty) {
       emit(QuestionsOverviewState.loading());
 
-      final updateResult = await updateQuestionUseCase.execute(
+      final updateResult = await _updateQuestionUseCase.execute(
         _overviewViewModelToEntity(viewModel),
       );
 
@@ -62,24 +52,31 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     }
   }
 
-  void _emitNewQuestions(List<Question> newQuestions, BuildContext context) {
-    final questions =
-        newQuestions.map((e) => _questionToViewModel(context, e)).toList();
+  void _watchQuestions() {
+    final watchResult = _watchAllQuestionsUseCase.execute();
+
+    if (watchResult.isErr) {
+      emit(QuestionsOverviewState.error(message: watchResult.err!.message));
+      return;
+    }
+
+    watchResult.ok!.listen(_emitNewQuestions);
+  }
+
+  void _emitNewQuestions(List<Question> newQuestions) {
+    final questions = newQuestions.map(_questionToViewModel).toList();
 
     emit(
       QuestionsOverviewState.questionListUpdated(questions: questions),
     );
   }
 
-  QuestionOverviewViewModel _questionToViewModel(
-    BuildContext context,
-    Question question,
-  ) {
+  QuestionOverviewViewModel _questionToViewModel(Question question) {
     return QuestionOverviewViewModel(
       id: question.id,
       shortDescription: question.shortDescription,
       categories: _categoriesToStrings(question.categories),
-      difficulty: _difficultyToString(context, question.difficulty),
+      difficulty: _difficultyToString(question.difficulty),
       description: question.description,
     );
   }
@@ -92,10 +89,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
 
   String _categoryToString(QuestionCategory c) => c.value;
 
-  String _difficultyToString(
-    BuildContext context,
-    QuestionDifficulty difficulty,
-  ) {
+  String _difficultyToString(QuestionDifficulty difficulty) {
     switch (difficulty) {
       case QuestionDifficulty.easy:
         return 'easy';
