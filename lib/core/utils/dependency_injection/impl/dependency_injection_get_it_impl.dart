@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 
 class DependencyInjectionGetItImpl implements DependencyInjection {
