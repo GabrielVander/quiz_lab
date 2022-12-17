@@ -344,7 +344,8 @@ class _Options extends StatelessWidget {
                             child: _Option(
                               key: e.id,
                               viewModel: e,
-                              onIsCorrect: (bool _) => onIsCorrect(e),
+                              onIsCorrect: ({required bool value}) =>
+                                  onIsCorrect(e),
                             ),
                           ),
                         )
@@ -372,7 +373,7 @@ class _Option extends StatelessWidget {
   });
 
   final SingleOptionViewModel viewModel;
-  final void Function(bool value) onIsCorrect;
+  final void Function({required bool value}) onIsCorrect;
 
   @override
   Widget build(BuildContext context) {
@@ -391,7 +392,7 @@ class _Option extends StatelessWidget {
           children: [
             Checkbox(
               value: viewModel.isCorrect,
-              onChanged: (bool? value) => onIsCorrect(value ?? false),
+              onChanged: (bool? value) => onIsCorrect(value: value ?? false),
             ),
             Text(S.of(context).isOptionCorrectLabel),
           ],

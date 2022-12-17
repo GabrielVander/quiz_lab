@@ -1,6 +1,6 @@
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/factories/data_source_factory.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/mappers/hive_question_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_entity_mapper.dart';
@@ -9,23 +9,24 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 
 class QuestionRepositoryImpl implements QuestionRepository {
   const QuestionRepositoryImpl({
-    required HiveDataSource hiveDataSource,
+    required DataSourceFactory dataSourceFactory,
     required QuestionEntityMapper questionMapper,
     required HiveQuestionModelMapper hiveQuestionModelMapper,
-  })  : _hiveDataSource = hiveDataSource,
+  })  : _dataSourceFactory = dataSourceFactory,
         _questionMapper = questionMapper,
         _hiveQuestionModelMapper = hiveQuestionModelMapper;
 
-  final HiveDataSource _hiveDataSource;
   final QuestionEntityMapper _questionMapper;
   final HiveQuestionModelMapper _hiveQuestionModelMapper;
+  final DataSourceFactory _dataSourceFactory;
 
   @override
   Future<Result<Unit, QuestionRepositoryFailure>> createSingle(
     Question question,
   ) async {
+    final hiveDataSource = _dataSourceFactory.makeHiveDataSource();
     final hiveModel = _hiveQuestionModelMapper.fromQuestion(question);
-    final creationResult = await _hiveDataSource.saveQuestion(hiveModel);
+    final creationResult = await hiveDataSource.saveQuestion(hiveModel);
 
     if (creationResult.isErr) {
       return Result.err(
@@ -41,7 +42,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
   @override
   Result<Stream<List<Question>>, QuestionRepositoryFailure> watchAll() {
-    final localQuestionsResult = _hiveDataSource.watchAllQuestions();
+    final hiveDataSource = _dataSourceFactory.makeHiveDataSource();
+    final localQuestionsResult = hiveDataSource.watchAllQuestions();
 
     if (localQuestionsResult.isErr) {
       return Result.err(
@@ -58,8 +60,9 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,
   ) async {
+    final hiveDataSource = _dataSourceFactory.makeHiveDataSource();
     final hiveModel = _hiveQuestionModelMapper.fromQuestion(question);
-    final updateResult = await _hiveDataSource.saveQuestion(hiveModel);
+    final updateResult = await hiveDataSource.saveQuestion(hiveModel);
 
     if (updateResult.isErr) {
       return Result.err(
@@ -77,7 +80,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(
     String id,
   ) async {
-    final deletionResult = await _hiveDataSource.deleteQuestion(
+    final hiveDataSource = _dataSourceFactory.makeHiveDataSource();
+    final deletionResult = await hiveDataSource.deleteQuestion(
       HiveQuestionModel(
         id: id,
         shortDescription: null,
