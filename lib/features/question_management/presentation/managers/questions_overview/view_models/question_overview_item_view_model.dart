@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-class QuestionOverviewViewModel extends Equatable {
-  const QuestionOverviewViewModel({
+class QuestionOverviewItemViewModel extends Equatable {
+  const QuestionOverviewItemViewModel({
     required this.id,
     required this.shortDescription,
     required this.description,
@@ -15,14 +15,14 @@ class QuestionOverviewViewModel extends Equatable {
   final List<String> categories;
   final String difficulty;
 
-  QuestionOverviewViewModel copyWith({
+  QuestionOverviewItemViewModel copyWith({
     String? id,
     String? shortDescription,
     String? description,
     List<String>? categories,
     String? difficulty,
   }) {
-    return QuestionOverviewViewModel(
+    return QuestionOverviewItemViewModel(
       id: id ?? this.id,
       shortDescription: shortDescription ?? this.shortDescription,
       description: description ?? this.description,

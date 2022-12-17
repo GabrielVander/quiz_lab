@@ -20,6 +20,8 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/delete_qu
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_entity_mapper.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_overview_item_view_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:uuid/uuid.dart';
 
@@ -125,6 +127,9 @@ void quizDiSetup(DependencyInjection di) {
           watchAllQuestionsUseCase: watchAllQuestionsUseCaseResult.unwrap(),
           deleteQuestionUseCase: deleteQuestionUseCaseResult.unwrap(),
           updateQuestionUseCase: updateQuestionUseCaseResult.unwrap(),
+          questionEntityMapper: QuestionEntityMapper(),
+          questionOverviewItemViewModelMapper:
+              QuestionOverviewItemViewModelMapper(),
         );
       },
     )

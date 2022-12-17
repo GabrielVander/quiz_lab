@@ -8,7 +8,7 @@ abstract class QuestionsOverviewState extends Equatable {
   factory QuestionsOverviewState.loading() => const Loading._();
 
   factory QuestionsOverviewState.questionListUpdated({
-    required List<QuestionOverviewViewModel> questions,
+    required List<QuestionOverviewItemViewModel> questions,
   }) =>
       QuestionListUpdated._(questions: questions);
 
@@ -35,7 +35,7 @@ class QuestionListUpdated extends QuestionsOverviewState {
     required this.questions,
   });
 
-  final List<QuestionOverviewViewModel> questions;
+  final List<QuestionOverviewItemViewModel> questions;
 
   @override
   List<Object> get props => [questions];

@@ -8,7 +8,7 @@ import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/view_models/question_overview_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionsOverviewPage extends StatelessWidget {
@@ -169,9 +169,9 @@ class _QuestionList extends StatelessWidget {
     required this.onSaveUpdatedQuestion,
   });
 
-  final List<QuestionOverviewViewModel> questions;
-  final void Function(QuestionOverviewViewModel viewModel) onDeleteQuestion;
-  final void Function(QuestionOverviewViewModel viewModel)
+  final List<QuestionOverviewItemViewModel> questions;
+  final void Function(QuestionOverviewItemViewModel viewModel) onDeleteQuestion;
+  final void Function(QuestionOverviewItemViewModel viewModel)
       onSaveUpdatedQuestion;
 
   @override
@@ -192,7 +192,7 @@ class _QuestionList extends StatelessWidget {
 
   void _showQuestionEditionBottomSheet(
     BuildContext context,
-    QuestionOverviewViewModel viewModel,
+    QuestionOverviewItemViewModel viewModel,
   ) {
     showModalBottomSheet<String>(
       context: context,
@@ -211,8 +211,8 @@ class _QuestionEditBottomSheet extends StatelessWidget {
     required this.onSave,
   });
 
-  final QuestionOverviewViewModel viewModel;
-  final void Function(QuestionOverviewViewModel updatedViewModel) onSave;
+  final QuestionOverviewItemViewModel viewModel;
+  final void Function(QuestionOverviewItemViewModel updatedViewModel) onSave;
 
   @override
   Widget build(BuildContext context) {
@@ -264,9 +264,9 @@ class _QuestionItem extends StatelessWidget {
     required this.onClick,
   });
 
-  final QuestionOverviewViewModel question;
-  final void Function(QuestionOverviewViewModel viewModel) onDelete;
-  final void Function(QuestionOverviewViewModel viewModel) onClick;
+  final QuestionOverviewItemViewModel question;
+  final void Function(QuestionOverviewItemViewModel viewModel) onDelete;
+  final void Function(QuestionOverviewItemViewModel viewModel) onClick;
 
   @override
   Widget build(BuildContext context) {

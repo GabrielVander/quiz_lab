@@ -6,7 +6,7 @@ import 'package:quiz_lab/core/common/manager_factory.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/view_models/question_creation.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionView extends StatelessWidget {
