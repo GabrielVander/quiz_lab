@@ -78,7 +78,7 @@ void quizDiSetup(DependencyInjection di) {
         }
 
         return UpdateQuestionUseCase(
-          questionRepository: repositoryResult.unwrap(),
+          repositoryFactory: RepositoryFactoryImpl(),
         );
       },
     )

@@ -27,10 +27,8 @@ class UseCaseFactory {
   }
 
   UpdateQuestionUseCase makeUpdateQuestionUseCase() {
-    final questionRepository = _repositoryFactory.makeQuestionRepository();
-
     return UpdateQuestionUseCase(
-      questionRepository: questionRepository,
+      repositoryFactory: _repositoryFactory,
     );
   }
 

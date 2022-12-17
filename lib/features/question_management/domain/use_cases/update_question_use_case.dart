@@ -2,18 +2,19 @@ import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 
 class UpdateQuestionUseCase {
   const UpdateQuestionUseCase({
-    required this.questionRepository,
-  });
+    required RepositoryFactory repositoryFactory,
+  }) : _repositoryFactory = repositoryFactory;
 
-  final QuestionRepository questionRepository;
+  final RepositoryFactory _repositoryFactory;
 
   Future<Result<Unit, UpdateQuestionUseCaseFailure>> execute(
     Question questionToUpdate,
   ) async {
+    final questionRepository = _repositoryFactory.makeQuestionRepository();
     final updateResult =
         await questionRepository.updateSingle(questionToUpdate);
 
