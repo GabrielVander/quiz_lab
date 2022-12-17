@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 import 'package:quiz_lab/core/common/manager_factory.dart';
 import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
@@ -27,9 +24,6 @@ import 'package:uuid/uuid.dart';
 
 void quizDiSetup(DependencyInjection di) {
   di
-    ..registerBuilder<FirebaseDataSource>(
-      (_) => FirebaseDataSource(firestore: FirebaseFirestore.instance),
-    )
     ..registerBuilder<QuestionRepository>(
       (DependencyInjection di) {
         final dataSourceResult = di.get<FirebaseDataSource>();
