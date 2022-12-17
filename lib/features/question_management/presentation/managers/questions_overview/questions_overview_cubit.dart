@@ -44,6 +44,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
   }
 
   Future<void> removeQuestion(QuestionOverviewItemViewModel question) async {
+    emit(QuestionsOverviewState.loading());
     await _deleteQuestionUseCase.execute(question.id);
   }
 
