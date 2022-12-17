@@ -20,10 +20,8 @@ class UseCaseFactory {
   }
 
   CreateQuestionUseCase makeCreateQuestionUseCase() {
-    final questionRepository = _repositoryFactory.makeQuestionRepository();
-
     return CreateQuestionUseCase(
-      questionRepository: questionRepository,
+      repositoryFactory: _repositoryFactory,
       uuidGenerator: const ResourceUuidGenerator(uuid: Uuid()),
     );
   }

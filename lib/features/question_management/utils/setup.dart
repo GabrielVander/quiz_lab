@@ -6,6 +6,7 @@ import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/factories/data_source_factory.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/factories/repository_factory_impl.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/mappers/factories/mapper_factory.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
@@ -63,8 +64,8 @@ void quizDiSetup(DependencyInjection di) {
         }
 
         return CreateQuestionUseCase(
-          questionRepository: repositoryResult.unwrap(),
           uuidGenerator: const ResourceUuidGenerator(uuid: Uuid()),
+          repositoryFactory: RepositoryFactoryImpl(),
         );
       },
     )
