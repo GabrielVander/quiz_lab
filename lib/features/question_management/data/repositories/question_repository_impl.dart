@@ -1,38 +1,34 @@
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/factories/data_source_factory.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/mappers/hive_question_model_mapper.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_entity_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/factories/mapper_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {
   const QuestionRepositoryImpl({
     required DataSourceFactory dataSourceFactory,
-    required QuestionEntityMapper questionMapper,
-    required HiveQuestionModelMapper hiveQuestionModelMapper,
-  })  : _dataSourceFactory = dataSourceFactory,
-        _questionMapper = questionMapper,
-        _hiveQuestionModelMapper = hiveQuestionModelMapper;
+    required MapperFactory mapperFactory,
+  })  : _mapperFactory = mapperFactory,
+        _dataSourceFactory = dataSourceFactory;
 
-  final QuestionEntityMapper _questionMapper;
-  final HiveQuestionModelMapper _hiveQuestionModelMapper;
   final DataSourceFactory _dataSourceFactory;
+  final MapperFactory _mapperFactory;
 
   @override
   Future<Result<Unit, QuestionRepositoryFailure>> createSingle(
     Question question,
   ) async {
-    final hiveDataSource = _dataSourceFactory.makeHiveDataSource();
-    final hiveModel = _hiveQuestionModelMapper.fromQuestion(question);
-    final creationResult = await hiveDataSource.saveQuestion(hiveModel);
+    final hiveModel = _hiveQuestionModelToQuestion(question);
+    final savingResult = await _saveModelToHive(hiveModel);
 
-    if (creationResult.isErr) {
+    if (savingResult.isErr) {
       return Result.err(
         QuestionRepositoryFailure.unableToCreate(
           question: question,
-          message: creationResult.err!.message,
+          message: savingResult.err!.message,
         ),
       );
     }
@@ -42,33 +38,31 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
   @override
   Result<Stream<List<Question>>, QuestionRepositoryFailure> watchAll() {
-    final hiveDataSource = _dataSourceFactory.makeHiveDataSource();
-    final localQuestionsResult = hiveDataSource.watchAllQuestions();
+    final hiveQuestionsResult = _watchHiveQuestions();
 
-    if (localQuestionsResult.isErr) {
+    if (hiveQuestionsResult.isErr) {
       return Result.err(
         QuestionRepositoryFailure.unableToWatchAll(
-          message: (localQuestionsResult.err!).message,
+          message: (hiveQuestionsResult.err!).message,
         ),
       );
     }
 
-    return Result.ok(_parseToEntityStream(localQuestionsResult.ok!));
+    return Result.ok(_parseToEntityStream(hiveQuestionsResult.ok!));
   }
 
   @override
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,
   ) async {
-    final hiveDataSource = _dataSourceFactory.makeHiveDataSource();
-    final hiveModel = _hiveQuestionModelMapper.fromQuestion(question);
-    final updateResult = await hiveDataSource.saveQuestion(hiveModel);
+    final hiveModel = _hiveQuestionModelToQuestion(question);
+    final savingResult = await _saveModelToHive(hiveModel);
 
-    if (updateResult.isErr) {
+    if (savingResult.isErr) {
       return Result.err(
         QuestionRepositoryFailure.unableToUpdate(
           id: question.id,
-          details: updateResult.err!.message,
+          details: savingResult.err!.message,
         ),
       );
     }
@@ -96,12 +90,39 @@ class QuestionRepositoryImpl implements QuestionRepository {
     );
   }
 
+  HiveQuestionModel _hiveQuestionModelToQuestion(Question question) {
+    final hiveQuestionModelMapper =
+        _mapperFactory.makeHiveQuestionModelMapper();
+    final hiveModel = hiveQuestionModelMapper.fromQuestion(question);
+
+    return hiveModel;
+  }
+
+  Future<Result<Unit, HiveDataSourceFailure>> _saveModelToHive(
+    HiveQuestionModel hiveModel,
+  ) async {
+    final hiveDataSource = _dataSourceFactory.makeHiveDataSource();
+    final savingResult = await hiveDataSource.saveQuestion(hiveModel);
+
+    return savingResult;
+  }
+
+  Result<Stream<List<HiveQuestionModel>>, HiveDataSourceFailure>
+      _watchHiveQuestions() {
+    final hiveDataSource = _dataSourceFactory.makeHiveDataSource();
+    final hiveQuestionsResult = hiveDataSource.watchAllQuestions();
+
+    return hiveQuestionsResult;
+  }
+
   Stream<List<Question>> _parseToEntityStream(
     Stream<List<HiveQuestionModel>> stream,
   ) {
+    final questionEntityMapper = _mapperFactory.makeQuestionEntityMapper();
+
     return stream.map(
       (m) => m
-          .map(_questionMapper.fromHiveModel)
+          .map(questionEntityMapper.fromHiveModel)
           .where((result) => result.isOk)
           .map((result) => result.ok!)
           .toList(),
