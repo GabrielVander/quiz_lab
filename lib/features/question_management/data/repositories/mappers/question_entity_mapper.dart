@@ -5,7 +5,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/question.d
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 
-class QuestionMapper {
+class QuestionEntityMapper {
   Result<Question, QuestionMapperFailure> fromHiveModel(
     HiveQuestionModel hiveModel,
   ) {

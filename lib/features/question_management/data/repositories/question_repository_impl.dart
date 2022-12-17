@@ -1,23 +1,23 @@
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/mappers/hive_question_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/hive_question_model_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_entity_mapper.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {
   const QuestionRepositoryImpl({
     required HiveDataSource hiveDataSource,
-    required QuestionMapper questionMapper,
+    required QuestionEntityMapper questionMapper,
     required HiveQuestionModelMapper hiveQuestionModelMapper,
   })  : _hiveDataSource = hiveDataSource,
         _questionMapper = questionMapper,
         _hiveQuestionModelMapper = hiveQuestionModelMapper;
 
   final HiveDataSource _hiveDataSource;
-  final QuestionMapper _questionMapper;
+  final QuestionEntityMapper _questionMapper;
   final HiveQuestionModelMapper _hiveQuestionModelMapper;
 
   @override

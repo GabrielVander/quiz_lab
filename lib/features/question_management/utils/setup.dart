@@ -11,8 +11,8 @@ import 'package:quiz_lab/core/utils/json_parser.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/firebase_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/mappers/hive_question_model_mapper.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/hive_question_model_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_entity_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
@@ -46,7 +46,7 @@ void quizDiSetup(DependencyInjection di) {
               decoder: jsonDecode,
             ),
           ),
-          questionMapper: QuestionMapper(),
+          questionMapper: QuestionEntityMapper(),
           hiveQuestionModelMapper: HiveQuestionModelMapper(),
         );
       },

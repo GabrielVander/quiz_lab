@@ -1,7 +1,7 @@
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/mappers/hive_question_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/hive_question_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';

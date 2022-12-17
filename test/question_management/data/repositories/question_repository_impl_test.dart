@@ -5,16 +5,16 @@ import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/mappers/hive_question_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/hive_question_model_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_entity_mapper.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 void main() {
   late HiveDataSource dummyHiveDataSource;
-  late QuestionMapper dummyQuestionMapper;
+  late QuestionEntityMapper dummyQuestionMapper;
   late HiveQuestionModelMapper dummyHiveQuestionModelMapper;
   late QuestionRepositoryImpl repository;
 
@@ -389,7 +389,7 @@ void main() {
 
 class _MockHiveDataSource extends Mock implements HiveDataSource {}
 
-class _MockQuestionMapper extends Mock implements QuestionMapper {}
+class _MockQuestionMapper extends Mock implements QuestionEntityMapper {}
 
 class _MockHiveQuestionModelMapper extends Mock
     implements HiveQuestionModelMapper {}
