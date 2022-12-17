@@ -14,7 +14,7 @@ void main() {
     mapper = QuestionOverviewItemViewModelMapper();
   });
 
-  group('fromQuestionEntity', () {
+  group('singleFromQuestionEntity', () {
     parameterizedTest(
       'should return a valid QuestionOverviewViewModel',
       ParameterizedSource.values([
@@ -105,14 +105,14 @@ void main() {
         final question = values[0] as Question;
         final expected = values[1] as QuestionOverviewItemViewModel;
 
-        final result = mapper.fromQuestionEntity(question);
+        final result = mapper.singleFromQuestionEntity(question);
 
         expect(result, expected);
       },
     );
   });
 
-  group('fromQuestionEntities', () {
+  group('multipleFromQuestionEntity', () {
     parameterizedTest(
       'should return valid QuestionOverviewViewModels',
       ParameterizedSource.values([
@@ -201,7 +201,7 @@ void main() {
         final questions = values[0] as List<Question>;
         final expected = values[1] as List<QuestionOverviewItemViewModel>;
 
-        final result = mapper.fromQuestionEntities(questions);
+        final result = mapper.multipleFromQuestionEntity(questions);
 
         expect(result, expected);
       },
