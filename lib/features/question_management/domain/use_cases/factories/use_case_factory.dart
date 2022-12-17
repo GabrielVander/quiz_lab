@@ -35,10 +35,8 @@ class UseCaseFactory {
   }
 
   DeleteQuestionUseCase makeDeleteQuestionUseCase() {
-    final questionRepository = _repositoryFactory.makeQuestionRepository();
-
     return DeleteQuestionUseCase(
-      questionRepository: questionRepository,
+      repositoryFactory: _repositoryFactory,
     );
   }
 }

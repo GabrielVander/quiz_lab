@@ -51,7 +51,7 @@ void quizDiSetup(DependencyInjection di) {
         }
 
         return DeleteQuestionUseCase(
-          questionRepository: repositoryResult.unwrap(),
+          repositoryFactory: RepositoryFactoryImpl(),
         );
       },
     )
