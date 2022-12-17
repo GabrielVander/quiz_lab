@@ -38,7 +38,7 @@ void quizDiSetup(DependencyInjection di) {
         }
 
         return WatchAllQuestionsUseCase(
-          questionRepository: repositoryResult.unwrap(),
+          repositoryFactory: RepositoryFactoryImpl(),
         );
       },
     )

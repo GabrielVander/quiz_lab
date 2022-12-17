@@ -13,28 +13,19 @@ class UseCaseFactory {
 
   final RepositoryFactory _repositoryFactory;
 
-  WatchAllQuestionsUseCase makeWatchAllQuestionsUseCase() {
-    final questionRepository = _repositoryFactory.makeQuestionRepository();
+  WatchAllQuestionsUseCase makeWatchAllQuestionsUseCase() =>
+      WatchAllQuestionsUseCase(repositoryFactory: _repositoryFactory);
 
-    return WatchAllQuestionsUseCase(questionRepository: questionRepository);
-  }
+  CreateQuestionUseCase makeCreateQuestionUseCase() => CreateQuestionUseCase(
+        repositoryFactory: _repositoryFactory,
+        uuidGenerator: const ResourceUuidGenerator(uuid: Uuid()),
+      );
 
-  CreateQuestionUseCase makeCreateQuestionUseCase() {
-    return CreateQuestionUseCase(
-      repositoryFactory: _repositoryFactory,
-      uuidGenerator: const ResourceUuidGenerator(uuid: Uuid()),
-    );
-  }
+  UpdateQuestionUseCase makeUpdateQuestionUseCase() => UpdateQuestionUseCase(
+        repositoryFactory: _repositoryFactory,
+      );
 
-  UpdateQuestionUseCase makeUpdateQuestionUseCase() {
-    return UpdateQuestionUseCase(
-      repositoryFactory: _repositoryFactory,
-    );
-  }
-
-  DeleteQuestionUseCase makeDeleteQuestionUseCase() {
-    return DeleteQuestionUseCase(
-      repositoryFactory: _repositoryFactory,
-    );
-  }
+  DeleteQuestionUseCase makeDeleteQuestionUseCase() => DeleteQuestionUseCase(
+        repositoryFactory: _repositoryFactory,
+      );
 }
