@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/factories/mapper_factory.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/factories/presentation_mapper_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
 
 part 'questions_overview_state.dart';
@@ -14,13 +14,13 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     implements Manager {
   QuestionsOverviewCubit({
     required UseCaseFactory useCaseFactory,
-    required MapperFactory mapperFactory,
+    required PresentationMapperFactory mapperFactory,
   })  : _useCaseFactory = useCaseFactory,
         _mapperFactory = mapperFactory,
         super(QuestionsOverviewState.initial());
 
   final UseCaseFactory _useCaseFactory;
-  final MapperFactory _mapperFactory;
+  final PresentationMapperFactory _mapperFactory;
 
   final _questionStreamController = StreamController<List<Question>>();
 

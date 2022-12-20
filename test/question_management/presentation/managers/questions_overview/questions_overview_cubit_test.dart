@@ -8,14 +8,14 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/factories/mapper_factory.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/factories/presentation_mapper_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_overview_item_view_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
 
 void main() {
   late UseCaseFactory mockUseCaseFactory;
-  late MapperFactory mockMapperFactory;
+  late PresentationMapperFactory mockMapperFactory;
 
   late QuestionsOverviewCubit cubit;
 
@@ -163,7 +163,7 @@ class _FakeQuestionOverviewItemViewModel extends Fake
 
 class _MockUseCaseFactory extends Mock implements UseCaseFactory {}
 
-class _MockMapperFactory extends Mock implements MapperFactory {}
+class _MockMapperFactory extends Mock implements PresentationMapperFactory {}
 
 class _MockQuestionOverviewItemViewModelMapper extends Mock
     implements QuestionOverviewItemViewModelMapper {}
