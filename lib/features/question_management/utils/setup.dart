@@ -9,47 +9,21 @@ import 'package:quiz_lab/features/question_management/data/data_sources/factorie
 import 'package:quiz_lab/features/question_management/data/repositories/factories/repository_factory_impl.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/mappers/factories/mapper_factory.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/factories/presentation_mapper_factory.dart';
 import 'package:uuid/uuid.dart';
 
-void quizDiSetup(DependencyInjection di) {
+void questionManagementDiSetup(DependencyInjection di) {
   di
     ..registerBuilder<QuestionRepository>(
       (DependencyInjection di) => QuestionRepositoryImpl(
         dataSourceFactory: DataSourceFactory(hiveInterface: Hive),
         mapperFactory: MapperFactory(),
       ),
-    )
-    ..registerBuilder<WatchAllQuestionsUseCase>(
-      (DependencyInjection di) {
-        final repositoryResult = di.get<QuestionRepository>();
-
-        if (repositoryResult.isErr) {
-          return null;
-        }
-
-        return WatchAllQuestionsUseCase(
-          repositoryFactory: RepositoryFactoryImpl(),
-        );
-      },
-    )
-    ..registerBuilder<DeleteQuestionUseCase>(
-      (DependencyInjection di) {
-        final repositoryResult = di.get<QuestionRepository>();
-
-        if (repositoryResult.isErr) {
-          return null;
-        }
-
-        return DeleteQuestionUseCase(
-          repositoryFactory: RepositoryFactoryImpl(),
-        );
-      },
     )
     ..registerBuilder<CreateQuestionUseCase>(
       (DependencyInjection di) {
@@ -65,18 +39,15 @@ void quizDiSetup(DependencyInjection di) {
         );
       },
     )
-    ..registerBuilder<UpdateQuestionUseCase>(
-      (DependencyInjection di) {
-        final repositoryResult = di.get<QuestionRepository>();
-
-        if (repositoryResult.isErr) {
-          return null;
-        }
-
-        return UpdateQuestionUseCase(
-          repositoryFactory: RepositoryFactoryImpl(),
-        );
-      },
+    ..registerBuilder<RepositoryFactory>(
+      (DependencyInjection di) => RepositoryFactoryImpl(),
+    )
+    ..registerBuilder<UseCaseFactory>(
+      (DependencyInjection di) =>
+          UseCaseFactory(repositoryFactory: di.get<RepositoryFactory>().ok!),
+    )
+    ..registerBuilder<PresentationMapperFactory>(
+      (di) => PresentationMapperFactory(),
     )
     ..registerBuilder<BottomNavigationCubit>(
       (DependencyInjection di) => BottomNavigationCubit(),

@@ -23,6 +23,6 @@ Future<void> setUp() async {
 
 void setupInjections() {
   dependencyInjection
-    ..addSetup(quizDiSetup)
+    ..addSetup(questionManagementDiSetup)
     ..setUp();
 }
