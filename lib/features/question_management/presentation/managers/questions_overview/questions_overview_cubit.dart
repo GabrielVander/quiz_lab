@@ -4,11 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_entity_mapper.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_overview_item_view_model_mapper.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/factories/mapper_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
 
 part 'questions_overview_state.dart';
@@ -16,28 +13,18 @@ part 'questions_overview_state.dart';
 class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     implements Manager {
   QuestionsOverviewCubit({
-    required WatchAllQuestionsUseCase watchAllQuestionsUseCase,
-    required DeleteQuestionUseCase deleteQuestionUseCase,
-    required UpdateQuestionUseCase updateQuestionUseCase,
-    required QuestionEntityMapper questionEntityMapper,
-    required QuestionOverviewItemViewModelMapper
-        questionOverviewItemViewModelMapper,
-  })  : _updateQuestionUseCase = updateQuestionUseCase,
-        _deleteQuestionUseCase = deleteQuestionUseCase,
-        _watchAllQuestionsUseCase = watchAllQuestionsUseCase,
-        _questionEntityMapper = questionEntityMapper,
-        _questionOverviewItemViewModelMapper =
-            questionOverviewItemViewModelMapper,
+    required UseCaseFactory useCaseFactory,
+    required MapperFactory mapperFactory,
+  })  : _useCaseFactory = useCaseFactory,
+        _mapperFactory = mapperFactory,
         super(QuestionsOverviewState.initial());
 
-  final WatchAllQuestionsUseCase _watchAllQuestionsUseCase;
-  final DeleteQuestionUseCase _deleteQuestionUseCase;
-  final UpdateQuestionUseCase _updateQuestionUseCase;
-  final QuestionEntityMapper _questionEntityMapper;
-  final QuestionOverviewItemViewModelMapper
-      _questionOverviewItemViewModelMapper;
+  final UseCaseFactory _useCaseFactory;
+  final MapperFactory _mapperFactory;
 
-  Future<void> updateQuestions() async {
+  final _questionStreamController = StreamController<List<Question>>();
+
+  void updateQuestions() {
     emit(QuestionsOverviewState.loading());
 
     _watchQuestions();
@@ -45,14 +32,17 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
 
   Future<void> removeQuestion(QuestionOverviewItemViewModel question) async {
     emit(QuestionsOverviewState.loading());
-    await _deleteQuestionUseCase.execute(question.id);
+
+    await _deleteQuestion(question);
   }
 
   Future<void> onQuestionSaved(QuestionOverviewItemViewModel viewModel) async {
     if (viewModel.shortDescription.isNotEmpty) {
       emit(QuestionsOverviewState.loading());
 
-      final asQuestionEntityMappingResult = _questionEntityMapper
+      final questionEntityMapper = _mapperFactory.makeQuestionEntityMapper();
+
+      final asQuestionEntityMappingResult = questionEntityMapper
           .singleFromQuestionOverviewItemViewModel(viewModel);
 
       if (asQuestionEntityMappingResult.isErr) {
@@ -63,7 +53,9 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
         );
       }
 
-      final updateResult = await _updateQuestionUseCase.execute(
+      final updateQuestionUseCase = _useCaseFactory.makeUpdateQuestionUseCase();
+
+      final updateResult = await updateQuestionUseCase.execute(
         asQuestionEntityMappingResult.ok!,
       );
 
@@ -73,19 +65,33 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
     }
   }
 
+  Future<void> _deleteQuestion(QuestionOverviewItemViewModel question) async {
+    final deleteQuestionUseCase = _useCaseFactory.makeDeleteQuestionUseCase();
+
+    await deleteQuestionUseCase.execute(question.id);
+  }
+
   void _watchQuestions() {
-    final watchResult = _watchAllQuestionsUseCase.execute();
+    final watchAllQuestionsUseCase =
+        _useCaseFactory.makeWatchAllQuestionsUseCase();
+
+    final watchResult = watchAllQuestionsUseCase.execute();
 
     if (watchResult.isErr) {
       emit(QuestionsOverviewState.error(message: watchResult.err!.message));
       return;
     }
 
-    watchResult.ok!.listen(_emitNewQuestions);
+    _questionStreamController.stream.listen(_emitNewQuestions);
+
+    watchResult.ok!.pipe(_questionStreamController);
   }
 
   void _emitNewQuestions(List<Question> newQuestions) {
-    final viewModels = _questionOverviewItemViewModelMapper
+    final questionOverviewItemViewModelMapper =
+        _mapperFactory.makeQuestionOverviewItemViewModelMapper();
+
+    final viewModels = questionOverviewItemViewModelMapper
         .multipleFromQuestionEntity(newQuestions);
 
     emit(

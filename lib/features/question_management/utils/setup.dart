@@ -15,10 +15,6 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/delete_qu
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_entity_mapper.dart'
-    as presentation_question_entity_mapper;
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_overview_item_view_model_mapper.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:uuid/uuid.dart';
 
 void quizDiSetup(DependencyInjection di) {
@@ -87,30 +83,6 @@ void quizDiSetup(DependencyInjection di) {
     )
     ..registerBuilder<AssessmentsOverviewCubit>(
       (DependencyInjection di) => AssessmentsOverviewCubit(),
-    )
-    ..registerBuilder<QuestionsOverviewCubit>(
-      (DependencyInjection di) {
-        final watchAllQuestionsUseCaseResult =
-            di.get<WatchAllQuestionsUseCase>();
-        final deleteQuestionUseCaseResult = di.get<DeleteQuestionUseCase>();
-        final updateQuestionUseCaseResult = di.get<UpdateQuestionUseCase>();
-
-        if (watchAllQuestionsUseCaseResult.isErr ||
-            deleteQuestionUseCaseResult.isErr ||
-            updateQuestionUseCaseResult.isErr) {
-          return null;
-        }
-
-        return QuestionsOverviewCubit(
-          watchAllQuestionsUseCase: watchAllQuestionsUseCaseResult.unwrap(),
-          deleteQuestionUseCase: deleteQuestionUseCaseResult.unwrap(),
-          updateQuestionUseCase: updateQuestionUseCaseResult.unwrap(),
-          questionEntityMapper:
-              presentation_question_entity_mapper.QuestionEntityMapper(),
-          questionOverviewItemViewModelMapper:
-              QuestionOverviewItemViewModelMapper(),
-        );
-      },
     )
     ..registerBuilder<QuestionCreationCubit>(
       (DependencyInjection di) {
