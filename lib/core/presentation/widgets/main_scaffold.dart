@@ -12,7 +12,6 @@ import 'package:quiz_lab/core/presentation/widgets/quiz_lab_nav_bar.dart';
 import 'package:quiz_lab/core/presentation/widgets/results_page.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/questions_overview_page.dart';
 
 class MainScaffold extends StatelessWidget {
@@ -62,8 +61,6 @@ class MainScaffold extends StatelessWidget {
               child: Pager(
                 bottomNavigationCubit:
                     bottomNavigationCubit.unwrap() as BottomNavigationCubit,
-                questionsOverviewCubit:
-                    questionsOverviewCubit.unwrap() as QuestionsOverviewCubit,
               ),
             ),
           );
@@ -95,11 +92,9 @@ class Pager extends HookWidget {
   const Pager({
     super.key,
     required this.bottomNavigationCubit,
-    required this.questionsOverviewCubit,
   });
 
   final BottomNavigationCubit bottomNavigationCubit;
-  final QuestionsOverviewCubit questionsOverviewCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +104,6 @@ class Pager extends HookWidget {
       case BottomNavigationIndexChangedState:
         return Page(
           bottomNavigationCubit: bottomNavigationCubit,
-          questionsOverviewCubit: questionsOverviewCubit,
           index: (state as BottomNavigationIndexChangedState).newIndex,
         );
     }
@@ -123,11 +117,9 @@ class Page extends StatelessWidget {
     super.key,
     required this.index,
     required this.bottomNavigationCubit,
-    required this.questionsOverviewCubit,
   });
 
   final BottomNavigationCubit bottomNavigationCubit;
-  final QuestionsOverviewCubit questionsOverviewCubit;
   final int index;
 
   @override
@@ -138,9 +130,7 @@ class Page extends StatelessWidget {
           assessmentsOverviewCubit: AssessmentsOverviewCubit(),
         );
       case 1:
-        return QuestionsOverviewPage(
-          questionsOverviewCubit: questionsOverviewCubit,
-        );
+        return QuestionsOverviewPage();
       case 2:
         return const ResultsPage();
     }
