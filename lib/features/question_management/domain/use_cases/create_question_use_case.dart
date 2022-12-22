@@ -6,16 +6,18 @@ import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class CreateQuestionUseCase {
   const CreateQuestionUseCase({
-    required this.questionRepository,
-    required this.uuidGenerator,
-  });
+    required RepositoryFactory repositoryFactory,
+    required ResourceUuidGenerator uuidGenerator,
+  })  : _uuidGenerator = uuidGenerator,
+        _repositoryFactory = repositoryFactory;
 
-  final QuestionRepository questionRepository;
-  final ResourceUuidGenerator uuidGenerator;
+  final RepositoryFactory _repositoryFactory;
+  final ResourceUuidGenerator _uuidGenerator;
 
   Future<Result<Unit, CreateQuestionUseCaseFailure>> execute(
     QuestionCreationInput input,
@@ -26,8 +28,8 @@ class CreateQuestionUseCase {
       return Result.err(inputParsingResult.err!);
     }
 
-    final creationResult =
-        await questionRepository.createSingle(inputParsingResult.ok!);
+    final question = _generateQuestionId(inputParsingResult.ok!);
+    final creationResult = await _createQuestion(question);
 
     return creationResult.mapErr(
       (error) => CreateQuestionUseCaseFailure.unableToCreate(
@@ -39,43 +41,19 @@ class CreateQuestionUseCase {
 
   Result<Question, _InputParseFailure> _parseInputToEntity(
     QuestionCreationInput input,
-  ) {
-    final difficultyParseResult = _difficultyFromInput(input);
+  ) =>
+      _InputParser.toEntity(input);
 
-    if (difficultyParseResult.isErr) {
-      return Result.err(difficultyParseResult.err!);
-    }
+  Future<Result<Unit, QuestionRepositoryFailure>> _createQuestion(
+    Question question,
+  ) async {
+    final questionRepository = _repositoryFactory.makeQuestionRepository();
 
-    return Result.ok(
-      Question(
-        id: uuidGenerator.generate(),
-        shortDescription: input.shortDescription,
-        description: input.description,
-        answerOptions: const [],
-        difficulty: difficultyParseResult.ok!,
-        categories:
-            input.categories.map((e) => QuestionCategory(value: e)).toList(),
-      ),
-    );
+    return questionRepository.createSingle(question);
   }
 
-  Result<QuestionDifficulty, _InputParseFailure> _difficultyFromInput(
-    QuestionCreationInput input,
-  ) {
-    final mappings = {
-      'easy': QuestionDifficulty.easy,
-      'medium': QuestionDifficulty.medium,
-      'hard': QuestionDifficulty.hard,
-    };
-
-    if (mappings.containsKey(input.difficulty)) {
-      return Result.ok(mappings[input.difficulty]!);
-    } else {
-      return Result.err(
-        _InputParseFailure.difficulty(receivedValue: input.difficulty),
-      );
-    }
-  }
+  Question _generateQuestionId(Question question) =>
+      question.copyWith(id: _uuidGenerator.generate());
 }
 
 @immutable
@@ -102,6 +80,48 @@ class QuestionCreationInput extends Equatable {
 
   @override
   bool get stringify => true;
+}
+
+class _InputParser {
+  static Result<Question, _InputParseFailure> toEntity(
+    QuestionCreationInput input,
+  ) {
+    final difficultyParseResult = _parseDifficulty(input);
+
+    if (difficultyParseResult.isErr) {
+      return Result.err(difficultyParseResult.err!);
+    }
+
+    return Result.ok(
+      Question(
+        id: '',
+        shortDescription: input.shortDescription,
+        description: input.description,
+        answerOptions: const [],
+        difficulty: difficultyParseResult.ok!,
+        categories:
+            input.categories.map((e) => QuestionCategory(value: e)).toList(),
+      ),
+    );
+  }
+
+  static Result<QuestionDifficulty, _InputParseFailure> _parseDifficulty(
+    QuestionCreationInput input,
+  ) {
+    final mappings = {
+      'easy': QuestionDifficulty.easy,
+      'medium': QuestionDifficulty.medium,
+      'hard': QuestionDifficulty.hard,
+    };
+
+    if (mappings.containsKey(input.difficulty)) {
+      return Result.ok(mappings[input.difficulty]!);
+    } else {
+      return Result.err(
+        _InputParseFailure.difficulty(receivedValue: input.difficulty),
+      );
+    }
+  }
 }
 
 @immutable

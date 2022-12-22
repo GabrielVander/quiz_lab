@@ -4,24 +4,26 @@ import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
 void main() {
-  late QuestionRepository dummyQuestionRepository;
+  late RepositoryFactory mockRepositoryFactory;
   late WatchAllQuestionsUseCase useCase;
 
   setUp(() {
-    dummyQuestionRepository = DummyQuestionRepository();
-    useCase =
-        WatchAllQuestionsUseCase(questionRepository: dummyQuestionRepository);
+    mockRepositoryFactory = _MockRepositoryFactory();
+    useCase = WatchAllQuestionsUseCase(
+      repositoryFactory: mockRepositoryFactory,
+    );
   });
 
   tearDown(resetMocktailState);
 
-  group('Err flow', () {
+  group('err flow', () {
     parameterizedTest(
-      'Question repository fails',
+      'question repository fails',
       ParameterizedSource.values([
         [
           QuestionRepositoryFailure.unableToWatchAll(message: ''),
@@ -36,7 +38,12 @@ void main() {
         final repositoryFailure = values[0] as QuestionRepositoryFailure;
         final expectedFailure = values[1] as WatchAllQuestionsFailure;
 
-        when(() => dummyQuestionRepository.watchAll())
+        final mockQuestionRepository = _MockQuestionRepository();
+
+        when(() => mockRepositoryFactory.makeQuestionRepository())
+            .thenReturn(mockQuestionRepository);
+
+        when(mockQuestionRepository.watchAll)
             .thenReturn(Result.err(repositoryFailure));
 
         final result = useCase.execute();
@@ -47,7 +54,7 @@ void main() {
     );
   });
 
-  group('Ok flow', () {
+  group('ok flow', () {
     parameterizedTest(
       'Use case should return stream from repository',
       ParameterizedSource.value([
@@ -96,8 +103,12 @@ void main() {
       (values) {
         final stream = values[0] as Stream<List<Question>>;
 
-        when(() => dummyQuestionRepository.watchAll())
-            .thenReturn(Result.ok(stream));
+        final mockQuestionRepository = _MockQuestionRepository();
+
+        when(() => mockRepositoryFactory.makeQuestionRepository())
+            .thenReturn(mockQuestionRepository);
+
+        when(mockQuestionRepository.watchAll).thenReturn(Result.ok(stream));
 
         final result = useCase.execute();
 
@@ -108,4 +119,6 @@ void main() {
   });
 }
 
-class DummyQuestionRepository extends Mock implements QuestionRepository {}
+class _MockRepositoryFactory extends Mock implements RepositoryFactory {}
+
+class _MockQuestionRepository extends Mock implements QuestionRepository {}

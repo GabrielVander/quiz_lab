@@ -8,16 +8,19 @@ import 'package:quiz_lab/features/question_management/domain/entities/answer_opt
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 
 void main() {
-  late QuestionRepository dummyRepository;
+  late RepositoryFactory mockRepositoryFactory;
   late UpdateQuestionUseCase useCase;
 
   setUp(() {
-    dummyRepository = _MockQuestionRepository();
-    useCase = UpdateQuestionUseCase(questionRepository: dummyRepository);
+    mockRepositoryFactory = _MockRepositoryFactory();
+    useCase = UpdateQuestionUseCase(
+      repositoryFactory: mockRepositoryFactory,
+    );
   });
 
   tearDown(resetMocktailState);
@@ -52,7 +55,12 @@ void main() {
         final repoFailure = values[1] as QuestionRepositoryFailure;
         final expectedFailure = values[2] as UpdateQuestionUseCaseFailure;
 
-        when(() => dummyRepository.updateSingle(question))
+        final mockQuestionRepository = _MockQuestionRepository();
+
+        when(() => mockRepositoryFactory.makeQuestionRepository())
+            .thenReturn(mockQuestionRepository);
+
+        when(() => mockQuestionRepository.updateSingle(question))
             .thenAnswer((_) async => Result.err(repoFailure));
 
         final result = await useCase.execute(question);
@@ -95,7 +103,12 @@ void main() {
       (values) async {
         final input = values[0] as Question;
 
-        when(() => dummyRepository.updateSingle(input))
+        final mockQuestionRepository = _MockQuestionRepository();
+
+        when(() => mockRepositoryFactory.makeQuestionRepository())
+            .thenReturn(mockQuestionRepository);
+
+        when(() => mockQuestionRepository.updateSingle(input))
             .thenAnswer((_) async => const Result.ok(unit));
 
         final result = await useCase.execute(input);
@@ -106,6 +119,8 @@ void main() {
     );
   });
 }
+
+class _MockRepositoryFactory extends Mock implements RepositoryFactory {}
 
 class _MockQuestionRepository extends Mock implements QuestionRepository {}
 

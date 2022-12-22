@@ -1,13 +1,15 @@
-import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 
 class DeleteQuestionUseCase {
   const DeleteQuestionUseCase({
-    required this.questionRepository,
-  });
+    required RepositoryFactory repositoryFactory,
+  }) : _repositoryFactory = repositoryFactory;
 
-  final QuestionRepository questionRepository;
+  final RepositoryFactory _repositoryFactory;
 
   Future<void> execute(String questionId) async {
+    final questionRepository = _repositoryFactory.makeQuestionRepository();
+
     await questionRepository.deleteSingle(questionId);
   }
 }

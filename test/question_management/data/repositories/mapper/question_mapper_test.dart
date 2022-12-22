@@ -1,16 +1,16 @@
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_entity_mapper.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 
 void main() {
-  late QuestionMapper mapper;
+  late QuestionEntityMapper mapper;
 
   setUp(() {
-    mapper = QuestionMapper();
+    mapper = QuestionEntityMapper();
   });
 
   group('fromHiveModel', () {

@@ -1,3 +1,4 @@
+// coverage:ignore-file
 // DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
 // This is a library that provides messages for a pt_BR locale. All the
 // messages from the main program should be duplicated here with the same

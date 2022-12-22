@@ -2,17 +2,18 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 
 class WatchAllQuestionsUseCase {
   const WatchAllQuestionsUseCase({
-    required QuestionRepository questionRepository,
-  }) : _questionRepository = questionRepository;
+    required RepositoryFactory repositoryFactory,
+  }) : _repositoryFactory = repositoryFactory;
 
-  final QuestionRepository _questionRepository;
+  final RepositoryFactory _repositoryFactory;
 
   Result<Stream<List<Question>>, WatchAllQuestionsFailure> execute() {
-    final streamResult = _questionRepository.watchAll();
+    final questionRepository = _repositoryFactory.makeQuestionRepository();
+    final streamResult = questionRepository.watchAll();
 
     if (streamResult.isErr) {
       return Result.err(

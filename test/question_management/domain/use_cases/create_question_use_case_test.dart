@@ -9,30 +9,32 @@ import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 
 void main() {
-  late QuestionRepository mockRepository;
+  late RepositoryFactory mockRepositoryFactory;
   late ResourceUuidGenerator mockUuidGenerator;
   late CreateQuestionUseCase useCase;
 
   setUp(() {
-    mockRepository = _MockQuestionRepository();
+    mockRepositoryFactory = _MockRepositoryFactory();
     mockUuidGenerator = _MockResourceUuidGenerator();
+
     useCase = CreateQuestionUseCase(
-      questionRepository: mockRepository,
+      repositoryFactory: mockRepositoryFactory,
       uuidGenerator: mockUuidGenerator,
     );
   });
 
   tearDown(resetMocktailState);
 
-  group('Err flow', () {
+  group('err flow', () {
     setUp(() => registerFallbackValue(_FakeQuestion()));
 
     parameterizedTest(
-      'Unable to parse input',
+      'unable to parse input',
       ParameterizedSource.values([
         [
           const QuestionCreationInput(
@@ -65,7 +67,7 @@ void main() {
     );
 
     parameterizedTest(
-      'Question repository fails',
+      'question repository fails',
       ParameterizedSource.values([
         [
           const QuestionCreationInput(
@@ -134,9 +136,14 @@ void main() {
         final repositoryFailure = values[2] as QuestionRepositoryFailure;
         final expectedFailure = values[3] as CreateQuestionUseCaseFailure;
 
+        final mockQuestionRepository = _MockQuestionRepository();
+
+        when(mockRepositoryFactory.makeQuestionRepository)
+            .thenReturn(mockQuestionRepository);
+
         when(() => mockUuidGenerator.generate()).thenReturn(uuid);
 
-        when(() => mockRepository.createSingle(any()))
+        when(() => mockQuestionRepository.createSingle(any()))
             .thenAnswer((_) async => Result.err(repositoryFailure));
 
         final result = await useCase.execute(input);
@@ -147,9 +154,9 @@ void main() {
     );
   });
 
-  group('Ok flow', () {
+  group('ok flow', () {
     parameterizedTest(
-      'Should call repository correctly',
+      'should call repository correctly',
       ParameterizedSource.values([
         [
           const QuestionCreationInput(
@@ -194,14 +201,19 @@ void main() {
         final uuid = values[1] as String;
         final expected = values[2] as Question;
 
+        final mockQuestionRepository = _MockQuestionRepository();
+
+        when(mockRepositoryFactory.makeQuestionRepository)
+            .thenReturn(mockQuestionRepository);
+
         when(() => mockUuidGenerator.generate()).thenReturn(uuid);
 
-        when(() => mockRepository.createSingle(any()))
+        when(() => mockQuestionRepository.createSingle(any()))
             .thenAnswer((_) async => const Result.ok(unit));
 
         await useCase.execute(input);
 
-        verify(() => mockRepository.createSingle(expected)).called(1);
+        verify(() => mockQuestionRepository.createSingle(expected)).called(1);
       },
     );
   });
@@ -212,6 +224,8 @@ class _FakeQuestion extends Fake with EquatableMixin implements Question {
   @override
   List<Object> get props => [];
 }
+
+class _MockRepositoryFactory extends Mock implements RepositoryFactory {}
 
 class _MockQuestionRepository extends Mock implements QuestionRepository {}
 
