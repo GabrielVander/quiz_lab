@@ -14,20 +14,17 @@ abstract class QuestionsOverviewState extends Equatable {
 
   factory QuestionsOverviewState.error({required String message}) =>
       QuestionsOverviewError._(message: message);
+
+  @override
+  List<Object> get props => [];
 }
 
 class Initial extends QuestionsOverviewState {
   const Initial._();
-
-  @override
-  List<Object> get props => [];
 }
 
 class Loading extends QuestionsOverviewState {
   const Loading._();
-
-  @override
-  List<Object> get props => [];
 }
 
 class QuestionListUpdated extends QuestionsOverviewState {
@@ -38,7 +35,7 @@ class QuestionListUpdated extends QuestionsOverviewState {
   final List<QuestionOverviewItemViewModel> questions;
 
   @override
-  List<Object> get props => [questions];
+  List<Object> get props => super.props..addAll([questions]);
 }
 
 class QuestionsOverviewError extends QuestionsOverviewState {
@@ -49,5 +46,5 @@ class QuestionsOverviewError extends QuestionsOverviewState {
   final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => super.props..addAll([message]);
 }

@@ -51,6 +51,8 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState>
             message: asQuestionEntityMappingResult.err!.message,
           ),
         );
+
+        return;
       }
 
       final updateQuestionUseCase = _useCaseFactory.makeUpdateQuestionUseCase();
