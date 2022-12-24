@@ -182,43 +182,22 @@ class _Form extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 15),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _TitleField(
-                    cubit: cubit,
-                  ),
-                ),
-              ],
+          _FormSection(
+            child: _TitleField(
+              cubit: cubit,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 15),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _DescriptionField(
-                    viewModel: viewModel.description,
-                    onChange: onDescriptionChange,
-                  ),
-                ),
-              ],
+          _FormSection(
+            child: _DescriptionField(
+              viewModel: viewModel.description,
+              onChange: onDescriptionChange,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 15),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _Options(
-                    viewModel: viewModel.options,
-                    onAddOption: onAddOption,
-                    onIsCorrect: onIsCorrect,
-                  ),
-                ),
-              ],
+          _FormSection(
+            child: _Options(
+              viewModel: viewModel.options,
+              onAddOption: onAddOption,
+              onIsCorrect: onIsCorrect,
             ),
           ),
           Row(
@@ -237,6 +216,26 @@ class _Form extends StatelessWidget {
               ),
             ],
           )
+        ],
+      ),
+    );
+  }
+}
+
+class _FormSection extends StatelessWidget {
+  const _FormSection({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: Row(
+        children: [
+          Expanded(
+            child: child,
+          ),
         ],
       ),
     );
