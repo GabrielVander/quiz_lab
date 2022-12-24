@@ -241,7 +241,7 @@ class _QuestionEditBottomSheet extends StatelessWidget {
                 TextField(
                   controller: controller,
                   decoration: InputDecoration(
-                    label: Text(S.of(context).questionShortDescriptionLabel),
+                    label: Text(S.of(context).questionTitleLabel),
                   ),
                 ),
                 ElevatedButton(

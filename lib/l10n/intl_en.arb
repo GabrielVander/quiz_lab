@@ -84,9 +84,9 @@
   "@createQuestionTitle": {
     "description": "Question creation page's title"
   },
-  "questionShortDescriptionLabel": "Short Description",
-  "@questionShortDescriptionLabel": {
-    "description": "Question's short description label"
+  "questionTitleLabel": "Title",
+  "@questionTitleLabel": {
+    "description": "Question's tile label"
   },
   "questionDescriptionLabel": "Description",
   "@questionDescriptionLabel": {

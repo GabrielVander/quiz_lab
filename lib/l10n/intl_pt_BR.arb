@@ -15,7 +15,7 @@
   "questionDifficultyLabel": "Dificuldade",
   "questionDifficultyValue": "{difficulty, select, easy {Fácil} medium {Médio} hard {Difícil} other {Desconhecido}}",
   "createQuestionTitle": "Criar Questão",
-  "questionShortDescriptionLabel": "Descrição Breve",
+  "questionTitleLabel": "Título",
   "questionDescriptionLabel": "Descrição",
   "goBackLabel": "Voltar",
   "createLabel": "Criar",

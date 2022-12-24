@@ -39,20 +39,8 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
-  Future<void> onShortDescriptionUpdate(
-    BuildContext context,
-    String newValue,
-  ) async {
-    _viewModel = _viewModel.copyWith(
-      shortDescription: _viewModel.shortDescription.copyWith(value: newValue),
-    );
-    _viewModel = _validateShortDescription(context, _viewModel);
-
-    emit(
-      QuestionCreationDisplayUpdate(
-        viewModel: _viewModel,
-      ),
-    );
+  void onTitleUpdate(String newValue) {
+    _validateNewQuestionTitle(newValue);
   }
 
   Future<void> onDescriptionUpdate(
@@ -129,7 +117,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   ) {
     var copy = viewModel;
 
-    copy = _validateShortDescription(context, copy);
+    _validateNewQuestionTitle(copy.shortDescription.value);
     copy = _validateDescription(context, copy);
 
     _isValid = copy == viewModel;
@@ -157,24 +145,14 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     );
   }
 
-  QuestionCreationViewModel _validateShortDescription(
-    BuildContext context,
-    QuestionCreationViewModel viewModel,
-  ) {
-    if (viewModel.shortDescription.value == '') {
-      return viewModel.copyWith(
-        shortDescription: viewModel.shortDescription.copyWith(
-          hasError: true,
-          errorMessage: S.of(context).mustBeSetMessage,
-        ),
-      );
+  void _validateNewQuestionTitle(String value) {
+    if (value == '') {
+      emit(QuestionCreationState.emptyTitle());
+
+      return;
     }
 
-    return viewModel.copyWith(
-      shortDescription: viewModel.shortDescription.copyWith(
-        hasError: false,
-      ),
-    );
+    emit(QuestionCreationState.titleOk());
   }
 
   Future<void> _createQuestion() async {

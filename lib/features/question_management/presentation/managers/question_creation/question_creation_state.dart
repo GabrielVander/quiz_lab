@@ -17,6 +17,12 @@ abstract class QuestionCreationState extends Equatable {
   factory QuestionCreationState.failure({required String message}) =>
       CreationError._(message: message);
 
+  factory QuestionCreationState.emptyTitle() =>
+      const QuestionCreationEmptyTitle._();
+
+  factory QuestionCreationState.titleOk() =>
+      const QuestionCreationTitleIsOk._();
+
   @override
   bool get stringify => true;
 }
@@ -62,6 +68,20 @@ class Loading extends QuestionCreationState {
 
 class Success extends QuestionCreationState {
   const Success._();
+
+  @override
+  List<Object> get props => [];
+}
+
+class QuestionCreationEmptyTitle extends QuestionCreationState {
+  const QuestionCreationEmptyTitle._();
+
+  @override
+  List<Object> get props => [];
+}
+
+class QuestionCreationTitleIsOk extends QuestionCreationState {
+  const QuestionCreationTitleIsOk._();
 
   @override
   List<Object> get props => [];

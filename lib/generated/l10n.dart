@@ -1,8 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -214,12 +212,12 @@ class S {
     );
   }
 
-  /// `Short Description`
-  String get questionShortDescriptionLabel {
+  /// `Title`
+  String get questionTitleLabel {
     return Intl.message(
-      'Short Description',
-      name: 'questionShortDescriptionLabel',
-      desc: 'Question\'s short description label',
+      'Title',
+      name: 'questionTitleLabel',
+      desc: 'Question\'s tile label',
       args: [],
     );
   }

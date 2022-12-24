@@ -2,39 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/common/manager_factory.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class QuestionView extends StatelessWidget {
-  const QuestionView({
+class QuestionCreationPage extends StatelessWidget {
+  const QuestionCreationPage({
     super.key,
-    required this.managerFactory,
+    required this.cubit,
   });
 
-  final ManagerFactory managerFactory;
+  final QuestionCreationCubit cubit;
 
   @override
   Widget build(BuildContext context) {
-    final questionCreationCubitResult = managerFactory.make(
-      desiredManager: AvailableManagers.questionCreationCubit,
-    );
-
-    if (questionCreationCubitResult.isErr) {
-      return Container();
-    }
-
     return SafeArea(
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(10),
-          child: _Body(
-            cubit:
-                questionCreationCubitResult.unwrap() as QuestionCreationCubit,
-          ),
+          child: _Body(cubit: cubit),
         ),
       ),
     );
@@ -50,11 +38,11 @@ class _Body extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(cubit);
-
-    if (state is QuestionCreationInitial) {
-      cubit.update();
-    }
+    final state = useBlocBuilder(
+      cubit,
+      buildWhen: (currentState) => [Success, CreationError]
+          .any((Type element) => currentState.runtimeType == element),
+    );
 
     if (state is Success || state is CreationError) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -89,47 +77,47 @@ class _Body extends HookWidget {
           ),
         );
       });
-
-      cubit.update();
     }
 
-    if (state is QuestionCreationDisplayUpdate) {
-      // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            _PageTitle(),
+          ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Expanded(
+          child: Builder(
+            builder: (context) {
+              if (state is QuestionCreationDisplayUpdate) {
+                return _Form(
+                  cubit: cubit,
+                  viewModel: state.viewModel,
+                  onShortDescriptionChange: cubit.onTitleUpdate,
+                  onDescriptionChange: (value) =>
+                      cubit.onDescriptionUpdate(context, value),
+                  onCreateQuestion: () => cubit.createQuestion(context),
+                  onAddOption: cubit.addOption,
+                  onIsCorrect: cubit.optionIsCorrect,
+                );
+              }
 
-      return Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              _PageTitle(),
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: _Form(
-              viewModel: state.viewModel,
-              onShortDescriptionChange: (value) =>
-                  cubit.onShortDescriptionUpdate(context, value),
-              onDescriptionChange: (value) =>
-                  cubit.onDescriptionUpdate(context, value),
-              onCreateQuestion: () => cubit.createQuestion(context),
-              onAddOption: cubit.addOption,
-              onIsCorrect: cubit.optionIsCorrect,
-            ),
-          ),
-        ],
-      );
-    }
+              if (state is Loading || state is QuestionCreationInitial) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
 
-    if (state is Loading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    return Container();
+              return Container();
+            },
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -141,6 +129,7 @@ class _PageTitle extends StatelessWidget {
     final fontSize = _getFontSize(context);
 
     return Text(
+      key: const ValueKey('newQuestionPageTitle'),
       S.of(context).createQuestionTitle,
       style: TextStyle(
         fontSize: fontSize,
@@ -170,6 +159,7 @@ class _PageTitle extends StatelessWidget {
 
 class _Form extends StatelessWidget {
   const _Form({
+    required this.cubit,
     required this.viewModel,
     required this.onShortDescriptionChange,
     required this.onDescriptionChange,
@@ -178,6 +168,7 @@ class _Form extends StatelessWidget {
     required this.onCreateQuestion,
   });
 
+  final QuestionCreationCubit cubit;
   final QuestionCreationViewModel viewModel;
   final void Function(String newValue) onShortDescriptionChange;
   final void Function(String newValue) onDescriptionChange;
@@ -196,9 +187,8 @@ class _Form extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: _ShortDescriptionField(
-                    viewModel: viewModel.shortDescription,
-                    onChanged: onShortDescriptionChange,
+                  child: _TitleField(
+                    cubit: cubit,
                   ),
                 ),
               ],
@@ -253,25 +243,42 @@ class _Form extends StatelessWidget {
   }
 }
 
-class _ShortDescriptionField extends StatelessWidget {
-  const _ShortDescriptionField({
-    required this.viewModel,
-    required this.onChanged,
+class _TitleField extends HookWidget {
+  const _TitleField({
+    required this.cubit,
   });
 
-  final FieldViewModel viewModel;
-  final void Function(String newValue) onChanged;
+  final QuestionCreationCubit cubit;
 
   @override
   Widget build(BuildContext context) {
+    final state = useBlocBuilder(
+      cubit,
+      buildWhen: (currentState) => [
+        QuestionCreationEmptyTitle,
+        QuestionCreationTitleIsOk
+      ].any((element) => currentState.runtimeType == element),
+    );
+
+    String? errorMessage;
+    const enabled = true;
+
+    if (state is QuestionCreationEmptyTitle) {
+      errorMessage = S.of(context).mustBeSetMessage;
+    }
+
+    if (state is QuestionCreationTitleIsOk) {
+      errorMessage = null;
+    }
+
     return TextField(
       decoration: InputDecoration(
-        labelText: S.of(context).questionShortDescriptionLabel,
+        labelText: S.of(context).questionTitleLabel,
         border: const OutlineInputBorder(),
-        errorText: viewModel.hasError ? viewModel.errorMessage : null,
+        errorText: errorMessage,
       ),
-      enabled: viewModel.isEnabled,
-      onChanged: onChanged,
+      onChanged: cubit.onTitleUpdate,
+      enabled: enabled,
     );
   }
 }
@@ -294,8 +301,8 @@ class _DescriptionField extends StatelessWidget {
         errorText: viewModel.hasError ? viewModel.errorMessage : null,
       ),
       onChanged: onChange,
-      minLines: 3,
-      maxLines: 3,
+      minLines: 5,
+      maxLines: 10,
     );
   }
 }
