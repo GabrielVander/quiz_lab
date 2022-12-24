@@ -9,9 +9,7 @@ void main() async {
   await setUp();
 
   runApp(
-    QuizLabApplication(
-      dependencyInjection: dependencyInjection,
-    ),
+    QuizLabApplication(dependencyInjection: dependencyInjection),
   );
 }
 

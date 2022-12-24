@@ -38,46 +38,39 @@ class _Body extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(
+    useBlocListener(
       cubit,
-      buildWhen: (currentState) => [Success, CreationError]
-          .any((Type element) => currentState.runtimeType == element),
-    );
+      (_, listenedState, ctx) {
+        var message = S.of(context).questionSavedSuccessfully;
+        var backgroundColor = Colors.green;
 
-    if (state is Success || state is CreationError) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showMaterialBanner(
-          MaterialBanner(
-            content: DecoratedBox(
-              decoration: BoxDecoration(
-                color: state is Success ? Colors.green : Colors.red,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      state is Success
-                          ? S.of(context).questionSavedSuccessfully
-                          : S.of(context).questionSavingFailure(
-                                (state as CreationError).message,
-                              ),
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              Container(),
-            ],
+        if (listenedState is QuestionCreationHasFailed) {
+          message = S.of(context).questionSavingFailure(
+                listenedState.details,
+              );
+          backgroundColor = Colors.red;
+        }
+
+        final snackBar = SnackBar(
+          content: Text(message),
+          backgroundColor: backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
+          behavior: SnackBarBehavior.floating,
         );
-      });
-    }
+
+        ScaffoldMessenger.of(ctx).showSnackBar(snackBar);
+
+        if (listenedState is QuestionCreationHasSucceded) {
+          GoRouter.of(ctx).go('/');
+        }
+      },
+      listenWhen: (currentState) => [
+        QuestionCreationHasSucceded,
+        QuestionCreationHasFailed
+      ].any((Type element) => currentState.runtimeType == element),
+    );
 
     return Column(
       children: [
@@ -93,23 +86,12 @@ class _Body extends HookWidget {
         Expanded(
           child: Builder(
             builder: (context) {
-              if (state is QuestionCreationDisplayUpdate) {
-                return _Form(
-                  cubit: cubit,
-                  viewModel: state.viewModel,
-                  onCreateQuestion: cubit.createQuestion,
-                  onAddOption: cubit.addOption,
-                  onIsCorrect: cubit.optionIsCorrect,
-                );
-              }
-
-              if (state is Loading || state is QuestionCreationInitial) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
-              return Container();
+              return _Form(
+                cubit: cubit,
+                onCreateQuestion: cubit.createQuestion,
+                onAddOption: cubit.addOption,
+                onIsCorrect: cubit.optionIsCorrect,
+              );
             },
           ),
         ),
@@ -157,14 +139,12 @@ class _PageTitle extends StatelessWidget {
 class _Form extends StatelessWidget {
   const _Form({
     required this.cubit,
-    required this.viewModel,
     required this.onAddOption,
     required this.onIsCorrect,
     required this.onCreateQuestion,
   });
 
   final QuestionCreationCubit cubit;
-  final QuestionCreationViewModel viewModel;
   final void Function() onAddOption;
   final void Function(SingleOptionViewModel viewModel) onIsCorrect;
   final void Function() onCreateQuestion;
@@ -183,7 +163,6 @@ class _Form extends StatelessWidget {
           ),
           _FormSection(
             child: _Options(
-              viewModel: viewModel.options,
               onAddOption: onAddOption,
               onIsCorrect: onIsCorrect,
             ),
@@ -242,19 +221,19 @@ class _TitleField extends HookWidget {
     final state = useBlocBuilder(
       _cubit,
       buildWhen: (currentState) => [
-        QuestionCreationEmptyTitle,
-        QuestionCreationTitleIsOk
+        QuestionCreationTitleIsEmpty,
+        QuestionCreationTitleIsValid
       ].any((element) => currentState.runtimeType == element),
     );
 
     String? errorMessage;
     const enabled = true;
 
-    if (state is QuestionCreationEmptyTitle) {
+    if (state is QuestionCreationTitleIsEmpty) {
       errorMessage = S.of(context).mustBeSetMessage;
     }
 
-    if (state is QuestionCreationTitleIsOk) {
+    if (state is QuestionCreationTitleIsValid) {
       errorMessage = null;
     }
 
@@ -282,18 +261,18 @@ class _DescriptionField extends HookWidget {
     final state = useBlocBuilder(
       _cubit,
       buildWhen: (currentState) => [
-        QuestionCreationEmptyDescription,
-        QuestionCreationDescriptionIsOk
+        QuestionCreationDescriptionIsEmpty,
+        QuestionCreationDescriptionIsValid
       ].any((element) => currentState.runtimeType == element),
     );
 
     String? errorMessage;
 
-    if (state is QuestionCreationEmptyDescription) {
+    if (state is QuestionCreationDescriptionIsEmpty) {
       errorMessage = S.of(context).mustBeSetMessage;
     }
 
-    if (state is QuestionCreationDescriptionIsOk) {
+    if (state is QuestionCreationDescriptionIsValid) {
       errorMessage = null;
     }
 
@@ -312,18 +291,16 @@ class _DescriptionField extends HookWidget {
 
 class _Options extends StatelessWidget {
   const _Options({
-    required this.viewModel,
     required this.onAddOption,
     required this.onIsCorrect,
   });
 
-  final OptionsViewModel viewModel;
   final void Function() onAddOption;
   final void Function(SingleOptionViewModel viewModel) onIsCorrect;
 
   @override
   Widget build(BuildContext context) {
-    final options = viewModel.optionViewModels;
+    // final options = <OptionsViewModel>[];
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -347,20 +324,20 @@ class _Options extends StatelessWidget {
               children: [
                 Expanded(
                   child: Column(
-                    children: options
-                        .map(
-                          (e) => Padding(
-                            padding: const EdgeInsets.only(bottom: 5),
-                            child: _Option(
-                              key: e.id,
-                              viewModel: e,
-                              onIsCorrect: ({required bool value}) =>
-                                  onIsCorrect(e),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
+                      // children: options
+                      //     .map(
+                      //       (e) => Padding(
+                      //         padding: const EdgeInsets.only(bottom: 5),
+                      //         child: _Option(
+                      //           key: e.id,
+                      //           viewModel: e,
+                      //           onIsCorrect: ({required bool value}) =>
+                      //               onIsCorrect(e),
+                      //         ),
+                      //       ),
+                      //     )
+                      //     .toList(),
+                      ),
                 ),
               ],
             ),
@@ -375,42 +352,42 @@ class _Options extends StatelessWidget {
   }
 }
 
-class _Option extends StatelessWidget {
-  const _Option({
-    super.key,
-    required this.viewModel,
-    required this.onIsCorrect,
-  });
-
-  final SingleOptionViewModel viewModel;
-  final void Function({required bool value}) onIsCorrect;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              labelText: S.of(context).optionInputLabel,
-              border: const OutlineInputBorder(),
-            ),
-          ),
-        ),
-        Row(
-          children: [
-            Checkbox(
-              value: viewModel.isCorrect,
-              onChanged: (bool? value) => onIsCorrect(value: value ?? false),
-            ),
-            Text(S.of(context).isOptionCorrectLabel),
-          ],
-        )
-      ],
-    );
-  }
-}
+// class _Option extends StatelessWidget {
+//   const _Option({
+//     super.key,
+//     required this.viewModel,
+//     required this.onIsCorrect,
+//   });
+//
+//   final SingleOptionViewModel viewModel;
+//   final void Function({required bool value}) onIsCorrect;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//       children: [
+//         Expanded(
+//           child: TextField(
+//             decoration: InputDecoration(
+//               labelText: S.of(context).optionInputLabel,
+//               border: const OutlineInputBorder(),
+//             ),
+//           ),
+//         ),
+//         Row(
+//           children: [
+//             Checkbox(
+//               value: viewModel.isCorrect,
+//               onChanged: (bool? value) => onIsCorrect(value: value ?? false),
+//             ),
+//             Text(S.of(context).isOptionCorrectLabel),
+//           ],
+//         )
+//       ],
+//     );
+//   }
+// }
 
 class _Subtitle extends StatelessWidget {
   const _Subtitle();

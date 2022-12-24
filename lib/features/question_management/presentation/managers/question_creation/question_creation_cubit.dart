@@ -100,23 +100,23 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
 
   bool _validateNewQuestionTitle() {
     if (_title == '') {
-      emit(QuestionCreationState.emptyTitle());
+      emit(QuestionCreationState.titleIsEmpty());
 
       return false;
     }
 
-    emit(QuestionCreationState.titleOk());
+    emit(QuestionCreationState.titleIsValid());
     return true;
   }
 
   bool _validateNewQuestionDescription() {
     if (_description == '') {
-      emit(QuestionCreationState.emptyDescription());
+      emit(QuestionCreationState.descriptionIsEmpty());
 
       return false;
     }
 
-    emit(QuestionCreationState.descriptionOk());
+    emit(QuestionCreationState.descriptionIsValid());
     return true;
   }
 
@@ -139,7 +139,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     );
 
     if (creationResult.isErr) {
-      emit(QuestionCreationState.failure(message: creationResult.err!.message));
+      emit(QuestionCreationState.failure(details: creationResult.err!.message));
       return;
     }
 

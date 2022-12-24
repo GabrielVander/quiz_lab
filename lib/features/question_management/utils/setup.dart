@@ -13,7 +13,6 @@ import 'package:quiz_lab/features/question_management/domain/repositories/factor
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/factories/presentation_mapper_factory.dart';
 import 'package:uuid/uuid.dart';
 
@@ -54,19 +53,6 @@ void questionManagementDiSetup(DependencyInjection di) {
     )
     ..registerBuilder<AssessmentsOverviewCubit>(
       (DependencyInjection di) => AssessmentsOverviewCubit(),
-    )
-    ..registerBuilder<QuestionCreationCubit>(
-      (DependencyInjection di) {
-        final createQuestionUseCaseResult = di.get<CreateQuestionUseCase>();
-
-        if (createQuestionUseCaseResult.isErr) {
-          return null;
-        }
-
-        return QuestionCreationCubit(
-          createQuestionUseCase: createQuestionUseCaseResult.unwrap(),
-        );
-      },
     )
     ..registerBuilder<NetworkCubit>((DependencyInjection di) => NetworkCubit())
     ..registerBuilder<ManagerFactory>(

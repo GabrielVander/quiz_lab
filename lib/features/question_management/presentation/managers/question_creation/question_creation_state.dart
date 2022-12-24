@@ -12,22 +12,23 @@ abstract class QuestionCreationState extends Equatable {
 
   factory QuestionCreationState.loading() => const Loading._();
 
-  factory QuestionCreationState.success() => const Success._();
+  factory QuestionCreationState.success() =>
+      const QuestionCreationHasSucceded._();
 
-  factory QuestionCreationState.failure({required String message}) =>
-      CreationError._(message: message);
+  factory QuestionCreationState.failure({required String details}) =>
+      QuestionCreationHasFailed._(details: details);
 
-  factory QuestionCreationState.emptyTitle() =>
-      const QuestionCreationEmptyTitle._();
+  factory QuestionCreationState.titleIsEmpty() =>
+      const QuestionCreationTitleIsEmpty._();
 
-  factory QuestionCreationState.titleOk() =>
-      const QuestionCreationTitleIsOk._();
+  factory QuestionCreationState.titleIsValid() =>
+      const QuestionCreationTitleIsValid._();
 
-  factory QuestionCreationState.emptyDescription() =>
-      const QuestionCreationEmptyDescription._();
+  factory QuestionCreationState.descriptionIsEmpty() =>
+      const QuestionCreationDescriptionIsEmpty._();
 
-  factory QuestionCreationState.descriptionOk() =>
-      const QuestionCreationDescriptionIsOk._();
+  factory QuestionCreationState.descriptionIsValid() =>
+      const QuestionCreationDescriptionIsValid._();
 
   @override
   bool get stringify => true;
@@ -53,18 +54,20 @@ class QuestionCreationDisplayUpdate extends QuestionCreationState {
       ];
 }
 
-class QuestionCreationQuestionCreated extends QuestionCreationState {
+class QuestionCreationHasFailed extends QuestionCreationState {
+  const QuestionCreationHasFailed._({required this.details});
+
+  final String details;
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [details];
 }
 
-class CreationError extends QuestionCreationState {
-  const CreationError._({required this.message});
-
-  final String message;
+class QuestionCreationHasSucceded extends QuestionCreationState {
+  const QuestionCreationHasSucceded._();
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [];
 }
 
 class Loading extends QuestionCreationState {
@@ -74,36 +77,29 @@ class Loading extends QuestionCreationState {
   List<Object> get props => [];
 }
 
-class Success extends QuestionCreationState {
-  const Success._();
+class QuestionCreationTitleIsEmpty extends QuestionCreationState {
+  const QuestionCreationTitleIsEmpty._();
 
   @override
   List<Object> get props => [];
 }
 
-class QuestionCreationEmptyTitle extends QuestionCreationState {
-  const QuestionCreationEmptyTitle._();
+class QuestionCreationTitleIsValid extends QuestionCreationState {
+  const QuestionCreationTitleIsValid._();
 
   @override
   List<Object> get props => [];
 }
 
-class QuestionCreationTitleIsOk extends QuestionCreationState {
-  const QuestionCreationTitleIsOk._();
+class QuestionCreationDescriptionIsEmpty extends QuestionCreationState {
+  const QuestionCreationDescriptionIsEmpty._();
 
   @override
   List<Object> get props => [];
 }
 
-class QuestionCreationEmptyDescription extends QuestionCreationState {
-  const QuestionCreationEmptyDescription._();
-
-  @override
-  List<Object> get props => [];
-}
-
-class QuestionCreationDescriptionIsOk extends QuestionCreationState {
-  const QuestionCreationDescriptionIsOk._();
+class QuestionCreationDescriptionIsValid extends QuestionCreationState {
+  const QuestionCreationDescriptionIsValid._();
 
   @override
   List<Object> get props => [];
