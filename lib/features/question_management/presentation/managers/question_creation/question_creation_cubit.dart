@@ -1,25 +1,24 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation.dart';
-import 'package:quiz_lab/generated/l10n.dart';
 
 part 'question_creation_state.dart';
 
 class QuestionCreationCubit extends Cubit<QuestionCreationState>
     implements Manager {
   QuestionCreationCubit({
-    required this.useCaseFactory,
-  }) : super(QuestionCreationInitial()) {
+    required UseCaseFactory useCaseFactory,
+  })  : _useCaseFactory = useCaseFactory,
+        super(QuestionCreationState.initial()) {
     display();
   }
 
-  final UseCaseFactory useCaseFactory;
-
-  bool _isValid = false;
+  final UseCaseFactory _useCaseFactory;
+  String _title = '';
+  String _description = '';
 
   QuestionCreationViewModel _viewModel = const QuestionCreationViewModel(
     shortDescription: FieldViewModel(
@@ -40,32 +39,19 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   void onTitleUpdate(String newValue) {
-    _validateNewQuestionTitle(newValue);
+    _title = newValue;
+    _validateNewQuestionTitle();
   }
 
-  Future<void> onDescriptionUpdate(
-    BuildContext context,
-    String newValue,
-  ) async {
-    _viewModel = _viewModel.copyWith(
-      description: _viewModel.description.copyWith(
-        value: newValue,
-      ),
-    );
-    _viewModel = _validateDescription(context, _viewModel);
-
-    emit(
-      QuestionCreationDisplayUpdate(
-        viewModel: _viewModel,
-      ),
-    );
+  void onDescriptionUpdate(String newValue) {
+    _description = newValue;
+    _validateNewQuestionDescription();
   }
 
-  Future<void> createQuestion(BuildContext context) async {
+  Future<void> createQuestion() async {
     emit(QuestionCreationState.loading());
-    _emitValidatedFields(context);
 
-    if (_isValid) {
+    if (_validateFields()) {
       await _createQuestion();
     }
   }
@@ -105,54 +91,33 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
-  void _emitValidatedFields(BuildContext context) {
-    final newViewModel = _validateFields(context, _viewModel);
-
-    emit(QuestionCreationDisplayUpdate(viewModel: newViewModel));
+  bool _validateFields() {
+    return [
+      _validateNewQuestionTitle(),
+      _validateNewQuestionDescription(),
+    ].every((isValid) => isValid);
   }
 
-  QuestionCreationViewModel _validateFields(
-    BuildContext context,
-    QuestionCreationViewModel viewModel,
-  ) {
-    var copy = viewModel;
-
-    _validateNewQuestionTitle(copy.shortDescription.value);
-    copy = _validateDescription(context, copy);
-
-    _isValid = copy == viewModel;
-
-    return copy;
-  }
-
-  QuestionCreationViewModel _validateDescription(
-    BuildContext context,
-    QuestionCreationViewModel viewModel,
-  ) {
-    if (_viewModel.description.value == '') {
-      return viewModel.copyWith(
-        description: viewModel.description.copyWith(
-          hasError: true,
-          errorMessage: S.of(context).mustBeSetMessage,
-        ),
-      );
-    }
-
-    return viewModel.copyWith(
-      description: viewModel.description.copyWith(
-        hasError: false,
-      ),
-    );
-  }
-
-  void _validateNewQuestionTitle(String value) {
-    if (value == '') {
+  bool _validateNewQuestionTitle() {
+    if (_title == '') {
       emit(QuestionCreationState.emptyTitle());
 
-      return;
+      return false;
     }
 
     emit(QuestionCreationState.titleOk());
+    return true;
+  }
+
+  bool _validateNewQuestionDescription() {
+    if (_description == '') {
+      emit(QuestionCreationState.emptyDescription());
+
+      return false;
+    }
+
+    emit(QuestionCreationState.descriptionOk());
+    return true;
   }
 
   Future<void> _createQuestion() async {
@@ -161,15 +126,15 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
       'medium',
       'hard',
     ]..shuffle();
-    final createQuestionUseCase = useCaseFactory.makeCreateQuestionUseCase();
+    final createQuestionUseCase = _useCaseFactory.makeCreateQuestionUseCase();
     final randomDifficulty = difficulties.first;
 
     final creationResult = await createQuestionUseCase.execute(
       QuestionCreationInput(
-        shortDescription: _viewModel.shortDescription.value,
-        description: _viewModel.description.value,
+        shortDescription: _title,
+        description: _description,
         difficulty: randomDifficulty,
-        categories: const ['Math', 'Algebra'],
+        categories: const [],
       ),
     );
 

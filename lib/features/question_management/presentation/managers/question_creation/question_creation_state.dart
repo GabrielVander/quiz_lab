@@ -3,7 +3,7 @@ part of 'question_creation_cubit.dart';
 abstract class QuestionCreationState extends Equatable {
   const QuestionCreationState();
 
-  factory QuestionCreationState.initial() => QuestionCreationInitial();
+  factory QuestionCreationState.initial() => const QuestionCreationInitial._();
 
   factory QuestionCreationState.displayUpdate({
     required QuestionCreationViewModel viewModel,
@@ -23,11 +23,19 @@ abstract class QuestionCreationState extends Equatable {
   factory QuestionCreationState.titleOk() =>
       const QuestionCreationTitleIsOk._();
 
+  factory QuestionCreationState.emptyDescription() =>
+      const QuestionCreationEmptyDescription._();
+
+  factory QuestionCreationState.descriptionOk() =>
+      const QuestionCreationDescriptionIsOk._();
+
   @override
   bool get stringify => true;
 }
 
 class QuestionCreationInitial extends QuestionCreationState {
+  const QuestionCreationInitial._();
+
   @override
   List<Object> get props => [];
 }
@@ -82,6 +90,20 @@ class QuestionCreationEmptyTitle extends QuestionCreationState {
 
 class QuestionCreationTitleIsOk extends QuestionCreationState {
   const QuestionCreationTitleIsOk._();
+
+  @override
+  List<Object> get props => [];
+}
+
+class QuestionCreationEmptyDescription extends QuestionCreationState {
+  const QuestionCreationEmptyDescription._();
+
+  @override
+  List<Object> get props => [];
+}
+
+class QuestionCreationDescriptionIsOk extends QuestionCreationState {
+  const QuestionCreationDescriptionIsOk._();
 
   @override
   List<Object> get props => [];

@@ -97,10 +97,7 @@ class _Body extends HookWidget {
                 return _Form(
                   cubit: cubit,
                   viewModel: state.viewModel,
-                  onShortDescriptionChange: cubit.onTitleUpdate,
-                  onDescriptionChange: (value) =>
-                      cubit.onDescriptionUpdate(context, value),
-                  onCreateQuestion: () => cubit.createQuestion(context),
+                  onCreateQuestion: cubit.createQuestion,
                   onAddOption: cubit.addOption,
                   onIsCorrect: cubit.optionIsCorrect,
                 );
@@ -161,8 +158,6 @@ class _Form extends StatelessWidget {
   const _Form({
     required this.cubit,
     required this.viewModel,
-    required this.onShortDescriptionChange,
-    required this.onDescriptionChange,
     required this.onAddOption,
     required this.onIsCorrect,
     required this.onCreateQuestion,
@@ -170,8 +165,6 @@ class _Form extends StatelessWidget {
 
   final QuestionCreationCubit cubit;
   final QuestionCreationViewModel viewModel;
-  final void Function(String newValue) onShortDescriptionChange;
-  final void Function(String newValue) onDescriptionChange;
   final void Function() onAddOption;
   final void Function(SingleOptionViewModel viewModel) onIsCorrect;
   final void Function() onCreateQuestion;
@@ -183,15 +176,10 @@ class _Form extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _FormSection(
-            child: _TitleField(
-              cubit: cubit,
-            ),
+            child: _TitleField(cubit: cubit),
           ),
           _FormSection(
-            child: _DescriptionField(
-              viewModel: viewModel.description,
-              onChange: onDescriptionChange,
-            ),
+            child: _DescriptionField(cubit: cubit),
           ),
           _FormSection(
             child: _Options(
@@ -244,15 +232,15 @@ class _FormSection extends StatelessWidget {
 
 class _TitleField extends HookWidget {
   const _TitleField({
-    required this.cubit,
-  });
+    required QuestionCreationCubit cubit,
+  }) : _cubit = cubit;
 
-  final QuestionCreationCubit cubit;
+  final QuestionCreationCubit _cubit;
 
   @override
   Widget build(BuildContext context) {
     final state = useBlocBuilder(
-      cubit,
+      _cubit,
       buildWhen: (currentState) => [
         QuestionCreationEmptyTitle,
         QuestionCreationTitleIsOk
@@ -276,30 +264,46 @@ class _TitleField extends HookWidget {
         border: const OutlineInputBorder(),
         errorText: errorMessage,
       ),
-      onChanged: cubit.onTitleUpdate,
+      onChanged: _cubit.onTitleUpdate,
       enabled: enabled,
     );
   }
 }
 
-class _DescriptionField extends StatelessWidget {
+class _DescriptionField extends HookWidget {
   const _DescriptionField({
-    required this.viewModel,
-    required this.onChange,
-  });
+    required QuestionCreationCubit cubit,
+  }) : _cubit = cubit;
 
-  final FieldViewModel viewModel;
-  final void Function(String newValue) onChange;
+  final QuestionCreationCubit _cubit;
 
   @override
   Widget build(BuildContext context) {
+    final state = useBlocBuilder(
+      _cubit,
+      buildWhen: (currentState) => [
+        QuestionCreationEmptyDescription,
+        QuestionCreationDescriptionIsOk
+      ].any((element) => currentState.runtimeType == element),
+    );
+
+    String? errorMessage;
+
+    if (state is QuestionCreationEmptyDescription) {
+      errorMessage = S.of(context).mustBeSetMessage;
+    }
+
+    if (state is QuestionCreationDescriptionIsOk) {
+      errorMessage = null;
+    }
+
     return TextField(
       decoration: InputDecoration(
         labelText: S.of(context).questionDescriptionLabel,
         border: const OutlineInputBorder(),
-        errorText: viewModel.hasError ? viewModel.errorMessage : null,
+        errorText: errorMessage,
       ),
-      onChanged: onChange,
+      onChanged: _cubit.onDescriptionUpdate,
       minLines: 5,
       maxLines: 10,
     );
