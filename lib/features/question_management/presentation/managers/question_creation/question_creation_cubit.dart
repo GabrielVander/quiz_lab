@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
@@ -11,10 +12,12 @@ part 'question_creation_state.dart';
 class QuestionCreationCubit extends Cubit<QuestionCreationState>
     implements Manager {
   QuestionCreationCubit({
-    required this.createQuestionUseCase,
-  }) : super(QuestionCreationInitial());
+    required this.useCaseFactory,
+  }) : super(QuestionCreationInitial()) {
+    display();
+  }
 
-  final CreateQuestionUseCase createQuestionUseCase;
+  final UseCaseFactory useCaseFactory;
 
   bool _isValid = false;
 
@@ -32,20 +35,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     options: OptionsViewModel(optionViewModels: []),
   );
 
-  Future<void> update() async {
-    _viewModel = const QuestionCreationViewModel(
-      shortDescription: FieldViewModel(
-        value: '',
-        isEnabled: true,
-        hasError: false,
-      ),
-      description: FieldViewModel(
-        value: '',
-        isEnabled: true,
-        hasError: false,
-      ),
-      options: OptionsViewModel(optionViewModels: []),
-    );
+  void display() {
     emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
@@ -193,6 +183,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
       'medium',
       'hard',
     ]..shuffle();
+    final createQuestionUseCase = useCaseFactory.makeCreateQuestionUseCase();
     final randomDifficulty = difficulties.first;
 
     final creationResult = await createQuestionUseCase.execute(
