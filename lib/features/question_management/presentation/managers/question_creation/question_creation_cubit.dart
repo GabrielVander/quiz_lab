@@ -19,6 +19,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   final UseCaseFactory _useCaseFactory;
   String _title = '';
   String _description = '';
+  String _difficulty = '';
 
   QuestionCreationViewModel _viewModel = const QuestionCreationViewModel(
     shortDescription: FieldViewModel(
@@ -40,16 +41,16 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
 
   void onTitleUpdate(String newValue) {
     _title = newValue;
-    _validateNewQuestionTitle();
+    _validateTitleFieldValue();
   }
 
   void onDescriptionUpdate(String newValue) {
     _description = newValue;
-    _validateNewQuestionDescription();
+    _validateDescriptionFieldValue();
   }
 
   Future<void> createQuestion() async {
-    emit(QuestionCreationState.loading());
+    emit(QuestionCreationState.saving());
 
     if (_validateFields()) {
       await _createQuestion();
@@ -91,14 +92,13 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
   }
 
-  bool _validateFields() {
-    return [
-      _validateNewQuestionTitle(),
-      _validateNewQuestionDescription(),
-    ].every((isValid) => isValid);
+  void onDifficultyUpdate(String? value) {
+    _difficulty = value ?? '';
+
+    _validateDifficultyFieldValue();
   }
 
-  bool _validateNewQuestionTitle() {
+  bool _validateTitleFieldValue() {
     if (_title == '') {
       emit(QuestionCreationState.titleIsEmpty());
 
@@ -109,7 +109,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     return true;
   }
 
-  bool _validateNewQuestionDescription() {
+  bool _validateDescriptionFieldValue() {
     if (_description == '') {
       emit(QuestionCreationState.descriptionIsEmpty());
 
@@ -120,20 +120,33 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     return true;
   }
 
+  bool _validateDifficultyFieldValue() {
+    if (_difficulty == '') {
+      emit(QuestionCreationState.difficultyIsNotSet());
+
+      return false;
+    }
+
+    emit(QuestionCreationState.difficultyIsSet());
+    return true;
+  }
+
+  bool _validateFields() {
+    return [
+      _validateTitleFieldValue(),
+      _validateDescriptionFieldValue(),
+      _validateDifficultyFieldValue(),
+    ].every((isValid) => isValid);
+  }
+
   Future<void> _createQuestion() async {
-    final difficulties = [
-      'easy',
-      'medium',
-      'hard',
-    ]..shuffle();
     final createQuestionUseCase = _useCaseFactory.makeCreateQuestionUseCase();
-    final randomDifficulty = difficulties.first;
 
     final creationResult = await createQuestionUseCase.execute(
       QuestionCreationInput(
         shortDescription: _title,
         description: _description,
-        difficulty: randomDifficulty,
+        difficulty: _difficulty,
         categories: const [],
       ),
     );

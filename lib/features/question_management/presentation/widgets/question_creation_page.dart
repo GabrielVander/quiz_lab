@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
+import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
@@ -62,12 +63,12 @@ class _Body extends HookWidget {
 
         ScaffoldMessenger.of(ctx).showSnackBar(snackBar);
 
-        if (listenedState is QuestionCreationHasSucceded) {
+        if (listenedState is QuestionCreationHasSucceeded) {
           GoRouter.of(ctx).go('/');
         }
       },
       listenWhen: (currentState) => [
-        QuestionCreationHasSucceded,
+        QuestionCreationHasSucceeded,
         QuestionCreationHasFailed
       ].any((Type element) => currentState.runtimeType == element),
     );
@@ -160,6 +161,9 @@ class _Form extends StatelessWidget {
           ),
           _FormSection(
             child: _DescriptionField(cubit: cubit),
+          ),
+          _FormSection(
+            child: _DifficultySelector(cubit: cubit),
           ),
           _FormSection(
             child: _Options(
@@ -348,6 +352,64 @@ class _Options extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _DifficultySelector extends HookWidget {
+  const _DifficultySelector({
+    required QuestionCreationCubit cubit,
+  }) : _cubit = cubit;
+
+  final QuestionCreationCubit _cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = useBlocBuilder(
+      _cubit,
+      buildWhen: (currentState) => [
+        QuestionCreationDifficultyIsSet,
+        QuestionCreationDifficultyIsNotSet
+      ].any((element) => currentState.runtimeType == element),
+    );
+
+    String? errorMessage;
+
+    if (state is QuestionCreationDifficultyIsNotSet) {
+      errorMessage = S.of(context).mustBeSetMessage;
+    }
+
+    if (state is QuestionCreationDifficultyIsSet) {
+      errorMessage = null;
+    }
+
+    final difficulties = [
+      'easy',
+      'medium',
+      'hard',
+    ];
+
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: S.of(context).questionDifficultyLabel,
+        border: const OutlineInputBorder(),
+        errorText: errorMessage,
+      ),
+      onChanged: _cubit.onDifficultyUpdate,
+      items: difficulties
+          .map(
+            (d) => DropdownMenuItem(
+              value: d,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(S.of(context).questionDifficultyValue(d)),
+                  DifficultyColor(difficulty: d),
+                ],
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 }
