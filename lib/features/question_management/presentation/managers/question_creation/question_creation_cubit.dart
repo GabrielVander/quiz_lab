@@ -12,32 +12,13 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   QuestionCreationCubit({
     required UseCaseFactory useCaseFactory,
   })  : _useCaseFactory = useCaseFactory,
-        super(QuestionCreationState.initial()) {
-    display();
-  }
+        super(QuestionCreationState.initial());
 
   final UseCaseFactory _useCaseFactory;
   String _title = '';
   String _description = '';
   String _difficulty = '';
-
-  QuestionCreationViewModel _viewModel = const QuestionCreationViewModel(
-    shortDescription: FieldViewModel(
-      value: '',
-      isEnabled: true,
-      hasError: false,
-    ),
-    description: FieldViewModel(
-      value: '',
-      isEnabled: true,
-      hasError: false,
-    ),
-    options: OptionsViewModel(optionViewModels: []),
-  );
-
-  void display() {
-    emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
-  }
+  Iterable<SingleOptionViewModel> _options = List.unmodifiable([]);
 
   void onTitleUpdate(String newValue) {
     _title = newValue;
@@ -57,45 +38,37 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     }
   }
 
-  void addOption() {
-    _viewModel = _viewModel.copyWith(
-      options: _viewModel.options.copyWith(
-        optionViewModels: [
-          ..._viewModel.options.optionViewModels,
-          SingleOptionViewModel(
-            fieldViewModel: const FieldViewModel(
-              value: '',
-              isEnabled: true,
-              hasError: false,
-            ),
-            isCorrect: false,
-          )
-        ],
-      ),
-    );
-
-    emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
-  }
-
-  void optionIsCorrect(SingleOptionViewModel viewModel) {
-    _viewModel = _viewModel.copyWith(
-      options: _viewModel.options.copyWith(
-        optionViewModels: _viewModel.options.optionViewModels.map((element) {
-          if (element.id == viewModel.id) {
-            return element.copyWith(isCorrect: !element.isCorrect);
-          }
-          return element;
-        }).toList(),
-      ),
-    );
-
-    emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
-  }
-
   void onDifficultyUpdate(String? value) {
     _difficulty = value ?? '';
 
     _validateDifficultyFieldValue();
+  }
+
+  void addOption() {
+    const optionsLimit = 5;
+
+    _options = List<SingleOptionViewModel>.unmodifiable(
+      _options.toList()
+        ..add(SingleOptionViewModel(value: '', isCorrect: false)),
+    );
+
+    emit(QuestionCreationState.optionsUpdated(_options.toList()));
+
+    if (_options.length == optionsLimit) {
+      emit(QuestionCreationState.optionLimitReached());
+    }
+  }
+
+  void toggleOptionAsCorrect(String id) {
+    _options = _options.map((option) {
+      if (option.id == id) {
+        return option.copyWith(isCorrect: true);
+      } else {
+        return option;
+      }
+    }).toList();
+
+    emit(QuestionCreationState.optionsUpdated(_options.map((e) => e).toList()));
   }
 
   bool _validateTitleFieldValue() {

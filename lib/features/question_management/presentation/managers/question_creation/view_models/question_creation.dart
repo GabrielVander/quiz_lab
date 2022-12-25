@@ -1,35 +1,22 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/widgets.dart';
+import 'package:uuid/uuid.dart';
 
 class QuestionCreationViewModel extends Equatable {
   const QuestionCreationViewModel({
     required this.shortDescription,
     required this.description,
-    required this.options,
   });
 
   final FieldViewModel shortDescription;
   final FieldViewModel description;
-  final OptionsViewModel options;
-
-  @override
-  String toString() {
-    return 'QuestionCreationViewModel{ '
-        'shortDescription: $shortDescription, '
-        'description: $description, '
-        'options: $options, '
-        '}';
-  }
 
   QuestionCreationViewModel copyWith({
     FieldViewModel? shortDescription,
     FieldViewModel? description,
-    OptionsViewModel? options,
   }) {
     return QuestionCreationViewModel(
       shortDescription: shortDescription ?? this.shortDescription,
       description: description ?? this.description,
-      options: options ?? this.options,
     );
   }
 
@@ -37,71 +24,37 @@ class QuestionCreationViewModel extends Equatable {
   List<Object?> get props => [
         shortDescription,
         description,
-        options,
-      ];
-}
-
-class OptionsViewModel extends Equatable {
-  const OptionsViewModel({
-    required this.optionViewModels,
-  });
-
-  final List<SingleOptionViewModel> optionViewModels;
-
-  @override
-  String toString() {
-    return 'OptionsViewModel{ '
-        'optionViewModels: $optionViewModels, '
-        '}';
-  }
-
-  OptionsViewModel copyWith({
-    List<SingleOptionViewModel>? optionViewModels,
-  }) {
-    return OptionsViewModel(
-      optionViewModels: optionViewModels ?? this.optionViewModels,
-    );
-  }
-
-  @override
-  List<Object?> get props => [
-        optionViewModels,
       ];
 }
 
 class SingleOptionViewModel extends Equatable {
   SingleOptionViewModel({
-    required this.fieldViewModel,
+    required this.value,
     required this.isCorrect,
+    this.errorMessage,
   });
 
-  final UniqueKey id = UniqueKey();
-  final FieldViewModel fieldViewModel;
+  final String id = const Uuid().v4();
+  final String value;
   final bool isCorrect;
-
-  @override
-  String toString() {
-    return 'SingleOptionViewModel{ '
-        'id: $id, '
-        'fieldViewModel: $fieldViewModel, '
-        'isCorrect: $isCorrect, '
-        '}';
-  }
+  final String? errorMessage;
 
   SingleOptionViewModel copyWith({
-    FieldViewModel? fieldViewModel,
+    String? value,
     bool? isCorrect,
+    String? errorMessage,
   }) {
     return SingleOptionViewModel(
-      fieldViewModel: fieldViewModel ?? this.fieldViewModel,
+      value: value ?? this.value,
       isCorrect: isCorrect ?? this.isCorrect,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
   @override
   List<Object?> get props => [
         id,
-        fieldViewModel,
+        value,
         isCorrect,
       ];
 }
