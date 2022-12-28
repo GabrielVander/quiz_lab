@@ -5,6 +5,7 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
+import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
@@ -241,7 +242,7 @@ class _QuestionEditBottomSheet extends StatelessWidget {
                 TextField(
                   controller: controller,
                   decoration: InputDecoration(
-                    label: Text(S.of(context).questionShortDescriptionLabel),
+                    label: Text(S.of(context).questionTitleLabel),
                   ),
                 ),
                 ElevatedButton(
@@ -484,7 +485,6 @@ class _QuestionItemDifficulty extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColor = _getTextColor(context);
     final fontSize = _getFontSize(context);
-    final difficultyColor = _getDifficultyColor(context);
 
     return Column(
       children: [
@@ -496,14 +496,7 @@ class _QuestionItemDifficulty extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        Container(
-          width: 25,
-          height: 25,
-          decoration: BoxDecoration(
-            color: difficultyColor,
-            shape: BoxShape.circle,
-          ),
-        ),
+        DifficultyColor(difficulty: difficulty),
         Text(
           S.of(context).questionDifficultyValue(difficulty),
           style: TextStyle(
@@ -513,22 +506,6 @@ class _QuestionItemDifficulty extends StatelessWidget {
         )
       ],
     );
-  }
-
-  Color _getDifficultyColor(BuildContext context) {
-    final themeColors = Theme.of(context).extension<ThemeColors>();
-    final difficultyColors = themeColors!.difficultyColors;
-
-    switch (difficulty) {
-      case 'easy':
-        return difficultyColors.easy;
-      case 'medium':
-        return difficultyColors.medium;
-      case 'hard':
-        return difficultyColors.hard;
-      default:
-        return difficultyColors.hard;
-    }
   }
 
   double _getFontSize(BuildContext context) {

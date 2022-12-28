@@ -1,214 +1,213 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation.dart';
-import 'package:quiz_lab/generated/l10n.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
+import 'package:uuid/uuid.dart';
 
 part 'question_creation_state.dart';
 
 class QuestionCreationCubit extends Cubit<QuestionCreationState>
     implements Manager {
   QuestionCreationCubit({
-    required this.createQuestionUseCase,
-  }) : super(QuestionCreationInitial());
-
-  final CreateQuestionUseCase createQuestionUseCase;
-
-  bool _isValid = false;
-
-  QuestionCreationViewModel _viewModel = const QuestionCreationViewModel(
-    shortDescription: FieldViewModel(
-      value: '',
-      isEnabled: true,
-      hasError: false,
-    ),
-    description: FieldViewModel(
-      value: '',
-      isEnabled: true,
-      hasError: false,
-    ),
-    options: OptionsViewModel(optionViewModels: []),
-  );
-
-  Future<void> update() async {
-    _viewModel = const QuestionCreationViewModel(
-      shortDescription: FieldViewModel(
-        value: '',
-        isEnabled: true,
-        hasError: false,
-      ),
-      description: FieldViewModel(
-        value: '',
-        isEnabled: true,
-        hasError: false,
-      ),
-      options: OptionsViewModel(optionViewModels: []),
-    );
-    emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
+    required UseCaseFactory useCaseFactory,
+  })  : _useCaseFactory = useCaseFactory,
+        super(QuestionCreationState.initial()) {
+    emit(QuestionCreationState.optionsUpdated(_options.toList()));
   }
 
-  Future<void> onShortDescriptionUpdate(
-    BuildContext context,
-    String newValue,
-  ) async {
-    _viewModel = _viewModel.copyWith(
-      shortDescription: _viewModel.shortDescription.copyWith(value: newValue),
-    );
-    _viewModel = _validateShortDescription(context, _viewModel);
+  final UseCaseFactory _useCaseFactory;
+  String _title = '';
+  String _description = '';
+  String _difficulty = '';
+  Iterable<SingleOptionViewModel> _options = List.unmodifiable([
+    SingleOptionViewModel(value: '', isCorrect: false),
+    SingleOptionViewModel(value: '', isCorrect: false),
+  ]);
 
-    emit(
-      QuestionCreationDisplayUpdate(
-        viewModel: _viewModel,
-      ),
-    );
+  void onTitleUpdate(String newValue) {
+    _title = newValue;
+    _validateTitleFieldValue();
   }
 
-  Future<void> onDescriptionUpdate(
-    BuildContext context,
-    String newValue,
-  ) async {
-    _viewModel = _viewModel.copyWith(
-      description: _viewModel.description.copyWith(
-        value: newValue,
-      ),
-    );
-    _viewModel = _validateDescription(context, _viewModel);
-
-    emit(
-      QuestionCreationDisplayUpdate(
-        viewModel: _viewModel,
-      ),
-    );
+  void onDescriptionUpdate(String newValue) {
+    _description = newValue;
+    _validateDescriptionFieldValue();
   }
 
-  Future<void> createQuestion(BuildContext context) async {
-    emit(QuestionCreationState.loading());
-    _emitValidatedFields(context);
+  Future<void> createQuestion() async {
+    emit(QuestionCreationState.saving());
 
-    if (_isValid) {
+    final areFieldsValid = _validateFields();
+
+    if (!areFieldsValid) {
+      return;
+    }
+
+    final hasAtLeastOneCorrectOption = _hasAtLeastOneCorrectOption();
+
+    if (!hasAtLeastOneCorrectOption) {
+      emit(QuestionCreationState.noCorrectOption());
+      return;
+    }
+
+    if (areFieldsValid) {
       await _createQuestion();
     }
   }
 
+  void onDifficultyUpdate(String? value) {
+    _difficulty = value ?? '';
+
+    _validateDifficultyFieldValue();
+  }
+
   void addOption() {
-    _viewModel = _viewModel.copyWith(
-      options: _viewModel.options.copyWith(
-        optionViewModels: [
-          ..._viewModel.options.optionViewModels,
-          SingleOptionViewModel(
-            fieldViewModel: const FieldViewModel(
-              value: '',
-              isEnabled: true,
-              hasError: false,
-            ),
-            isCorrect: false,
-          )
-        ],
-      ),
+    const optionsLimit = 5;
+
+    _options = List<SingleOptionViewModel>.unmodifiable(
+      _options.toList()
+        ..add(SingleOptionViewModel(value: '', isCorrect: false)),
     );
 
-    emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
+    emit(QuestionCreationState.optionsUpdated(_options.toList()));
+
+    if (_options.length == optionsLimit) {
+      emit(QuestionCreationState.optionLimitReached());
+    }
   }
 
-  void optionIsCorrect(SingleOptionViewModel viewModel) {
-    _viewModel = _viewModel.copyWith(
-      options: _viewModel.options.copyWith(
-        optionViewModels: _viewModel.options.optionViewModels.map((element) {
-          if (element.id == viewModel.id) {
-            return element.copyWith(isCorrect: !element.isCorrect);
-          }
-          return element;
-        }).toList(),
-      ),
-    );
+  void toggleOptionAsCorrect(String id) {
+    _options = _options
+        .map(
+          (option) => option.id == id
+              ? option.copyWith(isCorrect: !option.isCorrect)
+              : option,
+        )
+        .toList();
 
-    emit(QuestionCreationDisplayUpdate(viewModel: _viewModel));
+    emit(QuestionCreationState.optionsUpdated(_options.toList()));
   }
 
-  void _emitValidatedFields(BuildContext context) {
-    final newViewModel = _validateFields(context, _viewModel);
+  void onOptionUpdate(String id, String value) {
+    _options = _options
+        .map(
+          (option) => option.id == id ? option.copyWith(value: value) : option,
+        )
+        .toList();
 
-    emit(QuestionCreationDisplayUpdate(viewModel: newViewModel));
+    _validateOptions();
   }
 
-  QuestionCreationViewModel _validateFields(
-    BuildContext context,
-    QuestionCreationViewModel viewModel,
-  ) {
-    var copy = viewModel;
+  bool _validateTitleFieldValue() {
+    if (_title == '') {
+      emit(QuestionCreationState.titleIsEmpty());
 
-    copy = _validateShortDescription(context, copy);
-    copy = _validateDescription(context, copy);
-
-    _isValid = copy == viewModel;
-
-    return copy;
-  }
-
-  QuestionCreationViewModel _validateDescription(
-    BuildContext context,
-    QuestionCreationViewModel viewModel,
-  ) {
-    if (_viewModel.description.value == '') {
-      return viewModel.copyWith(
-        description: viewModel.description.copyWith(
-          hasError: true,
-          errorMessage: S.of(context).mustBeSetMessage,
-        ),
-      );
+      return false;
     }
 
-    return viewModel.copyWith(
-      description: viewModel.description.copyWith(
-        hasError: false,
-      ),
-    );
+    emit(QuestionCreationState.titleIsValid());
+    return true;
   }
 
-  QuestionCreationViewModel _validateShortDescription(
-    BuildContext context,
-    QuestionCreationViewModel viewModel,
-  ) {
-    if (viewModel.shortDescription.value == '') {
-      return viewModel.copyWith(
-        shortDescription: viewModel.shortDescription.copyWith(
-          hasError: true,
-          errorMessage: S.of(context).mustBeSetMessage,
-        ),
-      );
+  bool _validateDescriptionFieldValue() {
+    if (_description == '') {
+      emit(QuestionCreationState.descriptionIsEmpty());
+
+      return false;
     }
 
-    return viewModel.copyWith(
-      shortDescription: viewModel.shortDescription.copyWith(
-        hasError: false,
-      ),
-    );
+    emit(QuestionCreationState.descriptionIsValid());
+    return true;
   }
+
+  bool _validateDifficultyFieldValue() {
+    if (_difficulty == '') {
+      emit(QuestionCreationState.difficultyIsNotSet());
+
+      return false;
+    }
+
+    emit(QuestionCreationState.difficultyIsSet());
+    return true;
+  }
+
+  bool _validateOptions() {
+    final updatedOptions = _options.map(_validateSingleOption);
+    _options = updatedOptions;
+
+    emit(QuestionCreationState.optionsUpdated(_options.toList()));
+
+    return updatedOptions.map((e) => e.isEmpty).contains(true);
+  }
+
+  SingleOptionViewModel _validateSingleOption(SingleOptionViewModel option) =>
+      option.copyWith(isEmpty: option.value.isEmpty);
+
+  bool _validateFields() {
+    return [
+      _validateTitleFieldValue(),
+      _validateDescriptionFieldValue(),
+      _validateDifficultyFieldValue(),
+      _validateOptions(),
+    ].every((isValid) => isValid);
+  }
+
+  bool _hasAtLeastOneCorrectOption() =>
+      _options.any((option) => option.isCorrect);
 
   Future<void> _createQuestion() async {
-    final difficulties = [
-      'easy',
-      'medium',
-      'hard',
-    ]..shuffle();
-    final randomDifficulty = difficulties.first;
+    final createQuestionUseCase = _useCaseFactory.makeCreateQuestionUseCase();
 
     final creationResult = await createQuestionUseCase.execute(
       QuestionCreationInput(
-        shortDescription: _viewModel.shortDescription.value,
-        description: _viewModel.description.value,
-        difficulty: randomDifficulty,
-        categories: const ['Math', 'Algebra'],
+        shortDescription: _title,
+        description: _description,
+        difficulty: _difficulty,
+        categories: const [],
       ),
     );
 
     if (creationResult.isErr) {
-      emit(QuestionCreationState.failure(message: creationResult.err!.message));
+      emit(QuestionCreationState.failure(details: creationResult.err!.message));
       return;
     }
 
     emit(QuestionCreationState.success());
   }
+}
+
+class SingleOptionViewModel extends Equatable {
+  SingleOptionViewModel({
+    required this.value,
+    required this.isCorrect,
+    this.isEmpty = false,
+    String? id,
+  }) : id = id ?? const Uuid().v4();
+
+  final String id;
+  final String value;
+  final bool isCorrect;
+  final bool isEmpty;
+
+  SingleOptionViewModel copyWith({
+    String? value,
+    bool? isCorrect,
+    bool? isEmpty,
+  }) {
+    return SingleOptionViewModel(
+      id: this.id,
+      value: value ?? this.value,
+      isCorrect: isCorrect ?? this.isCorrect,
+      isEmpty: isEmpty ?? this.isEmpty,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        value,
+        isCorrect,
+        isEmpty,
+      ];
 }

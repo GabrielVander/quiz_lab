@@ -1,8 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -214,12 +212,12 @@ class S {
     );
   }
 
-  /// `Short Description`
-  String get questionShortDescriptionLabel {
+  /// `Title`
+  String get questionTitleLabel {
     return Intl.message(
-      'Short Description',
-      name: 'questionShortDescriptionLabel',
-      desc: 'Question\'s short description label',
+      'Title',
+      name: 'questionTitleLabel',
+      desc: 'Question\'s tile label',
       args: [],
     );
   }
@@ -332,6 +330,17 @@ class S {
       desc:
           'Snack bar message for when a failure occurs during question saving',
       args: [failureReason],
+    );
+  }
+
+  /// `Unable to save question: No correct option`
+  String get questionSavingFailureNoCorrectOption {
+    return Intl.message(
+      'Unable to save question: No correct option',
+      name: 'questionSavingFailureNoCorrectOption',
+      desc:
+          'Snack bar message for when attempting to save a question with no correct option',
+      args: [],
     );
   }
 }

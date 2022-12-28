@@ -15,7 +15,7 @@
   "questionDifficultyLabel": "Dificuldade",
   "questionDifficultyValue": "{difficulty, select, easy {Fácil} medium {Médio} hard {Difícil} other {Desconhecido}}",
   "createQuestionTitle": "Criar Questão",
-  "questionShortDescriptionLabel": "Descrição Breve",
+  "questionTitleLabel": "Título",
   "questionDescriptionLabel": "Descrição",
   "goBackLabel": "Voltar",
   "createLabel": "Criar",
@@ -26,5 +26,6 @@
   "addOptionLabel": "Adicionar Opção",
   "mustBeSetMessage": "Deve Estar Preenchido",
   "questionSavedSuccessfully": "Questão salva",
-  "questionSavingFailure": "Problemas ao salvar questão: {failureReason}"
+  "questionSavingFailure": "Problemas ao salvar questão: {failureReason}",
+  "questionSavingFailureNoCorrectOption": "Problema ao salvar questão: Nenhumas das opções está marcada como correta"
 }

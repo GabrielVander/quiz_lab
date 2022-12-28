@@ -1,4 +1,3 @@
-// coverage:ignore-file
 // DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
 // This is a library that provides messages for a en_US locale. All the
 // messages from the main program should be duplicated here with the same
@@ -73,8 +72,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "questionSavedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Question Saved"),
         "questionSavingFailure": m5,
-        "questionShortDescriptionLabel":
-            MessageLookupByLibrary.simpleMessage("Short Description"),
+        "questionSavingFailureNoCorrectOption":
+            MessageLookupByLibrary.simpleMessage(
+                "Unable to save question: No correct option"),
+        "questionTitleLabel": MessageLookupByLibrary.simpleMessage("Title"),
         "questionsSectionDisplayName":
             MessageLookupByLibrary.simpleMessage("Questions"),
         "resultsSectionDisplayName":
