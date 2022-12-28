@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation.dart';
+import 'package:uuid/uuid.dart';
 
 part 'question_creation_state.dart';
 
@@ -12,13 +12,18 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   QuestionCreationCubit({
     required UseCaseFactory useCaseFactory,
   })  : _useCaseFactory = useCaseFactory,
-        super(QuestionCreationState.initial());
+        super(QuestionCreationState.initial()) {
+    emit(QuestionCreationState.optionsUpdated(_options.toList()));
+  }
 
   final UseCaseFactory _useCaseFactory;
   String _title = '';
   String _description = '';
   String _difficulty = '';
-  Iterable<SingleOptionViewModel> _options = List.unmodifiable([]);
+  Iterable<SingleOptionViewModel> _options = List.unmodifiable([
+    SingleOptionViewModel(value: '', isCorrect: false),
+    SingleOptionViewModel(value: '', isCorrect: false),
+  ]);
 
   void onTitleUpdate(String newValue) {
     _title = newValue;
@@ -33,7 +38,20 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   Future<void> createQuestion() async {
     emit(QuestionCreationState.saving());
 
-    if (_validateFields()) {
+    final areFieldsValid = _validateFields();
+
+    if (!areFieldsValid) {
+      return;
+    }
+
+    final hasAtLeastOneCorrectOption = _hasAtLeastOneCorrectOption();
+
+    if (!hasAtLeastOneCorrectOption) {
+      emit(QuestionCreationState.noCorrectOption());
+      return;
+    }
+
+    if (areFieldsValid) {
       await _createQuestion();
     }
   }
@@ -60,15 +78,25 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   void toggleOptionAsCorrect(String id) {
-    _options = _options.map((option) {
-      if (option.id == id) {
-        return option.copyWith(isCorrect: true);
-      } else {
-        return option;
-      }
-    }).toList();
+    _options = _options
+        .map(
+          (option) => option.id == id
+              ? option.copyWith(isCorrect: !option.isCorrect)
+              : option,
+        )
+        .toList();
 
-    emit(QuestionCreationState.optionsUpdated(_options.map((e) => e).toList()));
+    emit(QuestionCreationState.optionsUpdated(_options.toList()));
+  }
+
+  void onOptionUpdate(String id, String value) {
+    _options = _options
+        .map(
+          (option) => option.id == id ? option.copyWith(value: value) : option,
+        )
+        .toList();
+
+    _validateOptions();
   }
 
   bool _validateTitleFieldValue() {
@@ -104,13 +132,29 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     return true;
   }
 
+  bool _validateOptions() {
+    final updatedOptions = _options.map(_validateSingleOption);
+    _options = updatedOptions;
+
+    emit(QuestionCreationState.optionsUpdated(_options.toList()));
+
+    return updatedOptions.map((e) => e.isEmpty).contains(true);
+  }
+
+  SingleOptionViewModel _validateSingleOption(SingleOptionViewModel option) =>
+      option.copyWith(isEmpty: option.value.isEmpty);
+
   bool _validateFields() {
     return [
       _validateTitleFieldValue(),
       _validateDescriptionFieldValue(),
       _validateDifficultyFieldValue(),
+      _validateOptions(),
     ].every((isValid) => isValid);
   }
+
+  bool _hasAtLeastOneCorrectOption() =>
+      _options.any((option) => option.isCorrect);
 
   Future<void> _createQuestion() async {
     final createQuestionUseCase = _useCaseFactory.makeCreateQuestionUseCase();
@@ -131,4 +175,39 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
 
     emit(QuestionCreationState.success());
   }
+}
+
+class SingleOptionViewModel extends Equatable {
+  SingleOptionViewModel({
+    required this.value,
+    required this.isCorrect,
+    this.isEmpty = false,
+    String? id,
+  }) : id = id ?? const Uuid().v4();
+
+  final String id;
+  final String value;
+  final bool isCorrect;
+  final bool isEmpty;
+
+  SingleOptionViewModel copyWith({
+    String? value,
+    bool? isCorrect,
+    bool? isEmpty,
+  }) {
+    return SingleOptionViewModel(
+      id: this.id,
+      value: value ?? this.value,
+      isCorrect: isCorrect ?? this.isCorrect,
+      isEmpty: isEmpty ?? this.isEmpty,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        value,
+        isCorrect,
+        isEmpty,
+      ];
 }

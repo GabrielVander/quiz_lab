@@ -72,6 +72,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "questionSavedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Question Saved"),
         "questionSavingFailure": m5,
+        "questionSavingFailureNoCorrectOption":
+            MessageLookupByLibrary.simpleMessage(
+                "Unable to save question: No correct option"),
         "questionTitleLabel": MessageLookupByLibrary.simpleMessage("Title"),
         "questionsSectionDisplayName":
             MessageLookupByLibrary.simpleMessage("Questions"),

@@ -332,6 +332,17 @@ class S {
       args: [failureReason],
     );
   }
+
+  /// `Unable to save question: No correct option`
+  String get questionSavingFailureNoCorrectOption {
+    return Intl.message(
+      'Unable to save question: No correct option',
+      name: 'questionSavingFailureNoCorrectOption',
+      desc:
+          'Snack bar message for when attempting to save a question with no correct option',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

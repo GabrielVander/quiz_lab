@@ -136,5 +136,9 @@
         "type": "String"
       }
     }
+  },
+  "questionSavingFailureNoCorrectOption": "Unable to save question: No correct option",
+  "@questionSavingFailureNoCorrectOption": {
+    "description": "Snack bar message for when attempting to save a question with no correct option"
   }
 }

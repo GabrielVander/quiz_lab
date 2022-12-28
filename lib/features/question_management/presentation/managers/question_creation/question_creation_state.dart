@@ -5,11 +5,6 @@ abstract class QuestionCreationState extends Equatable {
 
   factory QuestionCreationState.initial() => const QuestionCreationInitial._();
 
-  factory QuestionCreationState.displayUpdate({
-    required QuestionCreationViewModel viewModel,
-  }) =>
-      QuestionCreationDisplayUpdate(viewModel: viewModel);
-
   factory QuestionCreationState.saving() =>
       const QuestionCreationSavingQuestion._();
 
@@ -48,6 +43,9 @@ abstract class QuestionCreationState extends Equatable {
   factory QuestionCreationState.optionLimitReached() =>
       const QuestionCreationOptionLimitReached._();
 
+  factory QuestionCreationState.noCorrectOption() =>
+      const QuestionCreationNoCorrectOption._();
+
   @override
   List<Object> get props => [];
 
@@ -57,17 +55,6 @@ abstract class QuestionCreationState extends Equatable {
 
 class QuestionCreationInitial extends QuestionCreationState {
   const QuestionCreationInitial._();
-}
-
-class QuestionCreationDisplayUpdate extends QuestionCreationState {
-  const QuestionCreationDisplayUpdate({
-    required this.viewModel,
-  });
-
-  final QuestionCreationViewModel viewModel;
-
-  @override
-  List<Object> get props => super.props..addAll([viewModel]);
 }
 
 class QuestionCreationHasFailed extends QuestionCreationState {
@@ -133,4 +120,8 @@ class QuestionCreationOptionIsEmpty extends QuestionCreationState {
 
 class QuestionCreationOptionLimitReached extends QuestionCreationState {
   const QuestionCreationOptionLimitReached._();
+}
+
+class QuestionCreationNoCorrectOption extends QuestionCreationState {
+  const QuestionCreationNoCorrectOption._();
 }

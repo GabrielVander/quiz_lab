@@ -6,7 +6,6 @@ import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionCreationPage extends StatelessWidget {
@@ -46,9 +45,12 @@ class _Body extends HookWidget {
         var backgroundColor = Colors.green;
 
         if (listenedState is QuestionCreationHasFailed) {
-          message = S.of(context).questionSavingFailure(
-                listenedState.details,
-              );
+          message = S.of(context).questionSavingFailure(listenedState.details);
+          backgroundColor = Colors.red;
+        }
+
+        if (listenedState is QuestionCreationNoCorrectOption) {
+          message = S.of(context).questionSavingFailureNoCorrectOption;
           backgroundColor = Colors.red;
         }
 
@@ -69,8 +71,9 @@ class _Body extends HookWidget {
       },
       listenWhen: (currentState) => [
         QuestionCreationHasSucceeded,
-        QuestionCreationHasFailed
-      ].any((Type element) => currentState.runtimeType == element),
+        QuestionCreationHasFailed,
+        QuestionCreationNoCorrectOption,
+      ].any((s) => currentState.runtimeType == s),
     );
 
     return Column(
@@ -355,8 +358,7 @@ class _Options extends HookWidget {
       cubit,
       buildWhen: (currentState) => [
         QuestionCreationOptionsUpdated,
-        QuestionCreationOptionIsEmpty,
-      ].any((element) => currentState.runtimeType == element),
+      ].any((s) => currentState.runtimeType == s),
     );
 
     return DecoratedBox(
@@ -372,7 +374,9 @@ class _Options extends HookWidget {
               padding: const EdgeInsets.only(bottom: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [_Subtitle()],
+                children: const [
+                  _Subtitle(),
+                ],
               ),
             ),
             Row(
@@ -380,40 +384,31 @@ class _Options extends HookWidget {
                 Expanded(
                   child: Builder(
                     builder: (context) {
-                      var options = <SingleOptionViewModel>[];
-
-                      if (state is QuestionCreationOptionIsEmpty) {
-                        options = options.map((o) {
-                          if (o.id == state.id) {
-                            return o.copyWith(
-                              errorMessage: S.of(context).mustBeSetMessage,
-                            );
-                          }
-
-                          return o;
-                        }).toList();
-                      }
                       if (state is QuestionCreationOptionsUpdated) {
-                        options = state.options;
+                        return SizedBox(
+                          height: 230,
+                          child: ListView.separated(
+                            itemCount: state.options.length,
+                            itemBuilder: (context, index) {
+                              final option = state.options[index];
+
+                              return _Option(
+                                viewModel: option,
+                                onUpdated: (value) =>
+                                    cubit.onOptionUpdate(option.id, value),
+                                onIsCorrect: (_) =>
+                                    cubit.toggleOptionAsCorrect(option.id),
+                              );
+                            },
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                              height: 10,
+                            ),
+                          ),
+                        );
                       }
 
-                      return SizedBox(
-                        height: 200,
-                        child: ListView.separated(
-                          itemCount: options.length,
-                          itemBuilder: (context, index) {
-                            final option = options[index];
-
-                            return _Option(
-                              viewModel: option,
-                              onIsCorrect: (_) {},
-                            );
-                          },
-                          separatorBuilder: (context, index) => const SizedBox(
-                            height: 10,
-                          ),
-                        ),
-                      );
+                      return Container();
                     },
                   ),
                 ),
@@ -431,10 +426,12 @@ class _Option extends StatelessWidget {
   const _Option({
     required this.viewModel,
     required this.onIsCorrect,
+    required this.onUpdated,
   });
 
   final SingleOptionViewModel viewModel;
   final void Function(bool) onIsCorrect;
+  final void Function(String) onUpdated;
 
   @override
   Widget build(BuildContext context) {
@@ -443,9 +440,12 @@ class _Option extends StatelessWidget {
       children: [
         Expanded(
           child: TextField(
+            onChanged: onUpdated,
             decoration: InputDecoration(
               labelText: S.of(context).optionInputLabel,
               border: const OutlineInputBorder(),
+              errorText:
+                  viewModel.isEmpty ? S.of(context).mustBeSetMessage : null,
             ),
           ),
         ),
