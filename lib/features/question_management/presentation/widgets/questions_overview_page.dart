@@ -12,6 +12,7 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart
 import 'package:quiz_lab/features/question_management/presentation/managers/factories/cubit_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/no_questions.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionsOverviewPage extends StatelessWidget {
@@ -184,6 +185,12 @@ class _QuestionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (questions.isEmpty) {
+      return const Center(
+        child: NoQuestions(),
+      );
+    }
+
     return ListView.separated(
       itemCount: questions.length,
       itemBuilder: (BuildContext context, int index) {

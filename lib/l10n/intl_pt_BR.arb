@@ -27,5 +27,6 @@
   "mustBeSetMessage": "Deve Estar Preenchido",
   "questionSavedSuccessfully": "Questão salva",
   "questionSavingFailure": "Problemas ao salvar questão: {failureReason}",
-  "questionSavingFailureNoCorrectOption": "Problema ao salvar questão: Nenhumas das opções está marcada como correta"
+  "questionSavingFailureNoCorrectOption": "Problema ao salvar questão: Nenhumas das opções está marcada como correta",
+  "noQuestions": "Nenhuma questão"
 }

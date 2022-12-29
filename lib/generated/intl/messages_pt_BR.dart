@@ -61,6 +61,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "noConnection": MessageLookupByLibrary.simpleMessage("Sem Conexão"),
         "noDueDateLabel":
             MessageLookupByLibrary.simpleMessage("Sem Data Limite"),
+        "noQuestions": MessageLookupByLibrary.simpleMessage("Nenhuma questão"),
         "optionInputLabel": MessageLookupByLibrary.simpleMessage("Opção"),
         "optionsTitle": MessageLookupByLibrary.simpleMessage("Opções"),
         "questionAmountLabel": m3,

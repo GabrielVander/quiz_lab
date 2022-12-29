@@ -140,5 +140,9 @@
   "questionSavingFailureNoCorrectOption": "Unable to save question: No correct option",
   "@questionSavingFailureNoCorrectOption": {
     "description": "Snack bar message for when attempting to save a question with no correct option"
+  },
+  "noQuestions": "No questions",
+  "@noQuestions": {
+    "description": "Message to display when questions list is empty"
   }
 }
