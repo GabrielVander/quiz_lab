@@ -343,6 +343,16 @@ class S {
       args: [],
     );
   }
+
+  /// `No questions`
+  String get noQuestions {
+    return Intl.message(
+      'No questions',
+      name: 'noQuestions',
+      desc: 'Message to display when questions list is empty',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
