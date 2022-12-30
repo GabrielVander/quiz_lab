@@ -283,13 +283,7 @@ class _FormSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
-      child: Row(
-        children: [
-          Expanded(
-            child: child,
-          ),
-        ],
-      ),
+      child: child,
     );
   }
 }
@@ -438,42 +432,26 @@ class _Options extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  _Subtitle(),
-                ],
-              ),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 15),
+              child: Center(child: _Subtitle()),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Builder(
-                    builder: (context) {
-                      return SizedBox(
-                        height: 230,
-                        child: ListView.separated(
-                          itemCount: viewModels.length,
-                          itemBuilder: (context, index) {
-                            final viewModel = viewModels[index];
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: viewModels.length,
+              itemBuilder: (context, index) {
+                final viewModel = viewModels[index];
 
-                            return _Option(
-                              viewModel: viewModel,
-                              onChanged: onOptionChanged,
-                              onToggleIsCorrect: onToggleOptionIsCorrect,
-                            );
-                          },
-                          separatorBuilder: (context, index) => const SizedBox(
-                            height: 10,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                return _Option(
+                  viewModel: viewModel,
+                  onChanged: onOptionChanged,
+                  onToggleIsCorrect: onToggleOptionIsCorrect,
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(
+                height: 10,
+              ),
             ),
             _AddOptionButton(onPressed: onAddOption),
           ],
