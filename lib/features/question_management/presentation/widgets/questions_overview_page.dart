@@ -305,13 +305,8 @@ class _QuestionItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _QuestionItemTitle(title: question.shortDescription),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    _QuestionItemCategories(categories: question.categories),
                   ],
                 ),
                 _QuestionItemDifficulty(difficulty: question.difficulty),

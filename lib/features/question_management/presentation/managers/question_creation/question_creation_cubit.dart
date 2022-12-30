@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 part 'question_creation_state.dart';
@@ -13,201 +15,267 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     required UseCaseFactory useCaseFactory,
   })  : _useCaseFactory = useCaseFactory,
         super(QuestionCreationState.initial()) {
-    emit(QuestionCreationState.optionsUpdated(_options.toList()));
+    _viewModelSubject.add(_defaultViewModel);
+
+    emit(QuestionCreationState.viewModelSubjectUpdated(_viewModelSubject));
   }
 
   final UseCaseFactory _useCaseFactory;
-  String _title = '';
-  String _description = '';
-  String _difficulty = '';
-  Iterable<SingleOptionViewModel> _options = List.unmodifiable([
-    SingleOptionViewModel(value: '', isCorrect: false),
-    SingleOptionViewModel(value: '', isCorrect: false),
-  ]);
 
-  void onTitleUpdate(String newValue) {
-    _title = newValue;
-    _validateTitleFieldValue();
-  }
+  QuestionCreationViewModel get _defaultViewModel => QuestionCreationViewModel(
+        title: const QuestionCreationTitleViewModel(
+          value: '',
+          showErrorMessage: false,
+        ),
+        description: const QuestionCreationDescriptionViewModel(
+          value: '',
+          showErrorMessage: false,
+        ),
+        difficulty: const QuestionCreationDifficultyViewModel(
+          formField: QuestionCreationDifficultyValueViewModel(
+            value: '',
+            showErrorMessage: false,
+          ),
+          availableValues: [
+            'easy',
+            'medium',
+            'hard',
+          ],
+        ),
+        options: [
+          QuestionCreationOptionViewModel(
+            id: const Uuid().v4(),
+            formField: const QuestionCreationOptionValueViewModel(
+              value: '',
+              showErrorMessage: false,
+            ),
+            isCorrect: false,
+          ),
+          QuestionCreationOptionViewModel(
+            id: const Uuid().v4(),
+            formField: const QuestionCreationOptionValueViewModel(
+              value: '',
+              showErrorMessage: false,
+            ),
+            isCorrect: false,
+          ),
+        ],
+        addOptionButtonEnabled: true,
+        message: null,
+        showMessage: false,
+      );
 
-  void onDescriptionUpdate(String newValue) {
-    _description = newValue;
-    _validateDescriptionFieldValue();
-  }
+  final BehaviorSubject<QuestionCreationViewModel> _viewModelSubject =
+      BehaviorSubject();
 
-  Future<void> createQuestion() async {
-    emit(QuestionCreationState.saving());
-
-    final areFieldsValid = _validateFields();
-
-    if (!areFieldsValid) {
-      return;
-    }
-
-    final hasAtLeastOneCorrectOption = _hasAtLeastOneCorrectOption();
-
-    if (!hasAtLeastOneCorrectOption) {
-      emit(QuestionCreationState.noCorrectOption());
-      return;
-    }
-
-    if (areFieldsValid) {
-      await _createQuestion();
-    }
-  }
-
-  void onDifficultyUpdate(String? value) {
-    _difficulty = value ?? '';
-
-    _validateDifficultyFieldValue();
-  }
-
-  void addOption() {
-    const optionsLimit = 5;
-
-    _options = List<SingleOptionViewModel>.unmodifiable(
-      _options.toList()
-        ..add(SingleOptionViewModel(value: '', isCorrect: false)),
+  void onTitleChanged(String newValue) {
+    final newViewModel = _viewModelSubject.value.copyWith(
+      title: _viewModelSubject.value.title.copyWith(
+        value: newValue,
+        showErrorMessage: true,
+      ),
+      showMessage: false,
     );
 
-    emit(QuestionCreationState.optionsUpdated(_options.toList()));
+    _viewModelSubject.add(newViewModel);
+  }
 
-    if (_options.length == optionsLimit) {
-      emit(QuestionCreationState.optionLimitReached());
+  void onDescriptionChanged(String newValue) {
+    final newViewModel = _viewModelSubject.value.copyWith(
+      description: _viewModelSubject.value.description.copyWith(
+        value: newValue,
+        showErrorMessage: true,
+      ),
+      showMessage: false,
+    );
+
+    _viewModelSubject.add(newViewModel);
+  }
+
+  void onDifficultyChanged(String? value) {
+    final newViewModel = _viewModelSubject.value.copyWith(
+      difficulty: _viewModelSubject.value.difficulty.copyWith(
+        formField: _viewModelSubject.value.difficulty.formField.copyWith(
+          value: value ?? '',
+          showErrorMessage: true,
+        ),
+      ),
+      showMessage: false,
+    );
+
+    _viewModelSubject.add(newViewModel);
+  }
+
+  void onOptionChanged(String id, String value) {
+    final newViewModel = _viewModelSubject.value.copyWith(
+      options: _viewModelSubject.value.options.map(
+        (option) {
+          if (option.id == id) {
+            return option.copyWith(
+              formField: option.formField.copyWith(
+                value: value,
+                showErrorMessage: true,
+              ),
+            );
+          }
+
+          return option;
+        },
+      ).toList(),
+      showMessage: false,
+    );
+
+    _viewModelSubject.add(newViewModel);
+  }
+
+  void toggleOptionIsCorrect(String id) {
+    final newViewModel = _viewModelSubject.value.copyWith(
+      options: _viewModelSubject.value.options.map(
+        (option) {
+          if (option.id == id) {
+            return option.copyWith(
+              isCorrect: !option.isCorrect,
+            );
+          }
+
+          return option;
+        },
+      ).toList(),
+      showMessage: false,
+    );
+
+    _viewModelSubject.add(newViewModel);
+  }
+
+  void onAddOption() {
+    const optionsLimit = 5;
+
+    if (_viewModelSubject.value.options.length >= optionsLimit) {
+      return;
     }
+
+    final newViewModel = _viewModelSubject.value.copyWith(
+      options: [
+        ..._viewModelSubject.value.options,
+        QuestionCreationOptionViewModel(
+          id: const Uuid().v4(),
+          formField: const QuestionCreationOptionValueViewModel(
+            value: '',
+            showErrorMessage: false,
+          ),
+          isCorrect: false,
+        ),
+      ],
+      addOptionButtonEnabled:
+          _viewModelSubject.value.options.length + 1 < optionsLimit,
+      showMessage: false,
+    );
+
+    _viewModelSubject.add(newViewModel);
   }
 
-  void toggleOptionAsCorrect(String id) {
-    _options = _options
-        .map(
-          (option) => option.id == id
-              ? option.copyWith(isCorrect: !option.isCorrect)
-              : option,
-        )
-        .toList();
+  Future<void> onCreateQuestion() async {
+    final isValid = _validateFields();
 
-    emit(QuestionCreationState.optionsUpdated(_options.toList()));
-  }
-
-  void onOptionUpdate(String id, String value) {
-    _options = _options
-        .map(
-          (option) => option.id == id ? option.copyWith(value: value) : option,
-        )
-        .toList();
-
-    _validateOptions();
-  }
-
-  bool _validateTitleFieldValue() {
-    if (_title == '') {
-      emit(QuestionCreationState.titleIsEmpty());
-
-      return false;
+    if (!isValid) {
+      return;
     }
 
-    emit(QuestionCreationState.titleIsValid());
-    return true;
+    await _createQuestion();
   }
-
-  bool _validateDescriptionFieldValue() {
-    if (_description == '') {
-      emit(QuestionCreationState.descriptionIsEmpty());
-
-      return false;
-    }
-
-    emit(QuestionCreationState.descriptionIsValid());
-    return true;
-  }
-
-  bool _validateDifficultyFieldValue() {
-    if (_difficulty == '') {
-      emit(QuestionCreationState.difficultyIsNotSet());
-
-      return false;
-    }
-
-    emit(QuestionCreationState.difficultyIsSet());
-    return true;
-  }
-
-  bool _validateOptions() {
-    final updatedOptions = _options.map(_validateSingleOption);
-    _options = updatedOptions;
-
-    emit(QuestionCreationState.optionsUpdated(_options.toList()));
-
-    return updatedOptions.map((e) => e.isEmpty).contains(true);
-  }
-
-  SingleOptionViewModel _validateSingleOption(SingleOptionViewModel option) =>
-      option.copyWith(isEmpty: option.value.isEmpty);
-
-  bool _validateFields() {
-    return [
-      _validateTitleFieldValue(),
-      _validateDescriptionFieldValue(),
-      _validateDifficultyFieldValue(),
-      _validateOptions(),
-    ].every((isValid) => isValid);
-  }
-
-  bool _hasAtLeastOneCorrectOption() =>
-      _options.any((option) => option.isCorrect);
 
   Future<void> _createQuestion() async {
+    final viewModel = _viewModelSubject.value;
     final createQuestionUseCase = _useCaseFactory.makeCreateQuestionUseCase();
 
     final creationResult = await createQuestionUseCase.execute(
       QuestionCreationInput(
-        shortDescription: _title,
-        description: _description,
-        difficulty: _difficulty,
+        shortDescription: viewModel.title.value,
+        description: viewModel.description.value,
+        difficulty: viewModel.difficulty.formField.value,
         categories: const [],
       ),
     );
 
     if (creationResult.isErr) {
-      emit(QuestionCreationState.failure(details: creationResult.err!.message));
+      final newViewModel = viewModel.copyWith(
+        message: QuestionCreationMessageViewModel(
+          type: QuestionCreationMessageType.unableToSaveQuestion,
+          isFailure: true,
+          details: creationResult.err!.message,
+        ),
+        showMessage: true,
+      );
+
+      _viewModelSubject.add(newViewModel);
+
       return;
     }
 
-    emit(QuestionCreationState.success());
-  }
-}
-
-class SingleOptionViewModel extends Equatable {
-  SingleOptionViewModel({
-    required this.value,
-    required this.isCorrect,
-    this.isEmpty = false,
-    String? id,
-  }) : id = id ?? const Uuid().v4();
-
-  final String id;
-  final String value;
-  final bool isCorrect;
-  final bool isEmpty;
-
-  SingleOptionViewModel copyWith({
-    String? value,
-    bool? isCorrect,
-    bool? isEmpty,
-  }) {
-    return SingleOptionViewModel(
-      id: this.id,
-      value: value ?? this.value,
-      isCorrect: isCorrect ?? this.isCorrect,
-      isEmpty: isEmpty ?? this.isEmpty,
+    final newViewModel = _defaultViewModel.copyWith(
+      message: const QuestionCreationMessageViewModel(
+        type: QuestionCreationMessageType.questionSavedSuccessfully,
+        isFailure: false,
+        details: null,
+      ),
+      showMessage: true,
     );
+
+    _viewModelSubject.add(newViewModel);
+
+    emit(QuestionCreationState.goBack());
   }
 
-  @override
-  List<Object?> get props => [
-        id,
-        value,
-        isCorrect,
-        isEmpty,
-      ];
+  bool _validateFields() {
+    final areFieldsValid = _viewModelSubject.value.areFieldsValid;
+
+    if (!areFieldsValid) {
+      final newViewModel = _viewModelSubject.value.copyWith(
+        title: _viewModelSubject.value.title.copyWith(
+          showErrorMessage: true,
+        ),
+        description: _viewModelSubject.value.description.copyWith(
+          showErrorMessage: true,
+        ),
+        difficulty: _viewModelSubject.value.difficulty.copyWith(
+          formField: _viewModelSubject.value.difficulty.formField.copyWith(
+            showErrorMessage: true,
+          ),
+        ),
+        options: _viewModelSubject.value.options.map(
+          (option) {
+            return option.copyWith(
+              formField: option.formField.copyWith(
+                showErrorMessage: true,
+              ),
+            );
+          },
+        ).toList(),
+      );
+
+      _viewModelSubject.add(newViewModel);
+
+      return false;
+    }
+
+    final hasAtLeastOneCorrectOption =
+        _viewModelSubject.value.hasAtLeastOneCorrectOption;
+
+    if (!hasAtLeastOneCorrectOption) {
+      final newViewModel = _viewModelSubject.value.copyWith(
+        message: const QuestionCreationMessageViewModel(
+          type: QuestionCreationMessageType.noCorrectOption,
+          isFailure: true,
+          details: null,
+        ),
+        showMessage: true,
+      );
+
+      _viewModelSubject.add(newViewModel);
+
+      return false;
+    }
+
+    return true;
+  }
 }

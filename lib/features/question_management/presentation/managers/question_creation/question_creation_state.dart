@@ -5,123 +5,37 @@ abstract class QuestionCreationState extends Equatable {
 
   factory QuestionCreationState.initial() => const QuestionCreationInitial._();
 
-  factory QuestionCreationState.saving() =>
-      const QuestionCreationSavingQuestion._();
+  factory QuestionCreationState.loading() => const QuestionCreationLoading._();
 
-  factory QuestionCreationState.success() =>
-      const QuestionCreationHasSucceeded._();
+  factory QuestionCreationState.goBack() => const QuestionCreationGoBack._();
 
-  factory QuestionCreationState.failure({required String details}) =>
-      QuestionCreationHasFailed._(details: details);
-
-  factory QuestionCreationState.titleIsEmpty() =>
-      const QuestionCreationTitleIsEmpty._();
-
-  factory QuestionCreationState.titleIsValid() =>
-      const QuestionCreationTitleIsValid._();
-
-  factory QuestionCreationState.descriptionIsEmpty() =>
-      const QuestionCreationDescriptionIsEmpty._();
-
-  factory QuestionCreationState.descriptionIsValid() =>
-      const QuestionCreationDescriptionIsValid._();
-
-  factory QuestionCreationState.difficultyIsNotSet() =>
-      const QuestionCreationDifficultyIsNotSet._();
-
-  factory QuestionCreationState.difficultyIsSet() =>
-      const QuestionCreationDifficultyIsSet._();
-
-  factory QuestionCreationState.optionsUpdated(
-    List<SingleOptionViewModel> options,
+  factory QuestionCreationState.viewModelSubjectUpdated(
+    BehaviorSubject<QuestionCreationViewModel> viewModelSubject,
   ) =>
-      QuestionCreationOptionsUpdated._(options: options);
-
-  factory QuestionCreationState.optionIsEmpty(String id) =>
-      QuestionCreationOptionIsEmpty._(id: id);
-
-  factory QuestionCreationState.optionLimitReached() =>
-      const QuestionCreationOptionLimitReached._();
-
-  factory QuestionCreationState.noCorrectOption() =>
-      const QuestionCreationNoCorrectOption._();
+      QuestionCreationViewModelSubjectUpdated._(
+        viewModelSubject: viewModelSubject,
+      );
 
   @override
   List<Object> get props => [];
-
-  @override
-  bool get stringify => true;
 }
 
 class QuestionCreationInitial extends QuestionCreationState {
   const QuestionCreationInitial._();
 }
 
-class QuestionCreationHasFailed extends QuestionCreationState {
-  const QuestionCreationHasFailed._({required this.details});
-
-  final String details;
-
-  @override
-  List<Object> get props => super.props..addAll([details]);
+class QuestionCreationLoading extends QuestionCreationState {
+  const QuestionCreationLoading._();
 }
 
-class QuestionCreationHasSucceeded extends QuestionCreationState {
-  const QuestionCreationHasSucceeded._();
+class QuestionCreationGoBack extends QuestionCreationState {
+  const QuestionCreationGoBack._();
 }
 
-class QuestionCreationSavingQuestion extends QuestionCreationState {
-  const QuestionCreationSavingQuestion._();
-}
+class QuestionCreationViewModelSubjectUpdated extends QuestionCreationState {
+  const QuestionCreationViewModelSubjectUpdated._({
+    required this.viewModelSubject,
+  }) : super();
 
-class QuestionCreationTitleIsEmpty extends QuestionCreationState {
-  const QuestionCreationTitleIsEmpty._();
-}
-
-class QuestionCreationTitleIsValid extends QuestionCreationState {
-  const QuestionCreationTitleIsValid._();
-}
-
-class QuestionCreationDescriptionIsEmpty extends QuestionCreationState {
-  const QuestionCreationDescriptionIsEmpty._();
-}
-
-class QuestionCreationDescriptionIsValid extends QuestionCreationState {
-  const QuestionCreationDescriptionIsValid._();
-}
-
-class QuestionCreationDifficultyIsNotSet extends QuestionCreationState {
-  const QuestionCreationDifficultyIsNotSet._();
-}
-
-class QuestionCreationDifficultyIsSet extends QuestionCreationState {
-  const QuestionCreationDifficultyIsSet._();
-}
-
-class QuestionCreationOptionsUpdated extends QuestionCreationState {
-  const QuestionCreationOptionsUpdated._({
-    required this.options,
-  });
-
-  final List<SingleOptionViewModel> options;
-
-  @override
-  List<Object> get props => [options];
-}
-
-class QuestionCreationOptionIsEmpty extends QuestionCreationState {
-  const QuestionCreationOptionIsEmpty._({required this.id});
-
-  final String id;
-
-  @override
-  List<Object> get props => super.props..addAll([id]);
-}
-
-class QuestionCreationOptionLimitReached extends QuestionCreationState {
-  const QuestionCreationOptionLimitReached._();
-}
-
-class QuestionCreationNoCorrectOption extends QuestionCreationState {
-  const QuestionCreationNoCorrectOption._();
+  final BehaviorSubject<QuestionCreationViewModel> viewModelSubject;
 }
