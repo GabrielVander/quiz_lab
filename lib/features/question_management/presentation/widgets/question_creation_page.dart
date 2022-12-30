@@ -26,6 +26,7 @@ class QuestionCreationPage extends StatelessWidget {
           child: _Body(
             cubit: _cubit,
             onTitleChanged: _cubit.onTitleUpdate,
+            onDescriptionChanged: _cubit.onDescriptionUpdate,
           ),
         ),
       ),
@@ -37,10 +38,12 @@ class _Body extends HookWidget {
   const _Body({
     required this.cubit,
     required this.onTitleChanged,
+    required this.onDescriptionChanged,
   });
 
   final QuestionCreationCubit cubit;
   final void Function(String) onTitleChanged;
+  final void Function(String) onDescriptionChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +111,11 @@ class _Body extends HookWidget {
                 child: Builder(
                   builder: (context) {
                     return _Form(
-                      cubit: cubit,
-                      onCreateQuestion: cubit.createQuestion,
                       viewModel: snapshot.data!,
+                      cubit: cubit,
                       onTitleChanged: onTitleChanged,
+                      onCreateQuestion: cubit.createQuestion,
+                      onDescriptionChanged: onDescriptionChanged,
                     );
                   },
                 ),
@@ -164,15 +168,17 @@ class _PageTitle extends StatelessWidget {
 
 class _Form extends StatelessWidget {
   const _Form({
-    required this.cubit,
-    required this.onCreateQuestion,
-    required this.onTitleChanged,
     required this.viewModel,
+    required this.cubit,
+    required this.onTitleChanged,
+    required this.onDescriptionChanged,
+    required this.onCreateQuestion,
   });
 
   final QuestionCreationCubit cubit;
   final QuestionCreationViewModel viewModel;
   final void Function(String) onTitleChanged;
+  final void Function(String) onDescriptionChanged;
   final void Function() onCreateQuestion;
 
   @override
@@ -188,7 +194,10 @@ class _Form extends StatelessWidget {
             ),
           ),
           _FormSection(
-            child: _DescriptionField(cubit: cubit),
+            child: _DescriptionField(
+              viewModel: viewModel.description,
+              onChanged: onDescriptionChanged,
+            ),
           ),
           _FormSection(
             child: _DifficultySelector(cubit: cubit),
@@ -238,7 +247,7 @@ class _FormSection extends StatelessWidget {
   }
 }
 
-class _TitleField extends HookWidget {
+class _TitleField extends StatelessWidget {
   const _TitleField({
     required this.viewModel,
     required this.onChanged,
@@ -256,10 +265,6 @@ class _TitleField extends HookWidget {
       errorMessage = S.of(context).mustBeSetMessage;
     }
 
-    if (!viewModel.showErrorMessage) {
-      errorMessage = null;
-    }
-
     return TextField(
       decoration: InputDecoration(
         labelText: S.of(context).questionTitleLabel,
@@ -272,31 +277,21 @@ class _TitleField extends HookWidget {
   }
 }
 
-class _DescriptionField extends HookWidget {
+class _DescriptionField extends StatelessWidget {
   const _DescriptionField({
-    required QuestionCreationCubit cubit,
-  }) : _cubit = cubit;
+    required this.viewModel,
+    required this.onChanged,
+  });
 
-  final QuestionCreationCubit _cubit;
+  final TextFieldViewModel viewModel;
+  final void Function(String) onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(
-      _cubit,
-      buildWhen: (currentState) => [
-        QuestionCreationDescriptionIsEmpty,
-        QuestionCreationDescriptionIsValid
-      ].any((element) => currentState.runtimeType == element),
-    );
-
     String? errorMessage;
 
-    if (state is QuestionCreationDescriptionIsEmpty) {
+    if (viewModel.isEmpty && viewModel.showErrorMessage) {
       errorMessage = S.of(context).mustBeSetMessage;
-    }
-
-    if (state is QuestionCreationDescriptionIsValid) {
-      errorMessage = null;
     }
 
     return TextField(
@@ -305,7 +300,7 @@ class _DescriptionField extends HookWidget {
         border: const OutlineInputBorder(),
         errorText: errorMessage,
       ),
-      onChanged: _cubit.onDescriptionUpdate,
+      onChanged: onChanged,
       minLines: 5,
       maxLines: 10,
     );

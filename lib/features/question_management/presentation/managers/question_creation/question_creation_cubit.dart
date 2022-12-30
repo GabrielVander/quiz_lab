@@ -39,16 +39,24 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
 
   void onTitleUpdate(String newValue) {
     final newViewModel = _viewModelSubject.value.copyWith(
-      title: _viewModelSubject.value.title
-          .copyWith(value: newValue, showErrorMessage: true),
+      title: _viewModelSubject.value.title.copyWith(
+        value: newValue,
+        showErrorMessage: true,
+      ),
     );
 
     _viewModelSubject.add(newViewModel);
   }
 
   void onDescriptionUpdate(String newValue) {
-    _description = newValue;
-    _validateDescriptionFieldValue();
+    final newViewModel = _viewModelSubject.value.copyWith(
+      description: _viewModelSubject.value.description.copyWith(
+        value: newValue,
+        showErrorMessage: true,
+      ),
+    );
+
+    _viewModelSubject.add(newViewModel);
   }
 
   Future<void> createQuestion() async {
