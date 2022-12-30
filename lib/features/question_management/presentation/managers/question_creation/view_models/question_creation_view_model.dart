@@ -8,12 +8,14 @@ class QuestionCreationViewModel extends Equatable {
     required this.description,
     required this.difficulty,
     required this.options,
+    required this.addOptionButtonEnabled,
   });
 
   final QuestionCreationTitleViewModel title;
   final QuestionCreationDescriptionViewModel description;
   final QuestionCreationDifficultyViewModel difficulty;
-  final List<OptionFieldViewModel> options;
+  final List<QuestionCreationOptionViewModel> options;
+  final bool addOptionButtonEnabled;
 
   @override
   List<Object?> get props => [
@@ -27,13 +29,16 @@ class QuestionCreationViewModel extends Equatable {
     QuestionCreationTitleViewModel? title,
     QuestionCreationDescriptionViewModel? description,
     QuestionCreationDifficultyViewModel? difficulty,
-    List<OptionFieldViewModel>? options,
+    List<QuestionCreationOptionViewModel>? options,
+    bool? addOptionButtonEnabled,
   }) {
     return QuestionCreationViewModel(
       title: title ?? this.title,
       description: description ?? this.description,
       difficulty: difficulty ?? this.difficulty,
       options: options ?? this.options,
+      addOptionButtonEnabled:
+          addOptionButtonEnabled ?? this.addOptionButtonEnabled,
     );
   }
 }
@@ -109,6 +114,25 @@ class QuestionCreationDifficultyValueViewModel
 }
 
 @immutable
+class QuestionCreationOptionValueViewModel
+    extends _QuestionCreationTextFormFieldViewModel {
+  const QuestionCreationOptionValueViewModel({
+    required super.value,
+    required super.showErrorMessage,
+  }) : super._();
+
+  QuestionCreationOptionValueViewModel copyWith({
+    String? value,
+    bool? showErrorMessage,
+  }) {
+    return QuestionCreationOptionValueViewModel(
+      value: value ?? this.value,
+      showErrorMessage: showErrorMessage ?? this.showErrorMessage,
+    );
+  }
+}
+
+@immutable
 class QuestionCreationDifficultyViewModel {
   const QuestionCreationDifficultyViewModel({
     required this.formField,
@@ -134,16 +158,30 @@ class QuestionCreationDifficultyViewModel {
 }
 
 @immutable
-class OptionFieldViewModel {
-  const OptionFieldViewModel({
-    required this.textField,
+class QuestionCreationOptionViewModel {
+  const QuestionCreationOptionViewModel({
+    required this.id,
+    required this.formField,
     required this.isCorrect,
   });
 
-  final _QuestionCreationTextFormFieldViewModel textField;
+  final String id;
+  final QuestionCreationOptionValueViewModel formField;
   final bool isCorrect;
 
-  bool get isEmpty => textField.isEmpty;
+  bool get isEmpty => formField.isEmpty;
 
-  bool get showErrorMessage => textField.showErrorMessage;
+  bool get showErrorMessage => formField.showErrorMessage;
+
+  QuestionCreationOptionViewModel copyWith({
+    String? id,
+    QuestionCreationOptionValueViewModel? formField,
+    bool? isCorrect,
+  }) {
+    return QuestionCreationOptionViewModel(
+      id: id ?? this.id,
+      formField: formField ?? this.formField,
+      isCorrect: isCorrect ?? this.isCorrect,
+    );
+  }
 }

@@ -39,11 +39,6 @@ abstract class QuestionCreationState extends Equatable {
   factory QuestionCreationState.difficultyIsSet() =>
       const QuestionCreationDifficultyIsSet._();
 
-  factory QuestionCreationState.optionsUpdated(
-    List<SingleOptionViewModel> options,
-  ) =>
-      QuestionCreationOptionsUpdated._(options: options);
-
   factory QuestionCreationState.optionIsEmpty(String id) =>
       QuestionCreationOptionIsEmpty._(id: id);
 
@@ -111,17 +106,6 @@ class QuestionCreationDifficultyIsNotSet extends QuestionCreationState {
 
 class QuestionCreationDifficultyIsSet extends QuestionCreationState {
   const QuestionCreationDifficultyIsSet._();
-}
-
-class QuestionCreationOptionsUpdated extends QuestionCreationState {
-  const QuestionCreationOptionsUpdated._({
-    required this.options,
-  });
-
-  final List<SingleOptionViewModel> options;
-
-  @override
-  List<Object> get props => [options];
 }
 
 class QuestionCreationOptionIsEmpty extends QuestionCreationState {

@@ -28,6 +28,9 @@ class QuestionCreationPage extends StatelessWidget {
             onTitleChanged: _cubit.onTitleUpdate,
             onDescriptionChanged: _cubit.onDescriptionUpdate,
             onDifficultyChanged: _cubit.onDifficultyUpdate,
+            onOptionChanged: _cubit.onOptionUpdate,
+            onToggleOptionIsCorrect: _cubit.toggleOptionAsCorrect,
+            onAddOption: _cubit.addOption,
           ),
         ),
       ),
@@ -41,12 +44,18 @@ class _Body extends HookWidget {
     required this.onTitleChanged,
     required this.onDescriptionChanged,
     required this.onDifficultyChanged,
+    required this.onOptionChanged,
+    required this.onToggleOptionIsCorrect,
+    required this.onAddOption,
   });
 
   final QuestionCreationCubit cubit;
-  final void Function(String) onTitleChanged;
-  final void Function(String) onDescriptionChanged;
-  final void Function(String?) onDifficultyChanged;
+  final void Function(String newValue) onTitleChanged;
+  final void Function(String newValue) onDescriptionChanged;
+  final void Function(String? newValue) onDifficultyChanged;
+  final void Function(String id, String newValue) onOptionChanged;
+  final void Function(String id) onToggleOptionIsCorrect;
+  final void Function() onAddOption;
 
   @override
   Widget build(BuildContext context) {
@@ -115,11 +124,13 @@ class _Body extends HookWidget {
                   builder: (context) {
                     return _Form(
                       viewModel: snapshot.data!,
-                      cubit: cubit,
                       onTitleChanged: onTitleChanged,
                       onCreateQuestion: cubit.createQuestion,
                       onDescriptionChanged: onDescriptionChanged,
                       onDifficultyChanged: onDifficultyChanged,
+                      onOptionChanged: onOptionChanged,
+                      onToggleOptionIsCorrect: onToggleOptionIsCorrect,
+                      onAddOption: onAddOption,
                     );
                   },
                 ),
@@ -173,18 +184,22 @@ class _PageTitle extends StatelessWidget {
 class _Form extends StatelessWidget {
   const _Form({
     required this.viewModel,
-    required this.cubit,
     required this.onTitleChanged,
     required this.onDescriptionChanged,
     required this.onDifficultyChanged,
+    required this.onOptionChanged,
+    required this.onToggleOptionIsCorrect,
+    required this.onAddOption,
     required this.onCreateQuestion,
   });
 
-  final QuestionCreationCubit cubit;
   final QuestionCreationViewModel viewModel;
-  final void Function(String) onTitleChanged;
-  final void Function(String) onDescriptionChanged;
-  final void Function(String?) onDifficultyChanged;
+  final void Function(String newValue) onTitleChanged;
+  final void Function(String newValue) onDescriptionChanged;
+  final void Function(String? newValue) onDifficultyChanged;
+  final void Function(String id, String newValue) onOptionChanged;
+  final void Function(String id) onToggleOptionIsCorrect;
+  final void Function() onAddOption;
   final void Function() onCreateQuestion;
 
   @override
@@ -212,7 +227,13 @@ class _Form extends StatelessWidget {
             ),
           ),
           _FormSection(
-            child: _Options(cubit: cubit),
+            child: _Options(
+              viewModels: viewModel.options,
+              onOptionChanged: onOptionChanged,
+              onToggleOptionIsCorrect: onToggleOptionIsCorrect,
+              onAddOption:
+                  viewModel.addOptionButtonEnabled ? onAddOption : null,
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -376,22 +397,21 @@ class _DifficultyItem extends StatelessWidget {
   }
 }
 
-class _Options extends HookWidget {
+class _Options extends StatelessWidget {
   const _Options({
-    required this.cubit,
+    required this.viewModels,
+    required this.onOptionChanged,
+    required this.onToggleOptionIsCorrect,
+    required this.onAddOption,
   });
 
-  final QuestionCreationCubit cubit;
+  final List<QuestionCreationOptionViewModel> viewModels;
+  final void Function(String id, String newValue) onOptionChanged;
+  final void Function(String id) onToggleOptionIsCorrect;
+  final void Function()? onAddOption;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(
-      cubit,
-      buildWhen: (currentState) => [
-        QuestionCreationOptionsUpdated,
-      ].any((s) => currentState.runtimeType == s),
-    );
-
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5)),
@@ -415,37 +435,30 @@ class _Options extends HookWidget {
                 Expanded(
                   child: Builder(
                     builder: (context) {
-                      if (state is QuestionCreationOptionsUpdated) {
-                        return SizedBox(
-                          height: 230,
-                          child: ListView.separated(
-                            itemCount: state.options.length,
-                            itemBuilder: (context, index) {
-                              final option = state.options[index];
+                      return SizedBox(
+                        height: 230,
+                        child: ListView.separated(
+                          itemCount: viewModels.length,
+                          itemBuilder: (context, index) {
+                            final viewModel = viewModels[index];
 
-                              return _Option(
-                                viewModel: option,
-                                onUpdated: (value) =>
-                                    cubit.onOptionUpdate(option.id, value),
-                                onIsCorrect: (_) =>
-                                    cubit.toggleOptionAsCorrect(option.id),
-                              );
-                            },
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(
-                              height: 10,
-                            ),
+                            return _Option(
+                              viewModel: viewModel,
+                              onChanged: onOptionChanged,
+                              onToggleIsCorrect: onToggleOptionIsCorrect,
+                            );
+                          },
+                          separatorBuilder: (context, index) => const SizedBox(
+                            height: 10,
                           ),
-                        );
-                      }
-
-                      return Container();
+                        ),
+                      );
                     },
                   ),
                 ),
               ],
             ),
-            _AddOptionButton(cubit: cubit),
+            _AddOptionButton(onPressed: onAddOption),
           ],
         ),
       ),
@@ -456,27 +469,32 @@ class _Options extends HookWidget {
 class _Option extends StatelessWidget {
   const _Option({
     required this.viewModel,
-    required this.onIsCorrect,
-    required this.onUpdated,
+    required this.onChanged,
+    required this.onToggleIsCorrect,
   });
 
-  final SingleOptionViewModel viewModel;
-  final void Function(bool) onIsCorrect;
-  final void Function(String) onUpdated;
+  final QuestionCreationOptionViewModel viewModel;
+  final void Function(String id) onToggleIsCorrect;
+  final void Function(String id, String newValue) onChanged;
 
   @override
   Widget build(BuildContext context) {
+    String? errorMessage;
+
+    if (viewModel.isEmpty && viewModel.showErrorMessage) {
+      errorMessage = S.of(context).mustBeSetMessage;
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: TextField(
-            onChanged: onUpdated,
+            onChanged: (v) => onChanged(viewModel.id, v),
             decoration: InputDecoration(
               labelText: S.of(context).optionInputLabel,
               border: const OutlineInputBorder(),
-              errorText:
-                  viewModel.isEmpty ? S.of(context).mustBeSetMessage : null,
+              errorText: errorMessage,
             ),
           ),
         ),
@@ -484,7 +502,7 @@ class _Option extends StatelessWidget {
           children: [
             Checkbox(
               value: viewModel.isCorrect,
-              onChanged: (bool? value) => onIsCorrect(value ?? false),
+              onChanged: (_) => onToggleIsCorrect(viewModel.id),
             ),
             Text(S.of(context).isOptionCorrectLabel),
           ],
@@ -494,25 +512,17 @@ class _Option extends StatelessWidget {
   }
 }
 
-class _AddOptionButton extends HookWidget {
+class _AddOptionButton extends StatelessWidget {
   const _AddOptionButton({
-    required this.cubit,
+    required this.onPressed,
   });
 
-  final QuestionCreationCubit cubit;
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(
-      cubit,
-      buildWhen: (currentState) => [
-        QuestionCreationOptionLimitReached,
-      ].any((element) => currentState.runtimeType == element),
-    );
-
     return OutlinedButton(
-      onPressed:
-          state is QuestionCreationOptionLimitReached ? null : cubit.addOption,
+      onPressed: onPressed,
       child: Text(S.of(context).addOptionLabel),
     );
   }
