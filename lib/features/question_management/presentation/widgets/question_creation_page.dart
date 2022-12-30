@@ -6,15 +6,16 @@ import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionCreationPage extends StatelessWidget {
   const QuestionCreationPage({
     super.key,
-    required this.cubit,
-  });
+    required QuestionCreationCubit cubit,
+  }) : _cubit = cubit;
 
-  final QuestionCreationCubit cubit;
+  final QuestionCreationCubit _cubit;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,10 @@ class QuestionCreationPage extends StatelessWidget {
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(10),
-          child: _Body(cubit: cubit),
+          child: _Body(
+            cubit: _cubit,
+            onTitleChanged: _cubit.onTitleUpdate,
+          ),
         ),
       ),
     );
@@ -32,12 +36,17 @@ class QuestionCreationPage extends StatelessWidget {
 class _Body extends HookWidget {
   const _Body({
     required this.cubit,
+    required this.onTitleChanged,
   });
 
   final QuestionCreationCubit cubit;
+  final void Function(String) onTitleChanged;
 
   @override
   Widget build(BuildContext context) {
+    final state =
+        useBlocBuilder<QuestionCreationCubit, QuestionCreationState>(cubit);
+
     useBlocListener(
       cubit,
       (_, listenedState, ctx) {
@@ -76,29 +85,44 @@ class _Body extends HookWidget {
       ].any((s) => currentState.runtimeType == s),
     );
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            _PageTitle(),
-          ],
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Expanded(
-          child: Builder(
-            builder: (context) {
-              return _Form(
-                cubit: cubit,
-                onCreateQuestion: cubit.createQuestion,
-              );
-            },
-          ),
-        ),
-      ],
-    );
+    if (state is QuestionCreationViewModelSubjectUpdated) {
+      return StreamBuilder<QuestionCreationViewModel>(
+        stream: state.viewModelSubject.stream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  _PageTitle(),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: Builder(
+                  builder: (context) {
+                    return _Form(
+                      cubit: cubit,
+                      onCreateQuestion: cubit.createQuestion,
+                      viewModel: snapshot.data!,
+                      onTitleChanged: onTitleChanged,
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    return Container();
   }
 }
 
@@ -142,9 +166,13 @@ class _Form extends StatelessWidget {
   const _Form({
     required this.cubit,
     required this.onCreateQuestion,
+    required this.onTitleChanged,
+    required this.viewModel,
   });
 
   final QuestionCreationCubit cubit;
+  final QuestionCreationViewModel viewModel;
+  final void Function(String) onTitleChanged;
   final void Function() onCreateQuestion;
 
   @override
@@ -154,7 +182,10 @@ class _Form extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _FormSection(
-            child: _TitleField(cubit: cubit),
+            child: _TitleField(
+              viewModel: viewModel.title,
+              onChanged: onTitleChanged,
+            ),
           ),
           _FormSection(
             child: _DescriptionField(cubit: cubit),
@@ -209,29 +240,23 @@ class _FormSection extends StatelessWidget {
 
 class _TitleField extends HookWidget {
   const _TitleField({
-    required QuestionCreationCubit cubit,
-  }) : _cubit = cubit;
+    required this.viewModel,
+    required this.onChanged,
+  });
 
-  final QuestionCreationCubit _cubit;
+  final TextFieldViewModel viewModel;
+  final void Function(String) onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(
-      _cubit,
-      buildWhen: (currentState) => [
-        QuestionCreationTitleIsEmpty,
-        QuestionCreationTitleIsValid
-      ].any((element) => currentState.runtimeType == element),
-    );
-
     String? errorMessage;
     const enabled = true;
 
-    if (state is QuestionCreationTitleIsEmpty) {
+    if (viewModel.isEmpty && viewModel.showErrorMessage) {
       errorMessage = S.of(context).mustBeSetMessage;
     }
 
-    if (state is QuestionCreationTitleIsValid) {
+    if (!viewModel.showErrorMessage) {
       errorMessage = null;
     }
 
@@ -241,7 +266,7 @@ class _TitleField extends HookWidget {
         border: const OutlineInputBorder(),
         errorText: errorMessage,
       ),
-      onChanged: _cubit.onTitleUpdate,
+      onChanged: onChanged,
       enabled: enabled,
     );
   }

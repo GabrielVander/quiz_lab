@@ -5,6 +5,13 @@ abstract class QuestionCreationState extends Equatable {
 
   factory QuestionCreationState.initial() => const QuestionCreationInitial._();
 
+  factory QuestionCreationState.viewModelSubjectUpdated(
+    BehaviorSubject<QuestionCreationViewModel> viewModelSubject,
+  ) =>
+      QuestionCreationViewModelSubjectUpdated._(
+        viewModelSubject: viewModelSubject,
+      );
+
   factory QuestionCreationState.saving() =>
       const QuestionCreationSavingQuestion._();
 
@@ -55,6 +62,14 @@ abstract class QuestionCreationState extends Equatable {
 
 class QuestionCreationInitial extends QuestionCreationState {
   const QuestionCreationInitial._();
+}
+
+class QuestionCreationViewModelSubjectUpdated extends QuestionCreationState {
+  const QuestionCreationViewModelSubjectUpdated._({
+    required this.viewModelSubject,
+  }) : super();
+
+  final BehaviorSubject<QuestionCreationViewModel> viewModelSubject;
 }
 
 class QuestionCreationHasFailed extends QuestionCreationState {

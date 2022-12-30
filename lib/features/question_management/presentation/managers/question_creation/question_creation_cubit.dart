@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 part 'question_creation_state.dart';
@@ -13,7 +15,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     required UseCaseFactory useCaseFactory,
   })  : _useCaseFactory = useCaseFactory,
         super(QuestionCreationState.initial()) {
-    emit(QuestionCreationState.optionsUpdated(_options.toList()));
+    emit(QuestionCreationState.viewModelSubjectUpdated(_viewModelSubject));
   }
 
   final UseCaseFactory _useCaseFactory;
@@ -25,9 +27,23 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     SingleOptionViewModel(value: '', isCorrect: false),
   ]);
 
+  final BehaviorSubject<QuestionCreationViewModel> _viewModelSubject =
+      BehaviorSubject.seeded(
+    const QuestionCreationViewModel(
+      title: TextFieldViewModel(value: '', showErrorMessage: false),
+      description: TextFieldViewModel(value: '', showErrorMessage: false),
+      difficulty: '',
+      options: [],
+    ),
+  );
+
   void onTitleUpdate(String newValue) {
-    _title = newValue;
-    _validateTitleFieldValue();
+    final newViewModel = _viewModelSubject.value.copyWith(
+      title: _viewModelSubject.value.title
+          .copyWith(value: newValue, showErrorMessage: true),
+    );
+
+    _viewModelSubject.add(newViewModel);
   }
 
   void onDescriptionUpdate(String newValue) {
