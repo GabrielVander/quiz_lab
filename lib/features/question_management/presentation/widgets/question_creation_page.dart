@@ -9,7 +9,7 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class QuestionCreationPage extends StatelessWidget {
+class QuestionCreationPage extends HookWidget {
   const QuestionCreationPage({
     super.key,
     required QuestionCreationCubit cubit,
@@ -19,129 +19,146 @@ class QuestionCreationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = useBlocBuilder(_cubit);
+
     return SafeArea(
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(10),
-          child: _Body(
-            cubit: _cubit,
-            onTitleChanged: _cubit.onTitleUpdate,
-            onDescriptionChanged: _cubit.onDescriptionUpdate,
-            onDifficultyChanged: _cubit.onDifficultyUpdate,
-            onOptionChanged: _cubit.onOptionUpdate,
-            onToggleOptionIsCorrect: _cubit.toggleOptionAsCorrect,
-            onAddOption: _cubit.addOption,
+          child: Builder(
+            builder: (ctx) {
+              if (state is QuestionCreationGoBack) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  GoRouter.of(ctx).go('/');
+                });
+              }
+
+              if (state is QuestionCreationViewModelSubjectUpdated) {
+                final subject = state.viewModelSubject;
+
+                return StreamBuilder<QuestionCreationViewModel>(
+                  stream: subject.stream,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final viewModel = snapshot.data!;
+
+                    if (viewModel.message != null && viewModel.showMessage) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _showSnackBarMessage(context, viewModel.message!);
+                      });
+                    }
+
+                    return _Body(
+                      viewModel: viewModel,
+                      onTitleChanged: _cubit.onTitleChanged,
+                      onDescriptionChanged: _cubit.onDescriptionChanged,
+                      onDifficultyChanged: _cubit.onDifficultyChanged,
+                      onOptionChanged: _cubit.onOptionChanged,
+                      onToggleOptionIsCorrect: _cubit.toggleOptionIsCorrect,
+                      onAddOption: _cubit.onAddOption,
+                      onCreateQuestion: _cubit.onCreateQuestion,
+                    );
+                  },
+                );
+              }
+
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
           ),
         ),
       ),
     );
   }
+
+  void _showSnackBarMessage(
+    BuildContext context,
+    QuestionCreationMessageViewModel viewModel,
+  ) {
+    String message;
+    final backgroundColor = viewModel.isFailure ? Colors.red : Colors.green;
+
+    switch (viewModel.type) {
+      case QuestionCreationMessageType.questionSavedSuccessfully:
+        message = S.of(context).questionSavedSuccessfully;
+        break;
+      case QuestionCreationMessageType.unableToSaveQuestion:
+        message = S.of(context).questionSavingFailure(viewModel.details ?? '');
+        break;
+      case QuestionCreationMessageType.noCorrectOption:
+        message = S.of(context).questionSavingFailureNoCorrectOption;
+        break;
+    }
+
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: backgroundColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      behavior: SnackBarBehavior.floating,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 }
 
-class _Body extends HookWidget {
+class _Body extends StatelessWidget {
   const _Body({
-    required this.cubit,
+    required this.viewModel,
     required this.onTitleChanged,
     required this.onDescriptionChanged,
     required this.onDifficultyChanged,
     required this.onOptionChanged,
     required this.onToggleOptionIsCorrect,
     required this.onAddOption,
+    required this.onCreateQuestion,
   });
 
-  final QuestionCreationCubit cubit;
+  final QuestionCreationViewModel viewModel;
   final void Function(String newValue) onTitleChanged;
   final void Function(String newValue) onDescriptionChanged;
   final void Function(String? newValue) onDifficultyChanged;
   final void Function(String id, String newValue) onOptionChanged;
   final void Function(String id) onToggleOptionIsCorrect;
   final void Function() onAddOption;
+  final void Function() onCreateQuestion;
 
   @override
   Widget build(BuildContext context) {
-    final state =
-        useBlocBuilder<QuestionCreationCubit, QuestionCreationState>(cubit);
-
-    useBlocListener(
-      cubit,
-      (_, listenedState, ctx) {
-        var message = S.of(context).questionSavedSuccessfully;
-        var backgroundColor = Colors.green;
-
-        if (listenedState is QuestionCreationHasFailed) {
-          message = S.of(context).questionSavingFailure(listenedState.details);
-          backgroundColor = Colors.red;
-        }
-
-        if (listenedState is QuestionCreationNoCorrectOption) {
-          message = S.of(context).questionSavingFailureNoCorrectOption;
-          backgroundColor = Colors.red;
-        }
-
-        final snackBar = SnackBar(
-          content: Text(message),
-          backgroundColor: backgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            _PageTitle(),
+          ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Expanded(
+          child: Builder(
+            builder: (context) {
+              return _Form(
+                viewModel: viewModel,
+                onTitleChanged: onTitleChanged,
+                onDescriptionChanged: onDescriptionChanged,
+                onDifficultyChanged: onDifficultyChanged,
+                onOptionChanged: onOptionChanged,
+                onToggleOptionIsCorrect: onToggleOptionIsCorrect,
+                onAddOption: onAddOption,
+                onCreateQuestion: onCreateQuestion,
+              );
+            },
           ),
-          behavior: SnackBarBehavior.floating,
-        );
-
-        ScaffoldMessenger.of(ctx).showSnackBar(snackBar);
-
-        if (listenedState is QuestionCreationHasSucceeded) {
-          GoRouter.of(ctx).go('/');
-        }
-      },
-      listenWhen: (currentState) => [
-        QuestionCreationHasSucceeded,
-        QuestionCreationHasFailed,
-        QuestionCreationNoCorrectOption,
-      ].any((s) => currentState.runtimeType == s),
+        ),
+      ],
     );
-
-    if (state is QuestionCreationViewModelSubjectUpdated) {
-      return StreamBuilder<QuestionCreationViewModel>(
-        stream: state.viewModelSubject.stream,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  _PageTitle(),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Expanded(
-                child: Builder(
-                  builder: (context) {
-                    return _Form(
-                      viewModel: snapshot.data!,
-                      onTitleChanged: onTitleChanged,
-                      onCreateQuestion: cubit.createQuestion,
-                      onDescriptionChanged: onDescriptionChanged,
-                      onDifficultyChanged: onDifficultyChanged,
-                      onOptionChanged: onOptionChanged,
-                      onToggleOptionIsCorrect: onToggleOptionIsCorrect,
-                      onAddOption: onAddOption,
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    }
-
-    return Container();
   }
 }
 

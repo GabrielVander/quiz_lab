@@ -1,13 +1,14 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
-class QuestionCreationViewModel extends Equatable {
+class QuestionCreationViewModel {
   const QuestionCreationViewModel({
     required this.title,
     required this.description,
     required this.difficulty,
     required this.options,
+    required this.message,
+    required this.showMessage,
     required this.addOptionButtonEnabled,
   });
 
@@ -15,21 +16,26 @@ class QuestionCreationViewModel extends Equatable {
   final QuestionCreationDescriptionViewModel description;
   final QuestionCreationDifficultyViewModel difficulty;
   final List<QuestionCreationOptionViewModel> options;
+  final QuestionCreationMessageViewModel? message;
+  final bool showMessage;
   final bool addOptionButtonEnabled;
 
-  @override
-  List<Object?> get props => [
-        title,
-        description,
-        difficulty,
-        options,
-      ];
+  bool get areFieldsValid =>
+      !title.isEmpty &&
+      !description.isEmpty &&
+      !difficulty.isEmpty &&
+      options.every((option) => !option.isEmpty);
+
+  bool get hasAtLeastOneCorrectOption =>
+      options.any((option) => option.isCorrect);
 
   QuestionCreationViewModel copyWith({
     QuestionCreationTitleViewModel? title,
     QuestionCreationDescriptionViewModel? description,
     QuestionCreationDifficultyViewModel? difficulty,
     List<QuestionCreationOptionViewModel>? options,
+    QuestionCreationMessageViewModel? message,
+    bool? showMessage,
     bool? addOptionButtonEnabled,
   }) {
     return QuestionCreationViewModel(
@@ -37,6 +43,8 @@ class QuestionCreationViewModel extends Equatable {
       description: description ?? this.description,
       difficulty: difficulty ?? this.difficulty,
       options: options ?? this.options,
+      message: message ?? this.message,
+      showMessage: showMessage ?? this.showMessage,
       addOptionButtonEnabled:
           addOptionButtonEnabled ?? this.addOptionButtonEnabled,
     );
@@ -184,4 +192,23 @@ class QuestionCreationOptionViewModel {
       isCorrect: isCorrect ?? this.isCorrect,
     );
   }
+}
+
+@immutable
+class QuestionCreationMessageViewModel {
+  const QuestionCreationMessageViewModel({
+    required this.type,
+    required this.isFailure,
+    required this.details,
+  });
+
+  final QuestionCreationMessageType type;
+  final bool isFailure;
+  final String? details;
+}
+
+enum QuestionCreationMessageType {
+  noCorrectOption,
+  questionSavedSuccessfully,
+  unableToSaveQuestion,
 }
