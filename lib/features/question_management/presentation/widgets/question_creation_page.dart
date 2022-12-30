@@ -27,6 +27,7 @@ class QuestionCreationPage extends StatelessWidget {
             cubit: _cubit,
             onTitleChanged: _cubit.onTitleUpdate,
             onDescriptionChanged: _cubit.onDescriptionUpdate,
+            onDifficultyChanged: _cubit.onDifficultyUpdate,
           ),
         ),
       ),
@@ -39,11 +40,13 @@ class _Body extends HookWidget {
     required this.cubit,
     required this.onTitleChanged,
     required this.onDescriptionChanged,
+    required this.onDifficultyChanged,
   });
 
   final QuestionCreationCubit cubit;
   final void Function(String) onTitleChanged;
   final void Function(String) onDescriptionChanged;
+  final void Function(String?) onDifficultyChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +119,7 @@ class _Body extends HookWidget {
                       onTitleChanged: onTitleChanged,
                       onCreateQuestion: cubit.createQuestion,
                       onDescriptionChanged: onDescriptionChanged,
+                      onDifficultyChanged: onDifficultyChanged,
                     );
                   },
                 ),
@@ -172,6 +176,7 @@ class _Form extends StatelessWidget {
     required this.cubit,
     required this.onTitleChanged,
     required this.onDescriptionChanged,
+    required this.onDifficultyChanged,
     required this.onCreateQuestion,
   });
 
@@ -179,6 +184,7 @@ class _Form extends StatelessWidget {
   final QuestionCreationViewModel viewModel;
   final void Function(String) onTitleChanged;
   final void Function(String) onDescriptionChanged;
+  final void Function(String?) onDifficultyChanged;
   final void Function() onCreateQuestion;
 
   @override
@@ -200,7 +206,10 @@ class _Form extends StatelessWidget {
             ),
           ),
           _FormSection(
-            child: _DifficultySelector(cubit: cubit),
+            child: _DifficultySelector(
+              viewModel: viewModel.difficulty,
+              onChange: onDifficultyChanged,
+            ),
           ),
           _FormSection(
             child: _Options(cubit: cubit),
@@ -253,7 +262,7 @@ class _TitleField extends StatelessWidget {
     required this.onChanged,
   });
 
-  final TextFieldViewModel viewModel;
+  final QuestionCreationTitleViewModel viewModel;
   final void Function(String) onChanged;
 
   @override
@@ -283,7 +292,7 @@ class _DescriptionField extends StatelessWidget {
     required this.onChanged,
   });
 
-  final TextFieldViewModel viewModel;
+  final QuestionCreationDescriptionViewModel viewModel;
   final void Function(String) onChanged;
 
   @override
@@ -307,38 +316,24 @@ class _DescriptionField extends StatelessWidget {
   }
 }
 
-class _DifficultySelector extends HookWidget {
+class _DifficultySelector extends StatelessWidget {
   const _DifficultySelector({
-    required QuestionCreationCubit cubit,
-  }) : _cubit = cubit;
+    required this.viewModel,
+    required this.onChange,
+  });
 
-  final QuestionCreationCubit _cubit;
+  final QuestionCreationDifficultyViewModel viewModel;
+  final void Function(String?) onChange;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(
-      _cubit,
-      buildWhen: (currentState) => [
-        QuestionCreationDifficultyIsSet,
-        QuestionCreationDifficultyIsNotSet
-      ].any((element) => currentState.runtimeType == element),
-    );
-
     String? errorMessage;
 
-    if (state is QuestionCreationDifficultyIsNotSet) {
+    if (viewModel.isEmpty && viewModel.showErrorMessage) {
       errorMessage = S.of(context).mustBeSetMessage;
     }
 
-    if (state is QuestionCreationDifficultyIsSet) {
-      errorMessage = null;
-    }
-
-    final difficulties = [
-      'easy',
-      'medium',
-      'hard',
-    ];
+    final availableDifficultiesLabels = viewModel.availableValues;
 
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
@@ -346,21 +341,37 @@ class _DifficultySelector extends HookWidget {
         border: const OutlineInputBorder(),
         errorText: errorMessage,
       ),
-      onChanged: _cubit.onDifficultyUpdate,
-      items: difficulties
+      onChanged: onChange,
+      selectedItemBuilder: (context) => availableDifficultiesLabels
+          .map(
+            (d) => _DifficultyItem(difficulty: d),
+          )
+          .toList(),
+      items: availableDifficultiesLabels
           .map(
             (d) => DropdownMenuItem(
               value: d,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(S.of(context).questionDifficultyValue(d)),
-                  DifficultyColor(difficulty: d),
-                ],
-              ),
+              child: _DifficultyItem(difficulty: d),
             ),
           )
           .toList(),
+    );
+  }
+}
+
+class _DifficultyItem extends StatelessWidget {
+  const _DifficultyItem({required this.difficulty});
+
+  final String difficulty;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        DifficultyColor(difficulty: difficulty),
+        const SizedBox(width: 10),
+        Text(S.of(context).questionDifficultyValue(difficulty)),
+      ],
     );
   }
 }

@@ -19,8 +19,8 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   }
 
   final UseCaseFactory _useCaseFactory;
-  String _title = '';
-  String _description = '';
+  final String _title = '';
+  final String _description = '';
   String _difficulty = '';
   Iterable<SingleOptionViewModel> _options = List.unmodifiable([
     SingleOptionViewModel(value: '', isCorrect: false),
@@ -30,9 +30,22 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
   final BehaviorSubject<QuestionCreationViewModel> _viewModelSubject =
       BehaviorSubject.seeded(
     const QuestionCreationViewModel(
-      title: TextFieldViewModel(value: '', showErrorMessage: false),
-      description: TextFieldViewModel(value: '', showErrorMessage: false),
-      difficulty: '',
+      title: QuestionCreationTitleViewModel(value: '', showErrorMessage: false),
+      description: QuestionCreationDescriptionViewModel(
+        value: '',
+        showErrorMessage: false,
+      ),
+      difficulty: QuestionCreationDifficultyViewModel(
+        formField: QuestionCreationDifficultyValueViewModel(
+          value: '',
+          showErrorMessage: false,
+        ),
+        availableValues: [
+          'easy',
+          'medium',
+          'hard',
+        ],
+      ),
       options: [],
     ),
   );
@@ -59,6 +72,19 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     _viewModelSubject.add(newViewModel);
   }
 
+  void onDifficultyUpdate(String? value) {
+    final newViewModel = _viewModelSubject.value.copyWith(
+      difficulty: _viewModelSubject.value.difficulty.copyWith(
+        formField: _viewModelSubject.value.difficulty.formField.copyWith(
+          value: value ?? '',
+          showErrorMessage: true,
+        ),
+      ),
+    );
+
+    _viewModelSubject.add(newViewModel);
+  }
+
   Future<void> createQuestion() async {
     emit(QuestionCreationState.saving());
 
@@ -78,12 +104,6 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState>
     if (areFieldsValid) {
       await _createQuestion();
     }
-  }
-
-  void onDifficultyUpdate(String? value) {
-    _difficulty = value ?? '';
-
-    _validateDifficultyFieldValue();
   }
 
   void addOption() {
@@ -220,7 +240,7 @@ class SingleOptionViewModel extends Equatable {
     bool? isEmpty,
   }) {
     return SingleOptionViewModel(
-      id: this.id,
+      id: id,
       value: value ?? this.value,
       isCorrect: isCorrect ?? this.isCorrect,
       isEmpty: isEmpty ?? this.isEmpty,

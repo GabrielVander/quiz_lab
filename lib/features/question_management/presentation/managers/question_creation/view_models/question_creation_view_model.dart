@@ -10,9 +10,9 @@ class QuestionCreationViewModel extends Equatable {
     required this.options,
   });
 
-  final TextFieldViewModel title;
-  final TextFieldViewModel description;
-  final String difficulty;
+  final QuestionCreationTitleViewModel title;
+  final QuestionCreationDescriptionViewModel description;
+  final QuestionCreationDifficultyViewModel difficulty;
   final List<OptionFieldViewModel> options;
 
   @override
@@ -24,9 +24,9 @@ class QuestionCreationViewModel extends Equatable {
       ];
 
   QuestionCreationViewModel copyWith({
-    TextFieldViewModel? title,
-    TextFieldViewModel? description,
-    String? difficulty,
+    QuestionCreationTitleViewModel? title,
+    QuestionCreationDescriptionViewModel? description,
+    QuestionCreationDifficultyViewModel? difficulty,
     List<OptionFieldViewModel>? options,
   }) {
     return QuestionCreationViewModel(
@@ -39,8 +39,8 @@ class QuestionCreationViewModel extends Equatable {
 }
 
 @immutable
-class TextFieldViewModel {
-  const TextFieldViewModel({
+abstract class _QuestionCreationTextFormFieldViewModel {
+  const _QuestionCreationTextFormFieldViewModel._({
     required this.value,
     required this.showErrorMessage,
   });
@@ -49,14 +49,86 @@ class TextFieldViewModel {
   final bool showErrorMessage;
 
   bool get isEmpty => value.isEmpty;
+}
 
-  TextFieldViewModel copyWith({
+@immutable
+class QuestionCreationTitleViewModel
+    extends _QuestionCreationTextFormFieldViewModel {
+  const QuestionCreationTitleViewModel({
+    required super.value,
+    required super.showErrorMessage,
+  }) : super._();
+
+  QuestionCreationTitleViewModel copyWith({
     String? value,
     bool? showErrorMessage,
   }) {
-    return TextFieldViewModel(
+    return QuestionCreationTitleViewModel(
       value: value ?? this.value,
       showErrorMessage: showErrorMessage ?? this.showErrorMessage,
+    );
+  }
+}
+
+@immutable
+class QuestionCreationDescriptionViewModel
+    extends _QuestionCreationTextFormFieldViewModel {
+  const QuestionCreationDescriptionViewModel({
+    required super.value,
+    required super.showErrorMessage,
+  }) : super._();
+
+  QuestionCreationDescriptionViewModel copyWith({
+    String? value,
+    bool? showErrorMessage,
+  }) {
+    return QuestionCreationDescriptionViewModel(
+      value: value ?? this.value,
+      showErrorMessage: showErrorMessage ?? this.showErrorMessage,
+    );
+  }
+}
+
+@immutable
+class QuestionCreationDifficultyValueViewModel
+    extends _QuestionCreationTextFormFieldViewModel {
+  const QuestionCreationDifficultyValueViewModel({
+    required super.value,
+    required super.showErrorMessage,
+  }) : super._();
+
+  QuestionCreationDifficultyValueViewModel copyWith({
+    String? value,
+    bool? showErrorMessage,
+  }) {
+    return QuestionCreationDifficultyValueViewModel(
+      value: value ?? this.value,
+      showErrorMessage: showErrorMessage ?? this.showErrorMessage,
+    );
+  }
+}
+
+@immutable
+class QuestionCreationDifficultyViewModel {
+  const QuestionCreationDifficultyViewModel({
+    required this.formField,
+    required this.availableValues,
+  });
+
+  final QuestionCreationDifficultyValueViewModel formField;
+  final List<String> availableValues;
+
+  bool get isEmpty => formField.isEmpty;
+
+  bool get showErrorMessage => formField.showErrorMessage;
+
+  QuestionCreationDifficultyViewModel copyWith({
+    QuestionCreationDifficultyValueViewModel? formField,
+    List<String>? availableValues,
+  }) {
+    return QuestionCreationDifficultyViewModel(
+      formField: formField ?? this.formField,
+      availableValues: availableValues ?? this.availableValues,
     );
   }
 }
@@ -66,12 +138,12 @@ class OptionFieldViewModel {
   const OptionFieldViewModel({
     required this.textField,
     required this.isCorrect,
-    required this.showErrorMessage,
   });
 
-  final TextFieldViewModel textField;
+  final _QuestionCreationTextFormFieldViewModel textField;
   final bool isCorrect;
-  final bool showErrorMessage;
 
   bool get isEmpty => textField.isEmpty;
+
+  bool get showErrorMessage => textField.showErrorMessage;
 }
