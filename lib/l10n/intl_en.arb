@@ -144,5 +144,9 @@
   "noQuestions": "No questions",
   "@noQuestions": {
     "description": "Message to display when questions list is empty"
+  },
+  "unableToDisplayQuestion": "Unable to display question",
+  "@unableToDisplayQuestion": {
+    "description": "Message to display when question id is not valid"
   }
 }

@@ -28,5 +28,6 @@
   "questionSavedSuccessfully": "Questão salva",
   "questionSavingFailure": "Problemas ao salvar questão: {failureReason}",
   "questionSavingFailureNoCorrectOption": "Problema ao salvar questão: Nenhumas das opções está marcada como correta",
-  "noQuestions": "Nenhuma questão"
+  "noQuestions": "Nenhuma questão",
+  "unableToDisplayQuestion": "Não foi possível exibir a questão"
 }

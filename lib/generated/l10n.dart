@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -350,6 +351,16 @@ class S {
       'No questions',
       name: 'noQuestions',
       desc: 'Message to display when questions list is empty',
+      args: [],
+    );
+  }
+
+  /// `Unable to display question`
+  String get unableToDisplayQuestion {
+    return Intl.message(
+      'Unable to display question',
+      name: 'unableToDisplayQuestion',
+      desc: 'Message to display when question id is not valid',
       args: [],
     );
   }
