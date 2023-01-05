@@ -9,6 +9,7 @@ import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/factories/cubit_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
@@ -37,7 +38,8 @@ class QuestionsOverviewPage extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(bottom: 15),
             child: _Header(
-              onAddQuestion: () => GoRouter.of(context).go('/question'),
+              onAddQuestion: () =>
+                  GoRouter.of(context).pushNamed(Routes.createQuestion.name),
             ),
           ),
           Expanded(

@@ -6,6 +6,7 @@ import 'package:quiz_lab/core/common/manager_factory.dart';
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
 import 'package:quiz_lab/core/presentation/widgets/main_scaffold.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/factories/cubit_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_creation_page.dart';
 import 'package:quiz_lab/generated/l10n.dart';
@@ -58,7 +59,8 @@ class QuizLabApplication extends StatelessWidget {
     return GoRouter(
       routes: <GoRoute>[
         GoRoute(
-          path: '/',
+          name: Routes.home.name,
+          path: Routes.home.path,
           builder: (BuildContext context, GoRouterState state) {
             return MainScaffold(
               managerFactory: managerFactory,
@@ -66,7 +68,8 @@ class QuizLabApplication extends StatelessWidget {
           },
         ),
         GoRoute(
-          path: '/question',
+          name: Routes.createQuestion.name,
+          path: Routes.createQuestion.path,
           builder: (BuildContext context, GoRouterState state) {
             return QuestionCreationPage(
               cubit: cubitFactory.makeQuestionCreationCubit(),

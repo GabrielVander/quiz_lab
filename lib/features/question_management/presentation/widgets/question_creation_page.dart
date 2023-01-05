@@ -5,6 +5,7 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
@@ -29,7 +30,7 @@ class QuestionCreationPage extends HookWidget {
             builder: (ctx) {
               if (state is QuestionCreationGoBack) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  GoRouter.of(ctx).go('/');
+                  GoRouter.of(ctx).pop();
                 });
               }
 
@@ -256,7 +257,7 @@ class _Form extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               OutlinedButton(
-                onPressed: () => GoRouter.of(context).go('/'),
+                onPressed: () => GoRouter.of(context).goNamed(Routes.home.name),
                 child: Text(S.of(context).goBackLabel),
               ),
               const SizedBox(
@@ -432,25 +433,25 @@ class _Options extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.only(bottom: 15),
-              child: Center(child: _Subtitle()),
-            ),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: viewModels.length,
-              itemBuilder: (context, index) {
-                final viewModel = viewModels[index];
+            const Center(child: _Subtitle()),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: viewModels.length,
+                itemBuilder: (context, index) {
+                  final viewModel = viewModels[index];
 
-                return _Option(
-                  viewModel: viewModel,
-                  onChanged: onOptionChanged,
-                  onToggleIsCorrect: onToggleOptionIsCorrect,
-                );
-              },
-              separatorBuilder: (context, index) => const SizedBox(
-                height: 10,
+                  return _Option(
+                    viewModel: viewModel,
+                    onChanged: onOptionChanged,
+                    onToggleIsCorrect: onToggleOptionIsCorrect,
+                  );
+                },
+                separatorBuilder: (context, index) => const SizedBox(
+                  height: 10,
+                ),
               ),
             ),
             _AddOptionButton(onPressed: onAddOption),
