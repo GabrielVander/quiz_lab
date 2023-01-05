@@ -160,6 +160,14 @@ class _MainContent extends HookWidget {
         questions: state.questions,
         onDeleteQuestion: cubit.removeQuestion,
         onSaveUpdatedQuestion: cubit.onQuestionSaved,
+        onQuestionClick: (question) {
+          GoRouter.of(context).pushNamed(
+            Routes.displayQuestion.name,
+            params: {
+              'id': question.id,
+            },
+          );
+        },
       );
     }
 
@@ -178,12 +186,14 @@ class _QuestionList extends StatelessWidget {
     required this.questions,
     required this.onDeleteQuestion,
     required this.onSaveUpdatedQuestion,
+    required this.onQuestionClick,
   });
 
   final List<QuestionOverviewItemViewModel> questions;
   final void Function(QuestionOverviewItemViewModel viewModel) onDeleteQuestion;
   final void Function(QuestionOverviewItemViewModel viewModel)
       onSaveUpdatedQuestion;
+  final void Function(QuestionOverviewItemViewModel viewModel) onQuestionClick;
 
   @override
   Widget build(BuildContext context) {
@@ -199,78 +209,11 @@ class _QuestionList extends StatelessWidget {
         return _QuestionItem(
           question: questions[index],
           onDelete: onDeleteQuestion,
-          onClick: (viewModel) =>
-              _showQuestionEditionBottomSheet(context, viewModel),
+          onClick: onQuestionClick,
         );
       },
       separatorBuilder: (BuildContext _, int __) => const SizedBox(height: 10),
     );
-  }
-
-  void _showQuestionEditionBottomSheet(
-    BuildContext context,
-    QuestionOverviewItemViewModel viewModel,
-  ) {
-    showModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => _QuestionEditBottomSheet(
-        viewModel: viewModel,
-        onSave: onSaveUpdatedQuestion,
-      ),
-    );
-  }
-}
-
-class _QuestionEditBottomSheet extends StatelessWidget {
-  const _QuestionEditBottomSheet({
-    required this.viewModel,
-    required this.onSave,
-  });
-
-  final QuestionOverviewItemViewModel viewModel;
-  final void Function(QuestionOverviewItemViewModel updatedViewModel) onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = TextEditingController()
-      ..text = viewModel.shortDescription;
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: SizedBox(
-          height: 200,
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    label: Text(S.of(context).questionTitleLabel),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () => _saveQuestion(controller.text),
-                  child: Text(S.of(context).saveLabel),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _saveQuestion(String updatedShortDescription) {
-    final updatedViewModel =
-        viewModel.copyWith(shortDescription: updatedShortDescription);
-
-    onSave(updatedViewModel);
   }
 }
 
