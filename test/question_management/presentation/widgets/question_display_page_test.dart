@@ -16,7 +16,7 @@ void main() {
         Stream<QuestionDisplayState>.value(QuestionDisplayState.initial());
 
     mocktail.when(() => mockCubit.stream).thenAnswer((_) => dummyStream);
-    mocktail.when(() => mockCubit.load()).thenAnswer((_) {});
+    mocktail.when(() => mockCubit.loadQuestion(null)).thenAnswer((_) {});
 
     await tester.pumpWidget(
       MaterialApp(
@@ -25,7 +25,7 @@ void main() {
     );
 
     mocktail.verify(() => mockCubit.stream).called(1);
-    mocktail.verify(() => mockCubit.load()).called(1);
+    mocktail.verify(() => mockCubit.loadQuestion(null)).called(1);
     mocktail.verifyNoMoreInteractions(mockCubit);
   });
 }

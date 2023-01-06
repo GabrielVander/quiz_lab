@@ -1,7 +1,7 @@
 part of 'question_display_cubit.dart';
 
 @immutable
-abstract class QuestionDisplayState {
+abstract class QuestionDisplayState extends Equatable {
   const QuestionDisplayState._();
 
   factory QuestionDisplayState.initial() => const QuestionDisplayInitial._();
@@ -10,6 +10,9 @@ abstract class QuestionDisplayState {
     BehaviorSubject<QuestionDisplayViewModel> subject,
   ) =>
       QuestionDisplayViewModelSubjectUpdated._(subject: subject);
+
+  @override
+  List<Object> get props => [];
 }
 
 class QuestionDisplayInitial extends QuestionDisplayState {
@@ -21,4 +24,7 @@ class QuestionDisplayViewModelSubjectUpdated extends QuestionDisplayState {
       : super._();
 
   final BehaviorSubject<QuestionDisplayViewModel> subject;
+
+  @override
+  List<Object> get props => [subject];
 }

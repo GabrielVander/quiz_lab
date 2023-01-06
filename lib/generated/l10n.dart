@@ -1,7 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -361,6 +360,26 @@ class S {
       'Unable to display question',
       name: 'unableToDisplayQuestion',
       desc: 'Message to display when question id is not valid',
+      args: [],
+    );
+  }
+
+  /// `Answering...`
+  String get questionAnswerPageTitle {
+    return Intl.message(
+      'Answering...',
+      name: 'questionAnswerPageTitle',
+      desc: 'Title of the question answer page',
+      args: [],
+    );
+  }
+
+  /// `Answer`
+  String get answerQuestionButtonLabel {
+    return Intl.message(
+      'Answer',
+      name: 'answerQuestionButtonLabel',
+      desc: 'Answer question button label',
       args: [],
     );
   }

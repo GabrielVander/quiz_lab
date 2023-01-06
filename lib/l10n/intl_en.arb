@@ -148,5 +148,13 @@
   "unableToDisplayQuestion": "Unable to display question",
   "@unableToDisplayQuestion": {
     "description": "Message to display when question id is not valid"
+  },
+  "questionAnswerPageTitle": "Answering...",
+  "@questionAnswerPageTitle": {
+    "description": "Title of the question answer page"
+  },
+  "answerQuestionButtonLabel": "Answer",
+  "@answerQuestionButtonLabel": {
+    "description": "Answer question button label"
   }
 }

@@ -46,6 +46,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "addOptionLabel": MessageLookupByLibrary.simpleMessage("Add Option"),
         "answerAmountWithLimitLabel": m0,
         "answerAmountWithoutLimitLabel": m1,
+        "answerQuestionButtonLabel":
+            MessageLookupByLibrary.simpleMessage("Answer"),
         "assessmentsSectionDisplayName":
             MessageLookupByLibrary.simpleMessage("Assessments"),
         "createLabel": MessageLookupByLibrary.simpleMessage("Create"),
@@ -63,6 +65,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "optionInputLabel": MessageLookupByLibrary.simpleMessage("Option"),
         "optionsTitle": MessageLookupByLibrary.simpleMessage("Options"),
         "questionAmountLabel": m3,
+        "questionAnswerPageTitle":
+            MessageLookupByLibrary.simpleMessage("Answering..."),
         "questionCategoriesLabel":
             MessageLookupByLibrary.simpleMessage("Categories"),
         "questionDescriptionLabel":

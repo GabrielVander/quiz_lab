@@ -29,5 +29,7 @@
   "questionSavingFailure": "Problemas ao salvar questão: {failureReason}",
   "questionSavingFailureNoCorrectOption": "Problema ao salvar questão: Nenhumas das opções está marcada como correta",
   "noQuestions": "Nenhuma questão",
-  "unableToDisplayQuestion": "Não foi possível exibir a questão"
+  "unableToDisplayQuestion": "Não foi possível exibir a questão",
+  "questionAnswerPageTitle": "Respondendo...",
+  "answerQuestionButtonLabel": "Responder"
 }
