@@ -5,6 +5,7 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
@@ -70,6 +71,19 @@ void main() {
       final result = useCaseFactory.makeDeleteQuestionUseCase();
 
       expect(result, isA<DeleteQuestionUseCase>());
+    });
+  });
+
+  group('makeGetSingleQuestionUseCase', () {
+    test('should return GetSingleQuestionUseCase', () {
+      final mockQuestionRepository = _MockQuestionRepository();
+
+      when(() => mockRepositoryFactory.makeQuestionRepository())
+          .thenReturn(mockQuestionRepository);
+
+      final result = useCaseFactory.makeGetSingleQuestionUseCase();
+
+      expect(result, isA<GetSingleQuestionUseCase>());
     });
   });
 }
