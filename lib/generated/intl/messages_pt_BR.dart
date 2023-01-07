@@ -57,6 +57,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "dueDateLabel": MessageLookupByLibrary.simpleMessage("Data Limite"),
         "dueDateValue": m2,
         "goBackLabel": MessageLookupByLibrary.simpleMessage("Voltar"),
+        "goHomeLabel": MessageLookupByLibrary.simpleMessage("Página inicial"),
         "isOptionCorrectLabel": MessageLookupByLibrary.simpleMessage("Correta"),
         "mustBeSetMessage":
             MessageLookupByLibrary.simpleMessage("Deve Estar Preenchido"),
@@ -76,6 +77,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "questionDifficultyLabel":
             MessageLookupByLibrary.simpleMessage("Dificuldade"),
         "questionDifficultyValue": m4,
+        "questionDisplayCorrectAnswer":
+            MessageLookupByLibrary.simpleMessage("Correto"),
+        "questionDisplayIncorrectAnswer":
+            MessageLookupByLibrary.simpleMessage("Incorreto"),
         "questionSavedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Questão salva"),
         "questionSavingFailure": m5,

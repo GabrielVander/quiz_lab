@@ -92,27 +92,11 @@ class _QuestionDisplay extends StatelessWidget {
             ],
           ),
         ),
-        _AnswerButton(onPressed: onAnswer),
+        _AnswerButton(
+          onPressed: onAnswer,
+          isEnabled: viewModel.answerButtonIsEnabled,
+        ),
       ],
-    );
-  }
-}
-
-class _AnswerButton extends StatelessWidget {
-  const _AnswerButton({
-    required this.onPressed,
-  });
-
-  final void Function() onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {},
-      child: Text(
-        S.of(context).answerQuestionButtonLabel,
-        textScaleFactor: 1.2,
-      ),
     );
   }
 }
@@ -226,6 +210,27 @@ class _QuestionOptions extends StatelessWidget {
             onSelected: onOptionSelected,
           );
         },
+      ),
+    );
+  }
+}
+
+class _AnswerButton extends StatelessWidget {
+  const _AnswerButton({
+    required this.isEnabled,
+    required this.onPressed,
+  });
+
+  final bool isEnabled;
+  final void Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: isEnabled ? onPressed : null,
+      child: Text(
+        S.of(context).answerQuestionButtonLabel,
+        textScaleFactor: 1.2,
       ),
     );
   }

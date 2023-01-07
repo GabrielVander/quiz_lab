@@ -242,6 +242,16 @@ class S {
     );
   }
 
+  /// `Go home`
+  String get goHomeLabel {
+    return Intl.message(
+      'Go home',
+      name: 'goHomeLabel',
+      desc: 'Generic go home label',
+      args: [],
+    );
+  }
+
   /// `Create`
   String get createLabel {
     return Intl.message(
@@ -380,6 +390,26 @@ class S {
       'Answer',
       name: 'answerQuestionButtonLabel',
       desc: 'Answer question button label',
+      args: [],
+    );
+  }
+
+  /// `Correct`
+  String get questionDisplayCorrectAnswer {
+    return Intl.message(
+      'Correct',
+      name: 'questionDisplayCorrectAnswer',
+      desc: 'Message to display when the question is answered correctly',
+      args: [],
+    );
+  }
+
+  /// `Incorrect`
+  String get questionDisplayIncorrectAnswer {
+    return Intl.message(
+      'Incorrect',
+      name: 'questionDisplayIncorrectAnswer',
+      desc: 'Message to display when the question is answered incorrectly',
       args: [],
     );
   }

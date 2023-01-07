@@ -56,6 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "dueDateLabel": MessageLookupByLibrary.simpleMessage("Due Date"),
         "dueDateValue": m2,
         "goBackLabel": MessageLookupByLibrary.simpleMessage("Go Back"),
+        "goHomeLabel": MessageLookupByLibrary.simpleMessage("Go home"),
         "isOptionCorrectLabel":
             MessageLookupByLibrary.simpleMessage("Is Correct"),
         "mustBeSetMessage": MessageLookupByLibrary.simpleMessage("Must Be Set"),
@@ -74,6 +75,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "questionDifficultyLabel":
             MessageLookupByLibrary.simpleMessage("Difficulty"),
         "questionDifficultyValue": m4,
+        "questionDisplayCorrectAnswer":
+            MessageLookupByLibrary.simpleMessage("Correct"),
+        "questionDisplayIncorrectAnswer":
+            MessageLookupByLibrary.simpleMessage("Incorrect"),
         "questionSavedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Question Saved"),
         "questionSavingFailure": m5,

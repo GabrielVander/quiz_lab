@@ -1,7 +1,7 @@
 part of 'question_display_cubit.dart';
 
 @immutable
-abstract class QuestionDisplayState extends Equatable {
+abstract class QuestionDisplayState {
   const QuestionDisplayState._();
 
   factory QuestionDisplayState.initial() => const QuestionDisplayInitial._();

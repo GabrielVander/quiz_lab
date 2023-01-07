@@ -18,6 +18,7 @@
   "questionTitleLabel": "Título",
   "questionDescriptionLabel": "Descrição",
   "goBackLabel": "Voltar",
+  "goHomeLabel": "Página inicial",
   "createLabel": "Criar",
   "saveLabel": "Salvar",
   "optionsTitle": "Opções",
@@ -31,5 +32,7 @@
   "noQuestions": "Nenhuma questão",
   "unableToDisplayQuestion": "Não foi possível exibir a questão",
   "questionAnswerPageTitle": "Respondendo...",
-  "answerQuestionButtonLabel": "Responder"
+  "answerQuestionButtonLabel": "Responder",
+  "questionDisplayCorrectAnswer": "Correto",
+  "questionDisplayIncorrectAnswer": "Incorreto"
 }

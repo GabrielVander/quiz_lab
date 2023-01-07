@@ -96,6 +96,10 @@
   "@goBackLabel": {
     "description": "Generic go back label"
   },
+  "goHomeLabel": "Go home",
+  "@goHomeLabel": {
+    "description": "Generic go home label"
+  },
   "createLabel": "Create",
   "@createLabel": {
     "description": "Generic create label"
@@ -156,5 +160,13 @@
   "answerQuestionButtonLabel": "Answer",
   "@answerQuestionButtonLabel": {
     "description": "Answer question button label"
+  },
+  "questionDisplayCorrectAnswer": "Correct",
+  "@questionDisplayCorrectAnswer": {
+    "description": "Message to display when the question is answered correctly"
+  },
+  "questionDisplayIncorrectAnswer": "Incorrect",
+  "@questionDisplayIncorrectAnswer": {
+    "description": "Message to display when the question is answered incorrectly"
   }
 }
