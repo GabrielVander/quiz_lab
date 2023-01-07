@@ -1,5 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:okay/okay.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
 import 'package:rxdart/rxdart.dart';
@@ -7,52 +11,32 @@ import 'package:rxdart/rxdart.dart';
 part 'question_display_state.dart';
 
 class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
-  QuestionDisplayCubit({required this.useCaseFactory})
-      : super(QuestionDisplayState.initial()) {
-    final options = defaultViewModel.options.map((e) => e).toList()..shuffle();
+  QuestionDisplayCubit({required UseCaseFactory useCaseFactory})
+      : _useCaseFactory = useCaseFactory,
+        super(QuestionDisplayState.initial());
 
-    _viewModelSubject = BehaviorSubject<QuestionDisplayViewModel>.seeded(
-      defaultViewModel.copyWith(
-        options: options,
-      ),
-    );
-  }
+  final UseCaseFactory _useCaseFactory;
 
-  final UseCaseFactory useCaseFactory;
-
-  final defaultViewModel = const QuestionDisplayViewModel(
-    title: 'Equivalent',
-    difficulty: 'easy',
-    description: 'Which number is equivalent to 3^(4)÷3^(2)?',
-    options: [
-      QuestionDisplayOptionViewModel(
-        title: '3',
-        isSelected: false,
-        isCorrect: false,
-      ),
-      QuestionDisplayOptionViewModel(
-        title: '9',
-        isSelected: false,
-        isCorrect: true,
-      ),
-      QuestionDisplayOptionViewModel(
-        title: '27',
-        isSelected: false,
-        isCorrect: false,
-      ),
-      QuestionDisplayOptionViewModel(
-        title: '81',
-        isSelected: false,
-        isCorrect: false,
-      ),
-    ],
+  final _defaultViewModel = const QuestionDisplayViewModel(
+    title: '',
+    difficulty: '',
+    description: '',
+    options: [],
     answerButtonIsEnabled: false,
   );
 
-  late BehaviorSubject<QuestionDisplayViewModel> _viewModelSubject;
+  final BehaviorSubject<QuestionDisplayViewModel> _viewModelSubject =
+      BehaviorSubject<QuestionDisplayViewModel>();
 
-  void loadQuestion(String? questionId) {
-    emit(QuestionDisplayState.subjectUpdated(_viewModelSubject));
+  Future<void> loadQuestion(String? questionId) async {
+    final questionResult = await _getQuestionForId(questionId);
+
+    if (questionResult.isErr) {
+      emit(QuestionDisplayState.failure());
+      return;
+    }
+
+    _emitSubjectWithGivenQuestion(questionResult.ok!);
   }
 
   void onOptionSelected(QuestionDisplayOptionViewModel option) {
@@ -85,5 +69,67 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
     );
 
     emit(QuestionDisplayState.questionAnsweredIncorrectly(correctOption));
+  }
+
+  Future<Result<Question, String>> _getQuestionForId(String? questionId) async {
+    final getSingleQuestionUseCase =
+        _useCaseFactory.makeGetSingleQuestionUseCase();
+
+    return getSingleQuestionUseCase.execute(questionId);
+  }
+
+  void _emitSubjectWithGivenQuestion(Question question) {
+    final questionViewModel = _mapQuestionToViewModel(question);
+
+    _viewModelSubject.add(questionViewModel);
+
+    emit(QuestionDisplayState.subjectUpdated(_viewModelSubject));
+  }
+
+  QuestionDisplayViewModel _mapQuestionToViewModel(Question question) =>
+      _QuestionDisplayViewModelMapper(
+        defaultViewModel: _defaultViewModel,
+      ).map(question);
+}
+
+class _QuestionDisplayViewModelMapper {
+  const _QuestionDisplayViewModelMapper({
+    required QuestionDisplayViewModel defaultViewModel,
+  }) : _defaultViewModel = defaultViewModel;
+
+  final QuestionDisplayViewModel _defaultViewModel;
+
+  QuestionDisplayViewModel map(Question question) {
+    return _defaultViewModel.copyWith(
+      title: question.shortDescription,
+      difficulty: _mapDifficulty(question.difficulty),
+      description: question.description,
+      options: _mapOptions(question.answerOptions),
+    );
+  }
+
+  List<QuestionDisplayOptionViewModel> _mapOptions(List<AnswerOption> answers) {
+    return answers
+        .map(
+          (a) => QuestionDisplayOptionViewModel(
+            title: a.description,
+            isSelected: false,
+            isCorrect: a.isCorrect,
+          ),
+        )
+        .toList();
+  }
+
+  String _mapDifficulty(QuestionDifficulty difficulty) {
+    switch (difficulty) {
+      case QuestionDifficulty.easy:
+        return 'easy';
+      case QuestionDifficulty.medium:
+        return 'medium';
+      case QuestionDifficulty.hard:
+        return 'hard';
+      case QuestionDifficulty.unknown:
+        return 'unknown';
+    }
   }
 }

@@ -33,6 +33,12 @@ class QuestionDisplayPage extends HookWidget {
               cubit.loadQuestion(questionId);
             }
 
+            if (state is QuestionDisplayFailure) {
+              return Center(
+                child: Text('Oh no!'),
+              );
+            }
+
             if (state is QuestionDisplayViewModelSubjectUpdated) {
               return StreamBuilder<QuestionDisplayViewModel>(
                 stream: state.subject.stream,

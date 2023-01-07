@@ -20,6 +20,8 @@ abstract class QuestionDisplayState {
       QuestionDisplayQuestionAnsweredIncorrectly._(
         correctAnswer: correctAnswer,
       );
+
+  factory QuestionDisplayState.failure() => const QuestionDisplayFailure._();
 }
 
 class QuestionDisplayInitial extends QuestionDisplayState {
@@ -43,4 +45,8 @@ class QuestionDisplayQuestionAnsweredIncorrectly extends QuestionDisplayState {
   }) : super._();
 
   final QuestionDisplayOptionViewModel correctAnswer;
+}
+
+class QuestionDisplayFailure extends QuestionDisplayState {
+  const QuestionDisplayFailure._() : super._();
 }

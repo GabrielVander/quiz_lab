@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
-class QuestionDisplayViewModel {
+class QuestionDisplayViewModel extends Equatable {
   const QuestionDisplayViewModel({
     required this.title,
     required this.difficulty,
@@ -32,10 +33,19 @@ class QuestionDisplayViewModel {
           answerButtonIsEnabled ?? this.answerButtonIsEnabled,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        title,
+        difficulty,
+        description,
+        options,
+        answerButtonIsEnabled,
+      ];
 }
 
 @immutable
-class QuestionDisplayOptionViewModel {
+class QuestionDisplayOptionViewModel extends Equatable {
   const QuestionDisplayOptionViewModel({
     required this.title,
     required this.isSelected,
@@ -57,4 +67,11 @@ class QuestionDisplayOptionViewModel {
       isCorrect: isCorrect ?? this.isCorrect,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        title,
+        isSelected,
+        isCorrect,
+      ];
 }
