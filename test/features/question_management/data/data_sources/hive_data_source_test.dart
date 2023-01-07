@@ -66,6 +66,7 @@ void main() {
                 shortDescription: null,
                 description: null,
                 difficulty: null,
+                options: null,
                 categories: null,
               ),
               HiveDataSourceFailure.emptyId(),
@@ -76,6 +77,7 @@ void main() {
                 shortDescription: null,
                 description: null,
                 difficulty: null,
+                options: null,
                 categories: null,
               ),
               HiveDataSourceFailure.emptyId(),
@@ -140,6 +142,7 @@ void main() {
               description: '',
               difficulty: '',
               categories: [],
+              options: [],
             ),
             const HiveQuestionModel(
               id: '@!5qIE',
@@ -147,6 +150,10 @@ void main() {
               description: '*4h3B6',
               difficulty: '5a#3*xeB',
               categories: ['f09@q', 'f0C*^6', r'^$Wj3he'],
+              options: [
+                {'description': 'Px#5Mh', 'isCorrect': false},
+                {'description': 'x#5Mh', 'isCorrect': true},
+              ],
             ),
           ]),
           (values) async {
@@ -185,6 +192,7 @@ void main() {
             description: null,
             difficulty: null,
             categories: null,
+            options: null,
           ),
           const HiveQuestionModel(
             id: null,
@@ -192,6 +200,7 @@ void main() {
             description: null,
             difficulty: null,
             categories: null,
+            options: null,
           ),
         ]),
         (values) async {
@@ -254,6 +263,7 @@ void main() {
             description: null,
             difficulty: null,
             categories: null,
+            options: null,
           );
 
           when(() => mockQuestionsBox.delete(id)).thenAnswer((_) async {});
@@ -475,6 +485,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   )
                 ],
                 [
@@ -484,6 +495,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   )
                 ],
                 [
@@ -493,6 +505,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   ),
                   const HiveQuestionModel(
                     id: 'anotherKey',
@@ -500,6 +513,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   )
                 ],
               ],
@@ -524,6 +538,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   ),
                 ],
                 [
@@ -533,6 +548,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   ),
                   const HiveQuestionModel(
                     id: 'Rqh9r',
@@ -540,6 +556,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   )
                 ],
                 [
@@ -549,6 +566,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   ),
                   const HiveQuestionModel(
                     id: 'Rqh9r',
@@ -556,6 +574,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   )
                 ],
                 [
@@ -565,6 +584,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   ),
                   const HiveQuestionModel(
                     id: 'Rqh9r',
@@ -572,6 +592,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   ),
                   const HiveQuestionModel(
                     id: '0Mth40',
@@ -579,6 +600,7 @@ void main() {
                     description: '',
                     difficulty: '',
                     categories: [],
+                    options: [],
                   )
                 ],
               ],
@@ -653,5 +675,5 @@ class _FakeBoxEvent extends Fake implements BoxEvent {
 
 class _MockHiveBox extends Mock implements Box<String> {}
 
-class _MockJsonParser extends Mock
-    implements JsonParser<Map<String, dynamic>> {}
+class _MockJsonParser extends Mock implements JsonParser<Map<String, dynamic>> {
+}

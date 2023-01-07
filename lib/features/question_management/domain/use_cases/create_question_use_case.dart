@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
@@ -62,12 +63,14 @@ class QuestionCreationInput extends Equatable {
     required this.shortDescription,
     required this.description,
     required this.difficulty,
+    required this.options,
     required this.categories,
   });
 
   final String shortDescription;
   final String description;
   final String difficulty;
+  final List<QuestionCreationOptionInput> options;
   final List<String> categories;
 
   @override
@@ -75,11 +78,28 @@ class QuestionCreationInput extends Equatable {
         shortDescription,
         description,
         difficulty,
+        options,
         categories,
       ];
 
   @override
   bool get stringify => true;
+}
+
+class QuestionCreationOptionInput extends Equatable {
+  const QuestionCreationOptionInput({
+    required this.description,
+    required this.isCorrect,
+  });
+
+  final String description;
+  final bool isCorrect;
+
+  @override
+  List<Object?> get props => [
+        description,
+        isCorrect,
+      ];
 }
 
 class _InputParser {
@@ -97,7 +117,14 @@ class _InputParser {
         id: '',
         shortDescription: input.shortDescription,
         description: input.description,
-        answerOptions: const [],
+        answerOptions: input.options
+            .map(
+              (e) => AnswerOption(
+                description: e.description,
+                isCorrect: e.isCorrect,
+              ),
+            )
+            .toList(),
         difficulty: difficultyParseResult.ok!,
         categories:
             input.categories.map((e) => QuestionCategory(value: e)).toList(),

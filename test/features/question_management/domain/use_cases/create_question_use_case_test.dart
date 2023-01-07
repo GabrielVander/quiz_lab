@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
@@ -41,6 +42,7 @@ void main() {
             shortDescription: '',
             description: '',
             difficulty: '',
+            options: [],
             categories: [],
           ),
           CreateQuestionUseCaseFailure.unableToParseDifficulty(value: ''),
@@ -50,6 +52,7 @@ void main() {
             shortDescription: '3Yd0',
             description: 'f19!t',
             difficulty: '8Fy',
+            options: [],
             categories: ['Du0QQGO', 'O95eCUO'],
           ),
           CreateQuestionUseCaseFailure.unableToParseDifficulty(value: '8Fy'),
@@ -74,6 +77,7 @@ void main() {
             shortDescription: '',
             description: '',
             difficulty: 'medium',
+            options: [],
             categories: [],
           ),
           '',
@@ -86,6 +90,7 @@ void main() {
               shortDescription: '',
               description: '',
               difficulty: 'medium',
+              options: [],
               categories: [],
             ),
             message: '8&tL6xjE',
@@ -96,6 +101,12 @@ void main() {
             shortDescription: 'short',
             description: 'description',
             difficulty: 'easy',
+            options: [
+              QuestionCreationOptionInput(
+                description: 'description',
+                isCorrect: false,
+              )
+            ],
             categories: ['category'],
           ),
           'uuid',
@@ -105,6 +116,12 @@ void main() {
               shortDescription: 'short',
               description: 'description',
               difficulty: 'easy',
+              options: [
+                QuestionCreationOptionInput(
+                  description: 'description',
+                  isCorrect: false,
+                )
+              ],
               categories: ['category'],
             ),
             message: '',
@@ -115,6 +132,16 @@ void main() {
             shortDescription: '336dhR',
             description: '91A^*#Z',
             difficulty: 'hard',
+            options: [
+              QuestionCreationOptionInput(
+                description: '3W55p',
+                isCorrect: false,
+              ),
+              QuestionCreationOptionInput(
+                description: 'n&!MLH1',
+                isCorrect: true,
+              ),
+            ],
             categories: ['y6q729L', '3^*#Z'],
           ),
           'pvx',
@@ -124,6 +151,16 @@ void main() {
               shortDescription: '336dhR',
               description: '91A^*#Z',
               difficulty: 'hard',
+              options: [
+                QuestionCreationOptionInput(
+                  description: '3W55p',
+                  isCorrect: false,
+                ),
+                QuestionCreationOptionInput(
+                  description: 'n&!MLH1',
+                  isCorrect: true,
+                ),
+              ],
               categories: ['y6q729L', '3^*#Z'],
             ),
             message: '4p&',
@@ -163,6 +200,7 @@ void main() {
             shortDescription: 'shortDescription',
             description: 'description',
             difficulty: 'easy',
+            options: [],
             categories: [],
           ),
           '',
@@ -180,6 +218,16 @@ void main() {
             shortDescription: 'nkl!',
             description: 'oaK',
             difficulty: 'medium',
+            options: [
+              QuestionCreationOptionInput(
+                description: '!Iu6RU',
+                isCorrect: false,
+              ),
+              QuestionCreationOptionInput(
+                description: 'xBq',
+                isCorrect: true,
+              )
+            ],
             categories: ['3@0lv*ip', '@1H7'],
           ),
           'LO^*8O*4',
@@ -187,7 +235,10 @@ void main() {
             id: 'LO^*8O*4',
             shortDescription: 'nkl!',
             description: 'oaK',
-            answerOptions: [],
+            answerOptions: [
+              AnswerOption(description: '!Iu6RU', isCorrect: false),
+              AnswerOption(description: 'xBq', isCorrect: true),
+            ],
             difficulty: QuestionDifficulty.medium,
             categories: [
               QuestionCategory(value: '3@0lv*ip'),
@@ -229,5 +280,5 @@ class _MockRepositoryFactory extends Mock implements RepositoryFactory {}
 
 class _MockQuestionRepository extends Mock implements QuestionRepository {}
 
-class _MockResourceUuidGenerator extends Mock
-    implements ResourceUuidGenerator {}
+class _MockResourceUuidGenerator extends Mock implements ResourceUuidGenerator {
+}

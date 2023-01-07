@@ -2,6 +2,7 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/mappers/hive_question_model_mapper.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
@@ -35,6 +36,7 @@ void main() {
               description: '',
               difficulty: 'easy',
               categories: [],
+              options: [],
             ),
           ],
           [
@@ -42,7 +44,16 @@ void main() {
               id: '@mWpWvZ',
               shortDescription: 'wcS',
               description: 'ML9ZGlsr',
-              answerOptions: [],
+              answerOptions: [
+                AnswerOption(
+                  description: 'Dia%K',
+                  isCorrect: false,
+                ),
+                AnswerOption(
+                  description: '@eKc%C#6',
+                  isCorrect: true,
+                ),
+              ],
               difficulty: QuestionDifficulty.medium,
               categories: [QuestionCategory(value: 'jQ@wco')],
             ),
@@ -52,6 +63,10 @@ void main() {
               description: 'ML9ZGlsr',
               difficulty: 'medium',
               categories: ['jQ@wco'],
+              options: [
+                {'description': 'Dia%K', 'isCorrect': false},
+                {'description': '@eKc%C#6', 'isCorrect': true},
+              ],
             ),
           ],
         ]),

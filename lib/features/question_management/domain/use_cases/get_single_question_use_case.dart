@@ -30,7 +30,7 @@ class GetSingleQuestionUseCase {
     String id,
     Stream<List<Question>> stream,
   ) async {
-    final emittedQuestions = await stream.toList();
+    final emittedQuestions = await stream.take(1).toList();
 
     for (final questions in emittedQuestions) {
       try {

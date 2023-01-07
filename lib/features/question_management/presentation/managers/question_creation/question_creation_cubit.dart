@@ -191,6 +191,14 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
         shortDescription: viewModel.title.value,
         description: viewModel.description.value,
         difficulty: viewModel.difficulty.formField.value,
+        options: viewModel.options
+            .map(
+              (e) => QuestionCreationOptionInput(
+                description: e.formField.value,
+                isCorrect: e.isCorrect,
+              ),
+            )
+            .toList(),
         categories: const [],
       ),
     );

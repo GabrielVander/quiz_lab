@@ -164,27 +164,27 @@ void main() {
                 [
                   isA<QuestionDisplayViewModelSubjectUpdated>()
                       .having(
-                        (state) => state.subject.value.title,
+                        (state) => state.subject.title,
                         'title',
                         expectedViewModel.title,
                       )
                       .having(
-                        (state) => state.subject.value.description,
+                        (state) => state.subject.description,
                         'description',
                         expectedViewModel.description,
                       )
                       .having(
-                        (state) => state.subject.value.difficulty,
+                        (state) => state.subject.difficulty,
                         'difficulty',
                         expectedViewModel.difficulty,
                       )
                       .having(
-                        (state) => state.subject.value.answerButtonIsEnabled,
+                        (state) => state.subject.answerButtonIsEnabled,
                         'answerButtonIsEnabled',
                         expectedViewModel.answerButtonIsEnabled,
                       )
                       .having(
-                        (state) => state.subject.value.options,
+                        (state) => state.subject.options,
                         'options',
                         containsAll(expectedViewModel.options),
                       )

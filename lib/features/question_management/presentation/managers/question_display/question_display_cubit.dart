@@ -6,7 +6,6 @@ import 'package:quiz_lab/features/question_management/domain/entities/question.d
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
-import 'package:rxdart/rxdart.dart';
 
 part 'question_display_state.dart';
 
@@ -25,8 +24,13 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
     answerButtonIsEnabled: false,
   );
 
-  final BehaviorSubject<QuestionDisplayViewModel> _viewModelSubject =
-      BehaviorSubject<QuestionDisplayViewModel>();
+  QuestionDisplayViewModel _viewModelSubject = const QuestionDisplayViewModel(
+    title: '',
+    difficulty: '',
+    description: '',
+    options: [],
+    answerButtonIsEnabled: false,
+  );
 
   Future<void> loadQuestion(String? questionId) async {
     final questionResult = await _getQuestionForId(questionId);
@@ -40,22 +44,20 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
   }
 
   void onOptionSelected(QuestionDisplayOptionViewModel option) {
-    _viewModelSubject.add(
-      _viewModelSubject.value.copyWith(
-        options: _viewModelSubject.value.options.map((e) {
-          if (e.title == option.title) {
-            return e.copyWith(isSelected: true);
-          }
+    _viewModelSubject = _viewModelSubject.copyWith(
+      options: _viewModelSubject.options.map((e) {
+        if (e.title == option.title) {
+          return e.copyWith(isSelected: true);
+        }
 
-          return e.copyWith(isSelected: false);
-        }).toList(),
-        answerButtonIsEnabled: true,
-      ),
+        return e.copyWith(isSelected: false);
+      }).toList(),
+      answerButtonIsEnabled: true,
     );
   }
 
   void onAnswer() {
-    final selectedOption = _viewModelSubject.value.options.firstWhere(
+    final selectedOption = _viewModelSubject.options.firstWhere(
       (element) => element.isSelected,
     );
 
@@ -64,7 +66,7 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
       return;
     }
 
-    final correctOption = _viewModelSubject.value.options.firstWhere(
+    final correctOption = _viewModelSubject.options.firstWhere(
       (element) => element.isCorrect,
     );
 
@@ -81,9 +83,9 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
   void _emitSubjectWithGivenQuestion(Question question) {
     final questionViewModel = _mapQuestionToViewModel(question);
 
-    _viewModelSubject.add(questionViewModel);
+    _viewModelSubject = questionViewModel;
 
-    emit(QuestionDisplayState.subjectUpdated(_viewModelSubject));
+    emit(QuestionDisplayState.subjectUpdated(questionViewModel));
   }
 
   QuestionDisplayViewModel _mapQuestionToViewModel(Question question) =>

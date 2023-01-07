@@ -7,7 +7,7 @@ abstract class QuestionDisplayState {
   factory QuestionDisplayState.initial() => const QuestionDisplayInitial._();
 
   factory QuestionDisplayState.subjectUpdated(
-    BehaviorSubject<QuestionDisplayViewModel> subject,
+    QuestionDisplayViewModel subject,
   ) =>
       QuestionDisplayViewModelSubjectUpdated._(subject: subject);
 
@@ -32,7 +32,7 @@ class QuestionDisplayViewModelSubjectUpdated extends QuestionDisplayState {
   const QuestionDisplayViewModelSubjectUpdated._({required this.subject})
       : super._();
 
-  final BehaviorSubject<QuestionDisplayViewModel> subject;
+  final QuestionDisplayViewModel subject;
 }
 
 class QuestionDisplayQuestionAnsweredCorrectly extends QuestionDisplayState {

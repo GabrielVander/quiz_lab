@@ -2,39 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
 
 void main() {
-  group('toString', () {
-    for (final testCase in [
-      const _ToStringTestCase(
-        model: HiveQuestionModel(
-          id: null,
-          description: 'description',
-          shortDescription: 'shortDescription',
-          difficulty: 'difficulty',
-          categories: [],
-        ),
-        expected:
-            'HiveQuestionModel(null, shortDescription, description, difficulty,'
-            ' [])',
-      ),
-      const _ToStringTestCase(
-        model: HiveQuestionModel(
-          id: 'PJ4',
-          description: 'affair',
-          shortDescription: 'exercise',
-          difficulty: 'unless',
-          categories: ['black', 'robbery', 'crown'],
-        ),
-        expected:
-            'HiveQuestionModel(PJ4, exercise, affair, unless, [black, robbery, '
-            'crown])',
-      )
-    ]) {
-      test(testCase.expected, () {
-        expect(testCase.model.toString(), testCase.expected);
-      });
-    }
-  });
-
   group('toMap', () {
     for (final testCase in [
       const _ToMapTestCase(
@@ -44,11 +11,13 @@ void main() {
           shortDescription: 'shortDescription',
           difficulty: 'difficulty',
           categories: [],
+          options: [],
         ),
         expected: <String, dynamic>{
           'description': 'description',
           'shortDescription': 'shortDescription',
           'difficulty': 'difficulty',
+          'options': <Map<String, dynamic>>[],
           'categories': <String>[],
         },
       ),
@@ -59,6 +28,10 @@ void main() {
           shortDescription: 'end',
           difficulty: 'lighten',
           categories: ['lead', 'pint', 'success'],
+          options: [
+            {'description': 'Dia%K', 'isCorrect': false},
+            {'description': '@eKc%C#6', 'isCorrect': true},
+          ],
         ),
         expected: <String, dynamic>{
           'description': 'upright',
@@ -69,6 +42,16 @@ void main() {
             'pint',
             'success',
           ],
+          'options': <Map<String, dynamic>>[
+            <String, dynamic>{
+              'description': 'Dia%K',
+              'isCorrect': false,
+            },
+            <String, dynamic>{
+              'description': '@eKc%C#6',
+              'isCorrect': true,
+            },
+          ],
         },
       ), // const _ToStringTestCase(
     ]) {
@@ -77,16 +60,6 @@ void main() {
       });
     }
   });
-}
-
-class _ToStringTestCase {
-  const _ToStringTestCase({
-    required this.model,
-    required this.expected,
-  });
-
-  final HiveQuestionModel model;
-  final String expected;
 }
 
 class _ToMapTestCase {

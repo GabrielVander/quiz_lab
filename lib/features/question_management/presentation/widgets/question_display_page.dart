@@ -34,30 +34,19 @@ class QuestionDisplayPage extends HookWidget {
             }
 
             if (state is QuestionDisplayFailure) {
-              return Center(
+              return const Center(
                 child: Text('Oh no!'),
               );
             }
 
             if (state is QuestionDisplayViewModelSubjectUpdated) {
-              return StreamBuilder<QuestionDisplayViewModel>(
-                stream: state.subject.stream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final viewModel = snapshot.data!;
-
-                    return Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: _QuestionDisplay(
-                        viewModel: viewModel,
-                        onOptionSelected: cubit.onOptionSelected,
-                        onAnswer: cubit.onAnswer,
-                      ),
-                    );
-                  }
-
-                  return const _Loading();
-                },
+              return Padding(
+                padding: const EdgeInsets.all(10),
+                child: _QuestionDisplay(
+                  viewModel: state.subject,
+                  onOptionSelected: cubit.onOptionSelected,
+                  onAnswer: cubit.onAnswer,
+                ),
               );
             }
 
