@@ -39,12 +39,12 @@ class QuestionDisplayPage extends HookWidget {
               );
             }
 
-            if (state is QuestionDisplayViewModelSubjectUpdated) {
+            if (state is QuestionDisplayViewModelUpdated) {
               return Padding(
                 padding: const EdgeInsets.all(10),
                 child: _QuestionDisplay(
-                  viewModel: state.subject,
-                  onOptionSelected: cubit.onOptionSelected,
+                  viewModel: state.viewModel,
+                  onOptionSelected: (o) => cubit.onOptionSelected(o.title),
                   onAnswer: cubit.onAnswer,
                 ),
               );

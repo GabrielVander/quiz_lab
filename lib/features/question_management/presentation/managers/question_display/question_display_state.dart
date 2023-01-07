@@ -6,10 +6,10 @@ abstract class QuestionDisplayState {
 
   factory QuestionDisplayState.initial() => const QuestionDisplayInitial._();
 
-  factory QuestionDisplayState.subjectUpdated(
-    QuestionDisplayViewModel subject,
+  factory QuestionDisplayState.viewModelUpdated(
+    QuestionDisplayViewModel viewModel,
   ) =>
-      QuestionDisplayViewModelSubjectUpdated._(subject: subject);
+      QuestionDisplayViewModelUpdated._(viewModel: viewModel);
 
   factory QuestionDisplayState.questionAnsweredCorrectly() =>
       const QuestionDisplayQuestionAnsweredCorrectly._();
@@ -28,11 +28,11 @@ class QuestionDisplayInitial extends QuestionDisplayState {
   const QuestionDisplayInitial._() : super._();
 }
 
-class QuestionDisplayViewModelSubjectUpdated extends QuestionDisplayState {
-  const QuestionDisplayViewModelSubjectUpdated._({required this.subject})
+class QuestionDisplayViewModelUpdated extends QuestionDisplayState {
+  const QuestionDisplayViewModelUpdated._({required this.viewModel})
       : super._();
 
-  final QuestionDisplayViewModel subject;
+  final QuestionDisplayViewModel viewModel;
 }
 
 class QuestionDisplayQuestionAnsweredCorrectly extends QuestionDisplayState {

@@ -43,10 +43,10 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
     _emitSubjectWithGivenQuestion(questionResult.ok!);
   }
 
-  void onOptionSelected(QuestionDisplayOptionViewModel option) {
+  void onOptionSelected(String option) {
     _viewModelSubject = _viewModelSubject.copyWith(
       options: _viewModelSubject.options.map((e) {
-        if (e.title == option.title) {
+        if (e.title == option) {
           return e.copyWith(isSelected: true);
         }
 
@@ -54,6 +54,8 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
       }).toList(),
       answerButtonIsEnabled: true,
     );
+
+    emit(QuestionDisplayState.viewModelUpdated(_viewModelSubject));
   }
 
   void onAnswer() {
@@ -83,15 +85,26 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
   void _emitSubjectWithGivenQuestion(Question question) {
     final questionViewModel = _mapQuestionToViewModel(question);
 
-    _viewModelSubject = questionViewModel;
+    _viewModelSubject = _randomizeOptionsOrder(questionViewModel);
 
-    emit(QuestionDisplayState.subjectUpdated(questionViewModel));
+    emit(
+      QuestionDisplayState.viewModelUpdated(
+        _randomizeOptionsOrder(questionViewModel),
+      ),
+    );
   }
 
   QuestionDisplayViewModel _mapQuestionToViewModel(Question question) =>
       _QuestionDisplayViewModelMapper(
         defaultViewModel: _defaultViewModel,
       ).map(question);
+
+  QuestionDisplayViewModel _randomizeOptionsOrder(
+    QuestionDisplayViewModel questionViewModel,
+  ) =>
+      questionViewModel.copyWith(
+        options: questionViewModel.options..shuffle(),
+      );
 }
 
 class _QuestionDisplayViewModelMapper {

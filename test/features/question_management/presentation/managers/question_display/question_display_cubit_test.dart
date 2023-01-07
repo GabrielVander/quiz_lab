@@ -162,29 +162,29 @@ void main() {
               cubit.stream,
               emitsInOrder(
                 [
-                  isA<QuestionDisplayViewModelSubjectUpdated>()
+                  isA<QuestionDisplayViewModelUpdated>()
                       .having(
-                        (state) => state.subject.title,
+                        (state) => state.viewModel.title,
                         'title',
                         expectedViewModel.title,
                       )
                       .having(
-                        (state) => state.subject.description,
+                        (state) => state.viewModel.description,
                         'description',
                         expectedViewModel.description,
                       )
                       .having(
-                        (state) => state.subject.difficulty,
+                        (state) => state.viewModel.difficulty,
                         'difficulty',
                         expectedViewModel.difficulty,
                       )
                       .having(
-                        (state) => state.subject.answerButtonIsEnabled,
+                        (state) => state.viewModel.answerButtonIsEnabled,
                         'answerButtonIsEnabled',
                         expectedViewModel.answerButtonIsEnabled,
                       )
                       .having(
-                        (state) => state.subject.options,
+                        (state) => state.viewModel.options,
                         'options',
                         containsAll(expectedViewModel.options),
                       )
