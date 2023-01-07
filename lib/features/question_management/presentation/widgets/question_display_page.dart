@@ -62,7 +62,11 @@ class QuestionDisplayPage extends HookWidget {
             }
 
             if (state is QuestionDisplayQuestionAnsweredIncorrectly) {
-              return const _IncorrectAnswer();
+              return _IncorrectAnswer(
+                correctAnswer: state.correctAnswer.title,
+                shouldDisplayCorrectAnswer: true,
+                onGoHome: () => GoRouter.of(context).goNamed(Routes.home.name),
+              );
             }
 
             return const _Loading();
@@ -286,9 +290,55 @@ class _CorrectAnswer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _ResultDisplay(
+      backgroundColor: Colors.green,
+      message: S.of(context).questionDisplayCorrectAnswer,
+      onGoHome: onGoHome,
+      icon: Icons.check_circle,
+    );
+  }
+}
+
+class _IncorrectAnswer extends StatelessWidget {
+  const _IncorrectAnswer({
+    required this.correctAnswer,
+    required this.onGoHome,
+    this.shouldDisplayCorrectAnswer = false,
+  });
+
+  final String correctAnswer;
+  final bool shouldDisplayCorrectAnswer;
+  final void Function() onGoHome;
+
+  @override
+  Widget build(BuildContext context) {
+    return _ResultDisplay(
+      backgroundColor: Colors.red,
+      message: S.of(context).questionDisplayIncorrectAnswer,
+      icon: Icons.cancel,
+      onGoHome: onGoHome,
+    );
+  }
+}
+
+class _ResultDisplay extends StatelessWidget {
+  const _ResultDisplay({
+    required this.backgroundColor,
+    required this.message,
+    required this.icon,
+    required this.onGoHome,
+  });
+
+  final Color backgroundColor;
+  final String message;
+  final IconData icon;
+  final void Function() onGoHome;
+
+  @override
+  Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Colors.green,
+      decoration: BoxDecoration(
+        color: backgroundColor,
       ),
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -300,16 +350,16 @@ class _CorrectAnswer extends StatelessWidget {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(
-                        Icons.check_circle,
+                        icon,
                         color: Colors.white,
                         size: 150,
                       ),
                     ],
                   ),
                   Text(
-                    S.of(context).questionDisplayCorrectAnswer,
+                    message,
                     style: Theme.of(context).textTheme.headline2?.copyWith(
                           color: Colors.white,
                         ),
@@ -325,15 +375,6 @@ class _CorrectAnswer extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _IncorrectAnswer extends StatelessWidget {
-  const _IncorrectAnswer();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 

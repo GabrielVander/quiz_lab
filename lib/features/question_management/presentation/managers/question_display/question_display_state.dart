@@ -14,8 +14,12 @@ abstract class QuestionDisplayState {
   factory QuestionDisplayState.questionAnsweredCorrectly() =>
       const QuestionDisplayQuestionAnsweredCorrectly._();
 
-  factory QuestionDisplayState.questionAnsweredIncorrectly() =>
-      const QuestionDisplayQuestionAnsweredIncorrectly._();
+  factory QuestionDisplayState.questionAnsweredIncorrectly(
+    QuestionDisplayOptionViewModel correctAnswer,
+  ) =>
+      QuestionDisplayQuestionAnsweredIncorrectly._(
+        correctAnswer: correctAnswer,
+      );
 }
 
 class QuestionDisplayInitial extends QuestionDisplayState {
@@ -34,5 +38,9 @@ class QuestionDisplayQuestionAnsweredCorrectly extends QuestionDisplayState {
 }
 
 class QuestionDisplayQuestionAnsweredIncorrectly extends QuestionDisplayState {
-  const QuestionDisplayQuestionAnsweredIncorrectly._() : super._();
+  const QuestionDisplayQuestionAnsweredIncorrectly._({
+    required this.correctAnswer,
+  }) : super._();
+
+  final QuestionDisplayOptionViewModel correctAnswer;
 }
