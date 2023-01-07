@@ -1,17 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:quiz_lab/core/common/manager.dart';
+import 'package:flutter/foundation.dart';
 
 part 'bottom_navigation_state.dart';
 
-class BottomNavigationCubit extends Cubit<BottomNavigationState>
-    implements Manager {
-  BottomNavigationCubit()
-      : super(
-          BottomNavigationIndexChangedState(
-            newIndex: NavigationIndex.assessments.indexNumber,
-          ),
-        );
+class BottomNavigationCubit extends Cubit<BottomNavigationState> {
+  BottomNavigationCubit() : super(BottomNavigationInitial());
 
   NavigationIndex? previousIndex;
 

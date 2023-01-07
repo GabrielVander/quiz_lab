@@ -13,13 +13,9 @@ void main() {
   });
 
   test('initial state', () {
-    expect(
-      cubit.state,
-      BottomNavigationIndexChangedState(
-        newIndex: NavigationIndex.assessments.indexNumber,
-      ),
-    );
+    expect(cubit.state, BottomNavigationInitial());
   });
+
   group('transitionTo', () {
     group('emits correct state', () {
       <NavigationIndex, BottomNavigationIndexChangedState>{
@@ -42,6 +38,7 @@ void main() {
         });
       });
     });
+
     group('emits in order', () {
       <List<NavigationIndex>, List<BottomNavigationIndexChangedState>>{
         [

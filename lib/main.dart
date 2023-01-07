@@ -1,26 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:quiz_lab/core/constants.dart';
+import 'package:quiz_lab/core/presentation/manager/factories/core_cubit_factory.dart';
 import 'package:quiz_lab/core/quiz_lab_application.dart';
+import 'package:quiz_lab/core/utils/dependency_injection/setup.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/factories/question_management_cubit_factory.dart';
 import 'package:quiz_lab/features/question_management/utils/setup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await setUp();
+  await _setUp();
 
   runApp(
-    QuizLabApplication(dependencyInjection: dependencyInjection),
+    QuizLabApplication(
+      coreCubitFactory: dependencyInjection.get<CoreCubitFactory>(),
+      questionManagementCubitFactory:
+          dependencyInjection.get<QuestionManagementCubitFactory>(),
+    ),
   );
 }
 
-Future<void> setUp() async {
-  await Hive.initFlutter();
-  await Hive.openBox<String>('questions');
-  setupInjections();
+Future<void> _setUp() async {
+  await _setUpHive();
+  _setUpInjections();
 }
 
-void setupInjections() {
+Future<void> _setUpHive() async {
+  await Hive.initFlutter();
+  await Hive.openBox<String>('questions');
+}
+
+void _setUpInjections() {
   dependencyInjection
+    ..addSetup(coreDependencyInjectionSetup)
     ..addSetup(questionManagementDiSetup)
     ..setUp();
 }

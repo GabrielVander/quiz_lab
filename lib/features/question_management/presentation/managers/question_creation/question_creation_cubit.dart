@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:quiz_lab/core/common/manager.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
@@ -9,8 +8,7 @@ import 'package:uuid/uuid.dart';
 
 part 'question_creation_state.dart';
 
-class QuestionCreationCubit extends Cubit<QuestionCreationState>
-    implements Manager {
+class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationCubit({
     required UseCaseFactory useCaseFactory,
   })  : _useCaseFactory = useCaseFactory,

@@ -3,14 +3,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/factories/cubit_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/no_questions.dart';
@@ -19,14 +17,11 @@ import 'package:quiz_lab/generated/l10n.dart';
 class QuestionsOverviewPage extends StatelessWidget {
   QuestionsOverviewPage({
     super.key,
-    CubitFactory? cubitFactory,
+    required QuestionsOverviewCubit questionsOverviewCubit,
   }) {
-    _cubitFactory =
-        cubitFactory ?? CubitFactory(dependencyInjection: dependencyInjection);
-    _questionsOverviewCubit = _cubitFactory.makeQuestionsOverviewCubit();
+    _questionsOverviewCubit = questionsOverviewCubit;
   }
 
-  late final CubitFactory _cubitFactory;
   late final QuestionsOverviewCubit _questionsOverviewCubit;
 
   @override

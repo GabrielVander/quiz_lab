@@ -30,7 +30,11 @@ class QuestionCreationPage extends HookWidget {
             builder: (ctx) {
               if (state is QuestionCreationGoBack) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  GoRouter.of(ctx).pop();
+                  if (GoRouter.of(context).canPop()) {
+                    GoRouter.of(ctx).pop();
+                  } else {
+                    GoRouter.of(ctx).goNamed(Routes.home.name);
+                  }
                 });
               }
 
