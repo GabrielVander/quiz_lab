@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
@@ -51,6 +53,16 @@ class QuestionDisplayPage extends HookWidget {
                   return const _Loading();
                 },
               );
+            }
+
+            if (state is QuestionDisplayQuestionAnsweredCorrectly) {
+              return _CorrectAnswer(
+                onGoHome: () => GoRouter.of(context).goNamed(Routes.home.name),
+              );
+            }
+
+            if (state is QuestionDisplayQuestionAnsweredIncorrectly) {
+              return const _IncorrectAnswer();
             }
 
             return const _Loading();
@@ -262,6 +274,66 @@ class _QuestionSingleOption extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _CorrectAnswer extends StatelessWidget {
+  const _CorrectAnswer({
+    required this.onGoHome,
+  });
+
+  final void Function() onGoHome;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: Colors.green,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.check_circle,
+                        color: Colors.white,
+                        size: 150,
+                      ),
+                    ],
+                  ),
+                  Text(
+                    S.of(context).questionDisplayCorrectAnswer,
+                    style: Theme.of(context).textTheme.headline2?.copyWith(
+                          color: Colors.white,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: onGoHome,
+              child: Text(S.of(context).goHomeLabel),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _IncorrectAnswer extends StatelessWidget {
+  const _IncorrectAnswer();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
 

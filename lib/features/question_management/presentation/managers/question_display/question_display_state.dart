@@ -11,8 +11,11 @@ abstract class QuestionDisplayState {
   ) =>
       QuestionDisplayViewModelSubjectUpdated._(subject: subject);
 
-  @override
-  List<Object> get props => [];
+  factory QuestionDisplayState.questionAnsweredCorrectly() =>
+      const QuestionDisplayQuestionAnsweredCorrectly._();
+
+  factory QuestionDisplayState.questionAnsweredIncorrectly() =>
+      const QuestionDisplayQuestionAnsweredIncorrectly._();
 }
 
 class QuestionDisplayInitial extends QuestionDisplayState {
@@ -24,7 +27,12 @@ class QuestionDisplayViewModelSubjectUpdated extends QuestionDisplayState {
       : super._();
 
   final BehaviorSubject<QuestionDisplayViewModel> subject;
+}
 
-  @override
-  List<Object> get props => [subject];
+class QuestionDisplayQuestionAnsweredCorrectly extends QuestionDisplayState {
+  const QuestionDisplayQuestionAnsweredCorrectly._() : super._();
+}
+
+class QuestionDisplayQuestionAnsweredIncorrectly extends QuestionDisplayState {
+  const QuestionDisplayQuestionAnsweredIncorrectly._() : super._();
 }
