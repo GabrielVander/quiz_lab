@@ -10,6 +10,7 @@ class HiveQuestionModelMapper {
         shortDescription: _parseShortDescriptionFromQuestion(question),
         description: _parseDescriptionFromQuestion(question),
         difficulty: _parseDifficultyFromQuestion(question),
+        options: _parseOptionsFromQuestion(question),
         categories: _parseCategoriesFromQuestion(question),
       );
 
@@ -23,6 +24,11 @@ class HiveQuestionModelMapper {
 
   String _parseDifficultyFromQuestion(Question question) =>
       question.difficulty.name;
+
+  List<Map<String, dynamic>> _parseOptionsFromQuestion(Question question) =>
+      question.answerOptions
+          .map((a) => {'description': a.description, 'isCorrect': a.isCorrect})
+          .toList();
 
   List<String> _parseCategoriesFromQuestion(Question question) =>
       question.categories.map((e) => e.value).toList();

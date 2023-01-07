@@ -8,6 +8,7 @@ class HiveQuestionModel extends Equatable {
     required this.shortDescription,
     required this.description,
     required this.difficulty,
+    required this.options,
     required this.categories,
   });
 
@@ -17,6 +18,9 @@ class HiveQuestionModel extends Equatable {
       shortDescription: map['shortDescription'] as String? ?? '',
       description: map['description'] as String? ?? '',
       difficulty: map['difficulty'] as String? ?? '',
+      options: List<Map<String, dynamic>>.from(
+        map['options'] as List<dynamic>? ?? [],
+      ),
       categories: List<String>.from(map['categories'] as List<dynamic>? ?? []),
     );
   }
@@ -25,6 +29,7 @@ class HiveQuestionModel extends Equatable {
   final String? shortDescription;
   final String? description;
   final String? difficulty;
+  final List<Map<String, dynamic>>? options;
   final List<String>? categories;
 
   Map<String, dynamic> toMap() {
@@ -32,6 +37,7 @@ class HiveQuestionModel extends Equatable {
       'shortDescription': shortDescription,
       'description': description,
       'difficulty': difficulty,
+      'options': options,
       'categories': categories
     };
   }
@@ -42,6 +48,7 @@ class HiveQuestionModel extends Equatable {
         shortDescription,
         description,
         difficulty,
+        options,
         categories,
       ];
 
