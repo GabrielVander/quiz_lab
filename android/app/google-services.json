@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "189945333110",
+    "project_id": "quiz-lab-dev",
+    "storage_bucket": "quiz-lab-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189945333110:android:57112705f99d769a352657",
+        "android_client_info": {
+          "package_name": "gabriel.guimaraes.quiz_lab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "189945333110-pp613p7ctn5d58ksitoni6ganipf5a73.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAF6qK4B-m8CeAR5RyGXYiednYsM09gMLk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "189945333110-pp613p7ctn5d58ksitoni6ganipf5a73.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "189945333110-3oh713d6f2hrfv1utt6s6g0megik9pqa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "gabriel.guimaraes.quizLab"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
