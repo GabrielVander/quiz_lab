@@ -82,6 +82,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
         description: null,
         difficulty: null,
         categories: null,
+        options: null,
       ),
     );
 

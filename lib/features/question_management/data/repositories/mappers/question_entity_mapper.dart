@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
@@ -23,7 +24,7 @@ class QuestionEntityMapper {
       description: _parseDescriptionFromHiveModel(model),
       difficulty: _parseDifficultyFromHiveModel(model),
       categories: _parseCategoriesFromHiveModel(model),
-      answerOptions: const [],
+      answerOptions: _parseOptionsFromHiveModel(model),
     );
   }
 
@@ -75,6 +76,23 @@ class QuestionEntityMapper {
     }
 
     return model.categories!.map((c) => QuestionCategory(value: c)).toList();
+  }
+
+  List<AnswerOption> _parseOptionsFromHiveModel(HiveQuestionModel model) {
+    if (model.options == null) {
+      throw _FailureException(
+        failure: QuestionMapperFailure.missingCategories(),
+      );
+    }
+
+    return model.options!
+        .map(
+          (o) => AnswerOption(
+            description: o['description'] as String? ?? '',
+            isCorrect: o['isCorrect'] as bool? ?? false,
+          ),
+        )
+        .toList();
   }
 
   QuestionDifficulty _parseDifficultyFromString(String s) {

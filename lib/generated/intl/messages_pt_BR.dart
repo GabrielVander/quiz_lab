@@ -47,6 +47,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Adicionar Opção"),
         "answerAmountWithLimitLabel": m0,
         "answerAmountWithoutLimitLabel": m1,
+        "answerQuestionButtonLabel":
+            MessageLookupByLibrary.simpleMessage("Responder"),
         "assessmentsSectionDisplayName":
             MessageLookupByLibrary.simpleMessage("Avaliações"),
         "createLabel": MessageLookupByLibrary.simpleMessage("Criar"),
@@ -55,6 +57,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "dueDateLabel": MessageLookupByLibrary.simpleMessage("Data Limite"),
         "dueDateValue": m2,
         "goBackLabel": MessageLookupByLibrary.simpleMessage("Voltar"),
+        "goHomeLabel": MessageLookupByLibrary.simpleMessage("Página inicial"),
         "isOptionCorrectLabel": MessageLookupByLibrary.simpleMessage("Correta"),
         "mustBeSetMessage":
             MessageLookupByLibrary.simpleMessage("Deve Estar Preenchido"),
@@ -65,6 +68,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "optionInputLabel": MessageLookupByLibrary.simpleMessage("Opção"),
         "optionsTitle": MessageLookupByLibrary.simpleMessage("Opções"),
         "questionAmountLabel": m3,
+        "questionAnswerPageTitle":
+            MessageLookupByLibrary.simpleMessage("Respondendo..."),
         "questionCategoriesLabel":
             MessageLookupByLibrary.simpleMessage("Categorias"),
         "questionDescriptionLabel":
@@ -72,6 +77,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "questionDifficultyLabel":
             MessageLookupByLibrary.simpleMessage("Dificuldade"),
         "questionDifficultyValue": m4,
+        "questionDisplayCorrectAnswer":
+            MessageLookupByLibrary.simpleMessage("Correto"),
+        "questionDisplayIncorrectAnswer":
+            MessageLookupByLibrary.simpleMessage("Incorreto"),
         "questionSavedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Questão salva"),
         "questionSavingFailure": m5,
@@ -84,6 +93,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "resultsSectionDisplayName":
             MessageLookupByLibrary.simpleMessage("Resultados"),
         "saveLabel": MessageLookupByLibrary.simpleMessage("Salvar"),
+        "unableToDisplayQuestion": MessageLookupByLibrary.simpleMessage(
+            "Não foi possível exibir a questão"),
         "workInProgressMessage": MessageLookupByLibrary.simpleMessage(
             "Ainda Estamos Trabalhando Nisso!")
       };

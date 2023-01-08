@@ -18,6 +18,7 @@
   "questionTitleLabel": "Título",
   "questionDescriptionLabel": "Descrição",
   "goBackLabel": "Voltar",
+  "goHomeLabel": "Página inicial",
   "createLabel": "Criar",
   "saveLabel": "Salvar",
   "optionsTitle": "Opções",
@@ -28,5 +29,10 @@
   "questionSavedSuccessfully": "Questão salva",
   "questionSavingFailure": "Problemas ao salvar questão: {failureReason}",
   "questionSavingFailureNoCorrectOption": "Problema ao salvar questão: Nenhumas das opções está marcada como correta",
-  "noQuestions": "Nenhuma questão"
+  "noQuestions": "Nenhuma questão",
+  "unableToDisplayQuestion": "Não foi possível exibir a questão",
+  "questionAnswerPageTitle": "Respondendo...",
+  "answerQuestionButtonLabel": "Responder",
+  "questionDisplayCorrectAnswer": "Correto",
+  "questionDisplayIncorrectAnswer": "Incorreto"
 }

@@ -242,6 +242,16 @@ class S {
     );
   }
 
+  /// `Go home`
+  String get goHomeLabel {
+    return Intl.message(
+      'Go home',
+      name: 'goHomeLabel',
+      desc: 'Generic go home label',
+      args: [],
+    );
+  }
+
   /// `Create`
   String get createLabel {
     return Intl.message(
@@ -350,6 +360,56 @@ class S {
       'No questions',
       name: 'noQuestions',
       desc: 'Message to display when questions list is empty',
+      args: [],
+    );
+  }
+
+  /// `Unable to display question`
+  String get unableToDisplayQuestion {
+    return Intl.message(
+      'Unable to display question',
+      name: 'unableToDisplayQuestion',
+      desc: 'Message to display when question id is not valid',
+      args: [],
+    );
+  }
+
+  /// `Answering...`
+  String get questionAnswerPageTitle {
+    return Intl.message(
+      'Answering...',
+      name: 'questionAnswerPageTitle',
+      desc: 'Title of the question answer page',
+      args: [],
+    );
+  }
+
+  /// `Answer`
+  String get answerQuestionButtonLabel {
+    return Intl.message(
+      'Answer',
+      name: 'answerQuestionButtonLabel',
+      desc: 'Answer question button label',
+      args: [],
+    );
+  }
+
+  /// `Correct`
+  String get questionDisplayCorrectAnswer {
+    return Intl.message(
+      'Correct',
+      name: 'questionDisplayCorrectAnswer',
+      desc: 'Message to display when the question is answered correctly',
+      args: [],
+    );
+  }
+
+  /// `Incorrect`
+  String get questionDisplayIncorrectAnswer {
+    return Intl.message(
+      'Incorrect',
+      name: 'questionDisplayIncorrectAnswer',
+      desc: 'Message to display when the question is answered incorrectly',
       args: [],
     );
   }

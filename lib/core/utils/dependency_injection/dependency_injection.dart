@@ -1,32 +1,30 @@
 import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/utils/unit.dart';
 
 abstract class DependencyInjection {
   void addSetup(DiSetup setup);
 
   void setUp();
 
-  Result<T, DiFailure> get<T extends Object>();
+  T get<T extends Object>();
 
-  Result<Unit, DiFailure> registerInstance<T extends Object>(
+  void registerInstance<T extends Object>(
     T? Function(DependencyInjection di) getter,
   );
 
-  Result<Unit, DiFailure> registerBuilder<T extends Object>(
+  void registerBuilder<T extends Object>(
     T? Function(DependencyInjection di) builder,
   );
 
-  Result<Unit, DiFailure> registerFactory<T extends Object>(
+  void registerFactory<T extends Object>(
     T? Function(DependencyInjection di) factory,
   );
 
-  Future<Result<Unit, DiFailure>> unregisterAll();
+  Future<void> unregisterAll();
 }
 
 abstract class DiFailure extends Equatable {}
 
-class KeyAlreadyRegisteredFailure implements DiFailure {
+class KeyAlreadyRegisteredFailure extends Equatable implements Exception {
   const KeyAlreadyRegisteredFailure({
     required this.key,
   });
@@ -49,15 +47,13 @@ class KeyAlreadyRegisteredFailure implements DiFailure {
   }
 
   @override
-  List<Object?> get props => [
-        key,
-      ];
+  List<Object?> get props => [key];
 
   @override
   bool? get stringify => true;
 }
 
-class KeyNotRegisteredFailure implements DiFailure {
+class KeyNotRegisteredFailure extends Equatable implements Exception {
   const KeyNotRegisteredFailure({
     required this.key,
   });
@@ -80,9 +76,7 @@ class KeyNotRegisteredFailure implements DiFailure {
   }
 
   @override
-  List<Object?> get props => [
-        key,
-      ];
+  List<Object?> get props => [key];
 
   @override
   bool? get stringify => true;
