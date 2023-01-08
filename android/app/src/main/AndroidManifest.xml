@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="gabriel.guimaraes.quiz_lab">
    <application
-        android:label="quiz_lab"
-        android:name="${applicationName}"
+        android:label="Quiz Lab"
+       android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
