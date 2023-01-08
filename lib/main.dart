@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:logging/logging.dart';
 import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/presentation/manager/factories/core_cubit_factory.dart';
 import 'package:quiz_lab/core/quiz_lab_application.dart';
@@ -22,12 +24,22 @@ void main() async {
 
 Future<void> _setUp() async {
   await _setUpHive();
+  _setUpLogger();
   _setUpInjections();
 }
 
 Future<void> _setUpHive() async {
   await Hive.initFlutter();
   await Hive.openBox<String>('questions');
+}
+
+void _setUpLogger() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    if (kDebugMode) {
+      print('${record.time}: ${record.level.name} - ${record.message}');
+    }
+  });
 }
 
 void _setUpInjections() {
