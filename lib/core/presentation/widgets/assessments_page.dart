@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/presentation/widgets/assessment_overview.dart';
+import 'package:quiz_lab/core/presentation/widgets/fork_lift_message.dart';
 import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
@@ -37,11 +38,35 @@ class AssessmentsPage extends HookWidget {
             ),
           ),
           Expanded(
-            child: Content(state: state),
+            child: Center(
+              child:
+                  ForkLiftMessage(message: S.of(context).workInProgressMessage),
+            ),
           ),
         ],
       ),
     );
+
+    // return Padding(
+    //   padding: const EdgeInsets.all(15),
+    //   child: Column(
+    //     children: [
+    //       Padding(
+    //         padding: const EdgeInsets.only(bottom: 10),
+    //         child: Row(
+    //           children: [
+    //             PageSubtitle(
+    //               title: S.of(context).assessmentsSectionDisplayName,
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //       Expanded(
+    //         child: Content(state: state),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }
 
