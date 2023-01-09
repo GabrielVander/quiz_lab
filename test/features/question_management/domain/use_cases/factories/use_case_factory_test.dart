@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
@@ -10,84 +8,83 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/update_qu
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
 void main() {
-  late RepositoryFactory mockRepositoryFactory;
+  late WatchAllQuestionsUseCase watchAllQuestionsUseCaseMock;
+  late CreateQuestionUseCase createQuestionUseCaseMock;
+  late UpdateQuestionUseCase updateQuestionUseCaseMock;
+  late DeleteQuestionUseCase deleteQuestionUseCaseMock;
+  late GetSingleQuestionUseCase getSingleQuestionUseCaseMock;
+
   late UseCaseFactory useCaseFactory;
 
   setUp(() {
-    mockRepositoryFactory = _MockRepositoryFactory();
+    watchAllQuestionsUseCaseMock = _WatchAllQuestionsUseCaseMock();
+    createQuestionUseCaseMock = _CreateQuestionUseCaseMock();
+    updateQuestionUseCaseMock = _UpdateQuestionUseCaseMock();
+    deleteQuestionUseCaseMock = _DeleteQuestionUseCaseMock();
+    getSingleQuestionUseCaseMock = _GetSingleQuestionUseCaseMock();
     useCaseFactory = UseCaseFactory(
-      repositoryFactory: mockRepositoryFactory,
+      watchAllQuestionsUseCase: watchAllQuestionsUseCaseMock,
+      createQuestionUseCase: createQuestionUseCaseMock,
+      updateQuestionUseCase: updateQuestionUseCaseMock,
+      deleteQuestionUseCase: deleteQuestionUseCaseMock,
+      getSingleQuestionUseCase: getSingleQuestionUseCaseMock,
     );
   });
 
-  tearDown(resetMocktailState);
+  tearDown(mocktail.resetMocktailState);
 
   group('makeWatchAllQuestionsUseCase', () {
     test('should return WatchAllQuestionsUseCase', () {
-      final mockQuestionRepository = _MockQuestionRepository();
-
-      when(() => mockRepositoryFactory.makeQuestionRepository())
-          .thenReturn(mockQuestionRepository);
-
       final result = useCaseFactory.makeWatchAllQuestionsUseCase();
 
-      expect(result, isA<WatchAllQuestionsUseCase>());
+      expect(result, watchAllQuestionsUseCaseMock);
     });
   });
 
   group('makeCreateQuestionUseCase', () {
     test('should return CreateQuestionUseCase', () {
-      final mockQuestionRepository = _MockQuestionRepository();
-
-      when(() => mockRepositoryFactory.makeQuestionRepository())
-          .thenReturn(mockQuestionRepository);
-
       final result = useCaseFactory.makeCreateQuestionUseCase();
 
-      expect(result, isA<CreateQuestionUseCase>());
+      expect(result, createQuestionUseCaseMock);
     });
   });
 
   group('makeUpdateQuestionUseCase', () {
     test('should return UpdateQuestionUseCase', () {
-      final mockQuestionRepository = _MockQuestionRepository();
-
-      when(() => mockRepositoryFactory.makeQuestionRepository())
-          .thenReturn(mockQuestionRepository);
-
       final result = useCaseFactory.makeUpdateQuestionUseCase();
 
-      expect(result, isA<UpdateQuestionUseCase>());
+      expect(result, updateQuestionUseCaseMock);
     });
   });
 
   group('makeDeleteQuestionUseCase', () {
     test('should return DeleteQuestionUseCase', () {
-      final mockQuestionRepository = _MockQuestionRepository();
-
-      when(() => mockRepositoryFactory.makeQuestionRepository())
-          .thenReturn(mockQuestionRepository);
-
       final result = useCaseFactory.makeDeleteQuestionUseCase();
 
-      expect(result, isA<DeleteQuestionUseCase>());
+      expect(result, deleteQuestionUseCaseMock);
     });
   });
 
   group('makeGetSingleQuestionUseCase', () {
     test('should return GetSingleQuestionUseCase', () {
-      final mockQuestionRepository = _MockQuestionRepository();
-
-      when(() => mockRepositoryFactory.makeQuestionRepository())
-          .thenReturn(mockQuestionRepository);
-
       final result = useCaseFactory.makeGetSingleQuestionUseCase();
 
-      expect(result, isA<GetSingleQuestionUseCase>());
+      expect(result, getSingleQuestionUseCaseMock);
     });
   });
 }
 
-class _MockRepositoryFactory extends Mock implements RepositoryFactory {}
+class _WatchAllQuestionsUseCaseMock extends mocktail.Mock
+    implements WatchAllQuestionsUseCase {}
 
-class _MockQuestionRepository extends Mock implements QuestionRepository {}
+class _CreateQuestionUseCaseMock extends mocktail.Mock
+    implements CreateQuestionUseCase {}
+
+class _UpdateQuestionUseCaseMock extends mocktail.Mock
+    implements UpdateQuestionUseCase {}
+
+class _DeleteQuestionUseCaseMock extends mocktail.Mock
+    implements DeleteQuestionUseCase {}
+
+class _GetSingleQuestionUseCaseMock extends mocktail.Mock
+    implements GetSingleQuestionUseCase {}
