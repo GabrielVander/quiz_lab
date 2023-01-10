@@ -1,27 +1,42 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/logger/logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
+import 'package:rxdart/rxdart.dart';
 
 class WatchAllQuestionsUseCase {
   const WatchAllQuestionsUseCase({
+    required Logger logger,
     required RepositoryFactory repositoryFactory,
-  }) : _repositoryFactory = repositoryFactory;
+  })  : _logger = logger,
+        _repositoryFactory = repositoryFactory;
 
+  final Logger _logger;
   final RepositoryFactory _repositoryFactory;
 
   Result<Stream<List<Question>>, WatchAllQuestionsFailure> execute() {
+    _logger.logInfo('Watching all questions...');
+
     final questionRepository = _repositoryFactory.makeQuestionRepository();
     final streamResult = questionRepository.watchAll();
 
     if (streamResult.isErr) {
-      return Result.err(
-        WatchAllQuestionsFailure.generic(message: streamResult.err!.message),
+      final failure = WatchAllQuestionsFailure.generic(
+        message: streamResult.err!.message,
       );
+
+      _logger.logError(failure.message);
+      return Result.err(failure);
     }
 
-    return Result.ok(streamResult.ok!);
+    return Result.ok(
+      streamResult.ok!.doOnData(
+        (questions) =>
+            _logger.logInfo('Retrieved ${questions.length} questions'),
+      ),
+    );
   }
 }
 
