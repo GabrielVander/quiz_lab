@@ -314,107 +314,109 @@ class _QuestionItemTitle extends StatelessWidget {
   }
 }
 
-class _QuestionItemCategories extends StatelessWidget {
-  const _QuestionItemCategories({
-    required this.categories,
-  });
-
-  final List<String> categories;
-
-  @override
-  Widget build(BuildContext context) {
-    final textColor = _getTextColor(context);
-    final fontSize = _getFontSize(context);
-    final categoryFontSize = _getCategoryFontSize(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Row(
-            children: [
-              Text(
-                S.of(context).questionCategoriesLabel,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Row(
-          children: categories
-              .map(
-                (c) => Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(
-                      color: textColor,
-                    ),
-                  ),
-                  child: Text(
-                    c,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: categoryFontSize,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ],
-    );
-  }
-
-  double _getFontSize(BuildContext context) {
-    return ScreenBreakpoints.getValueForScreenType<double>(
-      context: context,
-      map: (p) {
-        switch (p.runtimeType) {
-          case MobileBreakpoint:
-            return 15;
-          case TabletBreakpoint:
-            return 17;
-          case DesktopBreakpoint:
-            return 19;
-          default:
-            return 15;
-        }
-      },
-    );
-  }
-
-  double _getCategoryFontSize(BuildContext context) {
-    return ScreenBreakpoints.getValueForScreenType<double>(
-      context: context,
-      map: (p) {
-        switch (p.runtimeType) {
-          case MobileBreakpoint:
-            return 12;
-          case TabletBreakpoint:
-            return 14;
-          case DesktopBreakpoint:
-            return 16;
-          default:
-            return 12;
-        }
-      },
-    );
-  }
-
-  Color _getTextColor(BuildContext context) {
-    final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors!.textColors.secondary;
-
-    return textColor;
-  }
-}
+// class _QuestionItemCategories extends StatelessWidget {
+//   const _QuestionItemCategories({
+//     required this.categories,
+//   });
+//
+//   final List<String> categories;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final textColor = _getTextColor(context);
+//     final fontSize = _getFontSize(context);
+//     final categoryFontSize = _getCategoryFontSize(context);
+//
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Padding(
+//           padding: const EdgeInsets.only(bottom: 5),
+//           child: Row(
+//             children: [
+//               Text(
+//                 S.of(context).questionCategoriesLabel,
+//                 style: TextStyle(
+//                   color: textColor,
+//                   fontSize: fontSize,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//         Row(
+//           children: categories
+//               .map(
+//                 (c) => Container(
+//                   margin: const EdgeInsets.only(right: 10),
+//                   padding: const EdgeInsets.all(5),
+//                   decoration: BoxDecoration(
+//                     borderRadius: const BorderRadius.all(
+//                     Radius.circular(10)
+//                     ),
+//                     border: Border.all(
+//                       color: textColor,
+//                     ),
+//                   ),
+//                   child: Text(
+//                     c,
+//                     style: TextStyle(
+//                       color: textColor,
+//                       fontSize: categoryFontSize,
+//                     ),
+//                   ),
+//                 ),
+//               )
+//               .toList(),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   double _getFontSize(BuildContext context) {
+//     return ScreenBreakpoints.getValueForScreenType<double>(
+//       context: context,
+//       map: (p) {
+//         switch (p.runtimeType) {
+//           case MobileBreakpoint:
+//             return 15;
+//           case TabletBreakpoint:
+//             return 17;
+//           case DesktopBreakpoint:
+//             return 19;
+//           default:
+//             return 15;
+//         }
+//       },
+//     );
+//   }
+//
+//   double _getCategoryFontSize(BuildContext context) {
+//     return ScreenBreakpoints.getValueForScreenType<double>(
+//       context: context,
+//       map: (p) {
+//         switch (p.runtimeType) {
+//           case MobileBreakpoint:
+//             return 12;
+//           case TabletBreakpoint:
+//             return 14;
+//           case DesktopBreakpoint:
+//             return 16;
+//           default:
+//             return 12;
+//         }
+//       },
+//     );
+//   }
+//
+//   Color _getTextColor(BuildContext context) {
+//     final themeColors = Theme.of(context).extension<ThemeColors>();
+//     final textColor = themeColors!.textColors.secondary;
+//
+//     return textColor;
+//   }
+// }
 
 class _QuestionItemDifficulty extends StatelessWidget {
   const _QuestionItemDifficulty({
