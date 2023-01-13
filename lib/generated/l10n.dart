@@ -413,6 +413,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Random`
+  String get openRandomQuestionButtonLabel {
+    return Intl.message(
+      'Random',
+      name: 'openRandomQuestionButtonLabel',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

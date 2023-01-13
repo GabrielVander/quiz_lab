@@ -34,5 +34,6 @@
   "questionAnswerPageTitle": "Respondendo...",
   "answerQuestionButtonLabel": "Responder",
   "questionDisplayCorrectAnswer": "Correto",
-  "questionDisplayIncorrectAnswer": "Incorreto"
+  "questionDisplayIncorrectAnswer": "Incorreto",
+  "openRandomQuestionButtonLabel": "Aleatória"
 }

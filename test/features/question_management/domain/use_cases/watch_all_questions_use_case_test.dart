@@ -4,7 +4,7 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/utils/logger/logger.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
@@ -12,7 +12,7 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
 void main() {
-  late Logger loggerMock;
+  late QuizLabLogger loggerMock;
   late RepositoryFactory mockRepositoryFactory;
   late WatchAllQuestionsUseCase useCase;
 
@@ -177,4 +177,4 @@ class _MockRepositoryFactory extends mocktail.Mock
 class _MockQuestionRepository extends mocktail.Mock
     implements QuestionRepository {}
 
-class _LoggerMock extends mocktail.Mock implements Logger {}
+class _LoggerMock extends mocktail.Mock implements QuizLabLogger {}

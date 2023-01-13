@@ -14,7 +14,7 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 import 'package:quiz_lab/features/question_management/presentation/widgets/no_questions.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class QuestionsOverviewPage extends StatelessWidget {
+class QuestionsOverviewPage extends HookWidget {
   QuestionsOverviewPage({
     super.key,
     required QuestionsOverviewCubit questionsOverviewCubit,
@@ -26,6 +26,8 @@ class QuestionsOverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = useBlocBuilder(_questionsOverviewCubit);
+
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(
@@ -38,8 +40,56 @@ class QuestionsOverviewPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: _MainContent(
-              cubit: _questionsOverviewCubit,
+            child: Builder(
+              builder: (context) {
+                if (state is Initial) {
+                  _questionsOverviewCubit.updateQuestions();
+                }
+
+                if (state is Loading || state is Initial) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (state is QuestionListUpdated) {
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: _QuestionList(
+                          questions: state.questions,
+                          onDeleteQuestion:
+                              _questionsOverviewCubit.removeQuestion,
+                          onSaveUpdatedQuestion:
+                              _questionsOverviewCubit.onQuestionSaved,
+                          onQuestionClick: (question) {
+                            GoRouter.of(context).pushNamed(
+                              Routes.displayQuestion.name,
+                              params: {
+                                'id': question.id,
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          _RandomQuestionButton(),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+
+                if (state is QuestionsOverviewError) {
+                  return Center(
+                    child: Text(state.message),
+                  );
+                }
+
+                return Container();
+              },
             ),
           ),
         ],
@@ -129,50 +179,41 @@ class _QuestionAddButton extends StatelessWidget {
   }
 }
 
-class _MainContent extends HookWidget {
-  const _MainContent({
-    required this.cubit,
-  });
-
-  final QuestionsOverviewCubit cubit;
+class _RandomQuestionButton extends StatelessWidget {
+  const _RandomQuestionButton();
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(cubit);
-
-    if (state is Initial) {
-      cubit.updateQuestions();
-    }
-
-    if (state is Loading || state is Initial) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    if (state is QuestionListUpdated) {
-      return _QuestionList(
-        questions: state.questions,
-        onDeleteQuestion: cubit.removeQuestion,
-        onSaveUpdatedQuestion: cubit.onQuestionSaved,
-        onQuestionClick: (question) {
-          GoRouter.of(context).pushNamed(
-            Routes.displayQuestion.name,
-            params: {
-              'id': question.id,
-            },
-          );
-        },
-      );
-    }
-
-    if (state is QuestionsOverviewError) {
-      return Center(
-        child: Text(state.message),
-      );
-    }
-
-    return Container();
+    return TextButton(
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Theme.of(context)
+                  .extension<ThemeColors>()!
+                  .mainColors
+                  .primary,
+            ),
+          ),
+        ),
+        backgroundColor: MaterialStateProperty.all<Color>(
+          Theme.of(context)
+              .extension<ThemeColors>()!
+              .mainColors
+              .primary
+              .withAlpha(20),
+        ),
+      ),
+      onPressed: () {},
+      child: Row(
+        children: [
+          const Icon(Icons.shuffle),
+          const SizedBox(width: 5),
+          Text(S.of(context).openRandomQuestionButtonLabel),
+        ],
+      ),
+    );
   }
 }
 
@@ -199,6 +240,7 @@ class _QuestionList extends StatelessWidget {
     }
 
     return ListView.separated(
+      shrinkWrap: true,
       itemCount: questions.length,
       itemBuilder: (BuildContext context, int index) {
         return _QuestionItem(
@@ -314,107 +356,109 @@ class _QuestionItemTitle extends StatelessWidget {
   }
 }
 
-class _QuestionItemCategories extends StatelessWidget {
-  const _QuestionItemCategories({
-    required this.categories,
-  });
-
-  final List<String> categories;
-
-  @override
-  Widget build(BuildContext context) {
-    final textColor = _getTextColor(context);
-    final fontSize = _getFontSize(context);
-    final categoryFontSize = _getCategoryFontSize(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Row(
-            children: [
-              Text(
-                S.of(context).questionCategoriesLabel,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Row(
-          children: categories
-              .map(
-                (c) => Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(
-                      color: textColor,
-                    ),
-                  ),
-                  child: Text(
-                    c,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: categoryFontSize,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ],
-    );
-  }
-
-  double _getFontSize(BuildContext context) {
-    return ScreenBreakpoints.getValueForScreenType<double>(
-      context: context,
-      map: (p) {
-        switch (p.runtimeType) {
-          case MobileBreakpoint:
-            return 15;
-          case TabletBreakpoint:
-            return 17;
-          case DesktopBreakpoint:
-            return 19;
-          default:
-            return 15;
-        }
-      },
-    );
-  }
-
-  double _getCategoryFontSize(BuildContext context) {
-    return ScreenBreakpoints.getValueForScreenType<double>(
-      context: context,
-      map: (p) {
-        switch (p.runtimeType) {
-          case MobileBreakpoint:
-            return 12;
-          case TabletBreakpoint:
-            return 14;
-          case DesktopBreakpoint:
-            return 16;
-          default:
-            return 12;
-        }
-      },
-    );
-  }
-
-  Color _getTextColor(BuildContext context) {
-    final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors!.textColors.secondary;
-
-    return textColor;
-  }
-}
+// class _QuestionItemCategories extends StatelessWidget {
+//   const _QuestionItemCategories({
+//     required this.categories,
+//   });
+//
+//   final List<String> categories;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final textColor = _getTextColor(context);
+//     final fontSize = _getFontSize(context);
+//     final categoryFontSize = _getCategoryFontSize(context);
+//
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Padding(
+//           padding: const EdgeInsets.only(bottom: 5),
+//           child: Row(
+//             children: [
+//               Text(
+//                 S.of(context).questionCategoriesLabel,
+//                 style: TextStyle(
+//                   color: textColor,
+//                   fontSize: fontSize,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//         Row(
+//           children: categories
+//               .map(
+//                 (c) => Container(
+//                   margin: const EdgeInsets.only(right: 10),
+//                   padding: const EdgeInsets.all(5),
+//                   decoration: BoxDecoration(
+//                     borderRadius: const BorderRadius.all(
+//                     Radius.circular(10)
+//                     ),
+//                     border: Border.all(
+//                       color: textColor,
+//                     ),
+//                   ),
+//                   child: Text(
+//                     c,
+//                     style: TextStyle(
+//                       color: textColor,
+//                       fontSize: categoryFontSize,
+//                     ),
+//                   ),
+//                 ),
+//               )
+//               .toList(),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   double _getFontSize(BuildContext context) {
+//     return ScreenBreakpoints.getValueForScreenType<double>(
+//       context: context,
+//       map: (p) {
+//         switch (p.runtimeType) {
+//           case MobileBreakpoint:
+//             return 15;
+//           case TabletBreakpoint:
+//             return 17;
+//           case DesktopBreakpoint:
+//             return 19;
+//           default:
+//             return 15;
+//         }
+//       },
+//     );
+//   }
+//
+//   double _getCategoryFontSize(BuildContext context) {
+//     return ScreenBreakpoints.getValueForScreenType<double>(
+//       context: context,
+//       map: (p) {
+//         switch (p.runtimeType) {
+//           case MobileBreakpoint:
+//             return 12;
+//           case TabletBreakpoint:
+//             return 14;
+//           case DesktopBreakpoint:
+//             return 16;
+//           default:
+//             return 12;
+//         }
+//       },
+//     );
+//   }
+//
+//   Color _getTextColor(BuildContext context) {
+//     final themeColors = Theme.of(context).extension<ThemeColors>();
+//     final textColor = themeColors!.textColors.secondary;
+//
+//     return textColor;
+//   }
+// }
 
 class _QuestionItemDifficulty extends StatelessWidget {
   const _QuestionItemDifficulty({
