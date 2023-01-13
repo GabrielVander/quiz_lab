@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:quiz_lab/core/utils/logger/logger.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
@@ -10,13 +10,13 @@ part 'question_creation_state.dart';
 
 class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationCubit({
-    required Logger logger,
+    required QuizLabLogger logger,
     required UseCaseFactory useCaseFactory,
   })  : _logger = logger,
         _useCaseFactory = useCaseFactory,
         super(QuestionCreationState.initial());
 
-  final Logger _logger;
+  final QuizLabLogger _logger;
   final UseCaseFactory _useCaseFactory;
   late QuestionCreationViewModel _viewModel = _defaultViewModel;
 

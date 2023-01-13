@@ -1,19 +1,19 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/utils/logger/logger.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:rxdart/rxdart.dart';
 
 class WatchAllQuestionsUseCase {
   const WatchAllQuestionsUseCase({
-    required Logger logger,
+    required QuizLabLogger logger,
     required RepositoryFactory repositoryFactory,
   })  : _logger = logger,
         _repositoryFactory = repositoryFactory;
 
-  final Logger _logger;
+  final QuizLabLogger _logger;
   final RepositoryFactory _repositoryFactory;
 
   Result<Stream<List<Question>>, WatchAllQuestionsFailure> execute() {

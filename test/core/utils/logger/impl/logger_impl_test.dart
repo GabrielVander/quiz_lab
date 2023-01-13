@@ -2,15 +2,15 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
-import 'package:quiz_lab/core/utils/logger/impl/logger_impl.dart';
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 
 void main() {
   late Logger loggerMock;
-  late LoggerImpl loggerImpl;
+  late QuizLabLoggerImpl loggerImpl;
 
   setUp(() {
     loggerMock = _LoggerMock();
-    loggerImpl = LoggerImpl(
+    loggerImpl = QuizLabLoggerImpl(
       logger: loggerMock,
     );
   });

@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
-import 'package:quiz_lab/core/utils/logger/logger.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/factories/data_source_factory.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/factories/repository_factory_impl.dart';
@@ -33,7 +33,7 @@ void questionManagementDiSetup(DependencyInjection di) {
     )
     ..registerBuilder(
       (di) => WatchAllQuestionsUseCase(
-        logger: di.get<Logger>(),
+        logger: di.get<QuizLabLogger>(),
         repositoryFactory: di.get<RepositoryFactory>(),
       ),
     )
