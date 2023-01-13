@@ -14,7 +14,7 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 import 'package:quiz_lab/features/question_management/presentation/widgets/no_questions.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class QuestionsOverviewPage extends StatelessWidget {
+class QuestionsOverviewPage extends HookWidget {
   QuestionsOverviewPage({
     super.key,
     required QuestionsOverviewCubit questionsOverviewCubit,
@@ -26,6 +26,8 @@ class QuestionsOverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = useBlocBuilder(_questionsOverviewCubit);
+
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(
@@ -38,8 +40,56 @@ class QuestionsOverviewPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: _MainContent(
-              cubit: _questionsOverviewCubit,
+            child: Builder(
+              builder: (context) {
+                if (state is Initial) {
+                  _questionsOverviewCubit.updateQuestions();
+                }
+
+                if (state is Loading || state is Initial) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (state is QuestionListUpdated) {
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: _QuestionList(
+                          questions: state.questions,
+                          onDeleteQuestion:
+                              _questionsOverviewCubit.removeQuestion,
+                          onSaveUpdatedQuestion:
+                              _questionsOverviewCubit.onQuestionSaved,
+                          onQuestionClick: (question) {
+                            GoRouter.of(context).pushNamed(
+                              Routes.displayQuestion.name,
+                              params: {
+                                'id': question.id,
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          _RandomQuestionButton(),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+
+                if (state is QuestionsOverviewError) {
+                  return Center(
+                    child: Text(state.message),
+                  );
+                }
+
+                return Container();
+              },
             ),
           ),
         ],
@@ -129,50 +179,41 @@ class _QuestionAddButton extends StatelessWidget {
   }
 }
 
-class _MainContent extends HookWidget {
-  const _MainContent({
-    required this.cubit,
-  });
-
-  final QuestionsOverviewCubit cubit;
+class _RandomQuestionButton extends StatelessWidget {
+  const _RandomQuestionButton();
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(cubit);
-
-    if (state is Initial) {
-      cubit.updateQuestions();
-    }
-
-    if (state is Loading || state is Initial) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    if (state is QuestionListUpdated) {
-      return _QuestionList(
-        questions: state.questions,
-        onDeleteQuestion: cubit.removeQuestion,
-        onSaveUpdatedQuestion: cubit.onQuestionSaved,
-        onQuestionClick: (question) {
-          GoRouter.of(context).pushNamed(
-            Routes.displayQuestion.name,
-            params: {
-              'id': question.id,
-            },
-          );
-        },
-      );
-    }
-
-    if (state is QuestionsOverviewError) {
-      return Center(
-        child: Text(state.message),
-      );
-    }
-
-    return Container();
+    return TextButton(
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Theme.of(context)
+                  .extension<ThemeColors>()!
+                  .mainColors
+                  .primary,
+            ),
+          ),
+        ),
+        backgroundColor: MaterialStateProperty.all<Color>(
+          Theme.of(context)
+              .extension<ThemeColors>()!
+              .mainColors
+              .primary
+              .withAlpha(20),
+        ),
+      ),
+      onPressed: () {},
+      child: Row(
+        children: [
+          const Icon(Icons.shuffle),
+          const SizedBox(width: 5),
+          Text(S.of(context).openRandomQuestionButtonLabel),
+        ],
+      ),
+    );
   }
 }
 
@@ -199,6 +240,7 @@ class _QuestionList extends StatelessWidget {
     }
 
     return ListView.separated(
+      shrinkWrap: true,
       itemCount: questions.length,
       itemBuilder: (BuildContext context, int index) {
         return _QuestionItem(
