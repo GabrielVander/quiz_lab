@@ -1,11 +1,11 @@
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
 
 class QuestionOverviewItemViewModelMapper {
-  QuestionOverviewItemViewModel singleFromQuestionEntity(
+  QuestionsOverviewItemViewModel singleFromQuestionEntity(
     Question question,
   ) {
-    return QuestionOverviewItemViewModel(
+    return QuestionsOverviewItemViewModel(
       id: question.id,
       shortDescription: question.shortDescription,
       description: question.description,
@@ -14,7 +14,7 @@ class QuestionOverviewItemViewModelMapper {
     );
   }
 
-  List<QuestionOverviewItemViewModel> multipleFromQuestionEntity(
+  List<QuestionsOverviewItemViewModel> multipleFromQuestionEntity(
     List<Question> questions,
   ) {
     return questions.map(singleFromQuestionEntity).toList();

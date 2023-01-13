@@ -10,7 +10,7 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/no_questions.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
@@ -42,22 +42,25 @@ class QuestionsOverviewPage extends HookWidget {
           Expanded(
             child: Builder(
               builder: (context) {
-                if (state is Initial) {
+                if (state is QuestionsOverviewInitial) {
                   _questionsOverviewCubit.updateQuestions();
                 }
 
-                if (state is Loading || state is Initial) {
+                if (state is QuestionsOverviewLoading ||
+                    state is QuestionsOverviewInitial) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
-                if (state is QuestionListUpdated) {
+                if (state is QuestionsOverviewViewModelUpdated) {
+                  final viewModel = state.viewModel;
+
                   return Column(
                     children: [
                       Expanded(
                         child: _QuestionList(
-                          questions: state.questions,
+                          questions: viewModel.questions,
                           onDeleteQuestion:
                               _questionsOverviewCubit.removeQuestion,
                           onSaveUpdatedQuestion:
@@ -74,15 +77,17 @@ class QuestionsOverviewPage extends HookWidget {
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          _RandomQuestionButton(),
+                        children: [
+                          _RandomQuestionButton(
+                            enabled: viewModel.isRandomQuestionButtonEnabled,
+                          ),
                         ],
                       ),
                     ],
                   );
                 }
 
-                if (state is QuestionsOverviewError) {
+                if (state is QuestionsOverviewErrorOccurred) {
                   return Center(
                     child: Text(state.message),
                   );
@@ -180,38 +185,52 @@ class _QuestionAddButton extends StatelessWidget {
 }
 
 class _RandomQuestionButton extends StatelessWidget {
-  const _RandomQuestionButton();
+  const _RandomQuestionButton({required this.enabled});
+
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      style: ButtonStyle(
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
-              color: Theme.of(context)
-                  .extension<ThemeColors>()!
-                  .mainColors
-                  .primary,
-            ),
-          ),
-        ),
-        backgroundColor: MaterialStateProperty.all<Color>(
-          Theme.of(context)
-              .extension<ThemeColors>()!
-              .mainColors
-              .primary
-              .withAlpha(20),
-        ),
-      ),
-      onPressed: () {},
+      onPressed: enabled ? () {} : null,
+      style: _buildButtonStyle(context, enabled),
       child: Row(
         children: [
           const Icon(Icons.shuffle),
           const SizedBox(width: 5),
           Text(S.of(context).openRandomQuestionButtonLabel),
         ],
+      ),
+    );
+  }
+
+  ButtonStyle _buildButtonStyle(BuildContext context, bool enabled) {
+    return ButtonStyle(
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: enabled
+                ? Theme.of(context).extension<ThemeColors>()!.mainColors.primary
+                : Theme.of(context)
+                    .extension<ThemeColors>()!
+                    .backgroundColors
+                    .disabled,
+          ),
+        ),
+      ),
+      backgroundColor: MaterialStateProperty.all<Color>(
+        enabled
+            ? Theme.of(context)
+                .extension<ThemeColors>()!
+                .mainColors
+                .primary
+                .withAlpha(20)
+            : Theme.of(context)
+                .extension<ThemeColors>()!
+                .backgroundColors
+                .disabled
+                .withAlpha(20),
       ),
     );
   }
@@ -225,11 +244,12 @@ class _QuestionList extends StatelessWidget {
     required this.onQuestionClick,
   });
 
-  final List<QuestionOverviewItemViewModel> questions;
-  final void Function(QuestionOverviewItemViewModel viewModel) onDeleteQuestion;
-  final void Function(QuestionOverviewItemViewModel viewModel)
+  final List<QuestionsOverviewItemViewModel> questions;
+  final void Function(QuestionsOverviewItemViewModel viewModel)
+      onDeleteQuestion;
+  final void Function(QuestionsOverviewItemViewModel viewModel)
       onSaveUpdatedQuestion;
-  final void Function(QuestionOverviewItemViewModel viewModel) onQuestionClick;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onQuestionClick;
 
   @override
   Widget build(BuildContext context) {
@@ -261,9 +281,9 @@ class _QuestionItem extends StatelessWidget {
     required this.onClick,
   });
 
-  final QuestionOverviewItemViewModel question;
-  final void Function(QuestionOverviewItemViewModel viewModel) onDelete;
-  final void Function(QuestionOverviewItemViewModel viewModel) onClick;
+  final QuestionsOverviewItemViewModel question;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onDelete;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onClick;
 
   @override
   Widget build(BuildContext context) {
@@ -355,110 +375,6 @@ class _QuestionItemTitle extends StatelessWidget {
     );
   }
 }
-
-// class _QuestionItemCategories extends StatelessWidget {
-//   const _QuestionItemCategories({
-//     required this.categories,
-//   });
-//
-//   final List<String> categories;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final textColor = _getTextColor(context);
-//     final fontSize = _getFontSize(context);
-//     final categoryFontSize = _getCategoryFontSize(context);
-//
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Padding(
-//           padding: const EdgeInsets.only(bottom: 5),
-//           child: Row(
-//             children: [
-//               Text(
-//                 S.of(context).questionCategoriesLabel,
-//                 style: TextStyle(
-//                   color: textColor,
-//                   fontSize: fontSize,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//         Row(
-//           children: categories
-//               .map(
-//                 (c) => Container(
-//                   margin: const EdgeInsets.only(right: 10),
-//                   padding: const EdgeInsets.all(5),
-//                   decoration: BoxDecoration(
-//                     borderRadius: const BorderRadius.all(
-//                     Radius.circular(10)
-//                     ),
-//                     border: Border.all(
-//                       color: textColor,
-//                     ),
-//                   ),
-//                   child: Text(
-//                     c,
-//                     style: TextStyle(
-//                       color: textColor,
-//                       fontSize: categoryFontSize,
-//                     ),
-//                   ),
-//                 ),
-//               )
-//               .toList(),
-//         ),
-//       ],
-//     );
-//   }
-//
-//   double _getFontSize(BuildContext context) {
-//     return ScreenBreakpoints.getValueForScreenType<double>(
-//       context: context,
-//       map: (p) {
-//         switch (p.runtimeType) {
-//           case MobileBreakpoint:
-//             return 15;
-//           case TabletBreakpoint:
-//             return 17;
-//           case DesktopBreakpoint:
-//             return 19;
-//           default:
-//             return 15;
-//         }
-//       },
-//     );
-//   }
-//
-//   double _getCategoryFontSize(BuildContext context) {
-//     return ScreenBreakpoints.getValueForScreenType<double>(
-//       context: context,
-//       map: (p) {
-//         switch (p.runtimeType) {
-//           case MobileBreakpoint:
-//             return 12;
-//           case TabletBreakpoint:
-//             return 14;
-//           case DesktopBreakpoint:
-//             return 16;
-//           default:
-//             return 12;
-//         }
-//       },
-//     );
-//   }
-//
-//   Color _getTextColor(BuildContext context) {
-//     final themeColors = Theme.of(context).extension<ThemeColors>();
-//     final textColor = themeColors!.textColors.secondary;
-//
-//     return textColor;
-//   }
-// }
 
 class _QuestionItemDifficulty extends StatelessWidget {
   const _QuestionItemDifficulty({

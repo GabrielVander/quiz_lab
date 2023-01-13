@@ -96,7 +96,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onDifficultyChanged(String? value) {
-    _logger.logInfo('Difficulty changed');
+    _logger.logInfo('Difficulty changed: $value');
 
     final newViewModel = _viewModel.copyWith(
       difficulty: _viewModel.difficulty.copyWith(
@@ -206,15 +206,14 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   Future<void> _createQuestion() async {
-    final viewModel = _defaultViewModel;
     final createQuestionUseCase = _useCaseFactory.makeCreateQuestionUseCase();
 
     final creationResult = await createQuestionUseCase.execute(
       QuestionCreationInput(
-        shortDescription: viewModel.title.value,
-        description: viewModel.description.value,
-        difficulty: viewModel.difficulty.formField.value,
-        options: viewModel.options
+        shortDescription: _viewModel.title.value,
+        description: _viewModel.description.value,
+        difficulty: _viewModel.difficulty.formField.value,
+        options: _viewModel.options
             .map(
               (e) => QuestionCreationOptionInput(
                 description: e.formField.value,
@@ -227,11 +226,15 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     );
 
     if (creationResult.isErr) {
-      final newViewModel = viewModel.copyWith(
+      final errMessage = creationResult.err!.message;
+
+      _logger.logError(errMessage);
+
+      final newViewModel = _viewModel.copyWith(
         message: QuestionCreationMessageViewModel(
           type: QuestionCreationMessageType.unableToSaveQuestion,
           isFailure: true,
-          details: creationResult.err!.message,
+          details: errMessage,
         ),
         showMessage: true,
       );

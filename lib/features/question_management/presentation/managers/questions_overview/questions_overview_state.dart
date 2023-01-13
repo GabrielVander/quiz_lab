@@ -1,50 +1,48 @@
 part of 'questions_overview_cubit.dart';
 
-abstract class QuestionsOverviewState extends Equatable {
+@immutable
+abstract class QuestionsOverviewState {
   const QuestionsOverviewState();
 
-  factory QuestionsOverviewState.initial() => const Initial._();
+  factory QuestionsOverviewState.initial() =>
+      const QuestionsOverviewInitial._();
 
-  factory QuestionsOverviewState.loading() => const Loading._();
+  factory QuestionsOverviewState.loading() =>
+      const QuestionsOverviewLoading._();
 
-  factory QuestionsOverviewState.questionListUpdated({
-    required List<QuestionOverviewItemViewModel> questions,
+  factory QuestionsOverviewState.viewModelUpdated({
+    required QuestionsOverviewViewModel viewModel,
   }) =>
-      QuestionListUpdated._(questions: questions);
+      QuestionsOverviewViewModelUpdated._(viewModel: viewModel);
 
-  factory QuestionsOverviewState.error({required String message}) =>
-      QuestionsOverviewError._(message: message);
-
-  @override
-  List<Object> get props => [];
+  factory QuestionsOverviewState.errorOccurred({required String message}) =>
+      QuestionsOverviewErrorOccurred._(message: message);
 }
 
-class Initial extends QuestionsOverviewState {
-  const Initial._();
+@immutable
+class QuestionsOverviewInitial extends QuestionsOverviewState {
+  const QuestionsOverviewInitial._();
 }
 
-class Loading extends QuestionsOverviewState {
-  const Loading._();
+@immutable
+class QuestionsOverviewLoading extends QuestionsOverviewState {
+  const QuestionsOverviewLoading._();
 }
 
-class QuestionListUpdated extends QuestionsOverviewState {
-  const QuestionListUpdated._({
-    required this.questions,
+@immutable
+class QuestionsOverviewViewModelUpdated extends QuestionsOverviewState {
+  const QuestionsOverviewViewModelUpdated._({
+    required this.viewModel,
   });
 
-  final List<QuestionOverviewItemViewModel> questions;
-
-  @override
-  List<Object> get props => super.props..addAll([questions]);
+  final QuestionsOverviewViewModel viewModel;
 }
 
-class QuestionsOverviewError extends QuestionsOverviewState {
-  const QuestionsOverviewError._({
+@immutable
+class QuestionsOverviewErrorOccurred extends QuestionsOverviewState {
+  const QuestionsOverviewErrorOccurred._({
     required this.message,
   }) : super();
 
   final String message;
-
-  @override
-  List<Object> get props => super.props..addAll([message]);
 }

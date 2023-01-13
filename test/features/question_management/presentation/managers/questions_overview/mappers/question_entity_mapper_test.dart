@@ -4,7 +4,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/question.d
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_entity_mapper.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
 
 void main() {
   late QuestionEntityMapper mapper;
@@ -19,7 +19,7 @@ void main() {
         'should fail',
         ParameterizedSource.values([
           [
-            const QuestionOverviewItemViewModel(
+            const QuestionsOverviewItemViewModel(
               id: '',
               shortDescription: '',
               description: '',
@@ -29,7 +29,7 @@ void main() {
             QuestionEntityMapperFailure.unexpectedDifficultyValue(value: ''),
           ],
           [
-            const QuestionOverviewItemViewModel(
+            const QuestionsOverviewItemViewModel(
               id: '6kP3Ec',
               shortDescription: '!Es2m4!',
               description: '2o5#^@',
@@ -42,7 +42,7 @@ void main() {
           ],
         ]),
         (values) {
-          final viewModel = values[0] as QuestionOverviewItemViewModel;
+          final viewModel = values[0] as QuestionsOverviewItemViewModel;
           final expectedFailure = values[1] as QuestionEntityMapperFailure;
 
           final result =
@@ -59,7 +59,7 @@ void main() {
         'should map correctly',
         ParameterizedSource.values([
           [
-            const QuestionOverviewItemViewModel(
+            const QuestionsOverviewItemViewModel(
               id: '',
               shortDescription: '',
               description: '',
@@ -76,7 +76,7 @@ void main() {
             )
           ],
           [
-            const QuestionOverviewItemViewModel(
+            const QuestionsOverviewItemViewModel(
               id: 'hiTGMK',
               shortDescription: 'Ico',
               description: '9J7c',
@@ -102,7 +102,7 @@ void main() {
           ],
         ]),
         (values) {
-          final viewModel = values[0] as QuestionOverviewItemViewModel;
+          final viewModel = values[0] as QuestionsOverviewItemViewModel;
           final expectedQuestion = values[1] as Question;
 
           final result =

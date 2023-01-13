@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/factories/presentation_mapper_factory.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
 
 part 'questions_overview_state.dart';
 
@@ -20,6 +20,11 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   final UseCaseFactory _useCaseFactory;
   final PresentationMapperFactory _mapperFactory;
 
+  QuestionsOverviewViewModel _viewModel = const QuestionsOverviewViewModel(
+    questions: [],
+    isRandomQuestionButtonEnabled: false,
+  );
+
   final _questionStreamController = StreamController<List<Question>>();
 
   void updateQuestions() {
@@ -28,13 +33,13 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     _watchQuestions();
   }
 
-  Future<void> removeQuestion(QuestionOverviewItemViewModel question) async {
+  Future<void> removeQuestion(QuestionsOverviewItemViewModel question) async {
     emit(QuestionsOverviewState.loading());
 
     await _deleteQuestion(question);
   }
 
-  Future<void> onQuestionSaved(QuestionOverviewItemViewModel viewModel) async {
+  Future<void> onQuestionSaved(QuestionsOverviewItemViewModel viewModel) async {
     if (viewModel.shortDescription.isNotEmpty) {
       emit(QuestionsOverviewState.loading());
 
@@ -45,7 +50,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
       if (asQuestionEntityMappingResult.isErr) {
         emit(
-          QuestionsOverviewState.error(
+          QuestionsOverviewState.errorOccurred(
             message: asQuestionEntityMappingResult.err!.message,
           ),
         );
@@ -60,12 +65,16 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
       );
 
       if (updateResult.isErr) {
-        emit(QuestionsOverviewState.error(message: updateResult.err!.message));
+        emit(
+          QuestionsOverviewState.errorOccurred(
+            message: updateResult.err!.message,
+          ),
+        );
       }
     }
   }
 
-  Future<void> _deleteQuestion(QuestionOverviewItemViewModel question) async {
+  Future<void> _deleteQuestion(QuestionsOverviewItemViewModel question) async {
     final deleteQuestionUseCase = _useCaseFactory.makeDeleteQuestionUseCase();
 
     await deleteQuestionUseCase.execute(question.id);
@@ -78,7 +87,11 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     final watchResult = watchAllQuestionsUseCase.execute();
 
     if (watchResult.isErr) {
-      emit(QuestionsOverviewState.error(message: watchResult.err!.message));
+      emit(
+        QuestionsOverviewState.errorOccurred(
+          message: watchResult.err!.message,
+        ),
+      );
       return;
     }
 
@@ -91,11 +104,14 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     final questionOverviewItemViewModelMapper =
         _mapperFactory.makeQuestionOverviewItemViewModelMapper();
 
-    final viewModels = questionOverviewItemViewModelMapper
+    final itemViewModels = questionOverviewItemViewModelMapper
         .multipleFromQuestionEntity(newQuestions);
 
-    emit(
-      QuestionsOverviewState.questionListUpdated(questions: viewModels),
+    _viewModel = _viewModel.copyWith(
+      questions: itemViewModels,
+      isRandomQuestionButtonEnabled: itemViewModels.isNotEmpty,
     );
+
+    emit(QuestionsOverviewState.viewModelUpdated(viewModel: _viewModel));
   }
 }

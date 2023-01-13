@@ -49,7 +49,7 @@ void main() {
 
   group(
     'makeQuestionDisplayCubit',
-        () {
+    () {
       test('should return a QuestionDisplayCubit', () {
         final result = cubitFactory.makeQuestionDisplayCubit();
 

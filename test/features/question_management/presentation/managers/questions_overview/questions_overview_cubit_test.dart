@@ -15,7 +15,7 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_entity_mapper.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_overview_item_view_model_mapper.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
 
 void main() {
   late UseCaseFactory mockUseCaseFactory;
@@ -39,7 +39,7 @@ void main() {
   });
 
   test('should emit initial state', () {
-    expect(cubit.state, QuestionsOverviewState.initial());
+    expect(cubit.state, isA<QuestionsOverviewInitial>());
   });
 
   group('updateQuestions', () {
@@ -48,40 +48,56 @@ void main() {
       ParameterizedSource.values([
         [
           <List<Question>>[],
-          <List<QuestionOverviewItemViewModel>>[],
+          <List<QuestionsOverviewItemViewModel>>[],
           [
-            QuestionsOverviewState.loading(),
+            isA<QuestionsOverviewLoading>(),
           ]
         ],
         [
           <List<Question>>[[]],
-          <List<QuestionOverviewItemViewModel>>[
-            <QuestionOverviewItemViewModel>[]
+          <List<QuestionsOverviewItemViewModel>>[
+            <QuestionsOverviewItemViewModel>[]
           ],
           [
-            QuestionsOverviewState.loading(),
-            QuestionsOverviewState.questionListUpdated(questions: const []),
+            isA<QuestionsOverviewLoading>(),
+            isA<QuestionsOverviewViewModelUpdated>()
+                .having(
+                  (state) => state.viewModel.questions,
+                  'questions',
+                  isEmpty,
+                )
+                .having(
+                  (state) => state.viewModel.isRandomQuestionButtonEnabled,
+                  'isRandomQuestionButtonEnabled',
+                  false,
+                ),
           ]
         ],
         [
           <List<Question>>[
             [_FakeQuestion(), _FakeQuestion(), _FakeQuestion()],
           ],
-          <List<QuestionOverviewItemViewModel>>[
-            <QuestionOverviewItemViewModel>[
+          <List<QuestionsOverviewItemViewModel>>[
+            <QuestionsOverviewItemViewModel>[
               _FakeQuestionOverviewItemViewModel(),
               _FakeQuestionOverviewItemViewModel(),
               _FakeQuestionOverviewItemViewModel(),
             ]
           ],
           [
-            QuestionsOverviewState.loading(),
-            QuestionsOverviewState.questionListUpdated(
-              questions: [
+            isA<QuestionsOverviewLoading>(),
+            isA<QuestionsOverviewViewModelUpdated>().having(
+              (state) => state.viewModel.questions,
+              'questions',
+              [
                 _FakeQuestionOverviewItemViewModel(),
                 _FakeQuestionOverviewItemViewModel(),
                 _FakeQuestionOverviewItemViewModel(),
               ],
+            ).having(
+              (state) => state.viewModel.isRandomQuestionButtonEnabled,
+              'isRandomQuestionButtonEnabled',
+              true,
             ),
           ]
         ],
@@ -90,26 +106,32 @@ void main() {
             [_FakeQuestion(), _FakeQuestion(), _FakeQuestion()],
             [_FakeQuestion(), _FakeQuestion(), _FakeQuestion()],
           ],
-          <List<QuestionOverviewItemViewModel>>[
-            <QuestionOverviewItemViewModel>[
+          <List<QuestionsOverviewItemViewModel>>[
+            <QuestionsOverviewItemViewModel>[
               _FakeQuestionOverviewItemViewModel(),
               _FakeQuestionOverviewItemViewModel(),
               _FakeQuestionOverviewItemViewModel(),
             ],
-            <QuestionOverviewItemViewModel>[
+            <QuestionsOverviewItemViewModel>[
               _FakeQuestionOverviewItemViewModel(),
               _FakeQuestionOverviewItemViewModel(),
               _FakeQuestionOverviewItemViewModel(),
             ],
           ],
           [
-            QuestionsOverviewState.loading(),
-            QuestionsOverviewState.questionListUpdated(
-              questions: [
+            isA<QuestionsOverviewLoading>(),
+            isA<QuestionsOverviewViewModelUpdated>().having(
+              (state) => state.viewModel.questions,
+              'questions',
+              <QuestionsOverviewItemViewModel>[
                 _FakeQuestionOverviewItemViewModel(),
                 _FakeQuestionOverviewItemViewModel(),
                 _FakeQuestionOverviewItemViewModel(),
               ],
+            ).having(
+              (state) => state.viewModel.isRandomQuestionButtonEnabled,
+              'isRandomQuestionButtonEnabled',
+              true,
             ),
           ]
         ],
@@ -117,8 +139,8 @@ void main() {
       (values) {
         final questions = values[0] as List<List<Question>>;
         final overviewItemsToReturn =
-            values[1] as List<List<QuestionOverviewItemViewModel>>;
-        final expectedStates = values[2] as List<QuestionsOverviewState>;
+            values[1] as List<List<QuestionsOverviewItemViewModel>>;
+        final expectedStates = values[2] as List<Matcher>;
 
         final mockWatchAllQuestionsUseCase = _MockWatchAllQuestionsUseCase();
         final mockQuestionOverviewItemViewModelMapper =
@@ -150,21 +172,29 @@ void main() {
         [
           '',
           [
-            QuestionsOverviewState.loading(),
-            QuestionsOverviewState.error(message: '')
+            isA<QuestionsOverviewLoading>(),
+            isA<QuestionsOverviewErrorOccurred>().having(
+              (state) => state.message,
+              'message',
+              '',
+            ),
           ],
         ],
         [
           'v^s',
           [
-            QuestionsOverviewState.loading(),
-            QuestionsOverviewState.error(message: 'v^s')
+            isA<QuestionsOverviewLoading>(),
+            isA<QuestionsOverviewErrorOccurred>().having(
+              (state) => state.message,
+              'message',
+              'v^s',
+            ),
           ],
         ],
       ]),
       (values) {
         final message = values[0] as String;
-        final expectedStates = values[1] as List<QuestionsOverviewState>;
+        final expectedStates = values[1] as List<Matcher>;
 
         final mockWatchAllQuestionsUseCase = _MockWatchAllQuestionsUseCase();
         final mockQuestionOverviewItemViewModelMapper =
@@ -194,19 +224,19 @@ void main() {
         [
           '',
           [
-            QuestionsOverviewState.loading(),
+            isA<QuestionsOverviewLoading>(),
           ]
         ],
         [
           '@Js',
           [
-            QuestionsOverviewState.loading(),
+            isA<QuestionsOverviewLoading>(),
           ]
         ],
       ]),
       (values) {
         final questionId = values[0] as String;
-        final expectedStates = values[1] as List<QuestionsOverviewState>;
+        final expectedStates = values[1] as List<Matcher>;
 
         final mockDeleteQuestionUseCase = _MockDeleteQuestionUseCase();
 
@@ -232,7 +262,7 @@ void main() {
       'should emit expected states',
       ParameterizedSource.values([
         [
-          const QuestionOverviewItemViewModel(
+          const QuestionsOverviewItemViewModel(
             id: '',
             difficulty: '',
             shortDescription: '',
@@ -245,10 +275,10 @@ void main() {
           Result<Unit, UpdateQuestionUseCaseFailure>.err(
             UpdateQuestionUseCaseFailure.repositoryFailure(''),
           ),
-          <QuestionsOverviewState>[]
+          <Matcher>[]
         ],
         [
-          const QuestionOverviewItemViewModel(
+          const QuestionsOverviewItemViewModel(
             id: '',
             difficulty: '',
             shortDescription: 'Bqdxm%',
@@ -261,17 +291,19 @@ void main() {
           Result<Unit, UpdateQuestionUseCaseFailure>.err(
             UpdateQuestionUseCaseFailure.repositoryFailure(''),
           ),
-          <QuestionsOverviewState>[
-            QuestionsOverviewState.loading(),
-            QuestionsOverviewState.error(
-              message: QuestionEntityMapperFailure.unexpectedDifficultyValue(
+          [
+            isA<QuestionsOverviewLoading>(),
+            isA<QuestionsOverviewErrorOccurred>().having(
+              (state) => state.message,
+              'message',
+              QuestionEntityMapperFailure.unexpectedDifficultyValue(
                 value: '',
               ).message,
             ),
           ]
         ],
         [
-          const QuestionOverviewItemViewModel(
+          const QuestionsOverviewItemViewModel(
             id: '',
             difficulty: '',
             shortDescription: 'd5jeil',
@@ -286,17 +318,19 @@ void main() {
           Result<Unit, UpdateQuestionUseCaseFailure>.err(
             UpdateQuestionUseCaseFailure.repositoryFailure(''),
           ),
-          <QuestionsOverviewState>[
-            QuestionsOverviewState.loading(),
-            QuestionsOverviewState.error(
-              message: QuestionEntityMapperFailure.unexpectedDifficultyValue(
+          [
+            isA<QuestionsOverviewLoading>(),
+            isA<QuestionsOverviewErrorOccurred>().having(
+              (state) => state.message,
+              'message',
+              QuestionEntityMapperFailure.unexpectedDifficultyValue(
                 value: 'Gjz7RKKZ',
               ).message,
             ),
           ]
         ],
         [
-          const QuestionOverviewItemViewModel(
+          const QuestionsOverviewItemViewModel(
             id: '',
             difficulty: '',
             shortDescription: 'd5jeil',
@@ -307,16 +341,17 @@ void main() {
           Result<Unit, UpdateQuestionUseCaseFailure>.err(
             UpdateQuestionUseCaseFailure.repositoryFailure(''),
           ),
-          <QuestionsOverviewState>[
-            QuestionsOverviewState.loading(),
-            QuestionsOverviewState.error(
-              message:
-                  UpdateQuestionUseCaseFailure.repositoryFailure('').message,
+          [
+            isA<QuestionsOverviewLoading>(),
+            isA<QuestionsOverviewErrorOccurred>().having(
+              (state) => state.message,
+              'message',
+              UpdateQuestionUseCaseFailure.repositoryFailure('').message,
             ),
           ]
         ],
         [
-          const QuestionOverviewItemViewModel(
+          const QuestionsOverviewItemViewModel(
             id: '',
             difficulty: '',
             shortDescription: '&Fl0',
@@ -327,22 +362,23 @@ void main() {
           Result<Unit, UpdateQuestionUseCaseFailure>.err(
             UpdateQuestionUseCaseFailure.repositoryFailure('#1q'),
           ),
-          <QuestionsOverviewState>[
-            QuestionsOverviewState.loading(),
-            QuestionsOverviewState.error(
-              message:
-                  UpdateQuestionUseCaseFailure.repositoryFailure('#1q').message,
+          [
+            isA<QuestionsOverviewLoading>(),
+            isA<QuestionsOverviewErrorOccurred>().having(
+              (state) => state.message,
+              'message',
+              UpdateQuestionUseCaseFailure.repositoryFailure('#1q').message,
             ),
           ]
         ],
       ]),
       (values) {
-        final viewModel = values[0] as QuestionOverviewItemViewModel;
+        final viewModel = values[0] as QuestionsOverviewItemViewModel;
         final questionEntityMapperResult =
             values[1] as Result<Question, QuestionEntityMapperFailure>;
         final updateQuestionUseCaseResult =
             values[2] as Result<Unit, UpdateQuestionUseCaseFailure>;
-        final expectedStates = values[3] as List<QuestionsOverviewState>;
+        final expectedStates = values[3] as List<Matcher>;
 
         final mockQuestionEntityMapper = _MockQuestionEntityMapper();
         final mockUpdateQuestionUseCase = _MockUpdateQuestionUseCase();
@@ -376,7 +412,7 @@ class _FakeQuestion extends Fake with EquatableMixin implements Question {
 
 class _FakeQuestionOverviewItemViewModel extends Fake
     with EquatableMixin
-    implements QuestionOverviewItemViewModel {
+    implements QuestionsOverviewItemViewModel {
   @override
   List<Object?> get props => [];
 
@@ -385,7 +421,7 @@ class _FakeQuestionOverviewItemViewModel extends Fake
 }
 
 class _FakeQuestionOverviewItemViewModelWithId extends Fake
-    implements QuestionOverviewItemViewModel {
+    implements QuestionsOverviewItemViewModel {
   _FakeQuestionOverviewItemViewModelWithId({
     required this.id,
   }) : super();
