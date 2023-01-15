@@ -5,7 +5,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/question.d
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/question_overview_item_view_model_mapper.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
 
 void main() {
   late QuestionOverviewItemViewModelMapper mapper;
@@ -27,7 +27,7 @@ void main() {
             difficulty: QuestionDifficulty.unknown,
             categories: [],
           ),
-          const QuestionOverviewItemViewModel(
+          const QuestionsOverviewItemViewModel(
             id: '',
             shortDescription: '',
             description: '',
@@ -46,7 +46,7 @@ void main() {
             difficulty: QuestionDifficulty.easy,
             categories: [QuestionCategory(value: r'7$P')],
           ),
-          const QuestionOverviewItemViewModel(
+          const QuestionsOverviewItemViewModel(
             id: 'b5h',
             shortDescription: 'ma8eVP%*',
             description: '0kt4S3',
@@ -71,7 +71,7 @@ void main() {
               QuestionCategory(value: r'C^$D%QK'),
             ],
           ),
-          const QuestionOverviewItemViewModel(
+          const QuestionsOverviewItemViewModel(
             id: r'$U!',
             shortDescription: 'cT3u&e5a',
             description: '!nBfpz&6',
@@ -92,7 +92,7 @@ void main() {
             difficulty: QuestionDifficulty.hard,
             categories: [],
           ),
-          const QuestionOverviewItemViewModel(
+          const QuestionsOverviewItemViewModel(
             id: r'$U!',
             shortDescription: 'cT3u&e5a',
             description: '!nBfpz&6',
@@ -103,7 +103,7 @@ void main() {
       ]),
       (values) {
         final question = values[0] as Question;
-        final expected = values[1] as QuestionOverviewItemViewModel;
+        final expected = values[1] as QuestionsOverviewItemViewModel;
 
         final result = mapper.singleFromQuestionEntity(question);
 
@@ -162,21 +162,21 @@ void main() {
             ),
           ],
           [
-            const QuestionOverviewItemViewModel(
+            const QuestionsOverviewItemViewModel(
               id: '',
               shortDescription: '',
               description: '',
               difficulty: 'unknown',
               categories: [],
             ),
-            const QuestionOverviewItemViewModel(
+            const QuestionsOverviewItemViewModel(
               id: 'b5h',
               shortDescription: 'ma8eVP%*',
               description: '0kt4S3',
               difficulty: 'easy',
               categories: [r'7$P'],
             ),
-            const QuestionOverviewItemViewModel(
+            const QuestionsOverviewItemViewModel(
               id: r'$U!',
               shortDescription: 'cT3u&e5a',
               description: '!nBfpz&6',
@@ -187,7 +187,7 @@ void main() {
                 r'C^$D%QK',
               ],
             ),
-            const QuestionOverviewItemViewModel(
+            const QuestionsOverviewItemViewModel(
               id: r'$U!',
               shortDescription: 'cT3u&e5a',
               description: '!nBfpz&6',
@@ -199,7 +199,7 @@ void main() {
       ]),
       (values) {
         final questions = values[0] as List<Question>;
-        final expected = values[1] as List<QuestionOverviewItemViewModel>;
+        final expected = values[1] as List<QuestionsOverviewItemViewModel>;
 
         final result = mapper.multipleFromQuestionEntity(questions);
 

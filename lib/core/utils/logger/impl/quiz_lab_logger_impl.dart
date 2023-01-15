@@ -1,10 +1,10 @@
 import 'package:ansicolor/ansicolor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart' as logging;
-import 'package:quiz_lab/core/utils/logger/logger.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 
-class LoggerImpl implements Logger {
-  LoggerImpl({
+class QuizLabLoggerImpl implements QuizLabLogger {
+  QuizLabLoggerImpl({
     required logging.Logger logger,
   }) : _logger = logger;
 
@@ -21,7 +21,7 @@ class LoggerImpl implements Logger {
 
   static void onListen(logging.LogRecord record) {
     final message =
-        '${record.time} :: ${record.loggerName} :: ${record.level.name} :: '
+        '${record.time} ${record.loggerName} ${record.level.name} - '
         '${record.message}';
 
     switch (record.level.name) {

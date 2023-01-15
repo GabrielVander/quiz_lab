@@ -10,22 +10,39 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/no_questions.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class QuestionsOverviewPage extends StatelessWidget {
+class QuestionsOverviewPage extends HookWidget {
   QuestionsOverviewPage({
     super.key,
     required QuestionsOverviewCubit questionsOverviewCubit,
   }) {
-    _questionsOverviewCubit = questionsOverviewCubit;
+    _cubit = questionsOverviewCubit;
   }
 
-  late final QuestionsOverviewCubit _questionsOverviewCubit;
+  late final QuestionsOverviewCubit _cubit;
 
   @override
   Widget build(BuildContext context) {
+    useBlocListener(
+      _cubit,
+      (_, QuestionsOverviewState current, BuildContext context) =>
+          _handleOpenQuestionState(current, context),
+      listenWhen: (QuestionsOverviewState currentState) =>
+          currentState is QuestionsOverviewOpenQuestion,
+    );
+
+    final state = useBlocBuilder(
+      _cubit,
+      buildWhen: (QuestionsOverviewState current) => [
+        QuestionsOverviewLoading,
+        QuestionsOverviewViewModelUpdated,
+        QuestionsOverviewErrorOccurred,
+      ].contains(current.runtimeType),
+    );
+
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(
@@ -38,13 +55,68 @@ class QuestionsOverviewPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: _MainContent(
-              cubit: _questionsOverviewCubit,
+            child: Builder(
+              builder: (context) {
+                if (state is QuestionsOverviewInitial) {
+                  _cubit.updateQuestions();
+                }
+
+                if (state is QuestionsOverviewLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (state is QuestionsOverviewErrorOccurred) {
+                  return Center(
+                    child: Text(state.message),
+                  );
+                }
+
+                if (state is QuestionsOverviewViewModelUpdated) {
+                  final viewModel = state.viewModel;
+
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: _QuestionList(
+                          questions: viewModel.questions,
+                          onDeleteQuestion: _cubit.removeQuestion,
+                          onSaveUpdatedQuestion: _cubit.onQuestionSaved,
+                          onQuestionClick: _cubit.onQuestionClick,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _RandomQuestionButton(
+                            enabled: viewModel.isRandomQuestionButtonEnabled,
+                            onClick: _cubit.onOpenRandomQuestion,
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+
+                return Container();
+              },
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _handleOpenQuestionState(Object? current, BuildContext context) {
+    final state = current! as QuestionsOverviewOpenQuestion;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      GoRouter.of(context).pushNamed(
+        Routes.displayQuestion.name,
+        params: {'id': state.questionId},
+      );
+    });
   }
 }
 
@@ -129,50 +201,59 @@ class _QuestionAddButton extends StatelessWidget {
   }
 }
 
-class _MainContent extends HookWidget {
-  const _MainContent({
-    required this.cubit,
+class _RandomQuestionButton extends StatelessWidget {
+  const _RandomQuestionButton({
+    required this.enabled,
+    required this.onClick,
   });
 
-  final QuestionsOverviewCubit cubit;
+  final bool enabled;
+  final void Function() onClick;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(cubit);
+    return TextButton(
+      onPressed: enabled ? onClick : null,
+      style: _buildButtonStyle(context, enabled),
+      child: Row(
+        children: [
+          const Icon(Icons.shuffle),
+          const SizedBox(width: 5),
+          Text(S.of(context).openRandomQuestionButtonLabel),
+        ],
+      ),
+    );
+  }
 
-    if (state is Initial) {
-      cubit.updateQuestions();
-    }
-
-    if (state is Loading || state is Initial) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    if (state is QuestionListUpdated) {
-      return _QuestionList(
-        questions: state.questions,
-        onDeleteQuestion: cubit.removeQuestion,
-        onSaveUpdatedQuestion: cubit.onQuestionSaved,
-        onQuestionClick: (question) {
-          GoRouter.of(context).pushNamed(
-            Routes.displayQuestion.name,
-            params: {
-              'id': question.id,
-            },
-          );
-        },
-      );
-    }
-
-    if (state is QuestionsOverviewError) {
-      return Center(
-        child: Text(state.message),
-      );
-    }
-
-    return Container();
+  ButtonStyle _buildButtonStyle(BuildContext context, bool enabled) {
+    return ButtonStyle(
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: enabled
+                ? Theme.of(context).extension<ThemeColors>()!.mainColors.primary
+                : Theme.of(context)
+                    .extension<ThemeColors>()!
+                    .backgroundColors
+                    .disabled,
+          ),
+        ),
+      ),
+      backgroundColor: MaterialStateProperty.all<Color>(
+        enabled
+            ? Theme.of(context)
+                .extension<ThemeColors>()!
+                .mainColors
+                .primary
+                .withAlpha(20)
+            : Theme.of(context)
+                .extension<ThemeColors>()!
+                .backgroundColors
+                .disabled
+                .withAlpha(20),
+      ),
+    );
   }
 }
 
@@ -184,11 +265,12 @@ class _QuestionList extends StatelessWidget {
     required this.onQuestionClick,
   });
 
-  final List<QuestionOverviewItemViewModel> questions;
-  final void Function(QuestionOverviewItemViewModel viewModel) onDeleteQuestion;
-  final void Function(QuestionOverviewItemViewModel viewModel)
+  final List<QuestionsOverviewItemViewModel> questions;
+  final void Function(QuestionsOverviewItemViewModel viewModel)
+      onDeleteQuestion;
+  final void Function(QuestionsOverviewItemViewModel viewModel)
       onSaveUpdatedQuestion;
-  final void Function(QuestionOverviewItemViewModel viewModel) onQuestionClick;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onQuestionClick;
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +281,7 @@ class _QuestionList extends StatelessWidget {
     }
 
     return ListView.separated(
+      shrinkWrap: true,
       itemCount: questions.length,
       itemBuilder: (BuildContext context, int index) {
         return _QuestionItem(
@@ -219,9 +302,9 @@ class _QuestionItem extends StatelessWidget {
     required this.onClick,
   });
 
-  final QuestionOverviewItemViewModel question;
-  final void Function(QuestionOverviewItemViewModel viewModel) onDelete;
-  final void Function(QuestionOverviewItemViewModel viewModel) onClick;
+  final QuestionsOverviewItemViewModel question;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onDelete;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onClick;
 
   @override
   Widget build(BuildContext context) {
@@ -311,108 +394,6 @@ class _QuestionItemTitle extends StatelessWidget {
         }
       },
     );
-  }
-}
-
-class _QuestionItemCategories extends StatelessWidget {
-  const _QuestionItemCategories({
-    required this.categories,
-  });
-
-  final List<String> categories;
-
-  @override
-  Widget build(BuildContext context) {
-    final textColor = _getTextColor(context);
-    final fontSize = _getFontSize(context);
-    final categoryFontSize = _getCategoryFontSize(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Row(
-            children: [
-              Text(
-                S.of(context).questionCategoriesLabel,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Row(
-          children: categories
-              .map(
-                (c) => Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(
-                      color: textColor,
-                    ),
-                  ),
-                  child: Text(
-                    c,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: categoryFontSize,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ],
-    );
-  }
-
-  double _getFontSize(BuildContext context) {
-    return ScreenBreakpoints.getValueForScreenType<double>(
-      context: context,
-      map: (p) {
-        switch (p.runtimeType) {
-          case MobileBreakpoint:
-            return 15;
-          case TabletBreakpoint:
-            return 17;
-          case DesktopBreakpoint:
-            return 19;
-          default:
-            return 15;
-        }
-      },
-    );
-  }
-
-  double _getCategoryFontSize(BuildContext context) {
-    return ScreenBreakpoints.getValueForScreenType<double>(
-      context: context,
-      map: (p) {
-        switch (p.runtimeType) {
-          case MobileBreakpoint:
-            return 12;
-          case TabletBreakpoint:
-            return 14;
-          case DesktopBreakpoint:
-            return 16;
-          default:
-            return 12;
-        }
-      },
-    );
-  }
-
-  Color _getTextColor(BuildContext context) {
-    final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors!.textColors.secondary;
-
-    return textColor;
   }
 }
 

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:quiz_lab/core/utils/logger/logger.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
@@ -10,13 +10,13 @@ part 'question_creation_state.dart';
 
 class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationCubit({
-    required Logger logger,
+    required QuizLabLogger logger,
     required UseCaseFactory useCaseFactory,
   })  : _logger = logger,
         _useCaseFactory = useCaseFactory,
         super(QuestionCreationState.initial());
 
-  final Logger _logger;
+  final QuizLabLogger _logger;
   final UseCaseFactory _useCaseFactory;
   late QuestionCreationViewModel _viewModel = _defaultViewModel;
 
@@ -96,7 +96,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onDifficultyChanged(String? value) {
-    _logger.logInfo('Difficulty changed');
+    _logger.logInfo('Difficulty changed: $value');
 
     final newViewModel = _viewModel.copyWith(
       difficulty: _viewModel.difficulty.copyWith(
@@ -206,15 +206,14 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   Future<void> _createQuestion() async {
-    final viewModel = _defaultViewModel;
     final createQuestionUseCase = _useCaseFactory.makeCreateQuestionUseCase();
 
     final creationResult = await createQuestionUseCase.execute(
       QuestionCreationInput(
-        shortDescription: viewModel.title.value,
-        description: viewModel.description.value,
-        difficulty: viewModel.difficulty.formField.value,
-        options: viewModel.options
+        shortDescription: _viewModel.title.value,
+        description: _viewModel.description.value,
+        difficulty: _viewModel.difficulty.formField.value,
+        options: _viewModel.options
             .map(
               (e) => QuestionCreationOptionInput(
                 description: e.formField.value,
@@ -227,11 +226,15 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     );
 
     if (creationResult.isErr) {
-      final newViewModel = viewModel.copyWith(
+      final errMessage = creationResult.err!.message;
+
+      _logger.logError(errMessage);
+
+      final newViewModel = _viewModel.copyWith(
         message: QuestionCreationMessageViewModel(
           type: QuestionCreationMessageType.unableToSaveQuestion,
           isFailure: true,
-          details: creationResult.err!.message,
+          details: errMessage,
         ),
         showMessage: true,
       );
