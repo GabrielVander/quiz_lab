@@ -6,21 +6,22 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 
 class QuestionManagementCubitFactory {
   const QuestionManagementCubitFactory({
+    required QuestionCreationCubit questionCreationCubit,
+    required QuestionsOverviewCubit questionsOverviewCubit,
     required this.useCaseFactory,
     required this.presentationMapperFactory,
-  });
+  })  : _questionCreationCubit = questionCreationCubit,
+        _questionsOverviewCubit = questionsOverviewCubit;
 
+  final QuestionCreationCubit _questionCreationCubit;
+  final QuestionsOverviewCubit _questionsOverviewCubit;
   final UseCaseFactory useCaseFactory;
   final PresentationMapperFactory presentationMapperFactory;
 
-  QuestionsOverviewCubit makeQuestionsOverviewCubit() => QuestionsOverviewCubit(
-        useCaseFactory: useCaseFactory,
-        mapperFactory: presentationMapperFactory,
-      );
+  QuestionsOverviewCubit makeQuestionsOverviewCubit() =>
+      _questionsOverviewCubit;
 
-  QuestionCreationCubit makeQuestionCreationCubit() => QuestionCreationCubit(
-        useCaseFactory: useCaseFactory,
-      );
+  QuestionCreationCubit makeQuestionCreationCubit() => _questionCreationCubit;
 
   QuestionDisplayCubit makeQuestionDisplayCubit() => QuestionDisplayCubit(
         useCaseFactory: useCaseFactory,

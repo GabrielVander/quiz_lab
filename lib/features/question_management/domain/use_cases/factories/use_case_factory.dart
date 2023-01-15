@@ -1,37 +1,37 @@
-import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
-import 'package:uuid/uuid.dart';
 
 class UseCaseFactory {
   const UseCaseFactory({
-    required RepositoryFactory repositoryFactory,
-  }) : _repositoryFactory = repositoryFactory;
+    required WatchAllQuestionsUseCase watchAllQuestionsUseCase,
+    required CreateQuestionUseCase createQuestionUseCase,
+    required UpdateQuestionUseCase updateQuestionUseCase,
+    required DeleteQuestionUseCase deleteQuestionUseCase,
+    required GetSingleQuestionUseCase getSingleQuestionUseCase,
+  })  : _watchAllQuestionsUseCase = watchAllQuestionsUseCase,
+        _createQuestionUseCase = createQuestionUseCase,
+        _updateQuestionUseCase = updateQuestionUseCase,
+        _deleteQuestionUseCase = deleteQuestionUseCase,
+        _getSingleQuestionUseCase = getSingleQuestionUseCase;
 
-  final RepositoryFactory _repositoryFactory;
+  final WatchAllQuestionsUseCase _watchAllQuestionsUseCase;
+  final CreateQuestionUseCase _createQuestionUseCase;
+  final UpdateQuestionUseCase _updateQuestionUseCase;
+  final DeleteQuestionUseCase _deleteQuestionUseCase;
+  final GetSingleQuestionUseCase _getSingleQuestionUseCase;
 
   WatchAllQuestionsUseCase makeWatchAllQuestionsUseCase() =>
-      WatchAllQuestionsUseCase(repositoryFactory: _repositoryFactory);
+      _watchAllQuestionsUseCase;
 
-  CreateQuestionUseCase makeCreateQuestionUseCase() => CreateQuestionUseCase(
-        repositoryFactory: _repositoryFactory,
-        uuidGenerator: const ResourceUuidGenerator(uuid: Uuid()),
-      );
+  CreateQuestionUseCase makeCreateQuestionUseCase() => _createQuestionUseCase;
 
-  UpdateQuestionUseCase makeUpdateQuestionUseCase() => UpdateQuestionUseCase(
-        repositoryFactory: _repositoryFactory,
-      );
+  UpdateQuestionUseCase makeUpdateQuestionUseCase() => _updateQuestionUseCase;
 
-  DeleteQuestionUseCase makeDeleteQuestionUseCase() => DeleteQuestionUseCase(
-        repositoryFactory: _repositoryFactory,
-      );
+  DeleteQuestionUseCase makeDeleteQuestionUseCase() => _deleteQuestionUseCase;
 
   GetSingleQuestionUseCase makeGetSingleQuestionUseCase() =>
-      GetSingleQuestionUseCase(
-        questionRepository: _repositoryFactory.makeQuestionRepository(),
-      );
+      _getSingleQuestionUseCase;
 }

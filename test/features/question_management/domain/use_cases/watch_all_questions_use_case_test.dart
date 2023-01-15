@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
@@ -9,17 +12,42 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
 void main() {
+  late QuizLabLogger loggerMock;
   late RepositoryFactory mockRepositoryFactory;
   late WatchAllQuestionsUseCase useCase;
 
   setUp(() {
+    loggerMock = _LoggerMock();
     mockRepositoryFactory = _MockRepositoryFactory();
     useCase = WatchAllQuestionsUseCase(
+      logger: loggerMock,
       repositoryFactory: mockRepositoryFactory,
     );
   });
 
-  tearDown(resetMocktailState);
+  tearDown(mocktail.resetMocktailState);
+
+  test('should log on process start', () {
+    final mockQuestionRepository = _MockQuestionRepository();
+
+    mocktail
+        .when(() => mockRepositoryFactory.makeQuestionRepository())
+        .thenReturn(mockQuestionRepository);
+
+    mocktail.when(mockQuestionRepository.watchAll).thenReturn(
+          Result.err(
+            QuestionRepositoryFailure.unableToWatchAll(message: 'message'),
+          ),
+        );
+
+    useCase.execute();
+
+    mocktail
+        .verify(
+          () => loggerMock.logInfo('Watching all questions...'),
+        )
+        .called(1);
+  });
 
   group('err flow', () {
     parameterizedTest(
@@ -40,16 +68,22 @@ void main() {
 
         final mockQuestionRepository = _MockQuestionRepository();
 
-        when(() => mockRepositoryFactory.makeQuestionRepository())
+        mocktail
+            .when(() => mockRepositoryFactory.makeQuestionRepository())
             .thenReturn(mockQuestionRepository);
 
-        when(mockQuestionRepository.watchAll)
+        mocktail
+            .when(mockQuestionRepository.watchAll)
             .thenReturn(Result.err(repositoryFailure));
 
         final result = useCase.execute();
 
         expect(result.isErr, true);
         expect(result.err, expectedFailure);
+
+        mocktail
+            .verify(() => loggerMock.logError(repositoryFailure.message))
+            .called(1);
       },
     );
   });
@@ -58,8 +92,8 @@ void main() {
     parameterizedTest(
       'Use case should return stream from repository',
       ParameterizedSource.value([
-        const Stream<List<Question>>.empty(),
-        Stream.fromIterable([
+        <List<Question>>[],
+        [
           [
             const Question(
               id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
@@ -70,8 +104,8 @@ void main() {
               categories: [],
             )
           ]
-        ]),
-        Stream.fromIterable([
+        ],
+        [
           [
             const Question(
               id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
@@ -98,27 +132,49 @@ void main() {
               categories: [],
             ),
           ]
-        ]),
+        ],
       ]),
-      (values) {
-        final stream = values[0] as Stream<List<Question>>;
+      (values) async {
+        final streamValues = values[0] as List<List<Question>>;
+        final stream = Stream.fromIterable(streamValues);
 
         final mockQuestionRepository = _MockQuestionRepository();
 
-        when(() => mockRepositoryFactory.makeQuestionRepository())
+        mocktail
+            .when(() => mockRepositoryFactory.makeQuestionRepository())
             .thenReturn(mockQuestionRepository);
 
-        when(mockQuestionRepository.watchAll).thenReturn(Result.ok(stream));
+        mocktail
+            .when(mockQuestionRepository.watchAll)
+            .thenReturn(Result.ok(stream));
 
         final result = useCase.execute();
 
         expect(result.isOk, isTrue);
-        expect(result.ok, stream);
+
+        final actualStream = result.ok;
+        unawaited(expectLater(actualStream, emitsInOrder(streamValues)));
+
+        // actualStream!.listen(null);
+
+        mocktail.verifyNever(() => loggerMock.logError(mocktail.any()));
+
+        for (final questions in streamValues) {
+          await mocktail.untilCalled(
+            () => loggerMock.logInfo(
+              'Retrieved ${questions.length} questions',
+            ),
+          );
+        }
       },
     );
   });
 }
 
-class _MockRepositoryFactory extends Mock implements RepositoryFactory {}
+class _MockRepositoryFactory extends mocktail.Mock
+    implements RepositoryFactory {}
 
-class _MockQuestionRepository extends Mock implements QuestionRepository {}
+class _MockQuestionRepository extends mocktail.Mock
+    implements QuestionRepository {}
+
+class _LoggerMock extends mocktail.Mock implements QuizLabLogger {}

@@ -1,6 +1,7 @@
 part of 'question_creation_cubit.dart';
 
-abstract class QuestionCreationState extends Equatable {
+@immutable
+abstract class QuestionCreationState {
   const QuestionCreationState();
 
   factory QuestionCreationState.initial() => const QuestionCreationInitial._();
@@ -9,33 +10,32 @@ abstract class QuestionCreationState extends Equatable {
 
   factory QuestionCreationState.goBack() => const QuestionCreationGoBack._();
 
-  factory QuestionCreationState.viewModelSubjectUpdated(
-    BehaviorSubject<QuestionCreationViewModel> viewModelSubject,
+  factory QuestionCreationState.viewModelUpdated(
+    QuestionCreationViewModel viewModel,
   ) =>
-      QuestionCreationViewModelSubjectUpdated._(
-        viewModelSubject: viewModelSubject,
-      );
-
-  @override
-  List<Object> get props => [];
+      QuestionCreationViewModelUpdated._(viewModel: viewModel);
 }
 
+@immutable
 class QuestionCreationInitial extends QuestionCreationState {
   const QuestionCreationInitial._();
 }
 
+@immutable
 class QuestionCreationLoading extends QuestionCreationState {
   const QuestionCreationLoading._();
 }
 
+@immutable
 class QuestionCreationGoBack extends QuestionCreationState {
   const QuestionCreationGoBack._();
 }
 
-class QuestionCreationViewModelSubjectUpdated extends QuestionCreationState {
-  const QuestionCreationViewModelSubjectUpdated._({
-    required this.viewModelSubject,
+@immutable
+class QuestionCreationViewModelUpdated extends QuestionCreationState {
+  const QuestionCreationViewModelUpdated._({
+    required this.viewModel,
   }) : super();
 
-  final BehaviorSubject<QuestionCreationViewModel> viewModelSubject;
+  final QuestionCreationViewModel viewModel;
 }

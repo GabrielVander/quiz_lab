@@ -65,6 +65,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "noDueDateLabel":
             MessageLookupByLibrary.simpleMessage("Sem Data Limite"),
         "noQuestions": MessageLookupByLibrary.simpleMessage("Nenhuma questão"),
+        "openRandomQuestionButtonLabel":
+            MessageLookupByLibrary.simpleMessage("Aleatória"),
         "optionInputLabel": MessageLookupByLibrary.simpleMessage("Opção"),
         "optionsTitle": MessageLookupByLibrary.simpleMessage("Opções"),
         "questionAmountLabel": m3,

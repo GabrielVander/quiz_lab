@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/factories/question_management_cubit_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
@@ -8,15 +8,21 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 
 void main() {
+  late QuestionCreationCubit questionCreationCubitMock;
+  late QuestionsOverviewCubit questionsOverviewCubitMock;
   late UseCaseFactory useCaseFactoryMock;
   late PresentationMapperFactory presentationMapperFactoryMock;
 
   late QuestionManagementCubitFactory cubitFactory;
 
   setUp(() {
-    useCaseFactoryMock = _MockUseCaseFactory();
+    questionCreationCubitMock = _QuestionCreationCubitMock();
+    questionsOverviewCubitMock = _QuestionsOverviewCubitMock();
+    useCaseFactoryMock = _UseCaseFactoryMock();
     presentationMapperFactoryMock = _PresentationMapperFactoryMock();
     cubitFactory = QuestionManagementCubitFactory(
+      questionCreationCubit: questionCreationCubitMock,
+      questionsOverviewCubit: questionsOverviewCubitMock,
       useCaseFactory: useCaseFactoryMock,
       presentationMapperFactory: presentationMapperFactoryMock,
     );
@@ -28,7 +34,7 @@ void main() {
       test('should return a QuestionsOverviewCubit', () {
         final result = cubitFactory.makeQuestionsOverviewCubit();
 
-        expect(result, isA<QuestionsOverviewCubit>());
+        expect(result, questionsOverviewCubitMock);
       });
     },
   );
@@ -39,7 +45,7 @@ void main() {
       test('should return a QuestionCreationCubit', () {
         final result = cubitFactory.makeQuestionCreationCubit();
 
-        expect(result, isA<QuestionCreationCubit>());
+        expect(result, questionCreationCubitMock);
       });
     },
   );
@@ -56,7 +62,13 @@ void main() {
   );
 }
 
-class _MockUseCaseFactory extends Mock implements UseCaseFactory {}
+class _UseCaseFactoryMock extends mocktail.Mock implements UseCaseFactory {}
 
-class _PresentationMapperFactoryMock extends Mock
+class _PresentationMapperFactoryMock extends mocktail.Mock
     implements PresentationMapperFactory {}
+
+class _QuestionCreationCubitMock extends mocktail.Mock
+    implements QuestionCreationCubit {}
+
+class _QuestionsOverviewCubitMock extends mocktail.Mock
+    implements QuestionsOverviewCubit {}

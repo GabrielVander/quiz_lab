@@ -27,46 +27,40 @@ class QuestionCreationPage extends HookWidget {
         body: Padding(
           padding: const EdgeInsets.all(10),
           child: Builder(
-            builder: (ctx) {
+            builder: (context) {
+              if (state is QuestionCreationInitial) {
+                _cubit.load();
+              }
+
               if (state is QuestionCreationGoBack) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (GoRouter.of(context).canPop()) {
-                    GoRouter.of(ctx).pop();
+                    GoRouter.of(context).pop();
                   } else {
-                    GoRouter.of(ctx).goNamed(Routes.home.name);
+                    GoRouter.of(context).goNamed(Routes.home.name);
                   }
                 });
               }
 
-              if (state is QuestionCreationViewModelSubjectUpdated) {
-                final subject = state.viewModelSubject;
+              if (state is QuestionCreationViewModelUpdated) {
+                final viewModel = state.viewModel;
 
-                return StreamBuilder<QuestionCreationViewModel>(
-                  stream: subject.stream,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                if (viewModel.message != null && viewModel.showMessage) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    _showSnackBarMessage(context, viewModel.message!);
+                  });
+                }
 
-                    final viewModel = snapshot.data!;
-
-                    if (viewModel.message != null && viewModel.showMessage) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _showSnackBarMessage(context, viewModel.message!);
-                      });
-                    }
-
-                    return _Body(
-                      viewModel: viewModel,
-                      onTitleChanged: _cubit.onTitleChanged,
-                      onDescriptionChanged: _cubit.onDescriptionChanged,
-                      onDifficultyChanged: _cubit.onDifficultyChanged,
-                      onOptionChanged: _cubit.onOptionChanged,
-                      onToggleOptionIsCorrect: _cubit.toggleOptionIsCorrect,
-                      onAddOption: _cubit.onAddOption,
-                      onCreateQuestion: _cubit.onCreateQuestion,
-                    );
-                  },
+                return _Body(
+                  viewModel: viewModel,
+                  onTitleChanged: _cubit.onTitleChanged,
+                  onDescriptionChanged: _cubit.onDescriptionChanged,
+                  onDifficultyChanged: _cubit.onDifficultyChanged,
+                  onOptionChanged: _cubit.onOptionChanged,
+                  onToggleOptionIsCorrect: _cubit.toggleOptionIsCorrect,
+                  onAddOption: _cubit.onAddOption,
+                  onCreateQuestion: _cubit.onCreateQuestion,
                 );
               }
 

@@ -1,99 +1,106 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 part 'question_creation_state.dart';
 
 class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationCubit({
+    required QuizLabLogger logger,
     required UseCaseFactory useCaseFactory,
-  })  : _useCaseFactory = useCaseFactory,
-        super(QuestionCreationState.initial()) {
-    _viewModelSubject.add(_defaultViewModel);
+  })  : _logger = logger,
+        _useCaseFactory = useCaseFactory,
+        super(QuestionCreationState.initial());
 
-    emit(QuestionCreationState.viewModelSubjectUpdated(_viewModelSubject));
+  final QuizLabLogger _logger;
+  final UseCaseFactory _useCaseFactory;
+  late QuestionCreationViewModel _viewModel = _defaultViewModel;
+
+  final QuestionCreationViewModel _defaultViewModel = QuestionCreationViewModel(
+    title: const QuestionCreationTitleViewModel(
+      value: '',
+      showErrorMessage: false,
+    ),
+    description: const QuestionCreationDescriptionViewModel(
+      value: '',
+      showErrorMessage: false,
+    ),
+    difficulty: const QuestionCreationDifficultyViewModel(
+      formField: QuestionCreationDifficultyValueViewModel(
+        value: '',
+        showErrorMessage: false,
+      ),
+      availableValues: [
+        'easy',
+        'medium',
+        'hard',
+      ],
+    ),
+    options: [
+      QuestionCreationOptionViewModel(
+        id: const Uuid().v4(),
+        formField: const QuestionCreationOptionValueViewModel(
+          value: '',
+          showErrorMessage: false,
+        ),
+        isCorrect: false,
+      ),
+      QuestionCreationOptionViewModel(
+        id: const Uuid().v4(),
+        formField: const QuestionCreationOptionValueViewModel(
+          value: '',
+          showErrorMessage: false,
+        ),
+        isCorrect: false,
+      ),
+    ],
+    addOptionButtonEnabled: true,
+    message: null,
+    showMessage: false,
+  );
+
+  void load() {
+    _updateViewModel(_defaultViewModel);
   }
 
-  final UseCaseFactory _useCaseFactory;
-
-  QuestionCreationViewModel get _defaultViewModel => QuestionCreationViewModel(
-        title: const QuestionCreationTitleViewModel(
-          value: '',
-          showErrorMessage: false,
-        ),
-        description: const QuestionCreationDescriptionViewModel(
-          value: '',
-          showErrorMessage: false,
-        ),
-        difficulty: const QuestionCreationDifficultyViewModel(
-          formField: QuestionCreationDifficultyValueViewModel(
-            value: '',
-            showErrorMessage: false,
-          ),
-          availableValues: [
-            'easy',
-            'medium',
-            'hard',
-          ],
-        ),
-        options: [
-          QuestionCreationOptionViewModel(
-            id: const Uuid().v4(),
-            formField: const QuestionCreationOptionValueViewModel(
-              value: '',
-              showErrorMessage: false,
-            ),
-            isCorrect: false,
-          ),
-          QuestionCreationOptionViewModel(
-            id: const Uuid().v4(),
-            formField: const QuestionCreationOptionValueViewModel(
-              value: '',
-              showErrorMessage: false,
-            ),
-            isCorrect: false,
-          ),
-        ],
-        addOptionButtonEnabled: true,
-        message: null,
-        showMessage: false,
-      );
-
-  final BehaviorSubject<QuestionCreationViewModel> _viewModelSubject =
-      BehaviorSubject();
-
   void onTitleChanged(String newValue) {
-    final newViewModel = _viewModelSubject.value.copyWith(
-      title: _viewModelSubject.value.title.copyWith(
+    _logger.logInfo('Title changed');
+
+    final newViewModel = _viewModel.copyWith(
+      title: _viewModel.title.copyWith(
         value: newValue,
         showErrorMessage: true,
       ),
       showMessage: false,
     );
 
-    _viewModelSubject.add(newViewModel);
+    _updateViewModel(newViewModel);
   }
 
   void onDescriptionChanged(String newValue) {
-    final newViewModel = _viewModelSubject.value.copyWith(
-      description: _viewModelSubject.value.description.copyWith(
+    _logger.logInfo('Description changed');
+
+    final newViewModel = _viewModel.copyWith(
+      description: _viewModel.description.copyWith(
         value: newValue,
         showErrorMessage: true,
       ),
       showMessage: false,
     );
 
-    _viewModelSubject.add(newViewModel);
+    _updateViewModel(newViewModel);
   }
 
   void onDifficultyChanged(String? value) {
-    final newViewModel = _viewModelSubject.value.copyWith(
-      difficulty: _viewModelSubject.value.difficulty.copyWith(
-        formField: _viewModelSubject.value.difficulty.formField.copyWith(
+    _logger.logInfo('Difficulty changed: $value');
+
+    final newViewModel = _viewModel.copyWith(
+      difficulty: _viewModel.difficulty.copyWith(
+        formField: _viewModel.difficulty.formField.copyWith(
           value: value ?? '',
           showErrorMessage: true,
         ),
@@ -101,12 +108,14 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
       showMessage: false,
     );
 
-    _viewModelSubject.add(newViewModel);
+    _updateViewModel(newViewModel);
   }
 
   void onOptionChanged(String id, String value) {
-    final newViewModel = _viewModelSubject.value.copyWith(
-      options: _viewModelSubject.value.options.map(
+    _logger.logInfo('Option changed');
+
+    final newViewModel = _viewModel.copyWith(
+      options: _viewModel.options.map(
         (option) {
           if (option.id == id) {
             return option.copyWith(
@@ -123,12 +132,14 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
       showMessage: false,
     );
 
-    _viewModelSubject.add(newViewModel);
+    _updateViewModel(newViewModel);
   }
 
   void toggleOptionIsCorrect(String id) {
-    final newViewModel = _viewModelSubject.value.copyWith(
-      options: _viewModelSubject.value.options.map(
+    _logger.logInfo('Option toggled');
+
+    final newViewModel = _viewModel.copyWith(
+      options: _viewModel.options.map(
         (option) {
           if (option.id == id) {
             return option.copyWith(
@@ -142,19 +153,22 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
       showMessage: false,
     );
 
-    _viewModelSubject.add(newViewModel);
+    _updateViewModel(newViewModel);
   }
 
   void onAddOption() {
+    _logger.logInfo('Adding option...');
+
     const optionsLimit = 5;
 
-    if (_viewModelSubject.value.options.length >= optionsLimit) {
+    if (_viewModel.options.length >= optionsLimit) {
+      _logger.logInfo('Options limit reached');
       return;
     }
 
-    final newViewModel = _viewModelSubject.value.copyWith(
+    final newViewModel = _viewModel.copyWith(
       options: [
-        ..._viewModelSubject.value.options,
+        ..._viewModel.options,
         QuestionCreationOptionViewModel(
           id: const Uuid().v4(),
           formField: const QuestionCreationOptionValueViewModel(
@@ -164,34 +178,42 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
           isCorrect: false,
         ),
       ],
-      addOptionButtonEnabled:
-          _viewModelSubject.value.options.length + 1 < optionsLimit,
+      addOptionButtonEnabled: _viewModel.options.length + 1 < optionsLimit,
       showMessage: false,
     );
 
-    _viewModelSubject.add(newViewModel);
+    _updateViewModel(newViewModel);
   }
 
   Future<void> onCreateQuestion() async {
+    _logger.logInfo('Creating question...');
+
     final isValid = _validateFields();
 
     if (!isValid) {
+      _logger.logWarning('Invalid fields');
       return;
     }
 
     await _createQuestion();
   }
 
+  void _updateViewModel(QuestionCreationViewModel newViewModel) {
+    _logger.logInfo('Updating view model...');
+
+    _viewModel = newViewModel;
+    emit(QuestionCreationState.viewModelUpdated(_viewModel));
+  }
+
   Future<void> _createQuestion() async {
-    final viewModel = _viewModelSubject.value;
     final createQuestionUseCase = _useCaseFactory.makeCreateQuestionUseCase();
 
     final creationResult = await createQuestionUseCase.execute(
       QuestionCreationInput(
-        shortDescription: viewModel.title.value,
-        description: viewModel.description.value,
-        difficulty: viewModel.difficulty.formField.value,
-        options: viewModel.options
+        shortDescription: _viewModel.title.value,
+        description: _viewModel.description.value,
+        difficulty: _viewModel.difficulty.formField.value,
+        options: _viewModel.options
             .map(
               (e) => QuestionCreationOptionInput(
                 description: e.formField.value,
@@ -204,21 +226,25 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     );
 
     if (creationResult.isErr) {
-      final newViewModel = viewModel.copyWith(
+      final errMessage = creationResult.err!.message;
+
+      _logger.logError(errMessage);
+
+      final newViewModel = _viewModel.copyWith(
         message: QuestionCreationMessageViewModel(
           type: QuestionCreationMessageType.unableToSaveQuestion,
           isFailure: true,
-          details: creationResult.err!.message,
+          details: errMessage,
         ),
         showMessage: true,
       );
 
-      _viewModelSubject.add(newViewModel);
+      _updateViewModel(newViewModel);
 
       return;
     }
 
-    final newViewModel = _defaultViewModel.copyWith(
+    final newViewModel = _viewModel.copyWith(
       message: const QuestionCreationMessageViewModel(
         type: QuestionCreationMessageType.questionSavedSuccessfully,
         isFailure: false,
@@ -227,28 +253,28 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
       showMessage: true,
     );
 
-    _viewModelSubject.add(newViewModel);
+    _updateViewModel(newViewModel);
 
     emit(QuestionCreationState.goBack());
   }
 
   bool _validateFields() {
-    final areFieldsValid = _viewModelSubject.value.areFieldsValid;
+    final areFieldsValid = _viewModel.areFieldsValid;
 
     if (!areFieldsValid) {
-      final newViewModel = _viewModelSubject.value.copyWith(
-        title: _viewModelSubject.value.title.copyWith(
+      final newViewModel = _viewModel.copyWith(
+        title: _viewModel.title.copyWith(
           showErrorMessage: true,
         ),
-        description: _viewModelSubject.value.description.copyWith(
+        description: _viewModel.description.copyWith(
           showErrorMessage: true,
         ),
-        difficulty: _viewModelSubject.value.difficulty.copyWith(
-          formField: _viewModelSubject.value.difficulty.formField.copyWith(
+        difficulty: _viewModel.difficulty.copyWith(
+          formField: _viewModel.difficulty.formField.copyWith(
             showErrorMessage: true,
           ),
         ),
-        options: _viewModelSubject.value.options.map(
+        options: _viewModel.options.map(
           (option) {
             return option.copyWith(
               formField: option.formField.copyWith(
@@ -259,16 +285,15 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
         ).toList(),
       );
 
-      _viewModelSubject.add(newViewModel);
+      _updateViewModel(newViewModel);
 
       return false;
     }
 
-    final hasAtLeastOneCorrectOption =
-        _viewModelSubject.value.hasAtLeastOneCorrectOption;
+    final hasAtLeastOneCorrectOption = _viewModel.hasAtLeastOneCorrectOption;
 
     if (!hasAtLeastOneCorrectOption) {
-      final newViewModel = _viewModelSubject.value.copyWith(
+      final newViewModel = _viewModel.copyWith(
         message: const QuestionCreationMessageViewModel(
           type: QuestionCreationMessageType.noCorrectOption,
           isFailure: true,
@@ -277,7 +302,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
         showMessage: true,
       );
 
-      _viewModelSubject.add(newViewModel);
+      _updateViewModel(newViewModel);
 
       return false;
     }
