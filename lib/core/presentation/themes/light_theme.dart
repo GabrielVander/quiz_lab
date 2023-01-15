@@ -30,6 +30,9 @@ class _LightThemeBackgroundColors implements BackgroundColors {
 
   @override
   Color get tertiary => const Color(0xFFD9F3FF);
+
+  @override
+  Color get disabled => const Color(0xABABABAB);
 }
 
 class _LightMainColors implements MainColors {

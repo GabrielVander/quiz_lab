@@ -9,6 +9,7 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 
 void main() {
   late QuestionCreationCubit questionCreationCubitMock;
+  late QuestionsOverviewCubit questionsOverviewCubitMock;
   late UseCaseFactory useCaseFactoryMock;
   late PresentationMapperFactory presentationMapperFactoryMock;
 
@@ -16,10 +17,12 @@ void main() {
 
   setUp(() {
     questionCreationCubitMock = _QuestionCreationCubitMock();
+    questionsOverviewCubitMock = _QuestionsOverviewCubitMock();
     useCaseFactoryMock = _UseCaseFactoryMock();
     presentationMapperFactoryMock = _PresentationMapperFactoryMock();
     cubitFactory = QuestionManagementCubitFactory(
       questionCreationCubit: questionCreationCubitMock,
+      questionsOverviewCubit: questionsOverviewCubitMock,
       useCaseFactory: useCaseFactoryMock,
       presentationMapperFactory: presentationMapperFactoryMock,
     );
@@ -31,7 +34,7 @@ void main() {
       test('should return a QuestionsOverviewCubit', () {
         final result = cubitFactory.makeQuestionsOverviewCubit();
 
-        expect(result, isA<QuestionsOverviewCubit>());
+        expect(result, questionsOverviewCubitMock);
       });
     },
   );
@@ -49,7 +52,7 @@ void main() {
 
   group(
     'makeQuestionDisplayCubit',
-        () {
+    () {
       test('should return a QuestionDisplayCubit', () {
         final result = cubitFactory.makeQuestionDisplayCubit();
 
@@ -66,3 +69,6 @@ class _PresentationMapperFactoryMock extends mocktail.Mock
 
 class _QuestionCreationCubitMock extends mocktail.Mock
     implements QuestionCreationCubit {}
+
+class _QuestionsOverviewCubitMock extends mocktail.Mock
+    implements QuestionsOverviewCubit {}
