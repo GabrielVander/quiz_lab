@@ -17,6 +17,9 @@ abstract class QuestionsOverviewState {
 
   factory QuestionsOverviewState.errorOccurred({required String message}) =>
       QuestionsOverviewErrorOccurred._(message: message);
+
+  factory QuestionsOverviewState.openQuestion(String id) =>
+      QuestionsOverviewOpenQuestion._(questionId: id);
 }
 
 @immutable
@@ -45,4 +48,13 @@ class QuestionsOverviewErrorOccurred extends QuestionsOverviewState {
   }) : super();
 
   final String message;
+}
+
+@immutable
+class QuestionsOverviewOpenQuestion extends QuestionsOverviewState {
+  const QuestionsOverviewOpenQuestion._({
+    required this.questionId,
+  }) : super();
+
+  final String questionId;
 }

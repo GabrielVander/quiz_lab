@@ -19,14 +19,29 @@ class QuestionsOverviewPage extends HookWidget {
     super.key,
     required QuestionsOverviewCubit questionsOverviewCubit,
   }) {
-    _questionsOverviewCubit = questionsOverviewCubit;
+    _cubit = questionsOverviewCubit;
   }
 
-  late final QuestionsOverviewCubit _questionsOverviewCubit;
+  late final QuestionsOverviewCubit _cubit;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(_questionsOverviewCubit);
+    useBlocListener(
+      _cubit,
+      (_, QuestionsOverviewState current, BuildContext context) =>
+          _handleOpenQuestionState(current, context),
+      listenWhen: (QuestionsOverviewState currentState) =>
+          currentState is QuestionsOverviewOpenQuestion,
+    );
+
+    final state = useBlocBuilder(
+      _cubit,
+      buildWhen: (QuestionsOverviewState current) => [
+        QuestionsOverviewLoading,
+        QuestionsOverviewViewModelUpdated,
+        QuestionsOverviewErrorOccurred,
+      ].contains(current.runtimeType),
+    );
 
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -43,13 +58,18 @@ class QuestionsOverviewPage extends HookWidget {
             child: Builder(
               builder: (context) {
                 if (state is QuestionsOverviewInitial) {
-                  _questionsOverviewCubit.updateQuestions();
+                  _cubit.updateQuestions();
                 }
 
-                if (state is QuestionsOverviewLoading ||
-                    state is QuestionsOverviewInitial) {
+                if (state is QuestionsOverviewLoading) {
                   return const Center(
                     child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (state is QuestionsOverviewErrorOccurred) {
+                  return Center(
+                    child: Text(state.message),
                   );
                 }
 
@@ -61,18 +81,9 @@ class QuestionsOverviewPage extends HookWidget {
                       Expanded(
                         child: _QuestionList(
                           questions: viewModel.questions,
-                          onDeleteQuestion:
-                              _questionsOverviewCubit.removeQuestion,
-                          onSaveUpdatedQuestion:
-                              _questionsOverviewCubit.onQuestionSaved,
-                          onQuestionClick: (question) {
-                            GoRouter.of(context).pushNamed(
-                              Routes.displayQuestion.name,
-                              params: {
-                                'id': question.id,
-                              },
-                            );
-                          },
+                          onDeleteQuestion: _cubit.removeQuestion,
+                          onSaveUpdatedQuestion: _cubit.onQuestionSaved,
+                          onQuestionClick: _cubit.onQuestionClick,
                         ),
                       ),
                       Row(
@@ -80,16 +91,11 @@ class QuestionsOverviewPage extends HookWidget {
                         children: [
                           _RandomQuestionButton(
                             enabled: viewModel.isRandomQuestionButtonEnabled,
+                            onClick: _cubit.onOpenRandomQuestion,
                           ),
                         ],
                       ),
                     ],
-                  );
-                }
-
-                if (state is QuestionsOverviewErrorOccurred) {
-                  return Center(
-                    child: Text(state.message),
                   );
                 }
 
@@ -100,6 +106,17 @@ class QuestionsOverviewPage extends HookWidget {
         ],
       ),
     );
+  }
+
+  void _handleOpenQuestionState(Object? current, BuildContext context) {
+    final state = current! as QuestionsOverviewOpenQuestion;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      GoRouter.of(context).pushNamed(
+        Routes.displayQuestion.name,
+        params: {'id': state.questionId},
+      );
+    });
   }
 }
 
@@ -185,14 +202,18 @@ class _QuestionAddButton extends StatelessWidget {
 }
 
 class _RandomQuestionButton extends StatelessWidget {
-  const _RandomQuestionButton({required this.enabled});
+  const _RandomQuestionButton({
+    required this.enabled,
+    required this.onClick,
+  });
 
   final bool enabled;
+  final void Function() onClick;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: enabled ? () {} : null,
+      onPressed: enabled ? onClick : null,
       style: _buildButtonStyle(context, enabled),
       child: Row(
         children: [
