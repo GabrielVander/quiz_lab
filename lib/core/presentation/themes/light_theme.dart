@@ -5,15 +5,15 @@ import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 final ThemeData lightTheme = ThemeData.light().copyWith(
   extensions: <ThemeExtension<dynamic>>[
     ThemeColors(
-      textColors: LightThemeTextColors(),
-      backgroundColors: LightThemeBackgroundColors(),
-      mainColors: LightMainColors(),
-      difficultyColors: LightDifficultyColors(),
+      textColors: _LightThemeTextColors(),
+      backgroundColors: _LightThemeBackgroundColors(),
+      mainColors: _LightMainColors(),
+      difficultyColors: _LightDifficultyColors(),
     ),
   ],
 );
 
-class LightThemeTextColors implements TextColors {
+class _LightThemeTextColors implements TextColors {
   @override
   Color get primary => Colors.black;
 
@@ -21,7 +21,7 @@ class LightThemeTextColors implements TextColors {
   Color get secondary => Colors.white;
 }
 
-class LightThemeBackgroundColors implements BackgroundColors {
+class _LightThemeBackgroundColors implements BackgroundColors {
   @override
   Color get primary => const Color(0xFFFFFFFF);
 
@@ -30,9 +30,12 @@ class LightThemeBackgroundColors implements BackgroundColors {
 
   @override
   Color get tertiary => const Color(0xFFD9F3FF);
+
+  @override
+  Color get disabled => const Color(0xABABABAB);
 }
 
-class LightMainColors implements MainColors {
+class _LightMainColors implements MainColors {
   @override
   Color get accent => const Color(0xFF837AD9);
 
@@ -43,7 +46,7 @@ class LightMainColors implements MainColors {
   Color get secondary => const Color(0xFF6791EC);
 }
 
-class LightDifficultyColors implements DifficultyColors {
+class _LightDifficultyColors implements DifficultyColors {
   @override
   Color get easy => const Color(0xFF006C04);
 

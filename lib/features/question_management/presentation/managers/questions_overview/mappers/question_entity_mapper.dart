@@ -3,7 +3,7 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/question_overview_item_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
 
 class QuestionEntityMapper {
   final _difficulties = {
@@ -15,7 +15,7 @@ class QuestionEntityMapper {
 
   Result<Question, QuestionEntityMapperFailure>
       singleFromQuestionOverviewItemViewModel(
-    QuestionOverviewItemViewModel viewModel,
+    QuestionsOverviewItemViewModel viewModel,
   ) {
     if (!_validateDifficulty(viewModel.difficulty)) {
       return Result.err(

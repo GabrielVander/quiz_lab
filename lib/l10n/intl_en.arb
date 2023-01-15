@@ -168,5 +168,6 @@
   "questionDisplayIncorrectAnswer": "Incorrect",
   "@questionDisplayIncorrectAnswer": {
     "description": "Message to display when the question is answered incorrectly"
-  }
+  },
+  "openRandomQuestionButtonLabel": "Random"
 }

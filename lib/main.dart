@@ -6,7 +6,7 @@ import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/presentation/manager/factories/core_cubit_factory.dart';
 import 'package:quiz_lab/core/quiz_lab_application.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/setup.dart';
-import 'package:quiz_lab/core/utils/logger/impl/logger_impl.dart';
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/factories/question_management_cubit_factory.dart';
 import 'package:quiz_lab/features/question_management/utils/setup.dart';
 
@@ -37,7 +37,7 @@ Future<void> _setUpHive() async {
 void _setUpLogger() {
   ansiColorDisabled = false;
   Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen(LoggerImpl.onListen);
+  Logger.root.onRecord.listen(QuizLabLoggerImpl.onListen);
 }
 
 void _setUpInjections() {
