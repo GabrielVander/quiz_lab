@@ -19,6 +19,9 @@ class QuizLabLoggerImpl implements QuizLabLogger {
   @override
   void warn(String message) => _logger.warning(message);
 
+  @override
+  void debug(String message) => _logger.config(message);
+
   static void onListen(logging.LogRecord record) {
     final message =
         '${record.time} ${record.loggerName} ${record.level.name} - '

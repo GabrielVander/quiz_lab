@@ -33,7 +33,7 @@ class WatchAllQuestionsUseCase {
 
     return Result.ok(
       streamResult.ok!.doOnData(
-            (questions) => _logger.info('Retrieved ${questions.length} questions'),
+        (questions) => _logger.info('Retrieved ${questions.length} questions'),
       ),
     );
   }
