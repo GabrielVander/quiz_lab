@@ -32,7 +32,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   final _questionStreamController = StreamController<List<Question>>();
 
   void updateQuestions() {
-    _logger.logInfo('Updating questions...');
+    _logger.info('Updating questions...');
     emit(QuestionsOverviewState.loading());
 
     _watchQuestions();
@@ -81,12 +81,12 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
   void onOpenRandomQuestion() {
     emit(QuestionsOverviewState.loading());
-    _logger.logInfo('Opening random question...');
+    _logger.info('Opening random question...');
 
     final ids = _viewModel.questions.map((q) => q.id).toList()..shuffle();
     final randomQuestionId = ids.first;
 
-    _logger.logInfo('Opening question $randomQuestionId...');
+    _logger.info('Opening question $randomQuestionId...');
     emit(QuestionsOverviewState.openQuestion(randomQuestionId));
     emit(QuestionsOverviewState.viewModelUpdated(viewModel: _viewModel));
   }

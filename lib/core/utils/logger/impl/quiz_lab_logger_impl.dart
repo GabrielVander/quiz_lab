@@ -11,13 +11,13 @@ class QuizLabLoggerImpl implements QuizLabLogger {
   final logging.Logger _logger;
 
   @override
-  void logError(String message) => _logger.severe(message);
+  void error(String message) => _logger.severe(message);
 
   @override
-  void logInfo(String message) => _logger.info(message);
+  void info(String message) => _logger.info(message);
 
   @override
-  void logWarning(String message) => _logger.warning(message);
+  void warn(String message) => _logger.warning(message);
 
   static void onListen(logging.LogRecord record) {
     final message =

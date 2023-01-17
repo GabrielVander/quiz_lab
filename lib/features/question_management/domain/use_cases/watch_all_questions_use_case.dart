@@ -17,7 +17,7 @@ class WatchAllQuestionsUseCase {
   final RepositoryFactory _repositoryFactory;
 
   Result<Stream<List<Question>>, WatchAllQuestionsFailure> execute() {
-    _logger.logInfo('Watching all questions...');
+    _logger.info('Watching all questions...');
 
     final questionRepository = _repositoryFactory.makeQuestionRepository();
     final streamResult = questionRepository.watchAll();
@@ -27,14 +27,13 @@ class WatchAllQuestionsUseCase {
         message: streamResult.err!.message,
       );
 
-      _logger.logError(failure.message);
+      _logger.error(failure.message);
       return Result.err(failure);
     }
 
     return Result.ok(
       streamResult.ok!.doOnData(
-        (questions) =>
-            _logger.logInfo('Retrieved ${questions.length} questions'),
+            (questions) => _logger.info('Retrieved ${questions.length} questions'),
       ),
     );
   }

@@ -1,7 +1,7 @@
 abstract class QuizLabLogger {
-  void logInfo(String message);
+  void info(String message);
 
-  void logWarning(String message);
+  void warn(String message);
 
-  void logError(String message);
+  void error(String message);
 }

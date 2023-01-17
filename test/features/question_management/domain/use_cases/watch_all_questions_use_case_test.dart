@@ -44,7 +44,7 @@ void main() {
 
     mocktail
         .verify(
-          () => loggerMock.logInfo('Watching all questions...'),
+          () => loggerMock.info('Watching all questions...'),
         )
         .called(1);
   });
@@ -82,7 +82,7 @@ void main() {
         expect(result.err, expectedFailure);
 
         mocktail
-            .verify(() => loggerMock.logError(repositoryFailure.message))
+            .verify(() => loggerMock.error(repositoryFailure.message))
             .called(1);
       },
     );
@@ -157,11 +157,11 @@ void main() {
 
         // actualStream!.listen(null);
 
-        mocktail.verifyNever(() => loggerMock.logError(mocktail.any()));
+        mocktail.verifyNever(() => loggerMock.error(mocktail.any()));
 
         for (final questions in streamValues) {
           await mocktail.untilCalled(
-            () => loggerMock.logInfo(
+            () => loggerMock.info(
               'Retrieved ${questions.length} questions',
             ),
           );
