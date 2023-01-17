@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
@@ -12,15 +13,15 @@ part 'questions_overview_state.dart';
 
 class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   QuestionsOverviewCubit({
-    required QuizLabLogger logger,
     required UseCaseFactory useCaseFactory,
     required PresentationMapperFactory mapperFactory,
-  })  : _logger = logger,
-        _useCaseFactory = useCaseFactory,
+  })  : _useCaseFactory = useCaseFactory,
         _mapperFactory = mapperFactory,
         super(QuestionsOverviewState.initial());
 
-  final QuizLabLogger _logger;
+  final QuizLabLogger _logger =
+      QuizLabLoggerFactory.createLogger<QuestionsOverviewCubit>();
+
   final UseCaseFactory _useCaseFactory;
   final PresentationMapperFactory _mapperFactory;
 

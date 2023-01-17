@@ -4,7 +4,6 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
@@ -12,42 +11,17 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
 void main() {
-  late QuizLabLogger loggerMock;
   late RepositoryFactory mockRepositoryFactory;
   late WatchAllQuestionsUseCase useCase;
 
   setUp(() {
-    loggerMock = _LoggerMock();
     mockRepositoryFactory = _MockRepositoryFactory();
     useCase = WatchAllQuestionsUseCase(
-      logger: loggerMock,
       repositoryFactory: mockRepositoryFactory,
     );
   });
 
   tearDown(mocktail.resetMocktailState);
-
-  test('should log on process start', () {
-    final mockQuestionRepository = _MockQuestionRepository();
-
-    mocktail
-        .when(() => mockRepositoryFactory.makeQuestionRepository())
-        .thenReturn(mockQuestionRepository);
-
-    mocktail.when(mockQuestionRepository.watchAll).thenReturn(
-          Result.err(
-            QuestionRepositoryFailure.unableToWatchAll(message: 'message'),
-          ),
-        );
-
-    useCase.execute();
-
-    mocktail
-        .verify(
-          () => loggerMock.info('Watching all questions...'),
-        )
-        .called(1);
-  });
 
   group('err flow', () {
     parameterizedTest(
@@ -80,10 +54,6 @@ void main() {
 
         expect(result.isErr, true);
         expect(result.err, expectedFailure);
-
-        mocktail
-            .verify(() => loggerMock.error(repositoryFailure.message))
-            .called(1);
       },
     );
   });
@@ -154,18 +124,6 @@ void main() {
 
         final actualStream = result.ok;
         unawaited(expectLater(actualStream, emitsInOrder(streamValues)));
-
-        // actualStream!.listen(null);
-
-        mocktail.verifyNever(() => loggerMock.error(mocktail.any()));
-
-        for (final questions in streamValues) {
-          await mocktail.untilCalled(
-            () => loggerMock.info(
-              'Retrieved ${questions.length} questions',
-            ),
-          );
-        }
       },
     );
   });
@@ -176,5 +134,3 @@ class _MockRepositoryFactory extends mocktail.Mock
 
 class _MockQuestionRepository extends mocktail.Mock
     implements QuestionRepository {}
-
-class _LoggerMock extends mocktail.Mock implements QuizLabLogger {}

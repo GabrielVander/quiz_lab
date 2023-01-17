@@ -84,3 +84,7 @@ class _Printer {
     }
   }
 }
+
+QuizLabLogger loggerImplFactory(String loggerName) => QuizLabLoggerImpl(
+      logger: logging.Logger(loggerName),
+    );
