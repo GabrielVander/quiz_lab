@@ -44,7 +44,7 @@ class QuizLabApplication extends StatelessWidget {
           builder: (BuildContext context, GoRouterState state) {
             return QuestionCreationPage(
               cubit:
-              _questionManagementCubitFactory.makeQuestionCreationCubit(),
+                  _questionManagementCubitFactory.makeQuestionCreationCubit(),
             );
           },
         ),
