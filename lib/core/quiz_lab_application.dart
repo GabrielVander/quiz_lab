@@ -6,6 +6,7 @@ import 'package:quiz_lab/core/presentation/manager/factories/core_cubit_factory.
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
 import 'package:quiz_lab/core/presentation/widgets/home_page.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
+import 'package:quiz_lab/features/auth/presentation/widget/login_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/factories/question_management_cubit_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_creation_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_display_page.dart';
@@ -25,6 +26,7 @@ class QuizLabApplication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final router = GoRouter(
+      initialLocation: Routes.login.path,
       routes: <GoRoute>[
         GoRoute(
           name: Routes.home.name,
@@ -42,7 +44,7 @@ class QuizLabApplication extends StatelessWidget {
           builder: (BuildContext context, GoRouterState state) {
             return QuestionCreationPage(
               cubit:
-                  _questionManagementCubitFactory.makeQuestionCreationCubit(),
+              _questionManagementCubitFactory.makeQuestionCreationCubit(),
             );
           },
         ),
@@ -54,6 +56,13 @@ class QuizLabApplication extends StatelessWidget {
               cubit: _questionManagementCubitFactory.makeQuestionDisplayCubit(),
               questionId: state.params['id'],
             );
+          },
+        ),
+        GoRoute(
+          name: Routes.login.name,
+          path: Routes.login.path,
+          builder: (BuildContext context, GoRouterState state) {
+            return const LoginPage();
           },
         ),
       ],
