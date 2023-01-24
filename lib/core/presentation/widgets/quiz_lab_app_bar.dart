@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/assets/images.dart';
+import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 
@@ -23,7 +23,7 @@ class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
           Column(
             children: const [
               Expanded(
-                child: LeadingIcon(
+                child: QuizLabIcon(
                   key: ValueKey('appBarIcon'),
                 ),
               ),
@@ -74,20 +74,6 @@ class Title extends StatelessWidget {
           style: TextStyle(fontSize: fontSize),
         ),
       ],
-    );
-  }
-}
-
-class LeadingIcon extends StatelessWidget {
-  const LeadingIcon({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      Images.appIconIconOnly,
-      fit: BoxFit.scaleDown,
     );
   }
 }
