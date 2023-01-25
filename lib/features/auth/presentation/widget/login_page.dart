@@ -16,21 +16,33 @@ class LoginPage extends StatelessWidget {
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(15),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                height: Theme.of(context).textTheme.displayLarge!.fontSize,
-                child: const QuizLabIcon(),
-              ),
-              const Center(
-                child: _Title(),
-              ),
-              const _LoginForm(
-                key: ValueKey<String>('loginForm'),
-              ),
-              const _AlternativeOptions()
-            ],
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return ListView.separated(
+                itemCount: 4,
+                separatorBuilder: (BuildContext context, int index) {
+                  return SizedBox(
+                    height: constraints.maxHeight * 0.1,
+                  );
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  return [
+                    SizedBox(
+                      height:
+                          Theme.of(context).textTheme.displayLarge!.fontSize,
+                      child: const QuizLabIcon(),
+                    ),
+                    const Center(
+                      child: _Title(),
+                    ),
+                    const _LoginForm(
+                      key: ValueKey<String>('loginForm'),
+                    ),
+                    const _AlternativeOptions()
+                  ][index];
+                },
+              );
+            },
           ),
         ),
       ),
