@@ -23,84 +23,111 @@ class LoginPage extends StatelessWidget {
                 height: Theme.of(context).textTheme.displayLarge!.fontSize,
                 child: const QuizLabIcon(),
               ),
-              Center(
-                child: Text(
-                  S.of(context).loginPageDisplayTitle,
-                  style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                        color: Theme.of(context)
-                            .extension<ThemeColors>()!
-                            .textColors
-                            .primary,
-                      ),
-                ),
+              const Center(
+                child: _Title(),
               ),
-              Form(
-                key: const ValueKey<String>('loginForm'),
-                child: Column(
-                  children: [
-                    _FormInput(
-                      key: const ValueKey('emailFormField'),
-                      label: S.of(context).emailLabel,
-                      icon: Icons.email,
-                      onChanged: (newValue) {},
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    _FormInput(
-                      key: const ValueKey('passwordFormField'),
-                      label: S.of(context).passwordLabel,
-                      icon: Icons.lock,
-                      obscureText: true,
-                      onChanged: (newValue) {},
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    ElevatedButton(
-                      key: const ValueKey('loginButton'),
-                      onPressed: () {
-                        GoRouter.of(context)
-                            .pushReplacementNamed(Routes.home.name);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                        ),
-                      ),
-                      child: Text(S.of(context).logInButtonLabel),
-                    ),
-                  ],
-                ),
+              const _LoginForm(
+                key: ValueKey<String>('loginForm'),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Divider(),
-                  GhostPillTextButton(
-                    key: const ValueKey('enterAnonymouslyButton'),
-                    onPressed: () {},
-                    child: Text(S.of(context).enterAnonymouslyButtonLabel),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        S.of(context).dontHaveAnAccountPhrase,
-                      ),
-                      TextButton(
-                        key: const ValueKey('signUpButton'),
-                        onPressed: () {},
-                        child: Text(S.of(context).loginPageSignUpButtonLabel),
-                      )
-                    ],
-                  ),
-                ],
-              )
+              const _AlternativeOptions()
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title();
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      S.of(context).loginPageDisplayTitle,
+      style: Theme.of(context).textTheme.displayMedium!.copyWith(
+            color:
+                Theme.of(context).extension<ThemeColors>()!.textColors.primary,
+          ),
+    );
+  }
+}
+
+class _LoginForm extends StatelessWidget {
+  const _LoginForm({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      child: Column(
+        children: [
+          _FormInput(
+            key: const ValueKey('emailFormField'),
+            label: S.of(context).emailLabel,
+            icon: Icons.email,
+            onChanged: (newValue) {},
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          _FormInput(
+            key: const ValueKey('passwordFormField'),
+            label: S.of(context).passwordLabel,
+            icon: Icons.lock,
+            obscureText: true,
+            onChanged: (newValue) {},
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          ElevatedButton(
+            key: const ValueKey('loginButton'),
+            onPressed: () {
+              GoRouter.of(context).pushReplacementNamed(Routes.home.name);
+            },
+            style: ElevatedButton.styleFrom(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+              ),
+            ),
+            child: Text(S.of(context).logInButtonLabel),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AlternativeOptions extends StatelessWidget {
+  const _AlternativeOptions();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Divider(),
+        GhostPillTextButton(
+          key: const ValueKey('enterAnonymouslyButton'),
+          onPressed: () {},
+          child: Text(S.of(context).enterAnonymouslyButtonLabel),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              S.of(context).dontHaveAnAccountPhrase,
+            ),
+            TextButton(
+              key: const ValueKey('signUpButton'),
+              onPressed: () {},
+              child: Text(S.of(context).loginPageSignUpButtonLabel),
+            )
+          ],
+        ),
+      ],
     );
   }
 }
