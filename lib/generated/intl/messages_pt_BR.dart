@@ -54,11 +54,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "createLabel": MessageLookupByLibrary.simpleMessage("Criar"),
         "createQuestionTitle":
             MessageLookupByLibrary.simpleMessage("Criar Questão"),
+        "dontHaveAnAccountPhrase":
+            MessageLookupByLibrary.simpleMessage("Ainda não tem uma conta?"),
         "dueDateLabel": MessageLookupByLibrary.simpleMessage("Data Limite"),
         "dueDateValue": m2,
+        "emailLabel": MessageLookupByLibrary.simpleMessage("Email"),
+        "enterAnonymouslyButtonLabel":
+            MessageLookupByLibrary.simpleMessage("Entrar anonimamente"),
         "goBackLabel": MessageLookupByLibrary.simpleMessage("Voltar"),
         "goHomeLabel": MessageLookupByLibrary.simpleMessage("Página inicial"),
         "isOptionCorrectLabel": MessageLookupByLibrary.simpleMessage("Correta"),
+        "logInButtonLabel": MessageLookupByLibrary.simpleMessage("Entrar"),
+        "loginPageDisplayTitle":
+            MessageLookupByLibrary.simpleMessage("Entre com sua conta"),
+        "loginPageSignUpButtonLabel":
+            MessageLookupByLibrary.simpleMessage("Cadastre-se"),
         "mustBeSetMessage":
             MessageLookupByLibrary.simpleMessage("Deve Estar Preenchido"),
         "noConnection": MessageLookupByLibrary.simpleMessage("Sem Conexão"),
@@ -69,6 +79,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Aleatória"),
         "optionInputLabel": MessageLookupByLibrary.simpleMessage("Opção"),
         "optionsTitle": MessageLookupByLibrary.simpleMessage("Opções"),
+        "passwordLabel": MessageLookupByLibrary.simpleMessage("Senha"),
         "questionAmountLabel": m3,
         "questionAnswerPageTitle":
             MessageLookupByLibrary.simpleMessage("Respondendo..."),

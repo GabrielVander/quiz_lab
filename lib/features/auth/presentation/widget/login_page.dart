@@ -5,6 +5,7 @@ import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/ghost_pill_text_button.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
+import 'package:quiz_lab/generated/l10n.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -24,7 +25,7 @@ class LoginPage extends StatelessWidget {
               ),
               Center(
                 child: Text(
-                  'Login to your account',
+                  S.of(context).loginPageDisplayTitle,
                   style: Theme.of(context).textTheme.displayMedium!.copyWith(
                         color: Theme.of(context)
                             .extension<ThemeColors>()!
@@ -39,7 +40,7 @@ class LoginPage extends StatelessWidget {
                   children: [
                     _FormInput(
                       key: const ValueKey('emailFormField'),
-                      label: 'Email',
+                      label: S.of(context).emailLabel,
                       icon: Icons.email,
                       onChanged: (newValue) {},
                     ),
@@ -48,7 +49,7 @@ class LoginPage extends StatelessWidget {
                     ),
                     _FormInput(
                       key: const ValueKey('passwordFormField'),
-                      label: 'Password',
+                      label: S.of(context).passwordLabel,
                       icon: Icons.lock,
                       obscureText: true,
                       onChanged: (newValue) {},
@@ -67,7 +68,7 @@ class LoginPage extends StatelessWidget {
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
                       ),
-                      child: const Text('Log in'),
+                      child: Text(S.of(context).logInButtonLabel),
                     ),
                   ],
                 ),
@@ -79,18 +80,18 @@ class LoginPage extends StatelessWidget {
                   GhostPillTextButton(
                     key: const ValueKey('enterAnonymouslyButton'),
                     onPressed: () {},
-                    child: const Text('Enter anonymously'),
+                    child: Text(S.of(context).enterAnonymouslyButtonLabel),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Don't have an account?",
+                      Text(
+                        S.of(context).dontHaveAnAccountPhrase,
                       ),
                       TextButton(
                         key: const ValueKey('signUpButton'),
                         onPressed: () {},
-                        child: const Text('Sign Up'),
+                        child: Text(S.of(context).loginPageSignUpButtonLabel),
                       )
                     ],
                   ),

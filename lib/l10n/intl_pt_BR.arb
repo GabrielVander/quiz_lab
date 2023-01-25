@@ -35,5 +35,12 @@
   "answerQuestionButtonLabel": "Responder",
   "questionDisplayCorrectAnswer": "Correto",
   "questionDisplayIncorrectAnswer": "Incorreto",
-  "openRandomQuestionButtonLabel": "Aleatória"
+  "openRandomQuestionButtonLabel": "Aleatória",
+  "loginPageDisplayTitle": "Entre com sua conta",
+  "emailLabel": "Email",
+  "passwordLabel": "Senha",
+  "logInButtonLabel": "Entrar",
+  "enterAnonymouslyButtonLabel": "Entrar anonimamente",
+  "dontHaveAnAccountPhrase": "Ainda não tem uma conta?",
+  "loginPageSignUpButtonLabel": "Cadastre-se"
 }
