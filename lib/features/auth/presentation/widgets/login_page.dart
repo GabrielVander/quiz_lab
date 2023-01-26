@@ -1,47 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/ghost_pill_text_button.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
+import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginPage extends HookWidget {
+  const LoginPage({
+    super.key,
+    required LoginPageCubit loginPageCubit,
+  }) : _cubit = loginPageCubit;
+
+  final LoginPageCubit _cubit;
 
   @override
   Widget build(BuildContext context) {
+    final state = useBlocBuilder(_cubit);
+
     return SafeArea(
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(15),
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              return ListView.separated(
-                itemCount: 4,
-                separatorBuilder: (BuildContext context, int index) {
-                  return SizedBox(
-                    height: constraints.maxHeight * 0.1,
-                  );
-                },
-                itemBuilder: (BuildContext context, int index) {
-                  return [
-                    SizedBox(
-                      height:
-                          Theme.of(context).textTheme.displayLarge!.fontSize,
-                      child: const QuizLabIcon(),
-                    ),
-                    const Center(
-                      child: _Title(),
-                    ),
-                    const _LoginForm(
-                      key: ValueKey<String>('loginForm'),
-                    ),
-                    const _AlternativeOptions()
-                  ][index];
-                },
-              );
+          child: Builder(
+            builder: (context) {
+              if (state is LoginPageViewModelUpdated) {
+                return LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return ListView.separated(
+                      itemCount: 4,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return SizedBox(
+                          height: constraints.maxHeight * 0.1,
+                        );
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        return [
+                          SizedBox(
+                            height: Theme.of(context)
+                                .textTheme
+                                .displayLarge!
+                                .fontSize,
+                            child: const QuizLabIcon(),
+                          ),
+                          const Center(
+                            child: _Title(),
+                          ),
+                          _LoginForm(
+                            key: const ValueKey<String>('loginForm'),
+                            emailViewModel: state.viewModel.email,
+                            passwordViewModel: state.viewModel.password,
+                          ),
+                          const _AlternativeOptions()
+                        ][index];
+                      },
+                    );
+                  },
+                );
+              }
+
+              return Container();
             },
           ),
         ),
@@ -68,29 +90,23 @@ class _Title extends StatelessWidget {
 class _LoginForm extends StatelessWidget {
   const _LoginForm({
     super.key,
+    required this.emailViewModel,
+    required this.passwordViewModel,
   });
+
+  final EmailViewModel emailViewModel;
+  final PasswordViewModel passwordViewModel;
 
   @override
   Widget build(BuildContext context) {
     return Form(
       child: Column(
         children: [
-          _FormInput(
-            key: const ValueKey('emailFormField'),
-            label: S.of(context).emailLabel,
-            icon: Icons.email,
-            onChanged: (newValue) {},
-          ),
+          _EmailInput(emailViewModel: emailViewModel),
           const SizedBox(
             height: 15,
           ),
-          _FormInput(
-            key: const ValueKey('passwordFormField'),
-            label: S.of(context).passwordLabel,
-            icon: Icons.lock,
-            obscureText: true,
-            onChanged: (newValue) {},
-          ),
+          _PasswordInput(passwordViewModel: passwordViewModel),
           const SizedBox(
             height: 15,
           ),
@@ -108,6 +124,65 @@ class _LoginForm extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _EmailInput extends StatelessWidget {
+  const _EmailInput({
+    required this.emailViewModel,
+  });
+
+  final EmailViewModel emailViewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) {
+        String? errorMessage;
+
+        if (emailViewModel.isEmpty && emailViewModel.showError) {
+          errorMessage = S.of(context).mustBeSetMessage;
+        }
+
+        return _FormInput(
+          key: const ValueKey('emailFormField'),
+          label: S.of(context).emailLabel,
+          icon: Icons.email,
+          errorMessage: errorMessage,
+          onChanged: (newValue) {},
+        );
+      },
+    );
+  }
+}
+
+class _PasswordInput extends StatelessWidget {
+  const _PasswordInput({
+    required this.passwordViewModel,
+  });
+
+  final PasswordViewModel passwordViewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) {
+        String? errorMessage;
+
+        if (passwordViewModel.isEmpty && passwordViewModel.showError) {
+          errorMessage = S.of(context).mustBeSetMessage;
+        }
+
+        return _FormInput(
+          key: const ValueKey('passwordFormField'),
+          label: S.of(context).passwordLabel,
+          icon: Icons.lock,
+          obscureText: true,
+          errorMessage: errorMessage,
+          onChanged: (newValue) {},
+        );
+      },
     );
   }
 }
@@ -150,12 +225,14 @@ class _FormInput extends HookWidget {
     required this.label,
     required this.icon,
     required this.onChanged,
+    this.errorMessage,
     this.obscureText = false,
   });
 
   final String label;
   final IconData icon;
   final bool obscureText;
+  final String? errorMessage;
   final void Function(String newValue) onChanged;
 
   @override
@@ -177,6 +254,7 @@ class _FormInput extends HookWidget {
         onChanged: onChanged,
         obscureText: obscureText,
         decoration: InputDecoration(
+          errorText: errorMessage,
           prefixIcon: Icon(
             icon,
             color: activeInactiveColor,
