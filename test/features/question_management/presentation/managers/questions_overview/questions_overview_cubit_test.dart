@@ -136,7 +136,7 @@ void main() {
           ]
         ],
       ]),
-          (values) {
+      (values) {
         final questions = values[0] as List<List<Question>>;
         final overviewItemsToReturn =
             values[1] as List<List<QuestionsOverviewItemViewModel>>;
@@ -181,7 +181,7 @@ void main() {
           [
             isA<QuestionsOverviewLoading>(),
             isA<QuestionsOverviewErrorOccurred>().having(
-                  (state) => state.message,
+              (state) => state.message,
               'message',
               '',
             ),
@@ -192,14 +192,14 @@ void main() {
           [
             isA<QuestionsOverviewLoading>(),
             isA<QuestionsOverviewErrorOccurred>().having(
-                  (state) => state.message,
+              (state) => state.message,
               'message',
               'v^s',
             ),
           ],
         ],
       ]),
-          (values) {
+      (values) {
         final message = values[0] as String;
         final expectedStates = values[1] as List<Matcher>;
 
@@ -245,7 +245,7 @@ void main() {
           ]
         ],
       ]),
-          (values) {
+      (values) {
         final questionId = values[0] as String;
         final expectedStates = values[1] as List<Matcher>;
 
@@ -307,7 +307,7 @@ void main() {
           [
             isA<QuestionsOverviewLoading>(),
             isA<QuestionsOverviewErrorOccurred>().having(
-                  (state) => state.message,
+              (state) => state.message,
               'message',
               QuestionEntityMapperFailure.unexpectedDifficultyValue(
                 value: '',
@@ -334,7 +334,7 @@ void main() {
           [
             isA<QuestionsOverviewLoading>(),
             isA<QuestionsOverviewErrorOccurred>().having(
-                  (state) => state.message,
+              (state) => state.message,
               'message',
               QuestionEntityMapperFailure.unexpectedDifficultyValue(
                 value: 'Gjz7RKKZ',
@@ -357,7 +357,7 @@ void main() {
           [
             isA<QuestionsOverviewLoading>(),
             isA<QuestionsOverviewErrorOccurred>().having(
-                  (state) => state.message,
+              (state) => state.message,
               'message',
               UpdateQuestionUseCaseFailure.repositoryFailure('').message,
             ),
@@ -378,14 +378,14 @@ void main() {
           [
             isA<QuestionsOverviewLoading>(),
             isA<QuestionsOverviewErrorOccurred>().having(
-                  (state) => state.message,
+              (state) => state.message,
               'message',
               UpdateQuestionUseCaseFailure.repositoryFailure('#1q').message,
             ),
           ]
         ],
       ]),
-          (values) {
+      (values) {
         final viewModel = values[0] as QuestionsOverviewItemViewModel;
         final questionEntityMapperResult =
             values[1] as Result<Question, QuestionEntityMapperFailure>;

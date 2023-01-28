@@ -9,7 +9,7 @@ import connectivity_plus
 import device_info_plus
 import flutter_web_auth_2
 import package_info_plus
-import path_provider_macos
+import path_provider_foundation
 import url_launcher_macos
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
