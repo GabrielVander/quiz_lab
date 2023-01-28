@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/ghost_pill_text_button.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
-import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
@@ -54,6 +52,9 @@ class LoginPage extends HookWidget {
                             key: const ValueKey<String>('loginForm'),
                             emailViewModel: state.viewModel.email,
                             passwordViewModel: state.viewModel.password,
+                            onLogin: _cubit.onLogin,
+                            onEmailChange: _cubit.onEmailChange,
+                            onPasswordChange: _cubit.onPasswordChange,
                           ),
                           const _AlternativeOptions()
                         ][index];
@@ -92,29 +93,39 @@ class _LoginForm extends StatelessWidget {
     super.key,
     required this.emailViewModel,
     required this.passwordViewModel,
+    required this.onEmailChange,
+    required this.onPasswordChange,
+    required this.onLogin,
   });
 
   final EmailViewModel emailViewModel;
   final PasswordViewModel passwordViewModel;
+  final void Function(String newValue) onEmailChange;
+  final void Function(String newValue) onPasswordChange;
+  final void Function() onLogin;
 
   @override
   Widget build(BuildContext context) {
     return Form(
       child: Column(
         children: [
-          _EmailInput(emailViewModel: emailViewModel),
+          _EmailInput(
+            viewModel: emailViewModel,
+            onChange: onEmailChange,
+          ),
           const SizedBox(
             height: 15,
           ),
-          _PasswordInput(passwordViewModel: passwordViewModel),
+          _PasswordInput(
+            viewModel: passwordViewModel,
+            onChange: onPasswordChange,
+          ),
           const SizedBox(
             height: 15,
           ),
           ElevatedButton(
             key: const ValueKey('loginButton'),
-            onPressed: () {
-              GoRouter.of(context).pushReplacementNamed(Routes.home.name);
-            },
+            onPressed: onLogin,
             style: ElevatedButton.styleFrom(
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -130,10 +141,12 @@ class _LoginForm extends StatelessWidget {
 
 class _EmailInput extends StatelessWidget {
   const _EmailInput({
-    required this.emailViewModel,
+    required this.viewModel,
+    required this.onChange,
   });
 
-  final EmailViewModel emailViewModel;
+  final EmailViewModel viewModel;
+  final void Function(String newValue) onChange;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +154,7 @@ class _EmailInput extends StatelessWidget {
       builder: (context) {
         String? errorMessage;
 
-        if (emailViewModel.isEmpty && emailViewModel.showError) {
+        if (viewModel.isEmpty && viewModel.showError) {
           errorMessage = S.of(context).mustBeSetMessage;
         }
 
@@ -150,7 +163,8 @@ class _EmailInput extends StatelessWidget {
           label: S.of(context).emailLabel,
           icon: Icons.email,
           errorMessage: errorMessage,
-          onChanged: (newValue) {},
+          onChange: onChange,
+          value: viewModel.value,
         );
       },
     );
@@ -159,10 +173,12 @@ class _EmailInput extends StatelessWidget {
 
 class _PasswordInput extends StatelessWidget {
   const _PasswordInput({
-    required this.passwordViewModel,
+    required this.viewModel,
+    required this.onChange,
   });
 
-  final PasswordViewModel passwordViewModel;
+  final PasswordViewModel viewModel;
+  final void Function(String) onChange;
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +186,7 @@ class _PasswordInput extends StatelessWidget {
       builder: (context) {
         String? errorMessage;
 
-        if (passwordViewModel.isEmpty && passwordViewModel.showError) {
+        if (viewModel.isEmpty && viewModel.showError) {
           errorMessage = S.of(context).mustBeSetMessage;
         }
 
@@ -180,7 +196,8 @@ class _PasswordInput extends StatelessWidget {
           icon: Icons.lock,
           obscureText: true,
           errorMessage: errorMessage,
-          onChanged: (newValue) {},
+          onChange: onChange,
+          value: viewModel.value,
         );
       },
     );
@@ -224,7 +241,8 @@ class _FormInput extends HookWidget {
     super.key,
     required this.label,
     required this.icon,
-    required this.onChanged,
+    required this.onChange,
+    required this.value,
     this.errorMessage,
     this.obscureText = false,
   });
@@ -232,8 +250,9 @@ class _FormInput extends HookWidget {
   final String label;
   final IconData icon;
   final bool obscureText;
+  final String value;
   final String? errorMessage;
-  final void Function(String newValue) onChanged;
+  final void Function(String newValue) onChange;
 
   @override
   Widget build(BuildContext context) {
@@ -245,13 +264,16 @@ class _FormInput extends HookWidget {
 
     final activeInactiveColor = isEditing.value ? activeColor : inactiveColor;
 
+    final textController = TextEditingController()..text = value;
+
     return Focus(
       onFocusChange: (bool gainedFocus) {
         isEditing.value = gainedFocus;
       },
       child: TextFormField(
+        controller: textController,
         style: Theme.of(context).textTheme.titleMedium,
-        onChanged: onChanged,
+        onChanged: onChange,
         obscureText: obscureText,
         decoration: InputDecoration(
           errorText: errorMessage,

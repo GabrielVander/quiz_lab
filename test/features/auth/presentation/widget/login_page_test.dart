@@ -102,7 +102,7 @@ void main() {
     'should display form errors when a form error view model is emitted',
     () {
       testWidgets(
-        'empty email error',
+        'empty password error',
         (WidgetTester widgetTester) async {
           mocktail.when(() => loginPageCubit.state).thenReturn(
                 LoginPageState.viewModelUpdated(
@@ -162,6 +162,148 @@ void main() {
       );
     },
   );
+
+  for (final email in [
+    '',
+    'Aqhv&Wf',
+  ]) {
+    testWidgets('should display email from view model: "$email"',
+        (WidgetTester widgetTester) async {
+      mocktail.when(() => loginPageCubit.state).thenReturn(
+            LoginPageState.viewModelUpdated(
+              LoginPageViewModel(
+                email: EmailViewModel(value: email),
+                password: const PasswordViewModel(value: ''),
+              ),
+            ),
+          );
+
+      await _pumpTarget(
+        widgetTester,
+        localizationsDelegateMock,
+        loginPageCubit,
+      );
+
+      expect(
+        find.widgetWithText(TextFormField, email),
+        findsAtLeastNWidgets(1),
+      );
+    });
+  }
+
+  for (final password in [
+    '',
+    '^P22!t',
+  ]) {
+    testWidgets('should display password from view model: "$password"',
+        (WidgetTester widgetTester) async {
+      mocktail.when(() => loginPageCubit.state).thenReturn(
+            LoginPageState.viewModelUpdated(
+              LoginPageViewModel(
+                email: const EmailViewModel(value: ''),
+                password: PasswordViewModel(value: password),
+              ),
+            ),
+          );
+
+      await _pumpTarget(
+        widgetTester,
+        localizationsDelegateMock,
+        loginPageCubit,
+      );
+
+      expect(
+        find.widgetWithText(TextFormField, password),
+        findsAtLeastNWidgets(1),
+      );
+    });
+  }
+
+  for (final email in [
+    'a',
+    'aB',
+    'aBwNUcz',
+  ]) {
+    testWidgets('should call cubit with given email = "$email" on email input',
+        (WidgetTester widgetTester) async {
+      mocktail.when(() => loginPageCubit.state).thenReturn(
+            LoginPageState.viewModelUpdated(
+              const LoginPageViewModel(
+                email: EmailViewModel(value: ''),
+                password: PasswordViewModel(value: ''),
+              ),
+            ),
+          );
+
+      await _pumpTarget(
+        widgetTester,
+        localizationsDelegateMock,
+        loginPageCubit,
+      );
+
+      await widgetTester.enterText(
+        find.byKey(const ValueKey('emailFormField')),
+        email,
+      );
+
+      mocktail.verify(() => loginPageCubit.onEmailChange(email)).called(1);
+    });
+  }
+
+  for (final password in [
+    'W',
+    r'4bv1Bn$&',
+  ]) {
+    testWidgets(
+        'should call cubit with given password = "$password" on password input',
+        (WidgetTester widgetTester) async {
+      mocktail.when(() => loginPageCubit.state).thenReturn(
+            LoginPageState.viewModelUpdated(
+              const LoginPageViewModel(
+                email: EmailViewModel(value: ''),
+                password: PasswordViewModel(value: ''),
+              ),
+            ),
+          );
+
+      await _pumpTarget(
+        widgetTester,
+        localizationsDelegateMock,
+        loginPageCubit,
+      );
+
+      await widgetTester.enterText(
+        find.byKey(const ValueKey('passwordFormField')),
+        password,
+      );
+
+      mocktail
+          .verify(() => loginPageCubit.onPasswordChange(password))
+          .called(1);
+    });
+  }
+
+  testWidgets('should call cubit when login button is pressed',
+      (WidgetTester widgetTester) async {
+    mocktail.when(() => loginPageCubit.state).thenReturn(
+          LoginPageState.viewModelUpdated(
+            const LoginPageViewModel(
+              email: EmailViewModel(value: ''),
+              password: PasswordViewModel(value: ''),
+            ),
+          ),
+        );
+
+    await _pumpTarget(
+      widgetTester,
+      localizationsDelegateMock,
+      loginPageCubit,
+    );
+
+    await widgetTester.tap(find.byKey(const ValueKey('loginButton')));
+
+    mocktail.verify(() => loginPageCubit.onLogin()).called(1);
+  });
 }
 
 Future<void> _pumpTarget(
@@ -181,8 +323,14 @@ Future<void> _pumpTarget(
         data: lightTheme,
         child: MediaQuery(
           data: const MediaQueryData(),
-          child: LoginPage(
-            loginPageCubit: loginPageCubit,
+          child: Overlay(
+            initialEntries: [
+              OverlayEntry(
+                builder: (BuildContext context) => LoginPage(
+                  loginPageCubit: loginPageCubit,
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -6,4 +6,10 @@ part 'login_page_state.dart';
 
 class LoginPageCubit extends Cubit<LoginPageState> {
   LoginPageCubit() : super(LoginPageState.initial());
+
+  void onLogin() {}
+
+  void onEmailChange(String email) {}
+
+  void onPasswordChange(String password) {}
 }
