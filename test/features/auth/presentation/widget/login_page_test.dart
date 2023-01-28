@@ -2,30 +2,36 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 import 'package:quiz_lab/features/auth/presentation/widgets/login_page.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
+import '../../../../test_utils/helper_functions.dart';
+
 void main() {
   late S localizationsMock;
   late AppLocalizationDelegate localizationsDelegateMock;
-  late LoginPageCubit loginPageCubit;
+  late GoRouter goRouterMock;
+  late LoginPageCubit loginPageCubitMock;
 
   setUp(() {
     localizationsMock = _SMock();
     localizationsDelegateMock =
         _LocalizationsDelegateMock(localizations: localizationsMock);
-    loginPageCubit = _LoginPageCubitMock();
+    goRouterMock = _GoRouterMock();
+    loginPageCubitMock = _LoginPageCubitMock();
   });
 
   tearDown(mocktail.resetMocktailState);
 
   testWidgets('should have expected structure',
       (WidgetTester widgetTester) async {
-    mocktail.when(() => loginPageCubit.state).thenReturn(
+    mocktail.when(() => loginPageCubitMock.state).thenReturn(
           LoginPageState.viewModelUpdated(
             const LoginPageViewModel(
               email: EmailViewModel(value: ''),
@@ -37,7 +43,8 @@ void main() {
     await _pumpTarget(
       widgetTester,
       localizationsDelegateMock,
-      loginPageCubit,
+      loginPageCubitMock,
+      goRouterMock,
     );
 
     expect(find.text(localizationsMock.loginPageDisplayTitle), findsOneWidget);
@@ -98,13 +105,34 @@ void main() {
     );
   });
 
+  for (final route in Routes.values) {
+    testWidgets(
+        'should replace with given $route when cubit state is '
+        '[LoginPagePushRouteReplacing]', (widgetTester) async {
+      mocktail.when(() => loginPageCubitMock.state).thenReturn(
+            LoginPageState.pushRouteReplacing(route),
+          );
+
+      await _pumpTarget(
+        widgetTester,
+        localizationsDelegateMock,
+        loginPageCubitMock,
+        goRouterMock,
+      );
+
+      mocktail
+          .verify(() => goRouterMock.pushReplacementNamed(route.name))
+          .called(1);
+    });
+  }
+
   group(
     'should display form errors when a form error view model is emitted',
     () {
       testWidgets(
         'empty password error',
         (WidgetTester widgetTester) async {
-          mocktail.when(() => loginPageCubit.state).thenReturn(
+          mocktail.when(() => loginPageCubitMock.state).thenReturn(
                 LoginPageState.viewModelUpdated(
                   const LoginPageViewModel(
                     email: EmailViewModel(
@@ -121,7 +149,8 @@ void main() {
           await _pumpTarget(
             widgetTester,
             localizationsDelegateMock,
-            loginPageCubit,
+            loginPageCubitMock,
+            goRouterMock,
           );
 
           expect(
@@ -134,7 +163,7 @@ void main() {
       testWidgets(
         'empty password error',
         (WidgetTester widgetTester) async {
-          mocktail.when(() => loginPageCubit.state).thenReturn(
+          mocktail.when(() => loginPageCubitMock.state).thenReturn(
                 LoginPageState.viewModelUpdated(
                   const LoginPageViewModel(
                     email: EmailViewModel(
@@ -151,7 +180,8 @@ void main() {
           await _pumpTarget(
             widgetTester,
             localizationsDelegateMock,
-            loginPageCubit,
+            loginPageCubitMock,
+            goRouterMock,
           );
 
           expect(
@@ -169,7 +199,7 @@ void main() {
   ]) {
     testWidgets('should display email from view model: "$email"',
         (WidgetTester widgetTester) async {
-      mocktail.when(() => loginPageCubit.state).thenReturn(
+      mocktail.when(() => loginPageCubitMock.state).thenReturn(
             LoginPageState.viewModelUpdated(
               LoginPageViewModel(
                 email: EmailViewModel(value: email),
@@ -181,7 +211,8 @@ void main() {
       await _pumpTarget(
         widgetTester,
         localizationsDelegateMock,
-        loginPageCubit,
+        loginPageCubitMock,
+        goRouterMock,
       );
 
       expect(
@@ -197,7 +228,7 @@ void main() {
   ]) {
     testWidgets('should display password from view model: "$password"',
         (WidgetTester widgetTester) async {
-      mocktail.when(() => loginPageCubit.state).thenReturn(
+      mocktail.when(() => loginPageCubitMock.state).thenReturn(
             LoginPageState.viewModelUpdated(
               LoginPageViewModel(
                 email: const EmailViewModel(value: ''),
@@ -209,7 +240,8 @@ void main() {
       await _pumpTarget(
         widgetTester,
         localizationsDelegateMock,
-        loginPageCubit,
+        loginPageCubitMock,
+        goRouterMock,
       );
 
       expect(
@@ -226,7 +258,7 @@ void main() {
   ]) {
     testWidgets('should call cubit with given email = "$email" on email input',
         (WidgetTester widgetTester) async {
-      mocktail.when(() => loginPageCubit.state).thenReturn(
+      mocktail.when(() => loginPageCubitMock.state).thenReturn(
             LoginPageState.viewModelUpdated(
               const LoginPageViewModel(
                 email: EmailViewModel(value: ''),
@@ -238,7 +270,8 @@ void main() {
       await _pumpTarget(
         widgetTester,
         localizationsDelegateMock,
-        loginPageCubit,
+        loginPageCubitMock,
+        goRouterMock,
       );
 
       await widgetTester.enterText(
@@ -246,7 +279,7 @@ void main() {
         email,
       );
 
-      mocktail.verify(() => loginPageCubit.onEmailChange(email)).called(1);
+      mocktail.verify(() => loginPageCubitMock.onEmailChange(email)).called(1);
     });
   }
 
@@ -257,7 +290,7 @@ void main() {
     testWidgets(
         'should call cubit with given password = "$password" on password input',
         (WidgetTester widgetTester) async {
-      mocktail.when(() => loginPageCubit.state).thenReturn(
+      mocktail.when(() => loginPageCubitMock.state).thenReturn(
             LoginPageState.viewModelUpdated(
               const LoginPageViewModel(
                 email: EmailViewModel(value: ''),
@@ -269,7 +302,8 @@ void main() {
       await _pumpTarget(
         widgetTester,
         localizationsDelegateMock,
-        loginPageCubit,
+        loginPageCubitMock,
+        goRouterMock,
       );
 
       await widgetTester.enterText(
@@ -278,14 +312,14 @@ void main() {
       );
 
       mocktail
-          .verify(() => loginPageCubit.onPasswordChange(password))
+          .verify(() => loginPageCubitMock.onPasswordChange(password))
           .called(1);
     });
   }
 
   testWidgets('should call cubit when login button is pressed',
       (WidgetTester widgetTester) async {
-    mocktail.when(() => loginPageCubit.state).thenReturn(
+    mocktail.when(() => loginPageCubitMock.state).thenReturn(
           LoginPageState.viewModelUpdated(
             const LoginPageViewModel(
               email: EmailViewModel(value: ''),
@@ -297,12 +331,60 @@ void main() {
     await _pumpTarget(
       widgetTester,
       localizationsDelegateMock,
-      loginPageCubit,
+      loginPageCubitMock,
+      goRouterMock,
     );
 
     await widgetTester.tap(find.byKey(const ValueKey('loginButton')));
 
-    mocktail.verify(() => loginPageCubit.onLogin()).called(1);
+    mocktail.verify(() => loginPageCubitMock.onLogin()).called(1);
+  });
+
+  testWidgets('should call cubit when enter anonymously button is pressed',
+      (WidgetTester widgetTester) async {
+    mocktail.when(() => loginPageCubitMock.state).thenReturn(
+          LoginPageState.viewModelUpdated(
+            const LoginPageViewModel(
+              email: EmailViewModel(value: ''),
+              password: PasswordViewModel(value: ''),
+            ),
+          ),
+        );
+
+    await _pumpTarget(
+      widgetTester,
+      localizationsDelegateMock,
+      loginPageCubitMock,
+      goRouterMock,
+    );
+
+    await widgetTester
+        .tap(find.byKey(const ValueKey('enterAnonymouslyButton')));
+
+    mocktail.verify(() => loginPageCubitMock.onEnterAnonymously()).called(1);
+  });
+
+  testWidgets('should call cubit when sign up button is pressed',
+      (WidgetTester widgetTester) async {
+    mocktail.when(() => loginPageCubitMock.state).thenReturn(
+          LoginPageState.viewModelUpdated(
+            const LoginPageViewModel(
+              email: EmailViewModel(value: ''),
+              password: PasswordViewModel(value: ''),
+            ),
+          ),
+        );
+
+    await _pumpTarget(
+      widgetTester,
+      localizationsDelegateMock,
+      loginPageCubitMock,
+      goRouterMock,
+    );
+
+    await safeTapByKey(widgetTester, const ValueKey('signUpButton'));
+
+    mocktail.verify(() => loginPageCubitMock.onSignUp()).called(1);
   });
 }
 
@@ -310,6 +392,7 @@ Future<void> _pumpTarget(
   WidgetTester widgetTester,
   AppLocalizationDelegate localizationsDelegateMock,
   LoginPageCubit loginPageCubit,
+  GoRouter goRouter,
 ) async {
   await widgetTester.pumpWidget(
     Localizations(
@@ -326,8 +409,11 @@ Future<void> _pumpTarget(
           child: Overlay(
             initialEntries: [
               OverlayEntry(
-                builder: (BuildContext context) => LoginPage(
-                  loginPageCubit: loginPageCubit,
+                builder: (BuildContext context) => InheritedGoRouter(
+                  goRouter: goRouter,
+                  child: LoginPage(
+                    loginPageCubit: loginPageCubit,
+                  ),
                 ),
               ),
             ],
@@ -384,3 +470,5 @@ class _LoginPageCubitMock extends mocktail.Mock implements LoginPageCubit {
   @override
   Stream<LoginPageState> get stream => const Stream.empty();
 }
+
+class _GoRouterMock extends mocktail.Mock implements GoRouter {}

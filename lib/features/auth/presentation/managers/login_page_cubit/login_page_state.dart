@@ -8,6 +8,9 @@ abstract class LoginPageState {
 
   factory LoginPageState.viewModelUpdated(LoginPageViewModel viewModel) =>
       LoginPageViewModelUpdated._(viewModel: viewModel);
+
+  factory LoginPageState.pushRouteReplacing(Routes route) =>
+      LoginPagePushRouteReplacing._(route: route);
 }
 
 class LoginPageInitial extends LoginPageState {
@@ -18,4 +21,10 @@ class LoginPageViewModelUpdated extends LoginPageState {
   const LoginPageViewModelUpdated._({required this.viewModel}) : super._();
 
   final LoginPageViewModel viewModel;
+}
+
+class LoginPagePushRouteReplacing extends LoginPageState {
+  const LoginPagePushRouteReplacing._({required this.route}) : super._();
+
+  final Routes route;
 }

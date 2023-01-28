@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/ghost_pill_text_button.dart';
@@ -26,6 +27,10 @@ class LoginPage extends HookWidget {
           padding: const EdgeInsets.all(15),
           child: Builder(
             builder: (context) {
+              if (state is LoginPagePushRouteReplacing) {
+                GoRouter.of(context).pushReplacementNamed(state.route.name);
+              }
+
               if (state is LoginPageViewModelUpdated) {
                 return LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
@@ -56,7 +61,10 @@ class LoginPage extends HookWidget {
                             onEmailChange: _cubit.onEmailChange,
                             onPasswordChange: _cubit.onPasswordChange,
                           ),
-                          const _AlternativeOptions()
+                          _AlternativeOptions(
+                            onEnterAnonymously: _cubit.onEnterAnonymously,
+                            onSignUp: _cubit.onSignUp,
+                          )
                         ][index];
                       },
                     );
@@ -205,7 +213,13 @@ class _PasswordInput extends StatelessWidget {
 }
 
 class _AlternativeOptions extends StatelessWidget {
-  const _AlternativeOptions();
+  const _AlternativeOptions({
+    required this.onEnterAnonymously,
+    required this.onSignUp,
+  });
+
+  final void Function() onEnterAnonymously;
+  final void Function() onSignUp;
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +229,7 @@ class _AlternativeOptions extends StatelessWidget {
         const Divider(),
         GhostPillTextButton(
           key: const ValueKey('enterAnonymouslyButton'),
-          onPressed: () {},
+          onPressed: onEnterAnonymously,
           child: Text(S.of(context).enterAnonymouslyButtonLabel),
         ),
         Row(
@@ -226,7 +240,7 @@ class _AlternativeOptions extends StatelessWidget {
             ),
             TextButton(
               key: const ValueKey('signUpButton'),
-              onPressed: () {},
+              onPressed: onSignUp,
               child: Text(S.of(context).loginPageSignUpButtonLabel),
             )
           ],
