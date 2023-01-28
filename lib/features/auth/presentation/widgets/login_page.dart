@@ -27,6 +27,12 @@ class LoginPage extends HookWidget {
           padding: const EdgeInsets.all(15),
           child: Builder(
             builder: (context) {
+              if (state is LoginPageInitial) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
               if (state is LoginPagePushRouteReplacing) {
                 GoRouter.of(context).pushReplacementNamed(state.route.name);
               }

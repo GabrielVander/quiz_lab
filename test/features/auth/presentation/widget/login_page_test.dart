@@ -29,6 +29,28 @@ void main() {
 
   tearDown(mocktail.resetMocktailState);
 
+  testWidgets(
+    'should display a circular progress indicator if cubit state is '
+    '[LoginPageInitial]',
+    (widgetTester) async {
+      mocktail
+          .when(() => loginPageCubitMock.state)
+          .thenReturn(LoginPageState.initial());
+
+      await _pumpTarget(
+        widgetTester,
+        localizationsDelegateMock,
+        loginPageCubitMock,
+        goRouterMock,
+      );
+
+      expect(
+        find.byType(CircularProgressIndicator),
+        findsAtLeastNWidgets(1),
+      );
+    },
+  );
+
   testWidgets('should have expected structure',
       (WidgetTester widgetTester) async {
     mocktail.when(() => loginPageCubitMock.state).thenReturn(
