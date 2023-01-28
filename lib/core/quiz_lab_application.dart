@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/presentation/manager/factories/core_cubit_factory.dart';
+import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
 import 'package:quiz_lab/core/presentation/widgets/home_page.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
+import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/widgets/login_page.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/factories/question_management_cubit_factory.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_creation_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_display_page.dart';
 import 'package:quiz_lab/generated/l10n.dart';
@@ -15,13 +19,20 @@ import 'package:quiz_lab/generated/l10n.dart';
 class QuizLabApplication extends StatelessWidget {
   const QuizLabApplication({
     super.key,
-    required CoreCubitFactory coreCubitFactory,
-    required QuestionManagementCubitFactory questionManagementCubitFactory,
-  })  : _coreCubitFactory = coreCubitFactory,
-        _questionManagementCubitFactory = questionManagementCubitFactory;
+    required this.networkCubit,
+    required this.bottomNavigationCubit,
+    required this.questionCreationCubit,
+    required this.questionsOverviewCubit,
+    required this.questionDisplayCubit,
+    required this.loginPageCubit,
+  });
 
-  final CoreCubitFactory _coreCubitFactory;
-  final QuestionManagementCubitFactory _questionManagementCubitFactory;
+  final NetworkCubit networkCubit;
+  final BottomNavigationCubit bottomNavigationCubit;
+  final QuestionCreationCubit questionCreationCubit;
+  final QuestionsOverviewCubit questionsOverviewCubit;
+  final QuestionDisplayCubit questionDisplayCubit;
+  final LoginPageCubit loginPageCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +44,9 @@ class QuizLabApplication extends StatelessWidget {
           path: Routes.home.path,
           builder: (BuildContext context, GoRouterState state) {
             return HomePage(
-              questionManagementCubitFactory: _questionManagementCubitFactory,
-              coreCubitFactory: _coreCubitFactory,
+              networkCubit: networkCubit,
+              bottomNavigationCubit: bottomNavigationCubit,
+              questionsOverviewCubit: questionsOverviewCubit,
             );
           },
         ),
@@ -43,8 +55,7 @@ class QuizLabApplication extends StatelessWidget {
           path: Routes.createQuestion.path,
           builder: (BuildContext context, GoRouterState state) {
             return QuestionCreationPage(
-              cubit:
-                  _questionManagementCubitFactory.makeQuestionCreationCubit(),
+              cubit: questionCreationCubit,
             );
           },
         ),
@@ -53,7 +64,7 @@ class QuizLabApplication extends StatelessWidget {
           path: Routes.displayQuestion.path,
           builder: (BuildContext context, GoRouterState state) {
             return QuestionDisplayPage(
-              cubit: _questionManagementCubitFactory.makeQuestionDisplayCubit(),
+              cubit: questionDisplayCubit,
               questionId: state.params['id'],
             );
           },
@@ -62,7 +73,9 @@ class QuizLabApplication extends StatelessWidget {
           name: Routes.login.name,
           path: Routes.login.path,
           builder: (BuildContext context, GoRouterState state) {
-            return const LoginPage();
+            return LoginPage(
+              loginPageCubit: loginPageCubit,
+            );
           },
         ),
       ],

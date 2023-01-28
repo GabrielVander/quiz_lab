@@ -4,7 +4,6 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/core/presentation/manager/factories/core_cubit_factory.dart';
 import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/assessments_page.dart';
@@ -13,29 +12,28 @@ import 'package:quiz_lab/core/presentation/widgets/quiz_lab_app_bar.dart';
 import 'package:quiz_lab/core/presentation/widgets/results_page.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/factories/question_management_cubit_factory.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/questions_overview_page.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class HomePage extends HookWidget {
-  HomePage({
+  const HomePage({
     super.key,
-    required QuestionManagementCubitFactory questionManagementCubitFactory,
-    required CoreCubitFactory coreCubitFactory,
-  })  : _questionManagementCubitFactory = questionManagementCubitFactory,
-        _bottomNavigationCubit = coreCubitFactory.makeBottomNavigationCubit(),
-        _networkCubit = coreCubitFactory.makeNetworkCubit();
+    required this.networkCubit,
+    required this.bottomNavigationCubit,
+    required this.questionsOverviewCubit,
+  });
 
-  final QuestionManagementCubitFactory _questionManagementCubitFactory;
-  final BottomNavigationCubit _bottomNavigationCubit;
-  final NetworkCubit _networkCubit;
+  final NetworkCubit networkCubit;
+  final BottomNavigationCubit bottomNavigationCubit;
+  final QuestionsOverviewCubit questionsOverviewCubit;
 
   @override
   Widget build(BuildContext context) {
-    final bottomNavigationState = useBlocBuilder(_bottomNavigationCubit);
+    final bottomNavigationState = useBlocBuilder(bottomNavigationCubit);
 
     if (bottomNavigationState is BottomNavigationInitial) {
-      _bottomNavigationCubit.transitionTo(
+      bottomNavigationCubit.transitionTo(
         newIndex: NavigationIndex.assessments.index,
       );
 
@@ -58,12 +56,12 @@ class HomePage extends HookWidget {
                 ? _BottomNavigationBar(
                     key: const ValueKey<String>('navBar'),
                     onItemTapped: (int newIndex) =>
-                        _bottomNavigationCubit.transitionTo(newIndex: newIndex),
+                        bottomNavigationCubit.transitionTo(newIndex: newIndex),
                     index: bottomNavigationState.newIndex,
                   )
                 : null,
             body: NetworkChecker(
-              cubit: _networkCubit,
+              cubit: networkCubit,
               child: Builder(
                 builder: (context) {
                   if (bottomNavigationState is BottomNavigationInitial) {
@@ -79,9 +77,7 @@ class HomePage extends HookWidget {
                           assessmentsOverviewCubit: AssessmentsOverviewCubit(),
                         ),
                         QuestionsOverviewPage(
-                          questionsOverviewCubit:
-                              _questionManagementCubitFactory
-                                  .makeQuestionsOverviewCubit(),
+                          questionsOverviewCubit: questionsOverviewCubit,
                         ),
                         const ResultsPage(),
                       ],
