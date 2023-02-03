@@ -2,14 +2,14 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentions_use_case.dart';
+import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 
 part 'login_page_state.dart';
 
 class LoginPageCubit extends Cubit<LoginPageState> {
   LoginPageCubit({
-    required LoginWithCredentionsUseCase loginWithCredentionsUseCase,
+    required LoginWithCredentialsUseCase loginWithCredentionsUseCase,
   })  : _loginWithCredentionsUseCase = loginWithCredentionsUseCase,
         super(LoginPageState.initial()) {
     _viewModel = defaultViewModel;
@@ -19,7 +19,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
   }
 
   final _logger = QuizLabLoggerFactory.createLogger<LoginPageCubit>();
-  final LoginWithCredentionsUseCase _loginWithCredentionsUseCase;
+  final LoginWithCredentialsUseCase _loginWithCredentionsUseCase;
 
   final defaultViewModel = const LoginPageViewModel(
     email: EmailViewModel(
@@ -62,7 +62,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     );
   }
 
-  void onLogin() async {
+  Future<void> onLogin() async {
     _logger.debug('Received login request');
 
     final isEmailEmpty = _viewModel.email.value.isEmpty;
@@ -92,7 +92,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     }
 
     final logInResult = await _loginWithCredentionsUseCase(
-      LoginWithCredentionsUseCaseInput(
+      LoginWithCredentialsUseCaseInput(
         email: _viewModel.email.value,
         password: _viewModel.password.value,
       ),
@@ -109,9 +109,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     }
 
     emit(
-      LoginPageState.displayLoggedInMessage(
-        logInResult.ok!.username,
-      ),
+      LoginPageState.displayLoggedInMessage(),
     );
 
     // emit(

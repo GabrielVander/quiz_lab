@@ -4,12 +4,13 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentions_use_case.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 
 void main() {
-  late LoginWithCredentionsUseCase loginWithCredentionsUseCaseMock;
+  late LoginWithCredentialsUseCase loginWithCredentionsUseCaseMock;
   late LoginPageCubit cubit;
 
   setUp(() {
@@ -183,7 +184,7 @@ void main() {
             mocktail
                 .when(
                   () => loginWithCredentionsUseCaseMock.call(
-                    const LoginWithCredentionsUseCaseInput(
+                    const LoginWithCredentialsUseCaseInput(
                       email: email,
                       password: password,
                     ),
@@ -223,22 +224,17 @@ void main() {
             const dummyEmail = 'k%qMlC';
             const dummyPassword = '5G4tC3';
 
-            const dummyUsername = '#!Ll%';
-
-            final fakeLoginWithCredentionsUseCaseOutput =
-                _FakeLoginWithCredentionsUseCaseOutput(dummyUsername);
-
             mocktail
                 .when(
                   () => loginWithCredentionsUseCaseMock.call(
-                    const LoginWithCredentionsUseCaseInput(
+                    const LoginWithCredentialsUseCaseInput(
                       email: dummyEmail,
                       password: dummyPassword,
                     ),
                   ),
                 )
                 .thenAnswer(
-                  (_) async => Result.ok(fakeLoginWithCredentionsUseCaseOutput),
+                  (_) async => const Result.ok(unit),
                 );
 
             unawaited(
@@ -248,11 +244,6 @@ void main() {
                   [
                     isA<LoginPageViewModelUpdated>(),
                     isA<LoginPageViewModelUpdated>(),
-                    isA<LoginPageDisplayLoggedInMessage>().having(
-                      (s) => s.username,
-                      'username',
-                      dummyUsername,
-                    ),
                   ],
                 ),
               ),
@@ -304,12 +295,4 @@ TypeMatcher<LoginPageViewModel> _defaultViewModelMatcher() {
 }
 
 class _LoginWithCredentionsUseCaseMock extends mocktail.Mock
-    implements LoginWithCredentionsUseCase {}
-
-class _FakeLoginWithCredentionsUseCaseOutput extends Fake
-    implements LoginWithCredentionsUseCaseOutput {
-  _FakeLoginWithCredentionsUseCaseOutput(this.username);
-
-  @override
-  final String username;
-}
+    implements LoginWithCredentialsUseCase {}

@@ -1,15 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 
 // ignore: one_member_abstracts
-abstract class LoginWithCredentionsUseCase {
-  Future<Result<LoginWithCredentionsUseCaseOutput, String>> call(
-    LoginWithCredentionsUseCaseInput input,
+abstract class LoginWithCredentialsUseCase {
+  Future<Result<Unit, String>> call(
+    LoginWithCredentialsUseCaseInput input,
   );
 }
 
-class LoginWithCredentionsUseCaseInput extends Equatable {
-  const LoginWithCredentionsUseCaseInput({
+class LoginWithCredentialsUseCaseInput extends Equatable {
+  const LoginWithCredentialsUseCaseInput({
     required this.email,
     required this.password,
   });

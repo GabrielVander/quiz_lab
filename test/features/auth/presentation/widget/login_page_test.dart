@@ -350,6 +350,8 @@ void main() {
           ),
         );
 
+    mocktail.when(() => loginPageCubitMock.onLogin()).thenAnswer((_) async {});
+
     await _pumpTarget(
       widgetTester,
       localizationsDelegateMock,
@@ -358,6 +360,8 @@ void main() {
     );
 
     await widgetTester.tap(find.byKey(const ValueKey('loginButton')));
+
+    await widgetTester.pump();
 
     mocktail.verify(() => loginPageCubitMock.onLogin()).called(1);
   });

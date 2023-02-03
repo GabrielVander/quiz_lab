@@ -17,8 +17,8 @@ abstract class LoginPageState {
   ) =>
       LoginPageDisplayErrorMessage._(type);
 
-  factory LoginPageState.displayLoggedInMessage(String username) =>
-      LoginPageDisplayLoggedInMessage._(username);
+  factory LoginPageState.displayLoggedInMessage() =>
+      const LoginPageDisplayLoggedInMessage._();
 }
 
 class LoginPageInitial extends LoginPageState {
@@ -44,7 +44,5 @@ class LoginPageDisplayErrorMessage extends LoginPageState {
 }
 
 class LoginPageDisplayLoggedInMessage extends LoginPageState {
-  const LoginPageDisplayLoggedInMessage._(this.username) : super._();
-
-  final String username;
+  const LoginPageDisplayLoggedInMessage._() : super._();
 }
