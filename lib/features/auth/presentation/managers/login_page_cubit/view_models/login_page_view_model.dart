@@ -11,6 +11,16 @@ class LoginPageViewModel {
 
   final EmailViewModel email;
   final PasswordViewModel password;
+
+  LoginPageViewModel copyWith({
+    EmailViewModel? email,
+    PasswordViewModel? password,
+  }) {
+    return LoginPageViewModel(
+      email: email ?? this.email,
+      password: password ?? this.password,
+    );
+  }
 }
 
 @immutable
@@ -24,6 +34,16 @@ class EmailViewModel {
   final bool showError;
 
   bool get isEmpty => value.isEmpty;
+
+  EmailViewModel copyWith({
+    String? value,
+    bool? showError,
+  }) {
+    return EmailViewModel(
+      value: value ?? this.value,
+      showError: showError ?? this.showError,
+    );
+  }
 }
 
 @immutable
@@ -37,4 +57,19 @@ class PasswordViewModel {
   final bool showError;
 
   bool get isEmpty => value.isEmpty;
+
+  PasswordViewModel copyWith({
+    String? value,
+    bool? showError,
+  }) {
+    return PasswordViewModel(
+      value: value ?? this.value,
+      showError: showError ?? this.showError,
+    );
+  }
+}
+
+enum LoginPageErrorTypeViewModel {
+  unableToLogin,
+  generic,
 }

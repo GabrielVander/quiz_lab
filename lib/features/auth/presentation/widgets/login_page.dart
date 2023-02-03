@@ -284,14 +284,12 @@ class _FormInput extends HookWidget {
 
     final activeInactiveColor = isEditing.value ? activeColor : inactiveColor;
 
-    final textController = TextEditingController()..text = value;
-
     return Focus(
       onFocusChange: (bool gainedFocus) {
         isEditing.value = gainedFocus;
       },
       child: TextFormField(
-        controller: textController,
+        initialValue: value,
         style: Theme.of(context).textTheme.titleMedium,
         onChanged: onChange,
         obscureText: obscureText,
