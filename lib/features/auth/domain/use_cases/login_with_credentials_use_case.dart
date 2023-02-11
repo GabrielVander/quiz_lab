@@ -24,16 +24,3 @@ class LoginWithCredentialsUseCaseInput extends Equatable {
         password,
       ];
 }
-
-class LoginWithCredentionsUseCaseOutput extends Equatable {
-  const LoginWithCredentionsUseCaseOutput({
-    required this.username,
-  });
-
-  final String username;
-
-  @override
-  List<Object> get props => [
-        username,
-      ];
-}

@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
@@ -16,11 +17,14 @@ abstract class AuthRepositoryError {
       AuthRepositoryUnexpectedError._(message: message);
 }
 
-class EmailCredentials {
-  EmailCredentials({required this.email, required this.password});
+class EmailCredentials extends Equatable {
+  const EmailCredentials({required this.email, required this.password});
 
   final String email;
   final String password;
+
+  @override
+  List<Object> get props => [email, password];
 }
 
 @immutable

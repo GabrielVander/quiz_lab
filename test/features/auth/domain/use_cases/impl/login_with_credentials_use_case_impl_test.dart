@@ -24,31 +24,37 @@ void main() {
 
   group('err flow', () {
     parameterizedTest(
-      'should return auth repository error message if it fails',
-      ParameterizedSource.value([
-        '',
-        '#SG',
+      'should return expected error message if auth repository fails',
+      ParameterizedSource.values([
+        [AuthRepositoryError.unexpected(message: ''), 'Unable to login: '],
+        [
+          AuthRepositoryError.unexpected(message: '#SG'),
+          'Unable to login: #SG',
+        ],
+        [
+          _FakeAuthRepositoryError(),
+          'Unable to login: Unknown error\nInstance of '
+              "'_FakeAuthRepositoryError'",
+        ]
       ]),
       (values) async {
         const dummyEmail = 'N3GKON@F';
         const dummyPassword = 's5o';
 
-        final errorMessage = values[0] as String;
+        final authError = values[0] as AuthRepositoryError;
+        final expectedErrorMessage = values[1] as String;
 
         mocktail
             .when(
               () => authRepository.loginWithEmailCredentials(
-                mocktail.any(
-                  that: isA<EmailCredentials>()
-                      .having((e) => e.email, 'email', dummyEmail)
-                      .having((e) => e.password, 'password', dummyPassword),
+                const EmailCredentials(
+                  email: dummyEmail,
+                  password: dummyPassword,
                 ),
               ),
             )
             .thenAnswer(
-              (_) async => Result.err(
-                AuthRepositoryError.unexpected(message: errorMessage),
-              ),
+              (_) async => Result.err(authError),
             );
 
         final result = await useCase(
@@ -59,7 +65,7 @@ void main() {
         );
 
         expect(result.isErr, true);
-        expect(result.err, 'Unable to login: $errorMessage');
+        expect(result.err, expectedErrorMessage);
       },
     );
   });
@@ -74,10 +80,9 @@ void main() {
         mocktail
             .when(
               () => authRepository.loginWithEmailCredentials(
-                mocktail.any(
-                  that: isA<EmailCredentials>()
-                      .having((e) => e.email, 'email', dummyEmail)
-                      .having((e) => e.password, 'password', dummyPassword),
+                const EmailCredentials(
+                  email: dummyEmail,
+                  password: dummyPassword,
                 ),
               ),
             )
@@ -100,3 +105,6 @@ void main() {
 class _AuthRepositoryMock extends mocktail.Mock implements AuthRepository {}
 
 class _FakeEmailCredentials extends mocktail.Fake implements EmailCredentials {}
+
+class _FakeAuthRepositoryError extends mocktail.Fake
+    implements AuthRepositoryError {}
