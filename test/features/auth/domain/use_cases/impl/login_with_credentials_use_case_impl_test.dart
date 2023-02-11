@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/auth/domain/entities/email_credentials.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/impl/login_with_credentials_use_case_impl.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
@@ -38,7 +37,7 @@ void main() {
 
         mocktail
             .when(
-              () => authRepository.loginWithCredentions(
+              () => authRepository.loginWithEmailCredentials(
                 mocktail.any(
                   that: isA<EmailCredentials>()
                       .having((e) => e.email, 'email', dummyEmail)
@@ -46,7 +45,11 @@ void main() {
                 ),
               ),
             )
-            .thenAnswer((_) async => Result<Unit, String>.err(errorMessage));
+            .thenAnswer(
+              (_) async => Result.err(
+                AuthRepositoryError.unexpected(message: errorMessage),
+              ),
+            );
 
         final result = await useCase(
           const LoginWithCredentialsUseCaseInput(
@@ -56,7 +59,7 @@ void main() {
         );
 
         expect(result.isErr, true);
-        expect(result.err, errorMessage);
+        expect(result.err, 'Unable to login: $errorMessage');
       },
     );
   });
@@ -70,7 +73,7 @@ void main() {
 
         mocktail
             .when(
-              () => authRepository.loginWithCredentions(
+              () => authRepository.loginWithEmailCredentials(
                 mocktail.any(
                   that: isA<EmailCredentials>()
                       .having((e) => e.email, 'email', dummyEmail)
@@ -78,7 +81,7 @@ void main() {
                 ),
               ),
             )
-            .thenAnswer((_) async => const Result<Unit, String>.ok(unit));
+            .thenAnswer((_) async => const Result.ok(unit));
 
         final result = await useCase(
           const LoginWithCredentialsUseCaseInput(
