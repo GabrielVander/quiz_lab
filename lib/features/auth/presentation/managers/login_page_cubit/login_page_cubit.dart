@@ -112,11 +112,11 @@ class LoginPageCubit extends Cubit<LoginPageState> {
       LoginPageState.displayLoggedInMessage(),
     );
 
-    // emit(
-    //   LoginPageState.pushRouteReplacing(
-    //     Routes.home,
-    //   ),
-    // );
+    emit(
+      LoginPageState.pushRouteReplacing(
+        Routes.home,
+      ),
+    );
   }
 
   void onEnterAnonymously() {}

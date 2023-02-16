@@ -4,6 +4,7 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
@@ -244,6 +245,9 @@ void main() {
                   [
                     isA<LoginPageViewModelUpdated>(),
                     isA<LoginPageViewModelUpdated>(),
+                    isA<LoginPageDisplayLoggedInMessage>(),
+                    isA<LoginPagePushRouteReplacing>()
+                        .having((s) => s.route, 'route', Routes.home),
                   ],
                 ),
               ),
@@ -251,8 +255,9 @@ void main() {
 
             cubit
               ..onEmailChange(dummyEmail)
-              ..onPasswordChange(dummyPassword)
-              ..onLogin();
+              ..onPasswordChange(dummyPassword);
+
+            await cubit.onLogin();
           },
         );
       },

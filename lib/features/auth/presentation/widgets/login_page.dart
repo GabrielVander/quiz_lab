@@ -34,7 +34,9 @@ class LoginPage extends HookWidget {
               }
 
               if (state is LoginPagePushRouteReplacing) {
-                GoRouter.of(context).pushReplacementNamed(state.route.name);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  GoRouter.of(context).pushReplacementNamed(state.route.name);
+                });
               }
 
               if (state is LoginPageViewModelUpdated) {
