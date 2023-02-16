@@ -198,6 +198,7 @@ void main() {
               emitsInOrder([
                 isA<LoginPageViewModelUpdated>(),
                 isA<LoginPageViewModelUpdated>(),
+                isA<LoginPageLoading>(),
                 isA<LoginPageDisplayErrorMessage>().having(
                   (s) => s.type,
                   'type',
@@ -245,6 +246,7 @@ void main() {
                   [
                     isA<LoginPageViewModelUpdated>(),
                     isA<LoginPageViewModelUpdated>(),
+                    isA<LoginPageLoading>(),
                     isA<LoginPageDisplayLoggedInMessage>(),
                     isA<LoginPagePushRouteReplacing>()
                         .having((s) => s.route, 'route', Routes.home),

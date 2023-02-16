@@ -19,6 +19,8 @@ abstract class LoginPageState {
 
   factory LoginPageState.displayLoggedInMessage() =>
       const LoginPageDisplayLoggedInMessage._();
+
+  factory LoginPageState.loading() => const LoginPageLoading._();
 }
 
 class LoginPageInitial extends LoginPageState {
@@ -45,4 +47,8 @@ class LoginPageDisplayErrorMessage extends LoginPageState {
 
 class LoginPageDisplayLoggedInMessage extends LoginPageState {
   const LoginPageDisplayLoggedInMessage._() : super._();
+}
+
+class LoginPageLoading extends LoginPageState {
+  const LoginPageLoading._() : super._();
 }

@@ -64,6 +64,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
 
   Future<void> onLogin() async {
     _logger.debug('Received login request');
+    emit(LoginPageState.loading());
 
     final isEmailEmpty = _viewModel.email.value.isEmpty;
     final isPasswordEmpty = _viewModel.password.value.isEmpty;

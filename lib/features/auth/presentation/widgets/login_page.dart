@@ -27,7 +27,7 @@ class LoginPage extends HookWidget {
           padding: const EdgeInsets.all(15),
           child: Builder(
             builder: (context) {
-              if (state is LoginPageInitial) {
+              if (state is LoginPageInitial || state is LoginPageLoading) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
