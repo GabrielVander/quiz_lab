@@ -2,22 +2,29 @@ import 'package:appwrite/appwrite.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/session_model.dart';
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 
 class AppwriteDataSource {
   AppwriteDataSource({
     required Account appwriteAccountService,
   }) : _appwriteAccountService = appwriteAccountService;
 
+  final _logger = QuizLabLoggerFactory.createLogger<AppwriteDataSource>();
+
   final Account _appwriteAccountService;
 
   Future<Result<SessionModel, String>> createEmailSession(
     EmailSessionCredentialsModel credentialsModel,
   ) async {
+    _logger.debug('Creating email session...');
+
     try {
       final session = await _appwriteAccountService.createEmailSession(
         email: credentialsModel.email,
         password: credentialsModel.password,
       );
+
+      _logger.debug('Email session created successfully');
 
       return Result.ok(
         SessionModel(
@@ -57,6 +64,7 @@ class AppwriteDataSource {
         ),
       );
     } on AppwriteException catch (e) {
+      _logger.error('Unable to create email session: $e');
       return Result.err(e.toString());
     }
   }
