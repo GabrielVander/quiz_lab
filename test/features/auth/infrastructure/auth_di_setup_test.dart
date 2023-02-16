@@ -6,7 +6,7 @@ import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.da
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/impl/login_with_credentials_use_case_impl.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
-import 'package:quiz_lab/features/auth/infrastructure/di_setup.dart';
+import 'package:quiz_lab/features/auth/infrastructure/auth_di_setup.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 
 void main() {
