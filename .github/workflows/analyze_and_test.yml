@@ -18,4 +18,4 @@ jobs:
       - name: Analyze code
         run: flutter analyze
       - name: Run tests
-        run: flutter pub run coverde check $MININUM_TEST_COVERAGE
+        run: flutter pub run coverde check ${{ vars.MININUM_TEST_COVERAGE }}
