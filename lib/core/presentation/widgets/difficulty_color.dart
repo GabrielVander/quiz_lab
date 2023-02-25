@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 
 class DifficultyColor extends StatelessWidget {
-  const DifficultyColor({super.key, required this.difficulty});
+  const DifficultyColor({
+    required this.difficulty,
+    super.key,
+  });
 
   final String difficulty;
 

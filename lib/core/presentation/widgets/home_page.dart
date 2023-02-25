@@ -18,10 +18,10 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class HomePage extends HookWidget {
   const HomePage({
-    super.key,
     required this.networkCubit,
     required this.bottomNavigationCubit,
     required this.questionsOverviewCubit,
+    super.key,
   });
 
   final NetworkCubit networkCubit;
@@ -134,9 +134,9 @@ class _Screens extends StatelessWidget {
 
 class _BottomNavigationBar extends StatelessWidget {
   const _BottomNavigationBar({
-    super.key,
     required this.index,
     required this.onItemTapped,
+    super.key,
   });
 
   final int index;

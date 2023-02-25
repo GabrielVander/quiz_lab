@@ -70,7 +70,10 @@ void main() {
               .thenThrow(AppwriteException('IR4N'));
 
           final result = await dataSource.createEmailSession(
-            EmailSessionCredentialsModel(email: 'x4piF3j', password: 'QCK!bQ'),
+            const EmailSessionCredentialsModel(
+              email: 'x4piF3j',
+              password: 'QCK!bQ',
+            ),
           );
 
           expect(result.isErr, true);
@@ -223,7 +226,10 @@ void main() {
               .thenAnswer((_) async => appwriteSession);
 
           final result = await dataSource.createEmailSession(
-            EmailSessionCredentialsModel(email: r'2@$UgaNF', password: 'J!GK'),
+            const EmailSessionCredentialsModel(
+              email: r'2@$UgaNF',
+              password: 'J!GK',
+            ),
           );
 
           expect(result.isOk, true);

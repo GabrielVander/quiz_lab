@@ -5,9 +5,9 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart
 
 class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
   const QuizLabAppBar({
-    super.key,
     required this.height,
     required this.padding,
+    super.key,
   });
 
   final double height;

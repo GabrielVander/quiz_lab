@@ -4,8 +4,8 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart
 
 class PageSubtitle extends StatelessWidget {
   const PageSubtitle({
-    super.key,
     required this.title,
+    super.key,
   });
 
   final String title;

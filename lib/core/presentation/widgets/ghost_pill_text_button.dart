@@ -3,9 +3,9 @@ import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 
 class GhostPillTextButton extends StatelessWidget {
   const GhostPillTextButton({
-    super.key,
     required this.onPressed,
     required this.child,
+    super.key,
     this.enabled = true,
   });
 

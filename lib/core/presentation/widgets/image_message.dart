@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class ImageMessage extends StatelessWidget {
   const ImageMessage({
-    super.key,
     required this.imageAssetName,
     required this.imageHeight,
     required this.message,
     required this.fontSize,
+    super.key,
   });
 
   final String imageAssetName;

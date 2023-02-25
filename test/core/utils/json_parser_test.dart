@@ -9,8 +9,8 @@ void main() {
   late JsonParser<Map<String, dynamic>> parser;
 
   setUp(() {
-    mockEncoder = _MockEncoder();
-    mockDecoder = _MockDecoder();
+    mockEncoder = _MockEncoder().call;
+    mockDecoder = _MockDecoder().call;
     parser = JsonParser(encoder: mockEncoder, decoder: mockDecoder);
   });
 

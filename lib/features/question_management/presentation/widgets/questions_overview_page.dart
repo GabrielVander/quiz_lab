@@ -17,8 +17,8 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionsOverviewPage extends HookWidget {
   QuestionsOverviewPage({
-    super.key,
     required QuestionsOverviewCubit questionsOverviewCubit,
+    super.key,
   }) {
     _cubit = questionsOverviewCubit;
   }

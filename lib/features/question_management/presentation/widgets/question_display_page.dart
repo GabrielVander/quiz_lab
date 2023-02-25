@@ -10,9 +10,9 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionDisplayPage extends HookWidget {
   const QuestionDisplayPage({
-    super.key,
     required this.questionId,
     required this.cubit,
+    super.key,
   });
 
   final QuestionDisplayCubit cubit;
@@ -126,7 +126,7 @@ class _QuestionTitle extends StatelessWidget {
       children: [
         Text(
           viewModel.title,
-          style: Theme.of(context).textTheme.headline4,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
       ],
     );
@@ -149,7 +149,7 @@ class _QuestionDifficulty extends StatelessWidget {
         const SizedBox(width: 5),
         Text(
           S.of(context).questionDifficultyValue(viewModel.difficulty),
-          style: Theme.of(context).textTheme.bodyText1,
+          style: Theme.of(context).textTheme.bodyLarge,
           textScaleFactor: 1.2,
         ),
       ],
@@ -269,7 +269,7 @@ class _QuestionSingleOption extends StatelessWidget {
         ),
         Text(
           option.title,
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
       ],
     );
@@ -355,7 +355,7 @@ class _ResultDisplay extends StatelessWidget {
                   ),
                   Text(
                     message,
-                    style: Theme.of(context).textTheme.headline2?.copyWith(
+                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
                           color: Colors.white,
                         ),
                   ),

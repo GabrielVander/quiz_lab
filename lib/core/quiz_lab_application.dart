@@ -18,13 +18,13 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class QuizLabApplication extends StatelessWidget {
   const QuizLabApplication({
-    super.key,
     required this.networkCubit,
     required this.bottomNavigationCubit,
     required this.questionCreationCubit,
     required this.questionsOverviewCubit,
     required this.questionDisplayCubit,
     required this.loginPageCubit,
+    super.key,
   });
 
   final NetworkCubit networkCubit;

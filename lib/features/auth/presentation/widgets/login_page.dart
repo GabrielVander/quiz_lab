@@ -9,8 +9,8 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({
-    super.key,
     required LoginPageCubit loginPageCubit,
+    super.key,
   }) : _cubit = loginPageCubit;
 
   final LoginPageCubit _cubit;
@@ -140,12 +140,12 @@ class _Title extends StatelessWidget {
 
 class _LoginForm extends StatelessWidget {
   const _LoginForm({
-    super.key,
     required this.emailViewModel,
     required this.passwordViewModel,
     required this.onEmailChange,
     required this.onPasswordChange,
     required this.onLogin,
+    super.key,
   });
 
   final EmailViewModel emailViewModel;
@@ -293,11 +293,11 @@ class _AlternativeOptions extends StatelessWidget {
 
 class _FormInput extends StatefulWidget {
   const _FormInput({
-    super.key,
     required this.label,
     required this.icon,
     required this.onChange,
     required this.value,
+    super.key,
     this.errorMessage,
     this.obscureText = false,
   });
