@@ -6,9 +6,9 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class NetworkChecker extends HookWidget {
   const NetworkChecker({
-    super.key,
     required this.cubit,
     required this.child,
+    super.key,
   });
 
   final NetworkCubit cubit;

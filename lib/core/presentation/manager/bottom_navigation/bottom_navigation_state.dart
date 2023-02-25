@@ -14,8 +14,8 @@ class BottomNavigationInitial extends BottomNavigationState {}
 @immutable
 class BottomNavigationIndexChangedState extends BottomNavigationState {
   const BottomNavigationIndexChangedState({
-    this.previousIndex,
     required this.newIndex,
+    this.previousIndex,
   });
 
   final int? previousIndex;

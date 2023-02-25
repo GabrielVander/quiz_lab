@@ -6,8 +6,8 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart
 
 class ForkLiftMessage extends StatelessWidget {
   const ForkLiftMessage({
-    super.key,
     required this.message,
+    super.key,
   });
 
   final String message;

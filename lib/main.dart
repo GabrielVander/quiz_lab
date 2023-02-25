@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:logging/logging.dart';
 import 'package:quiz_lab/core/constants.dart';
-import 'package:quiz_lab/core/presentation/manager/factories/core_cubit_factory.dart';
+import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
 import 'package:quiz_lab/core/quiz_lab_application.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
-import 'package:quiz_lab/core/utils/dependency_injection/setup.dart';
 import 'package:quiz_lab/core/utils/environment.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/factories/question_management_cubit_factory.dart';
-import 'package:quiz_lab/features/question_management/utils/setup.dart';
+import 'package:quiz_lab/features/auth/infrastructure/auth_di_setup.dart';
+import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +18,12 @@ void main() async {
 
   runApp(
     QuizLabApplication(
-      coreCubitFactory: dependencyInjection.get<CoreCubitFactory>(),
-      questionManagementCubitFactory:
-          dependencyInjection.get<QuestionManagementCubitFactory>(),
+      networkCubit: dependencyInjection.get(),
+      bottomNavigationCubit: dependencyInjection.get(),
+      questionCreationCubit: dependencyInjection.get(),
+      questionsOverviewCubit: dependencyInjection.get(),
+      questionDisplayCubit: dependencyInjection.get(),
+      loginPageCubit: dependencyInjection.get(),
     ),
   );
 }
@@ -48,6 +50,7 @@ void _setUpInjections() {
     ..addSetup(_appwriteDependencyInjectionSetup)
     ..addSetup(coreDependencyInjectionSetup)
     ..addSetup(questionManagementDiSetup)
+    ..addSetup(authenticationDiSetup)
     ..setUp();
 }
 

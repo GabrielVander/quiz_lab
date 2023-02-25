@@ -280,5 +280,5 @@ class _MockRepositoryFactory extends Mock implements RepositoryFactory {}
 
 class _MockQuestionRepository extends Mock implements QuestionRepository {}
 
-class _MockResourceUuidGenerator extends Mock implements ResourceUuidGenerator {
-}
+class _MockResourceUuidGenerator extends Mock
+    implements ResourceUuidGenerator {}
