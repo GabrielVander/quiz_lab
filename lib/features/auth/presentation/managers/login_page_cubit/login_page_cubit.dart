@@ -12,7 +12,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     required LoginWithCredentialsUseCase loginWithCredentionsUseCase,
   })  : _loginWithCredentionsUseCase = loginWithCredentionsUseCase,
         super(LoginPageState.initial()) {
-    _viewModel = defaultViewModel;
+    _viewModel = _defaultViewModel;
     emit(
       LoginPageState.viewModelUpdated(_viewModel),
     );
@@ -21,7 +21,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
   final _logger = QuizLabLoggerFactory.createLogger<LoginPageCubit>();
   final LoginWithCredentialsUseCase _loginWithCredentionsUseCase;
 
-  final defaultViewModel = const LoginPageViewModel(
+  final _defaultViewModel = const LoginPageViewModel(
     email: EmailViewModel(
       value: '',
     ),
@@ -100,6 +100,8 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     );
 
     if (logInResult.isErr) {
+      emit(LoginPageState.viewModelUpdated(_defaultViewModel));
+
       emit(
         LoginPageState.displayErrorMessage(
           LoginPageErrorTypeViewModel.unableToLogin,

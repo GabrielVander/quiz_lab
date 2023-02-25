@@ -199,11 +199,12 @@ void main() {
                 isA<LoginPageViewModelUpdated>(),
                 isA<LoginPageViewModelUpdated>(),
                 isA<LoginPageLoading>(),
+                isA<LoginPageViewModelUpdated>(),
                 isA<LoginPageDisplayErrorMessage>().having(
                   (s) => s.type,
                   'type',
                   LoginPageErrorTypeViewModel.unableToLogin,
-                )
+                ),
               ]),
             );
 

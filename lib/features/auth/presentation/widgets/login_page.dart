@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/ghost_pill_text_button.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
@@ -9,7 +8,7 @@ import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/lo
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class LoginPage extends HookWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({
     super.key,
     required LoginPageCubit loginPageCubit,
@@ -19,69 +18,95 @@ class LoginPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(_cubit);
-
     return SafeArea(
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(15),
-          child: Builder(
-            builder: (context) {
-              if (state is LoginPageInitial || state is LoginPageLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
+          child: BlocListener<LoginPageCubit, LoginPageState>(
+            bloc: _cubit,
+            listenWhen: (_, s) {
+              return [
+                LoginPagePushRouteReplacing,
+                LoginPageDisplayErrorMessage,
+              ].contains(s.runtimeType);
+            },
+            listener: (context, state) {
               if (state is LoginPagePushRouteReplacing) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   GoRouter.of(context).pushReplacementNamed(state.route.name);
                 });
               }
 
-              if (state is LoginPageViewModelUpdated) {
-                return LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    return ListView.separated(
-                      itemCount: 4,
-                      separatorBuilder: (BuildContext context, int index) {
-                        return SizedBox(
-                          height: constraints.maxHeight * 0.1,
-                        );
-                      },
-                      itemBuilder: (BuildContext context, int index) {
-                        return [
-                          SizedBox(
-                            height: Theme.of(context)
-                                .textTheme
-                                .displayLarge!
-                                .fontSize,
-                            child: const QuizLabIcon(),
-                          ),
-                          const Center(
-                            child: _Title(),
-                          ),
-                          _LoginForm(
-                            key: const ValueKey<String>('loginForm'),
-                            emailViewModel: state.viewModel.email,
-                            passwordViewModel: state.viewModel.password,
-                            onLogin: _cubit.onLogin,
-                            onEmailChange: _cubit.onEmailChange,
-                            onPasswordChange: _cubit.onPasswordChange,
-                          ),
-                          _AlternativeOptions(
-                            onEnterAnonymously: _cubit.onEnterAnonymously,
-                            onSignUp: _cubit.onSignUp,
-                          )
-                        ][index];
-                      },
-                    );
-                  },
-                );
+              if (state is LoginPageDisplayErrorMessage) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                      content: Text(S.of(context).genericErrorMessage),
+                    ),
+                  );
+                });
               }
-
-              return Container();
             },
+            child: BlocBuilder(
+              bloc: _cubit,
+              buildWhen: (_, s) => [
+                LoginPageInitial,
+                LoginPageLoading,
+                LoginPageViewModelUpdated,
+              ].contains(s.runtimeType),
+              builder: (context, state) {
+                if (state is LoginPageInitial || state is LoginPageLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (state is LoginPageViewModelUpdated) {
+                  return LayoutBuilder(
+                    builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      return ListView.separated(
+                        itemCount: 4,
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(
+                            height: constraints.maxHeight * 0.1,
+                          );
+                        },
+                        itemBuilder: (BuildContext context, int index) {
+                          return [
+                            SizedBox(
+                              height: Theme.of(context)
+                                  .textTheme
+                                  .displayLarge!
+                                  .fontSize,
+                              child: const QuizLabIcon(),
+                            ),
+                            const Center(
+                              child: _Title(),
+                            ),
+                            _LoginForm(
+                              key: const ValueKey<String>('loginForm'),
+                              emailViewModel: state.viewModel.email,
+                              passwordViewModel: state.viewModel.password,
+                              onLogin: _cubit.onLogin,
+                              onEmailChange: _cubit.onEmailChange,
+                              onPasswordChange: _cubit.onPasswordChange,
+                            ),
+                            _AlternativeOptions(
+                              onEnterAnonymously: _cubit.onEnterAnonymously,
+                              onSignUp: _cubit.onSignUp,
+                            )
+                          ][index];
+                        },
+                      );
+                    },
+                  );
+                }
+
+                return Container();
+              },
+            ),
           ),
         ),
       ),
@@ -258,7 +283,7 @@ class _AlternativeOptions extends StatelessWidget {
   }
 }
 
-class _FormInput extends HookWidget {
+class _FormInput extends StatefulWidget {
   const _FormInput({
     super.key,
     required this.label,
@@ -277,28 +302,36 @@ class _FormInput extends HookWidget {
   final void Function(String newValue) onChange;
 
   @override
+  State<_FormInput> createState() => _FormInputState();
+}
+
+class _FormInputState extends State<_FormInput> {
+  bool isEditing = false;
+
+  @override
   Widget build(BuildContext context) {
-    final isEditing = useState(false);
     final activeColor =
         Theme.of(context).extension<ThemeColors>()!.mainColors.primary;
     final inactiveColor =
         Theme.of(context).extension<ThemeColors>()!.backgroundColors.disabled;
 
-    final activeInactiveColor = isEditing.value ? activeColor : inactiveColor;
+    final activeInactiveColor = isEditing ? activeColor : inactiveColor;
 
     return Focus(
       onFocusChange: (bool gainedFocus) {
-        isEditing.value = gainedFocus;
+        setState(() {
+          isEditing = gainedFocus;
+        });
       },
       child: TextFormField(
-        initialValue: value,
+        initialValue: widget.value,
         style: Theme.of(context).textTheme.titleMedium,
-        onChanged: onChange,
-        obscureText: obscureText,
+        onChanged: widget.onChange,
+        obscureText: widget.obscureText,
         decoration: InputDecoration(
-          errorText: errorMessage,
+          errorText: widget.errorMessage,
           prefixIcon: Icon(
-            icon,
+            widget.icon,
             color: activeInactiveColor,
           ),
           filled: true,
@@ -312,11 +345,11 @@ class _FormInput extends HookWidget {
             borderRadius: BorderRadius.circular(15),
           ),
           fillColor: activeInactiveColor.withOpacity(0.075),
-          hintText: label,
+          hintText: widget.label,
           hintStyle: TextStyle(
             color: inactiveColor,
           ),
-          labelText: label,
+          labelText: widget.label,
           floatingLabelStyle: TextStyle(
             color: activeInactiveColor,
           ),

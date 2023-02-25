@@ -42,5 +42,6 @@
   "logInButtonLabel": "Entrar",
   "enterAnonymouslyButtonLabel": "Entrar anonimamente",
   "dontHaveAnAccountPhrase": "Ainda não tem uma conta?",
-  "loginPageSignUpButtonLabel": "Cadastre-se"
+  "loginPageSignUpButtonLabel": "Cadastre-se",
+  "genericErrorMessage": "Something went wrong"
 }

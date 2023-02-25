@@ -60,6 +60,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "emailLabel": MessageLookupByLibrary.simpleMessage("Email"),
         "enterAnonymouslyButtonLabel":
             MessageLookupByLibrary.simpleMessage("Enter anonymously"),
+        "genericErrorMessage":
+            MessageLookupByLibrary.simpleMessage("Something went wrong"),
         "goBackLabel": MessageLookupByLibrary.simpleMessage("Go Back"),
         "goHomeLabel": MessageLookupByLibrary.simpleMessage("Go home"),
         "isOptionCorrectLabel":

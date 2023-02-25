@@ -493,6 +493,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Something went wrong`
+  String get genericErrorMessage {
+    return Intl.message(
+      'Something went wrong',
+      name: 'genericErrorMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
