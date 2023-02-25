@@ -32,8 +32,8 @@ void main() {
 
   testWidgets(
     'should display a circular progress indicator if cubit state is '
-        '[LoginPageInitial]',
-        (widgetTester) async {
+    '[LoginPageInitial]',
+    (widgetTester) async {
       mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
             (_) => const Stream.empty(),
           );
@@ -165,21 +165,6 @@ void main() {
       expect(find.text(localizationsMock.logInButtonLabel), findsOneWidget);
 
       expect(
-        find.byKey(
-          const ValueKey('enterAnonymouslyButton'),
-          skipOffstage: false,
-        ),
-        findsOneWidget,
-      );
-      expect(
-        find.text(
-          localizationsMock.enterAnonymouslyButtonLabel,
-          skipOffstage: false,
-        ),
-        findsOneWidget,
-      );
-
-      expect(
         find.text(
           localizationsMock.dontHaveAnAccountPhrase,
           skipOffstage: false,
@@ -231,10 +216,10 @@ void main() {
 
   group(
     'should display form errors when a form error view model is emitted',
-        () {
+    () {
       testWidgets(
         'empty password error',
-            (WidgetTester widgetTester) async {
+        (WidgetTester widgetTester) async {
           mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
                 (_) => const Stream.empty(),
               );
@@ -249,9 +234,9 @@ void main() {
                     password: PasswordViewModel(
                       value: '',
                     ),
-              ),
-            ),
-          );
+                  ),
+                ),
+              );
 
           await _pumpTarget(
             widgetTester,
@@ -284,8 +269,8 @@ void main() {
                       showError: true,
                     ),
                   ),
-            ),
-          );
+                ),
+              );
 
           await _pumpTarget(
             widgetTester,
@@ -484,12 +469,9 @@ void main() {
             );
 
             widgetTester.binding.scheduleWarmUpFrame();
+            await widgetTester.pump();
 
-            mocktail
-                .verify(
-                  () => localizationsMock.genericErrorMessage,
-                )
-                .called(1);
+            expect(find.widgetWithText(SnackBar, string), findsOneWidget);
           },
         );
       }
@@ -531,35 +513,6 @@ void main() {
   );
 
   testWidgets(
-    'should call cubit when enter anonymously button is pressed',
-    (WidgetTester widgetTester) async {
-      mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-            (_) => const Stream.empty(),
-          );
-      mocktail.when(() => loginPageCubitMock.state).thenReturn(
-            LoginPageState.viewModelUpdated(
-              const LoginPageViewModel(
-                email: EmailViewModel(value: ''),
-                password: PasswordViewModel(value: ''),
-              ),
-            ),
-          );
-
-      await _pumpTarget(
-        widgetTester,
-        localizationsDelegateMock,
-        loginPageCubitMock,
-        goRouterMock,
-      );
-
-      await widgetTester
-          .tap(find.byKey(const ValueKey('enterAnonymouslyButton')));
-
-      mocktail.verify(() => loginPageCubitMock.onEnterAnonymously()).called(1);
-    },
-  );
-
-  testWidgets(
     'should call cubit when sign up button is pressed',
     (WidgetTester widgetTester) async {
       mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
@@ -586,12 +539,48 @@ void main() {
       mocktail.verify(() => loginPageCubitMock.onSignUp()).called(1);
     },
   );
+
+  for (final text in ['']) {
+    testWidgets(
+      'should display not yet implemented message when cubit emits '
+      '[LoginPageDisplayNotYetImplementedMessage]',
+      (widgetTester) async {
+        mocktail.when(() => localizationsMock.notYetImplemented).thenReturn(
+              text,
+            );
+
+        mocktail.when(() => loginPageCubitMock.state).thenReturn(
+              LoginPageState.displayNotYetImplementedMessage(),
+            );
+
+        mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
+              (_) => Stream.value(
+                LoginPageState.displayNotYetImplementedMessage(),
+              ),
+            );
+
+        await _pumpTarget(
+          widgetTester,
+          localizationsDelegateMock,
+          loginPageCubitMock,
+          goRouterMock,
+        );
+
+        widgetTester.binding.scheduleWarmUpFrame();
+
+        await widgetTester.pump();
+
+        expect(find.text(text), findsOneWidget);
+      },
+    );
+  }
 }
 
-Future<void> _pumpTarget(WidgetTester widgetTester,
-    AppLocalizationDelegate localizationsDelegateMock,
-    LoginPageCubit loginPageCubit,
-    GoRouter goRouter,
+Future<void> _pumpTarget(
+  WidgetTester widgetTester,
+  AppLocalizationDelegate localizationsDelegateMock,
+  LoginPageCubit loginPageCubit,
+  GoRouter goRouter,
 ) async {
   await widgetTester.pumpWidget(
     InheritedGoRouter(

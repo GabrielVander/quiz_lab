@@ -43,5 +43,6 @@
   "enterAnonymouslyButtonLabel": "Entrar anonimamente",
   "dontHaveAnAccountPhrase": "Ainda não tem uma conta?",
   "loginPageSignUpButtonLabel": "Cadastre-se",
-  "genericErrorMessage": "Something went wrong"
+  "genericErrorMessage": "Something went wrong",
+  "notYetImplemented": "Ainda não implementado"
 }

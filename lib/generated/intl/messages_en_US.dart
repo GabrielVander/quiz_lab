@@ -75,6 +75,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "noConnection": MessageLookupByLibrary.simpleMessage("No Connection"),
         "noDueDateLabel": MessageLookupByLibrary.simpleMessage("No Due Date"),
         "noQuestions": MessageLookupByLibrary.simpleMessage("No questions"),
+        "notYetImplemented":
+            MessageLookupByLibrary.simpleMessage("Not yet implemented"),
         "openRandomQuestionButtonLabel":
             MessageLookupByLibrary.simpleMessage("Random"),
         "optionInputLabel": MessageLookupByLibrary.simpleMessage("Option"),

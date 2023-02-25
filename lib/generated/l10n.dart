@@ -503,6 +503,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Not yet implemented`
+  String get notYetImplemented {
+    return Intl.message(
+      'Not yet implemented',
+      name: 'notYetImplemented',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

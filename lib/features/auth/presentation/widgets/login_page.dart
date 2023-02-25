@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
-import 'package:quiz_lab/core/presentation/widgets/ghost_pill_text_button.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
@@ -28,6 +27,7 @@ class LoginPage extends StatelessWidget {
               return [
                 LoginPagePushRouteReplacing,
                 LoginPageDisplayErrorMessage,
+                LoginPageDisplayNotYetImplementedMessage,
               ].contains(s.runtimeType);
             },
             listener: (context, state) {
@@ -43,6 +43,15 @@ class LoginPage extends StatelessWidget {
                     SnackBar(
                       backgroundColor: Theme.of(context).colorScheme.error,
                       content: Text(S.of(context).genericErrorMessage),
+                    ),
+                  );
+                });
+              }
+              if (state is LoginPageDisplayNotYetImplementedMessage) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(S.of(context).notYetImplemented),
                     ),
                   );
                 });
@@ -259,12 +268,11 @@ class _AlternativeOptions extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Divider(),
-        GhostPillTextButton(
-          key: const ValueKey('enterAnonymouslyButton'),
-          onPressed: onEnterAnonymously,
-          child: Text(S.of(context).enterAnonymouslyButtonLabel),
-        ),
+        // GhostPillTextButton(
+        //   key: const ValueKey('enterAnonymouslyButton'),
+        //   onPressed: onEnterAnonymously,
+        //   child: Text(S.of(context).enterAnonymouslyButtonLabel),
+        // ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

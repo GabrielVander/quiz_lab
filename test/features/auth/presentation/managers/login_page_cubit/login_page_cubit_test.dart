@@ -266,6 +266,17 @@ void main() {
       },
     );
   });
+
+  test('onSignUp', () {
+    expectLater(
+      cubit.stream,
+      emitsInOrder([
+        isA<LoginPageDisplayNotYetImplementedMessage>(),
+      ]),
+    );
+
+    cubit.onSignUp();
+  });
 }
 
 TypeMatcher<LoginPageViewModel> _defaultViewModelMatcher() {

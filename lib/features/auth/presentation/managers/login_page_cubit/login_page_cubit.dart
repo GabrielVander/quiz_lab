@@ -124,5 +124,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
 
   void onEnterAnonymously() {}
 
-  void onSignUp() {}
+  void onSignUp() {
+    emit(LoginPageState.displayNotYetImplementedMessage());
+  }
 }
