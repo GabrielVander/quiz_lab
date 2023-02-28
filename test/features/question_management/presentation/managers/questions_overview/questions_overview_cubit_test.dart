@@ -5,7 +5,6 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
@@ -19,19 +18,16 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
 
 void main() {
-  late QuizLabLogger loggerMock;
   late UseCaseFactory mockUseCaseFactory;
   late PresentationMapperFactory mockMapperFactory;
 
   late QuestionsOverviewCubit cubit;
 
   setUp(() {
-    loggerMock = _QuizLabLoggerMock();
     mockUseCaseFactory = _MockUseCaseFactory();
     mockMapperFactory = _MockMapperFactory();
 
     cubit = QuestionsOverviewCubit(
-      logger: loggerMock,
       useCaseFactory: mockUseCaseFactory,
       mapperFactory: mockMapperFactory,
     );
@@ -133,7 +129,7 @@ void main() {
                 _FakeQuestionOverviewItemViewModel(),
               ],
             ).having(
-                  (state) => state.viewModel.isRandomQuestionButtonEnabled,
+              (state) => state.viewModel.isRandomQuestionButtonEnabled,
               'isRandomQuestionButtonEnabled',
               true,
             ),
@@ -471,5 +467,3 @@ class _MockDeleteQuestionUseCase extends mocktail.Mock
 
 class _MockUpdateQuestionUseCase extends mocktail.Mock
     implements UpdateQuestionUseCase {}
-
-class _QuizLabLoggerMock extends mocktail.Mock implements QuizLabLogger {}
