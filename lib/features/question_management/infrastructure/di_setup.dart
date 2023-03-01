@@ -3,7 +3,6 @@ import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessme
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/factories/data_source_factory.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/factories/repository_factory_impl.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/mappers/factories/mapper_factory.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
@@ -27,9 +26,6 @@ void questionManagementDiSetup(DependencyInjection di) {
         dataSourceFactory: DataSourceFactory(hiveInterface: Hive),
         mapperFactory: MapperFactory(),
       ),
-    )
-    ..registerBuilder<RepositoryFactory>(
-      (DependencyInjection di) => RepositoryFactoryImpl(),
     )
     ..registerBuilder(
       (di) => WatchAllQuestionsUseCase(
