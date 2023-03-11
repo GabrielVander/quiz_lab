@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/factories/data_source_factory.dart';
@@ -20,7 +20,7 @@ void main() {
   late QuestionRepositoryImpl repository;
 
   setUp(() {
-    registerFallbackValue(_FakeQuestionModel());
+    mocktail.registerFallbackValue(_FakeQuestionModel());
 
     mockDataSourceFactory = _MockDataSourceFactory();
     mockMapperFactory = _MockMapperFactory();
@@ -31,7 +31,7 @@ void main() {
     );
   });
 
-  tearDown(resetMocktailState);
+  tearDown(mocktail.resetMocktailState);
 
   group('createSingle', () {
     group('err flow', () {
@@ -56,16 +56,20 @@ void main() {
         final fakeEntity = _FakeQuestion();
         final fakeModel = _FakeQuestionModel();
 
-        when(() => mockDataSourceFactory.makeHiveDataSource())
+        mocktail
+            .when(() => mockDataSourceFactory.makeHiveDataSource())
             .thenReturn(mockHiveDataSource);
 
-        when(() => mockMapperFactory.makeHiveQuestionModelMapper())
+        mocktail
+            .when(() => mockMapperFactory.makeHiveQuestionModelMapper())
             .thenReturn(mockHiveQuestionModelMapper);
 
-        when(() => mockHiveDataSource.saveQuestion(fakeModel))
+        mocktail
+            .when(() => mockHiveDataSource.saveQuestion(fakeModel))
             .thenAnswer((_) async => Result.err(dataSourceFailure));
 
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
+        mocktail
+            .when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(fakeModel);
 
         final result = await repository.createSingle(fakeEntity);
@@ -86,21 +90,27 @@ void main() {
         final fakeEntity = _FakeQuestion();
         final fakeHiveModel = _FakeQuestionModel();
 
-        when(() => mockDataSourceFactory.makeHiveDataSource())
+        mocktail
+            .when(() => mockDataSourceFactory.makeHiveDataSource())
             .thenReturn(mockHiveDataSource);
 
-        when(() => mockMapperFactory.makeHiveQuestionModelMapper())
+        mocktail
+            .when(() => mockMapperFactory.makeHiveQuestionModelMapper())
             .thenReturn(mockHiveQuestionModelMapper);
 
-        when(() => mockHiveDataSource.saveQuestion(any()))
+        mocktail
+            .when(() => mockHiveDataSource.saveQuestion(mocktail.any()))
             .thenAnswer((_) async => const Result.ok(unit));
 
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
+        mocktail
+            .when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(fakeHiveModel);
 
         await repository.createSingle(fakeEntity);
 
-        verify(() => mockHiveDataSource.saveQuestion(fakeHiveModel)).called(1);
+        mocktail
+            .verify(() => mockHiveDataSource.saveQuestion(fakeHiveModel))
+            .called(1);
       });
 
       test('should return Ok', () async {
@@ -110,19 +120,24 @@ void main() {
         final fakeEntity = _FakeQuestion();
         final fakeHiveModel = _FakeQuestionModel();
 
-        when(() => mockDataSourceFactory.makeHiveDataSource())
+        mocktail
+            .when(() => mockDataSourceFactory.makeHiveDataSource())
             .thenReturn(mockHiveDataSource);
 
-        when(() => mockMapperFactory.makeHiveQuestionModelMapper())
+        mocktail
+            .when(() => mockMapperFactory.makeHiveQuestionModelMapper())
             .thenReturn(mockHiveQuestionModelMapper);
 
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
+        mocktail
+            .when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(fakeHiveModel);
 
-        when(() => mockHiveDataSource.saveQuestion(any()))
+        mocktail
+            .when(() => mockHiveDataSource.saveQuestion(mocktail.any()))
             .thenAnswer((_) async => const Result.ok(unit));
 
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
+        mocktail
+            .when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(fakeHiveModel);
 
         final result = await repository.createSingle(fakeEntity);
@@ -151,10 +166,12 @@ void main() {
 
         final mockHiveDataSource = _MockHiveDataSource();
 
-        when(() => mockDataSourceFactory.makeHiveDataSource())
+        mocktail
+            .when(() => mockDataSourceFactory.makeHiveDataSource())
             .thenReturn(mockHiveDataSource);
 
-        when(mockHiveDataSource.watchAllQuestions)
+        mocktail
+            .when(mockHiveDataSource.watchAllQuestions)
             .thenReturn(Result.err(failure));
 
         final result = repository.watchAll();
@@ -221,16 +238,20 @@ void main() {
         final mockHiveDataSource = _MockHiveDataSource();
         final mockQuestionEntityMapper = _MockQuestionEntityMapper();
 
-        when(() => mockDataSourceFactory.makeHiveDataSource())
+        mocktail
+            .when(() => mockDataSourceFactory.makeHiveDataSource())
             .thenReturn(mockHiveDataSource);
 
-        when(() => mockMapperFactory.makeQuestionEntityMapper())
+        mocktail
+            .when(() => mockMapperFactory.makeQuestionEntityMapper())
             .thenReturn(mockQuestionEntityMapper);
 
-        when(mockHiveDataSource.watchAllQuestions)
+        mocktail
+            .when(mockHiveDataSource.watchAllQuestions)
             .thenReturn(Result.ok(Stream.value(hiveModels)));
 
-        when(() => mockQuestionEntityMapper.fromHiveModel(any()))
+        mocktail
+            .when(() => mockQuestionEntityMapper.fromHiveModel(mocktail.any()))
             .thenAnswer((_) => mapperResults.removeAt(0));
 
         final result = repository.watchAll();
@@ -245,19 +266,21 @@ void main() {
         final mockHiveDataSource = _MockHiveDataSource();
         final mockQuestionEntityMapper = _MockQuestionEntityMapper();
 
-        when(() => mockDataSourceFactory.makeHiveDataSource())
+        mocktail
+            .when(() => mockDataSourceFactory.makeHiveDataSource())
             .thenReturn(mockHiveDataSource);
 
-        when(() => mockMapperFactory.makeQuestionEntityMapper())
+        mocktail
+            .when(() => mockMapperFactory.makeQuestionEntityMapper())
             .thenReturn(mockQuestionEntityMapper);
 
-        when(mockHiveDataSource.watchAllQuestions).thenReturn(
-          const Result.ok(Stream<List<HiveQuestionModel>>.empty()),
-        );
+        mocktail.when(mockHiveDataSource.watchAllQuestions).thenReturn(
+              const Result.ok(Stream<List<HiveQuestionModel>>.empty()),
+            );
 
         repository.watchAll();
 
-        verify(mockHiveDataSource.watchAllQuestions).called(1);
+        mocktail.verify(mockHiveDataSource.watchAllQuestions).called(1);
       });
 
       parameterizedTest(
@@ -280,16 +303,22 @@ void main() {
           final mockHiveDataSource = _MockHiveDataSource();
           final mockQuestionEntityMapper = _MockQuestionEntityMapper();
 
-          when(() => mockDataSourceFactory.makeHiveDataSource())
+          mocktail
+              .when(() => mockDataSourceFactory.makeHiveDataSource())
               .thenReturn(mockHiveDataSource);
 
-          when(() => mockMapperFactory.makeQuestionEntityMapper())
+          mocktail
+              .when(() => mockMapperFactory.makeQuestionEntityMapper())
               .thenReturn(mockQuestionEntityMapper);
 
-          when(mockHiveDataSource.watchAllQuestions)
+          mocktail
+              .when(mockHiveDataSource.watchAllQuestions)
               .thenReturn(Result.ok(hiveModelStream));
 
-          when(() => mockQuestionEntityMapper.fromHiveModel(any()))
+          mocktail
+              .when(
+                () => mockQuestionEntityMapper.fromHiveModel(mocktail.any()),
+              )
               .thenReturn(Result.ok(_FakeQuestion()));
 
           final result = repository.watchAll();
@@ -342,16 +371,20 @@ void main() {
           final fakeEntity = _FakeQuestion.id(id);
           final fakeModel = _FakeQuestionModel();
 
-          when(() => mockDataSourceFactory.makeHiveDataSource())
+          mocktail
+              .when(() => mockDataSourceFactory.makeHiveDataSource())
               .thenReturn(mockHiveDataSource);
 
-          when(() => mockMapperFactory.makeHiveQuestionModelMapper())
+          mocktail
+              .when(() => mockMapperFactory.makeHiveQuestionModelMapper())
               .thenReturn(mockHiveQuestionModelMapper);
 
-          when(() => mockHiveDataSource.saveQuestion(fakeModel))
+          mocktail
+              .when(() => mockHiveDataSource.saveQuestion(fakeModel))
               .thenAnswer((_) async => Result.err(dataSourceFailure));
 
-          when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
+          mocktail
+              .when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
               .thenReturn(fakeModel);
 
           final result = await repository.updateSingle(fakeEntity);
@@ -373,25 +406,32 @@ void main() {
         final fakeEntity = _FakeQuestion();
         final fakeModel = _FakeQuestionModel();
 
-        when(() => mockDataSourceFactory.makeHiveDataSource())
+        mocktail
+            .when(() => mockDataSourceFactory.makeHiveDataSource())
             .thenReturn(mockHiveDataSource);
 
-        when(() => mockMapperFactory.makeHiveQuestionModelMapper())
+        mocktail
+            .when(() => mockMapperFactory.makeHiveQuestionModelMapper())
             .thenReturn(mockHiveQuestionModelMapper);
 
-        when(() => mockHiveDataSource.saveQuestion(fakeModel))
+        mocktail
+            .when(() => mockHiveDataSource.saveQuestion(fakeModel))
             .thenAnswer((_) async => const Result.ok(unit));
 
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
+        mocktail
+            .when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .thenReturn(fakeModel);
 
         final result = await repository.updateSingle(fakeEntity);
 
         expect(result.isOk, isTrue);
 
-        verify(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
+        mocktail
+            .verify(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
             .called(1);
-        verify(() => mockHiveDataSource.saveQuestion(fakeModel)).called(1);
+        mocktail
+            .verify(() => mockHiveDataSource.saveQuestion(fakeModel))
+            .called(1);
       });
     });
   });
@@ -409,20 +449,26 @@ void main() {
 
           final mockHiveDataSource = _MockHiveDataSource();
 
-          when(() => mockDataSourceFactory.makeHiveDataSource())
+          mocktail
+              .when(() => mockDataSourceFactory.makeHiveDataSource())
               .thenReturn(mockHiveDataSource);
 
-          when(() => mockHiveDataSource.deleteQuestion(any()))
+          mocktail
+              .when(() => mockHiveDataSource.deleteQuestion(mocktail.any()))
               .thenAnswer((_) async => const Result.ok(unit));
 
           final result = await repository.deleteSingle(id);
           expect(result.isOk, isTrue);
 
-          verify(
-            () => mockHiveDataSource.deleteQuestion(
-              any(that: predicate((q) => (q! as HiveQuestionModel).id == id)),
-            ),
-          ).called(1);
+          mocktail
+              .verify(
+                () => mockHiveDataSource.deleteQuestion(
+                  mocktail.any(
+                    that: predicate((q) => (q! as HiveQuestionModel).id == id),
+                  ),
+                ),
+              )
+              .called(1);
         },
       );
     });
@@ -464,10 +510,12 @@ void main() {
 
           final mockHiveDataSource = _MockHiveDataSource();
 
-          when(() => mockDataSourceFactory.makeHiveDataSource())
+          mocktail
+              .when(() => mockDataSourceFactory.makeHiveDataSource())
               .thenReturn(mockHiveDataSource);
 
-          when(() => mockHiveDataSource.deleteQuestion(any()))
+          mocktail
+              .when(() => mockHiveDataSource.deleteQuestion(mocktail.any()))
               .thenAnswer((_) async => Result.err(failure));
 
           final result = await repository.deleteSingle(id);
@@ -480,15 +528,17 @@ void main() {
   });
 }
 
-class _MockDataSourceFactory extends Mock implements DataSourceFactory {}
+class _MockDataSourceFactory extends mocktail.Mock
+    implements DataSourceFactory {}
 
-class _MockMapperFactory extends Mock implements MapperFactory {}
+class _MockMapperFactory extends mocktail.Mock implements MapperFactory {}
 
-class _MockHiveDataSource extends Mock implements HiveDataSource {}
+class _MockHiveDataSource extends mocktail.Mock implements HiveDataSource {}
 
-class _MockQuestionEntityMapper extends Mock implements QuestionEntityMapper {}
+class _MockQuestionEntityMapper extends mocktail.Mock
+    implements QuestionEntityMapper {}
 
-class _MockHiveQuestionModelMapper extends Mock
+class _MockHiveQuestionModelMapper extends mocktail.Mock
     implements HiveQuestionModelMapper {}
 
 class _FakeQuestionModel extends Fake implements HiveQuestionModel {}

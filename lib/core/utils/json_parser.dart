@@ -9,7 +9,6 @@ class JsonParser<T extends Object> {
 
   Result<String, EncodeFailure> encode(T input) {
     try {
-      encoder(input);
       return Result.ok(encoder(input));
       // ignore: avoid_catching_errors
     } on Exception catch (e) {

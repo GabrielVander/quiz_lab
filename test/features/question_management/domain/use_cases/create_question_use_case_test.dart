@@ -10,21 +10,20 @@ import 'package:quiz_lab/features/question_management/domain/entities/answer_opt
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 
 void main() {
-  late RepositoryFactory mockRepositoryFactory;
+  late QuestionRepository questionRepositoryMock;
   late ResourceUuidGenerator mockUuidGenerator;
   late CreateQuestionUseCase useCase;
 
   setUp(() {
-    mockRepositoryFactory = _MockRepositoryFactory();
+    questionRepositoryMock = _QuestionRepositoryMock();
     mockUuidGenerator = _MockResourceUuidGenerator();
 
     useCase = CreateQuestionUseCase(
-      repositoryFactory: mockRepositoryFactory,
+      questionRepository: questionRepositoryMock,
       uuidGenerator: mockUuidGenerator,
     );
   });
@@ -173,14 +172,9 @@ void main() {
         final repositoryFailure = values[2] as QuestionRepositoryFailure;
         final expectedFailure = values[3] as CreateQuestionUseCaseFailure;
 
-        final mockQuestionRepository = _MockQuestionRepository();
-
-        when(mockRepositoryFactory.makeQuestionRepository)
-            .thenReturn(mockQuestionRepository);
-
         when(() => mockUuidGenerator.generate()).thenReturn(uuid);
 
-        when(() => mockQuestionRepository.createSingle(any()))
+        when(() => questionRepositoryMock.createSingle(any()))
             .thenAnswer((_) async => Result.err(repositoryFailure));
 
         final result = await useCase.execute(input);
@@ -252,19 +246,14 @@ void main() {
         final uuid = values[1] as String;
         final expected = values[2] as Question;
 
-        final mockQuestionRepository = _MockQuestionRepository();
-
-        when(mockRepositoryFactory.makeQuestionRepository)
-            .thenReturn(mockQuestionRepository);
-
         when(() => mockUuidGenerator.generate()).thenReturn(uuid);
 
-        when(() => mockQuestionRepository.createSingle(any()))
+        when(() => questionRepositoryMock.createSingle(any()))
             .thenAnswer((_) async => const Result.ok(unit));
 
         await useCase.execute(input);
 
-        verify(() => mockQuestionRepository.createSingle(expected)).called(1);
+        verify(() => questionRepositoryMock.createSingle(expected)).called(1);
       },
     );
   });
@@ -276,9 +265,7 @@ class _FakeQuestion extends Fake with EquatableMixin implements Question {
   List<Object> get props => [];
 }
 
-class _MockRepositoryFactory extends Mock implements RepositoryFactory {}
-
-class _MockQuestionRepository extends Mock implements QuestionRepository {}
+class _QuestionRepositoryMock extends Mock implements QuestionRepository {}
 
 class _MockResourceUuidGenerator extends Mock
     implements ResourceUuidGenerator {}
