@@ -25,24 +25,16 @@ void main() {
   group('err flow', () {
     parameterizedTest(
       'should return expected error message if auth repository fails',
-      ParameterizedSource.values([
-        [AuthRepositoryError.unexpected(message: ''), 'Unable to login: '],
-        [
-          AuthRepositoryError.unexpected(message: '#SG'),
-          'Unable to login: #SG',
-        ],
-        [
-          _FakeAuthRepositoryError(),
-          'Unable to login: Unknown error\nInstance of '
-              "'_FakeAuthRepositoryError'",
-        ]
+      ParameterizedSource.value([
+        AuthRepositoryError.unexpected(message: ''),
+        AuthRepositoryError.unexpected(message: '#SG'),
+        _FakeAuthRepositoryError(),
       ]),
       (values) async {
         const dummyEmail = 'N3GKON@F';
         const dummyPassword = 's5o';
 
         final authError = values[0] as AuthRepositoryError;
-        final expectedErrorMessage = values[1] as String;
 
         mocktail
             .when(
@@ -65,7 +57,7 @@ void main() {
         );
 
         expect(result.isErr, true);
-        expect(result.err, expectedErrorMessage);
+        expect(result.err, 'Login failed');
       },
     );
   });

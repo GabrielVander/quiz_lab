@@ -4,18 +4,28 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/session_model.dart';
 
 void main() {
   late Account appwriteAccountServiceMock;
+  late Databases appwriteDatabasesServiceMock;
 
   late AppwriteDataSource dataSource;
 
   setUp(() {
     appwriteAccountServiceMock = _AccountMock();
+    appwriteDatabasesServiceMock = _DatabasesMock();
+
     dataSource = AppwriteDataSource(
       appwriteAccountService: appwriteAccountServiceMock,
+      appwriteDatabasesService: appwriteDatabasesServiceMock,
+      configuration: const AppwriteDataSourceConfiguration(
+        databaseId: 'F4G9rL^G',
+        questionsCollectionId: '8bD3Xy',
+      ),
     );
   });
 
@@ -239,6 +249,150 @@ void main() {
       );
     },
   );
+
+  group('createQuestion()', () {
+    test(
+      'should return exception when appwrite databases service throws an '
+      'exception',
+      () async {
+        final dummyException = _SomeException();
+
+        mocktail
+            .when(
+              () => appwriteDatabasesServiceMock.createDocument(
+                databaseId: mocktail.any(named: 'databaseId'),
+                documentId: mocktail.any(named: 'documentId'),
+                collectionId: mocktail.any(named: 'collectionId'),
+                data: mocktail.any(named: 'data'),
+                permissions: mocktail.any(named: 'permissions'),
+              ),
+            )
+            .thenThrow(dummyException);
+
+        final result = await dataSource
+            .createQuestion(_FakeAppwriteQuestionCreationModel());
+
+        expect(result.isErr, true);
+        expect(
+          result.err,
+          AppwriteDataSourceFailure.unexpected(dummyException),
+        );
+      },
+    );
+
+    parameterizedTest(
+      'should call Appwrite databases services correctly',
+      ParameterizedSource.values([
+        [
+          const AppwriteDataSourceConfiguration(
+            databaseId: '',
+            questionsCollectionId: '',
+          ),
+          const AppwriteQuestionCreationModel(
+            id: '',
+            title: '',
+            description: '',
+            difficulty: '',
+            options: [],
+            categories: [],
+          ),
+        ],
+        [
+          const AppwriteDataSourceConfiguration(
+            databaseId: '@VwG4',
+            questionsCollectionId: '1FpiQ%2',
+          ),
+          const AppwriteQuestionCreationModel(
+            id: r'9$q',
+            title: 'g%2%4J',
+            description: 'MzT9ra5%',
+            difficulty: 'XCj4I1*H',
+            options: [
+              AppwriteQuestionOptionModel(
+                description: '1Di%',
+                isCorrect: false,
+              ),
+              AppwriteQuestionOptionModel(
+                description: 'rH84J1',
+                isCorrect: true,
+              ),
+              AppwriteQuestionOptionModel(
+                description: 'o3yko0',
+                isCorrect: false,
+              ),
+            ],
+            categories: [
+              '#4k6',
+              '!1t0#',
+              r'@U%89f$H',
+            ],
+          ),
+        ],
+      ]),
+      (values) async {
+        final dummyAppwriteDataSourceConfiguration =
+            values[0] as AppwriteDataSourceConfiguration;
+        final dummyAppwriteQuestionCreationModel =
+            values[1] as AppwriteQuestionCreationModel;
+
+        final documentMock = _DocumentMock();
+
+        dataSource = AppwriteDataSource(
+          appwriteAccountService: appwriteAccountServiceMock,
+          appwriteDatabasesService: appwriteDatabasesServiceMock,
+          configuration: dummyAppwriteDataSourceConfiguration,
+        );
+
+        mocktail
+            .when(() => documentMock.data)
+            .thenReturn(dummyAppwriteQuestionCreationModel.toMap());
+
+        mocktail
+            .when(
+              () => appwriteDatabasesServiceMock.createDocument(
+                databaseId: mocktail.any(named: 'databaseId'),
+                documentId: mocktail.any(named: 'documentId'),
+                collectionId: mocktail.any(named: 'collectionId'),
+                data: mocktail.any(named: 'data'),
+                permissions: mocktail.any(named: 'permissions'),
+              ),
+            )
+            .thenAnswer((_) async => documentMock);
+
+        final result =
+            await dataSource.createQuestion(dummyAppwriteQuestionCreationModel);
+
+        mocktail.verify(
+          () => appwriteDatabasesServiceMock.createDocument(
+            databaseId: dummyAppwriteDataSourceConfiguration.databaseId,
+            collectionId:
+                dummyAppwriteDataSourceConfiguration.questionsCollectionId,
+            documentId: dummyAppwriteQuestionCreationModel.id,
+            data: dummyAppwriteQuestionCreationModel.toMap(),
+          ),
+        );
+
+        expect(result.isOk, true);
+      },
+    );
+  });
 }
 
+class _FakeAppwriteQuestionCreationModel extends mocktail.Fake
+    implements AppwriteQuestionCreationModel {
+  @override
+  final String id = '4PH';
+
+  @override
+  Map<String, dynamic> toMap() => {
+        'id': id,
+      };
+}
+
+class _SomeException implements Exception {}
+
 class _AccountMock extends mocktail.Mock implements Account {}
+
+class _DatabasesMock extends mocktail.Mock implements Databases {}
+
+class _DocumentMock extends mocktail.Mock implements Document {}

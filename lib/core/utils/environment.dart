@@ -34,6 +34,10 @@ class Environment {
         return _appwriteProjectId();
       case EnvironmentVariable.environment:
         return _environment();
+      case EnvironmentVariable.appwriteDatabaseId:
+        return _appwriteDatabaseId();
+      case EnvironmentVariable.appwriteQuestionCollectionId:
+        return _appwriteQuestionCollectionId();
     }
   }
 
@@ -50,12 +54,24 @@ class Environment {
   static String? _environment() => const bool.hasEnvironment('ENVIRONMENT')
       ? const String.fromEnvironment('ENVIRONMENT')
       : null;
+
+  static String? _appwriteDatabaseId() =>
+      const bool.hasEnvironment('APPWRITE_DATABASE_ID')
+          ? const String.fromEnvironment('APPWRITE_DATABASE_ID')
+          : null;
+
+  static String? _appwriteQuestionCollectionId() =>
+      const bool.hasEnvironment('APPWRITE_QUESTION_COLLECTION_ID')
+          ? const String.fromEnvironment('APPWRITE_QUESTION_COLLECTION_ID')
+          : null;
 }
 
 enum EnvironmentVariable {
   appwriteEndpoint,
   appwriteProjectId,
   environment,
+  appwriteDatabaseId,
+  appwriteQuestionCollectionId,
 }
 
 enum EnvironmentType {

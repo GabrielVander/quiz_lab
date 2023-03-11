@@ -6,18 +6,17 @@ import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
 void main() {
-  late RepositoryFactory mockRepositoryFactory;
+  late QuestionRepository questionRepositoryMock;
   late WatchAllQuestionsUseCase useCase;
 
   setUp(() {
-    mockRepositoryFactory = _MockRepositoryFactory();
+    questionRepositoryMock = _QuestionRepositoryMock();
     useCase = WatchAllQuestionsUseCase(
-      repositoryFactory: mockRepositoryFactory,
+      questionRepository: questionRepositoryMock,
     );
   });
 
@@ -40,14 +39,8 @@ void main() {
         final repositoryFailure = values[0] as QuestionRepositoryFailure;
         final expectedFailure = values[1] as WatchAllQuestionsFailure;
 
-        final mockQuestionRepository = _MockQuestionRepository();
-
         mocktail
-            .when(() => mockRepositoryFactory.makeQuestionRepository())
-            .thenReturn(mockQuestionRepository);
-
-        mocktail
-            .when(mockQuestionRepository.watchAll)
+            .when(questionRepositoryMock.watchAll)
             .thenReturn(Result.err(repositoryFailure));
 
         final result = useCase.execute();
@@ -108,14 +101,8 @@ void main() {
         final streamValues = values[0] as List<List<Question>>;
         final stream = Stream.fromIterable(streamValues);
 
-        final mockQuestionRepository = _MockQuestionRepository();
-
         mocktail
-            .when(() => mockRepositoryFactory.makeQuestionRepository())
-            .thenReturn(mockQuestionRepository);
-
-        mocktail
-            .when(mockQuestionRepository.watchAll)
+            .when(questionRepositoryMock.watchAll)
             .thenReturn(Result.ok(stream));
 
         final result = useCase.execute();
@@ -129,8 +116,5 @@ void main() {
   });
 }
 
-class _MockRepositoryFactory extends mocktail.Mock
-    implements RepositoryFactory {}
-
-class _MockQuestionRepository extends mocktail.Mock
+class _QuestionRepositoryMock extends mocktail.Mock
     implements QuestionRepository {}

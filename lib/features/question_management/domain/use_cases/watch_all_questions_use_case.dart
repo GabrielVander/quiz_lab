@@ -4,24 +4,23 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
 class WatchAllQuestionsUseCase {
   WatchAllQuestionsUseCase({
-    required RepositoryFactory repositoryFactory,
-  }) : _repositoryFactory = repositoryFactory;
+    required QuestionRepository questionRepository,
+  }) : _questionRepository = questionRepository;
 
   final QuizLabLogger _logger =
       QuizLabLoggerFactory.createLogger<WatchAllQuestionsUseCase>();
 
-  final RepositoryFactory _repositoryFactory;
+  final QuestionRepository _questionRepository;
 
   Result<Stream<List<Question>>, WatchAllQuestionsFailure> execute() {
     _logger.info('Watching all questions...');
 
-    final questionRepository = _repositoryFactory.makeQuestionRepository();
-    final streamResult = questionRepository.watchAll();
+    final streamResult = _questionRepository.watchAll();
 
     if (streamResult.isErr) {
       final failure = WatchAllQuestionsFailure.generic(

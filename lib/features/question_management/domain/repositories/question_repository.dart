@@ -104,3 +104,14 @@ class UnableToDelete extends QuestionRepositoryFailure {
   @override
   List<Object> get props => super.props..addAll([id]);
 }
+
+@immutable
+class UnexpectedErrorFailure extends QuestionRepositoryFailure {
+  const UnexpectedErrorFailure({required this.exception})
+      : super._(message: 'Unexpected error: $exception');
+
+  final Exception exception;
+
+  @override
+  List<Object> get props => super.props..addAll([exception]);
+}

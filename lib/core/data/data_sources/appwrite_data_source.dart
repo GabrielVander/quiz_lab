@@ -1,5 +1,7 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/session_model.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
@@ -7,11 +9,17 @@ import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 class AppwriteDataSource {
   AppwriteDataSource({
     required Account appwriteAccountService,
-  }) : _appwriteAccountService = appwriteAccountService;
+    required Databases appwriteDatabasesService,
+    required AppwriteDataSourceConfiguration configuration,
+  })  : _appwriteAccountService = appwriteAccountService,
+        _appwriteDatabasesService = appwriteDatabasesService,
+        _configuration = configuration;
 
   final _logger = QuizLabLoggerFactory.createLogger<AppwriteDataSource>();
 
   final Account _appwriteAccountService;
+  final Databases _appwriteDatabasesService;
+  final AppwriteDataSourceConfiguration _configuration;
 
   Future<Result<SessionModel, String>> createEmailSession(
     EmailSessionCredentialsModel credentialsModel,
@@ -64,8 +72,61 @@ class AppwriteDataSource {
         ),
       );
     } on AppwriteException catch (e) {
-      _logger.error('Unable to create email session: $e');
+      _logger.error(e.toString());
+
+      if (e.message == 'Connection refused' && e.code == null) {
+        _logger.error('Connection refused');
+      }
+
       return Result.err(e.toString());
     }
   }
+
+  Future<Result<AppwriteQuestionCreationModel, AppwriteDataSourceFailure>>
+      createQuestion(
+    AppwriteQuestionCreationModel question,
+  ) async {
+    _logger.debug('Creating question document...');
+
+    try {
+      await _appwriteDatabasesService.createDocument(
+        databaseId: _configuration.databaseId,
+        collectionId: _configuration.questionsCollectionId,
+        documentId: question.id,
+        data: question.toMap(),
+      );
+
+      _logger.debug('Question document created successfully');
+      return Result.ok(question);
+    } on Exception catch (e) {
+      _logger.error(e.toString());
+      return Result.err(AppwriteDataSourceFailure.unexpected(e));
+    }
+  }
+}
+
+class AppwriteDataSourceConfiguration {
+  const AppwriteDataSourceConfiguration({
+    required this.databaseId,
+    required this.questionsCollectionId,
+  });
+
+  final String databaseId;
+  final String questionsCollectionId;
+}
+
+abstract class AppwriteDataSourceFailure extends Equatable {
+  const AppwriteDataSourceFailure._();
+
+  factory AppwriteDataSourceFailure.unexpected(Exception exception) =>
+      AppwriteDataSourceUnexpectedFailure._(exception);
+}
+
+class AppwriteDataSourceUnexpectedFailure extends AppwriteDataSourceFailure {
+  const AppwriteDataSourceUnexpectedFailure._(this.exception) : super._();
+
+  final Exception exception;
+
+  @override
+  List<Object?> get props => [exception];
 }
