@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
@@ -8,90 +9,52 @@ import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 
 void main() {
-  late DependencyInjection diMock;
+  late _DependencyInjectionMock diMock;
 
   setUp(() {
     diMock = _DependencyInjectionMock();
   });
 
-  group('should register all dependencies', () {
-    test('appwrite account service', () {
+  parameterizedTest(
+    'should register all dependencies',
+    ParameterizedSource.values([
+      [Account, () => _check<Account>(diMock)],
+      [Databases, () => _check<Databases>(diMock)],
+      [AppwriteDataSource, () => _check<AppwriteDataSource>(diMock)],
+      [NetworkCubit, () => _check<NetworkCubit>(diMock)],
+      [BottomNavigationCubit, () => _check<BottomNavigationCubit>(diMock)],
+    ]),
+    (values) {
+      final check = values[1] as void Function();
+
       mocktail.when(() => diMock.get<Client>()).thenReturn(_FakeClient());
+      mocktail.when(() => diMock.get<Account>()).thenReturn(_AccountMock());
+      mocktail.when(() => diMock.get<Databases>()).thenReturn(_DatabasesMock());
+      mocktail
+          .when(() => diMock.get<AppwriteDataSourceConfiguration>())
+          .thenReturn(_AppwriteDataSourceConfigurationMock());
 
-      coreDependencyInjectionSetup(diMock);
+      check();
+    },
+  );
+}
 
-      final captured = mocktail
-          .verify(
-            () => diMock.registerInstance<Account>(mocktail.captureAny()),
-          )
-          .captured;
+void _check<T extends Object>(
+  _DependencyInjectionMock diMock,
+) {
+  coreDependencyInjectionSetup(diMock);
 
-      final getter = captured.last as Account Function(DependencyInjection);
+  final captured = mocktail
+      .verify(
+        () => diMock.registerFactory<T>(mocktail.captureAny()),
+      )
+      .captured;
 
-      final account = getter(diMock);
+  final getter = captured.last as T Function(_DependencyInjectionMock);
 
-      expect(account, isA<Account>());
-    });
+  final account = getter(diMock);
 
-    test('appwrite datasource', () {
-      mocktail.when(() => diMock.get<Account>()).thenReturn(_FakeAccount());
-
-      coreDependencyInjectionSetup(diMock);
-
-      final captured = mocktail
-          .verify(
-            () => diMock
-                .registerFactory<AppwriteDataSource>(mocktail.captureAny()),
-          )
-          .captured;
-
-      final factory =
-          captured.last as AppwriteDataSource Function(DependencyInjection);
-
-      final dataSource = factory(diMock);
-
-      expect(dataSource, isA<AppwriteDataSource>());
-    });
-
-    test('network cubit', () {
-      coreDependencyInjectionSetup(diMock);
-
-      final captured = mocktail
-          .verify(
-            () => diMock.registerFactory<NetworkCubit>(
-              mocktail.captureAny(),
-            ),
-          )
-          .captured;
-
-      final factory =
-          captured.last as NetworkCubit Function(DependencyInjection);
-
-      final cubit = factory(diMock);
-
-      expect(cubit, isA<NetworkCubit>());
-    });
-
-    test('bottom navigation cubit', () {
-      coreDependencyInjectionSetup(diMock);
-
-      final captured = mocktail
-          .verify(
-            () => diMock.registerFactory<BottomNavigationCubit>(
-              mocktail.captureAny(),
-            ),
-          )
-          .captured;
-
-      final factory = captured.last as BottomNavigationCubit Function(
-        DependencyInjection,
-      );
-
-      final cubit = factory(diMock);
-
-      expect(cubit, isA<BottomNavigationCubit>());
-    });
-  });
+  expect(account, isA<T>());
 }
 
 class _DependencyInjectionMock extends mocktail.Mock
@@ -99,4 +62,9 @@ class _DependencyInjectionMock extends mocktail.Mock
 
 class _FakeClient extends mocktail.Fake implements Client {}
 
-class _FakeAccount extends mocktail.Fake implements Account {}
+class _AccountMock extends mocktail.Mock implements Account {}
+
+class _DatabasesMock extends mocktail.Mock implements Databases {}
+
+class _AppwriteDataSourceConfigurationMock extends mocktail.Mock
+    implements AppwriteDataSourceConfiguration {}

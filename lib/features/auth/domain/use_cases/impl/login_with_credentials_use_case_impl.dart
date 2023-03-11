@@ -27,20 +27,10 @@ class LoginWithCredentialsUseCaseImpl implements LoginWithCredentialsUseCase {
       ),
     );
 
-    return loginResult.mapErr(_mapError);
-  }
+    return loginResult.mapErr((_) {
+      _logger.error('Login failed');
 
-  String _mapError(AuthRepositoryError error) {
-    if (error is AuthRepositoryUnexpectedError) {
-      final m = 'Unable to login: ${error.message}';
-
-      _logger.error(m);
-      return m;
-    }
-
-    final m = 'Unable to login: Unknown error\n$error';
-
-    _logger.error(m);
-    return m;
+      return 'Login failed';
+    });
   }
 }

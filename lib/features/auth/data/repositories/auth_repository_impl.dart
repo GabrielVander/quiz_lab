@@ -28,7 +28,7 @@ class AuthRepositoryImpl implements AuthRepository {
     if (result.isErr) {
       final e = AuthRepositoryError.unexpected(message: result.err!);
 
-      _logger.error(e.toString());
+      _logger.error('Unable to login with email credentials');
       return Result.err(e);
     }
 

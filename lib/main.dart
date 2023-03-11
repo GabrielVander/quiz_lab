@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:logging/logging.dart';
 import 'package:quiz_lab/core/constants.dart';
+import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
 import 'package:quiz_lab/core/quiz_lab_application.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
@@ -57,7 +58,18 @@ void _setUpInjections() {
 void _appwriteDependencyInjectionSetup(DependencyInjection di) {
   final client = _setUpAppwriteClient();
 
-  di.registerInstance<appwrite.Client>((_) => client);
+  di
+    ..registerInstance<appwrite.Client>((_) => client)
+    ..registerInstance<AppwriteDataSourceConfiguration>(
+      (_) => AppwriteDataSourceConfiguration(
+        databaseId: Environment.getRequiredEnvironmentVariable(
+          EnvironmentVariable.appwriteDatabaseId,
+        ),
+        questionsCollectionId: Environment.getRequiredEnvironmentVariable(
+          EnvironmentVariable.appwriteQuestionCollectionId,
+        ),
+      ),
+    );
 }
 
 appwrite.Client _setUpAppwriteClient() {
