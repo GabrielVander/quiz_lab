@@ -15,7 +15,7 @@ class GetSingleQuestionUseCase {
       return const Result.err('Unable to find question');
     }
 
-    final result = questionRepository.watchAll();
+    final result = await questionRepository.watchAll();
 
     if (result.isErr) {
       return Result.err(result.err!.message);

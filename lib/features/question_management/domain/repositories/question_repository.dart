@@ -9,7 +9,7 @@ abstract class QuestionRepository {
     Question question,
   );
 
-  Result<Stream<List<Question>>, QuestionRepositoryFailure> watchAll();
+  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll();
 
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,

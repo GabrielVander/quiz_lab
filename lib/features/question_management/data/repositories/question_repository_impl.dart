@@ -37,7 +37,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
   }
 
   @override
-  Result<Stream<List<Question>>, QuestionRepositoryFailure> watchAll() {
+  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>>
+      watchAll() async {
     final hiveQuestionsResult = _watchHiveQuestions();
 
     if (hiveQuestionsResult.isErr) {

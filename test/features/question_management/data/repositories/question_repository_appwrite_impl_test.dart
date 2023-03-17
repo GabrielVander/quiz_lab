@@ -174,6 +174,8 @@ void main() {
       expect(result.ok, unit);
     });
   });
+
+  group('watchAll()', () {});
 }
 
 class _AppwriteDataSourceMock extends mocktail.Mock

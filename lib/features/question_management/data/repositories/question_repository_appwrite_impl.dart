@@ -28,9 +28,9 @@ class QuestionRepositoryAppwriteImpl extends QuestionRepository {
         description: question.description,
         options: question.answerOptions
             .map(
-              (e) => AppwriteQuestionOptionModel(
-                description: e.description,
-                isCorrect: e.isCorrect,
+              (o) => AppwriteQuestionOptionModel(
+                description: o.description,
+                isCorrect: o.isCorrect,
               ),
             )
             .toList(),
@@ -55,7 +55,7 @@ class QuestionRepositoryAppwriteImpl extends QuestionRepository {
   }
 
   @override
-  Result<Stream<List<Question>>, QuestionRepositoryFailure> watchAll() {
+  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll() {
     throw UnimplementedError();
   }
 }
