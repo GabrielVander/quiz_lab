@@ -2,6 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/session_model.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
@@ -11,14 +12,17 @@ class AppwriteDataSource {
     required Account appwriteAccountService,
     required Databases appwriteDatabasesService,
     required AppwriteDataSourceConfiguration configuration,
+    required Realtime appwriteRealtimeService,
   })  : _appwriteAccountService = appwriteAccountService,
         _appwriteDatabasesService = appwriteDatabasesService,
+        _appwriteRealtimeService = appwriteRealtimeService,
         _configuration = configuration;
 
   final _logger = QuizLabLoggerFactory.createLogger<AppwriteDataSource>();
 
   final Account _appwriteAccountService;
   final Databases _appwriteDatabasesService;
+  final Realtime _appwriteRealtimeService;
   final AppwriteDataSourceConfiguration _configuration;
 
   Future<Result<SessionModel, String>> createEmailSession(
@@ -102,6 +106,21 @@ class AppwriteDataSource {
       _logger.error(e.toString());
       return Result.err(AppwriteDataSourceFailure.unexpected(e));
     }
+  }
+
+  Stream<AppwriteRealtimeQuestionMessageModel> watchQuestions() {
+    _logger.debug('Watching questions...');
+
+    final s = _appwriteRealtimeService.subscribe([
+      'databases'
+          '.${_configuration.databaseId}'
+          '.collections'
+          '.${_configuration.questionsCollectionId}'
+          '.documents'
+    ]);
+
+    return s.stream
+        .map(AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage);
   }
 }
 
