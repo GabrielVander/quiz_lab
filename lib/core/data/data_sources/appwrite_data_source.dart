@@ -2,6 +2,8 @@ import 'package:appwrite/appwrite.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_list_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/session_model.dart';
@@ -122,9 +124,27 @@ class AppwriteDataSource {
     return s.stream
         .map(AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage);
   }
+
+  Future<AppwriteQuestionListModel> getAllQuestions() async {
+    _logger.debug('Retrieving all questions...');
+
+    final documentList = await _appwriteDatabasesService.listDocuments(
+      databaseId: _configuration.databaseId,
+      collectionId: _configuration.questionsCollectionId,
+    );
+
+    _logger.debug('Retrieved ${documentList.total} questions');
+
+    return AppwriteQuestionListModel(
+      total: documentList.total,
+      questions: documentList.documents
+          .map(AppwriteQuestionModel.fromDocument)
+          .toList(),
+    );
+  }
 }
 
-class AppwriteDataSourceConfiguration {
+class AppwriteDataSourceConfiguration extends Equatable {
   const AppwriteDataSourceConfiguration({
     required this.databaseId,
     required this.questionsCollectionId,
@@ -132,6 +152,20 @@ class AppwriteDataSourceConfiguration {
 
   final String databaseId;
   final String questionsCollectionId;
+
+  @override
+  List<Object> get props => [
+        databaseId,
+        questionsCollectionId,
+      ];
+
+  @override
+  String toString() {
+    return 'AppwriteDataSourceConfiguration{'
+        'databaseId: $databaseId, '
+        'questionsCollectionId: $questionsCollectionId'
+        '}';
+  }
 }
 
 abstract class AppwriteDataSourceFailure extends Equatable {

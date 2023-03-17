@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_list_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/email_session_credentials_model.dart';
@@ -459,7 +461,7 @@ void main() {
               events: [],
               channels: [],
               timestamp: '',
-              payload: AppwriteRealtimeQuestionPayloadModel(
+              payload: AppwriteQuestionModel(
                 id: '',
                 title: '',
                 options: [],
@@ -510,7 +512,7 @@ void main() {
               events: ['&Bp54', r'C*F$!Ah', '*8pg^4'],
               channels: ['NR1', '^o58IQ5', 'No854Z0N'],
               timestamp: '29O%1',
-              payload: AppwriteRealtimeQuestionPayloadModel(
+              payload: AppwriteQuestionModel(
                 id: 'k2Kao43',
                 title: 'v5l!@',
                 options: [
@@ -564,6 +566,157 @@ void main() {
       );
     });
   });
+
+  group('getAllQuestions()', () {
+    group('ok', () {
+      parameterizedTest(
+        'should call databases service correctly',
+        ParameterizedSource.value([
+          const AppwriteDataSourceConfiguration(
+            databaseId: '',
+            questionsCollectionId: '',
+          ),
+          const AppwriteDataSourceConfiguration(
+            databaseId: 'wQD67',
+            questionsCollectionId: r'$aDf',
+          ),
+        ]),
+        (values) async {
+          final dummyAppwriteDataSourceConfiguration =
+              values[0] as AppwriteDataSourceConfiguration;
+
+          final documentListMock = _DocumentListMock();
+
+          mocktail.when(() => documentListMock.total).thenReturn(0);
+          mocktail.when(() => documentListMock.documents).thenReturn([]);
+
+          mocktail
+              .when(
+                () => appwriteDatabasesServiceMock.listDocuments(
+                  databaseId: mocktail.any(named: 'databaseId'),
+                  collectionId: mocktail.any(named: 'collectionId'),
+                ),
+              )
+              .thenAnswer((_) async => documentListMock);
+
+          await AppwriteDataSource(
+            appwriteAccountService: appwriteAccountServiceMock,
+            appwriteDatabasesService: appwriteDatabasesServiceMock,
+            configuration: dummyAppwriteDataSourceConfiguration,
+            appwriteRealtimeService: appwriteRealtimeServiceMock,
+          ).getAllQuestions();
+
+          mocktail.verify(
+            () => appwriteDatabasesServiceMock.listDocuments(
+              databaseId: dummyAppwriteDataSourceConfiguration.databaseId,
+              collectionId:
+                  dummyAppwriteDataSourceConfiguration.questionsCollectionId,
+            ),
+          );
+        },
+      );
+
+      parameterizedTest(
+        'should return expected',
+        ParameterizedSource.values([
+          [
+            DocumentList(
+              total: 0,
+              documents: [],
+            ),
+            const AppwriteQuestionListModel(
+              total: 0,
+              questions: <AppwriteQuestionModel>[],
+            ),
+          ],
+          [
+            DocumentList(
+              total: 1,
+              documents: [
+                Document(
+                  $id: 'k2Kao43',
+                  $collectionId: 'h^NjK84I',
+                  $databaseId: 'Cxc#Y1Cj',
+                  $createdAt: '516',
+                  $updatedAt: 'D3y^k#Hw',
+                  $permissions: ['sqG', r'Ft3a7I$v', 'KCfj'],
+                  data: {
+                    'title': 'v5l!@',
+                    'options': <Map<String, dynamic>>[
+                      {
+                        'description': '7T5Tm0p',
+                        'isCorrect': false,
+                      },
+                      {
+                        'description': '!D@g3',
+                        'isCorrect': true,
+                      },
+                      {
+                        'description': 'V%#BGZ',
+                        'isCorrect': false,
+                      },
+                    ],
+                    'difficulty': 'Tw&N9dD',
+                    'description': 'JLzh',
+                    'categories': ['p4lM', r'#2$vxpA', 'cWnH2io'],
+                  },
+                )
+              ],
+            ),
+            const AppwriteQuestionListModel(
+              total: 1,
+              questions: [
+                AppwriteQuestionModel(
+                  id: 'k2Kao43',
+                  title: 'v5l!@',
+                  options: [
+                    AppwriteQuestionOptionModel(
+                      description: '7T5Tm0p',
+                      isCorrect: false,
+                    ),
+                    AppwriteQuestionOptionModel(
+                      description: '!D@g3',
+                      isCorrect: true,
+                    ),
+                    AppwriteQuestionOptionModel(
+                      description: 'V%#BGZ',
+                      isCorrect: false,
+                    ),
+                  ],
+                  difficulty: 'Tw&N9dD',
+                  description: 'JLzh',
+                  categories: ['p4lM', r'#2$vxpA', 'cWnH2io'],
+                  permissions: ['sqG', r'Ft3a7I$v', 'KCfj'],
+                  databaseId: 'Cxc#Y1Cj',
+                  collectionId: 'h^NjK84I',
+                  createdAt: '516',
+                  updatedAt: 'D3y^k#Hw',
+                )
+              ],
+            ),
+          ],
+        ]),
+        (values) async {
+          final dummyDocumentList = values[0] as DocumentList;
+          final expectedAppwriteQuestionListModel =
+              values[1] as AppwriteQuestionListModel;
+
+          mocktail
+              .when(
+                () => appwriteDatabasesServiceMock.listDocuments(
+                  databaseId: mocktail.any(named: 'databaseId'),
+                  collectionId: mocktail.any(named: 'collectionId'),
+                ),
+              )
+              .thenAnswer((_) async => dummyDocumentList);
+
+          final result = await dataSource.getAllQuestions();
+
+          expect(result, expectedAppwriteQuestionListModel);
+        },
+      );
+    });
+  });
 }
 
 class _FakeAppwriteQuestionCreationModel extends mocktail.Fake
@@ -589,3 +742,5 @@ class _RealtimeMock extends mocktail.Mock implements Realtime {}
 
 class _RealtimeSubscriptionMock extends mocktail.Mock
     implements RealtimeSubscription {}
+
+class _DocumentListMock extends mocktail.Mock implements DocumentList {}
