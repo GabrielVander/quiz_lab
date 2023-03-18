@@ -165,7 +165,7 @@ void main() {
 
         mocktail
             .when(mockWatchAllQuestionsUseCase.execute)
-            .thenReturn(Result.ok(Stream.fromIterable(questions)));
+            .thenAnswer((_) async => Result.ok(Stream.fromIterable(questions)));
 
         expectLater(cubit.stream, emitsInOrder(expectedStates));
 
@@ -217,8 +217,10 @@ void main() {
             .when(() => mockUseCaseFactory.makeWatchAllQuestionsUseCase())
             .thenReturn(mockWatchAllQuestionsUseCase);
 
-        mocktail.when(mockWatchAllQuestionsUseCase.execute).thenReturn(
-              Result.err(WatchAllQuestionsFailure.generic(message: message)),
+        mocktail.when(mockWatchAllQuestionsUseCase.execute).thenAnswer(
+              (_) async => Result.err(
+                WatchAllQuestionsFailure.generic(message: message),
+              ),
             );
 
         expectLater(cubit.stream, emitsInOrder(expectedStates));

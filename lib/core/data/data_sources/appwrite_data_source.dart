@@ -2,6 +2,9 @@ import 'package:appwrite/appwrite.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_list_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/session_model.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
@@ -11,14 +14,17 @@ class AppwriteDataSource {
     required Account appwriteAccountService,
     required Databases appwriteDatabasesService,
     required AppwriteDataSourceConfiguration configuration,
+    required Realtime appwriteRealtimeService,
   })  : _appwriteAccountService = appwriteAccountService,
         _appwriteDatabasesService = appwriteDatabasesService,
+        _appwriteRealtimeService = appwriteRealtimeService,
         _configuration = configuration;
 
   final _logger = QuizLabLoggerFactory.createLogger<AppwriteDataSource>();
 
   final Account _appwriteAccountService;
   final Databases _appwriteDatabasesService;
+  final Realtime _appwriteRealtimeService;
   final AppwriteDataSourceConfiguration _configuration;
 
   Future<Result<SessionModel, String>> createEmailSession(
@@ -74,10 +80,6 @@ class AppwriteDataSource {
     } on AppwriteException catch (e) {
       _logger.error(e.toString());
 
-      if (e.message == 'Connection refused' && e.code == null) {
-        _logger.error('Connection refused');
-      }
-
       return Result.err(e.toString());
     }
   }
@@ -103,6 +105,40 @@ class AppwriteDataSource {
       return Result.err(AppwriteDataSourceFailure.unexpected(e));
     }
   }
+
+  Stream<AppwriteRealtimeQuestionMessageModel>
+      watchForQuestionCollectionUpdate() {
+    _logger.debug('Watching for question collection updates...');
+
+    final s = _appwriteRealtimeService.subscribe([
+      'databases'
+          '.${_configuration.databaseId}'
+          '.collections'
+          '.${_configuration.questionsCollectionId}'
+          '.documents'
+    ]);
+
+    return s.stream
+        .map(AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage);
+  }
+
+  Future<AppwriteQuestionListModel> getAllQuestions() async {
+    _logger.debug('Retrieving all questions...');
+
+    final documentList = await _appwriteDatabasesService.listDocuments(
+      databaseId: _configuration.databaseId,
+      collectionId: _configuration.questionsCollectionId,
+    );
+
+    _logger.debug('Retrieved ${documentList.total} questions');
+
+    return AppwriteQuestionListModel(
+      total: documentList.total,
+      questions: documentList.documents
+          .map(AppwriteQuestionModel.fromDocument)
+          .toList(),
+    );
+  }
 }
 
 class AppwriteDataSourceConfiguration {
@@ -113,6 +149,14 @@ class AppwriteDataSourceConfiguration {
 
   final String databaseId;
   final String questionsCollectionId;
+
+  @override
+  String toString() {
+    return 'AppwriteDataSourceConfiguration{'
+        'databaseId: $databaseId, '
+        'questionsCollectionId: $questionsCollectionId'
+        '}';
+  }
 }
 
 abstract class AppwriteDataSourceFailure extends Equatable {
@@ -128,5 +172,7 @@ class AppwriteDataSourceUnexpectedFailure extends AppwriteDataSourceFailure {
   final Exception exception;
 
   @override
-  List<Object?> get props => [exception];
+  List<Object?> get props => [
+        exception,
+      ];
 }

@@ -17,10 +17,11 @@ class WatchAllQuestionsUseCase {
 
   final QuestionRepository _questionRepository;
 
-  Result<Stream<List<Question>>, WatchAllQuestionsFailure> execute() {
+  Future<Result<Stream<List<Question>>, WatchAllQuestionsFailure>>
+      execute() async {
     _logger.info('Watching all questions...');
 
-    final streamResult = _questionRepository.watchAll();
+    final streamResult = await _questionRepository.watchAll();
 
     if (streamResult.isErr) {
       final failure = WatchAllQuestionsFailure.generic(

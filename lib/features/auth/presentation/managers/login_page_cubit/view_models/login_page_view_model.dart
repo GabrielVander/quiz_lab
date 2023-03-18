@@ -7,8 +7,6 @@ class LoginPageViewModel {
     required this.password,
   });
 
-  bool get emailHasError => email.isEmpty;
-
   final EmailViewModel email;
   final PasswordViewModel password;
 

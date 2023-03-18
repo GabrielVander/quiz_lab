@@ -37,7 +37,7 @@ void main() {
 
         mocktail
             .when(() => questionRepositoryMock.watchAll())
-            .thenAnswer((_) => Result.err(questionRepositoryFailure));
+            .thenAnswer((_) async => Result.err(questionRepositoryFailure));
 
         final result = await useCase.execute('5iPj@0V');
 
@@ -70,7 +70,7 @@ void main() {
 
         mocktail
             .when(() => questionRepositoryMock.watchAll())
-            .thenAnswer((_) => Result.ok(questionsStream));
+            .thenAnswer((_) async => Result.ok(questionsStream));
 
         final result = await useCase.execute('6EyuF!KL');
 
@@ -116,7 +116,7 @@ void main() {
 
         mocktail
             .when(() => questionRepositoryMock.watchAll())
-            .thenAnswer((_) => Result.ok(questionsStream));
+            .thenAnswer((_) async => Result.ok(questionsStream));
 
         final result = await useCase.execute(targetQuestionId);
 

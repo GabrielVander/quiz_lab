@@ -160,7 +160,7 @@ void main() {
               HiveDataSourceFailure.hiveError(message: '%ae'),
               QuestionRepositoryFailure.unableToWatchAll(message: '%ae'),
             ],
-          ]), (values) {
+          ]), (values) async {
         final failure = values[0] as HiveDataSourceFailure;
         final expectedFailure = values[1] as QuestionRepositoryFailure;
 
@@ -174,7 +174,7 @@ void main() {
             .when(mockHiveDataSource.watchAllQuestions)
             .thenReturn(Result.err(failure));
 
-        final result = repository.watchAll();
+        final result = await repository.watchAll();
 
         expect(result.isErr, isTrue);
         expect(result.err, expectedFailure);
@@ -229,7 +229,7 @@ void main() {
               ],
               <Question>[_FakeQuestion(), _FakeQuestion()],
             ],
-          ]), (values) {
+          ]), (values) async {
         final hiveModels = values[0] as List<HiveQuestionModel>;
         final mapperResults =
             values[1] as List<Result<Question, QuestionMapperFailure>>;
@@ -254,9 +254,9 @@ void main() {
             .when(() => mockQuestionEntityMapper.fromHiveModel(mocktail.any()))
             .thenAnswer((_) => mapperResults.removeAt(0));
 
-        final result = repository.watchAll();
-        expect(result.isOk, isTrue);
+        final result = await repository.watchAll();
 
+        expect(result.isOk, isTrue);
         expect(result.ok, emits(expectedQuestions));
       });
     });
@@ -321,7 +321,8 @@ void main() {
               )
               .thenReturn(Result.ok(_FakeQuestion()));
 
-          final result = repository.watchAll();
+          final result = await repository.watchAll();
+
           expect(result.isOk, isTrue);
 
           await expectLater(

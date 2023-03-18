@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 
 class AppwriteQuestionOptionModel extends Equatable {
   const AppwriteQuestionOptionModel({
@@ -28,4 +29,9 @@ class AppwriteQuestionOptionModel extends Equatable {
       'isCorrect': isCorrect,
     };
   }
+
+  AnswerOption toAnswerOption() => AnswerOption(
+        description: description,
+        isCorrect: isCorrect,
+      );
 }

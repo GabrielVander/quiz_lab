@@ -35,15 +35,15 @@ void main() {
           WatchAllQuestionsFailure.generic(message: 'f9T')
         ],
       ]),
-      (values) {
+      (values) async {
         final repositoryFailure = values[0] as QuestionRepositoryFailure;
         final expectedFailure = values[1] as WatchAllQuestionsFailure;
 
         mocktail
             .when(questionRepositoryMock.watchAll)
-            .thenReturn(Result.err(repositoryFailure));
+            .thenAnswer((_) async => Result.err(repositoryFailure));
 
-        final result = useCase.execute();
+        final result = await useCase.execute();
 
         expect(result.isErr, true);
         expect(result.err, expectedFailure);
@@ -103,9 +103,9 @@ void main() {
 
         mocktail
             .when(questionRepositoryMock.watchAll)
-            .thenReturn(Result.ok(stream));
+            .thenAnswer((_) async => Result.ok(stream));
 
-        final result = useCase.execute();
+        final result = await useCase.execute();
 
         expect(result.isOk, isTrue);
 

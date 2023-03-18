@@ -20,6 +20,7 @@ void main() {
     ParameterizedSource.values([
       [Account, () => _check<Account>(diMock)],
       [Databases, () => _check<Databases>(diMock)],
+      [Realtime, () => _check<Realtime>(diMock)],
       [AppwriteDataSource, () => _check<AppwriteDataSource>(diMock)],
       [NetworkCubit, () => _check<NetworkCubit>(diMock)],
       [BottomNavigationCubit, () => _check<BottomNavigationCubit>(diMock)],
@@ -30,6 +31,7 @@ void main() {
       mocktail.when(() => diMock.get<Client>()).thenReturn(_FakeClient());
       mocktail.when(() => diMock.get<Account>()).thenReturn(_AccountMock());
       mocktail.when(() => diMock.get<Databases>()).thenReturn(_DatabasesMock());
+      mocktail.when(() => diMock.get<Realtime>()).thenReturn(_RealtimeMock());
       mocktail
           .when(() => diMock.get<AppwriteDataSourceConfiguration>())
           .thenReturn(_AppwriteDataSourceConfigurationMock());
@@ -68,3 +70,5 @@ class _DatabasesMock extends mocktail.Mock implements Databases {}
 
 class _AppwriteDataSourceConfigurationMock extends mocktail.Mock
     implements AppwriteDataSourceConfiguration {}
+
+class _RealtimeMock extends mocktail.Mock implements Realtime {}
