@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 
 class AppwriteQuestionModel extends Equatable {
   const AppwriteQuestionModel({
@@ -17,9 +22,7 @@ class AppwriteQuestionModel extends Equatable {
     required this.categories,
   });
 
-  factory AppwriteQuestionModel.fromMap(
-    Map<String, dynamic> map,
-  ) {
+  factory AppwriteQuestionModel.fromMap(Map<String, dynamic> map,) {
     return AppwriteQuestionModel(
       id: map[r'$id'] as String,
       createdAt: map[r'$createdAt'] as String,
@@ -37,9 +40,7 @@ class AppwriteQuestionModel extends Equatable {
     );
   }
 
-  factory AppwriteQuestionModel.fromDocument(
-    Document doc,
-  ) {
+  factory AppwriteQuestionModel.fromDocument(Document doc,) {
     return AppwriteQuestionModel(
       id: doc.$id,
       createdAt: doc.$createdAt,
@@ -50,10 +51,15 @@ class AppwriteQuestionModel extends Equatable {
       title: doc.data['title'] as String,
       description: doc.data['description'] as String,
       difficulty: doc.data['difficulty'] as String,
-      options: (doc.data['options'] as List<Map<String, dynamic>>)
+      options: (jsonDecode(doc.data['options'] as String) as List<dynamic>)
+          .map((o) => o as Map<String, dynamic>)
           .map(AppwriteQuestionOptionModel.fromMap)
           .toList(),
-      categories: doc.data['categories'] as List<String>,
+      categories: (doc.data['categories'] as List<dynamic>)
+          .map((c) => c as String?)
+          .where((c) => c != null)
+          .map((c) => c!)
+          .toList(),
     );
   }
 
@@ -71,17 +77,17 @@ class AppwriteQuestionModel extends Equatable {
 
   @override
   List<Object> get props => [
-        id,
-        createdAt,
-        updatedAt,
-        collectionId,
-        databaseId,
-        title,
-        description,
-        difficulty,
-        options,
-        categories,
-      ];
+    id,
+    createdAt,
+    updatedAt,
+    collectionId,
+    databaseId,
+    title,
+    description,
+    difficulty,
+    options,
+    categories,
+  ];
 
   @override
   String toString() {
@@ -98,5 +104,27 @@ class AppwriteQuestionModel extends Equatable {
         'options: $options, '
         'categories: $categories'
         '}';
+  }
+
+  Question toQuestion() => Question(
+        id: id,
+        shortDescription: title,
+        description: description,
+        difficulty: _mapDifficulty(difficulty),
+        answerOptions: options.map((o) => o.toAnswerOption()).toList(),
+        categories: categories.map((c) => QuestionCategory(value: c)).toList(),
+      );
+
+  QuestionDifficulty _mapDifficulty(String difficulty) {
+    switch (difficulty) {
+      case 'easy':
+        return QuestionDifficulty.easy;
+      case 'medium':
+        return QuestionDifficulty.medium;
+      case 'hard':
+        return QuestionDifficulty.hard;
+      default:
+        return QuestionDifficulty.unknown;
+    }
   }
 }

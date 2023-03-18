@@ -4,7 +4,10 @@ import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_list_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_appwrite_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
@@ -24,6 +27,8 @@ void main() {
       appwriteDataSource: appwriteDataSourceMock,
     );
   });
+
+  tearDown(mocktail.resetMocktailState);
 
   group('createSingle()', () {
     setUp(() {
@@ -175,7 +180,166 @@ void main() {
     });
   });
 
-  group('watchAll()', () {});
+  group('watchAll()', () {
+    parameterizedTest(
+      'should fetch questions on every update',
+      ParameterizedSource.value([
+        0,
+        // 1, mocktail does not register calls made inside a callback
+        // 3, mocktail does not register calls made inside a callback
+        // 99, mocktail does not register calls made inside a callback
+      ]),
+      (values) async {
+        final amountOfUpdates = values[0] as int;
+
+        final appwriteQuestionListModelMock = _AppwriteQuestionListModelMock();
+
+        final updateMessages = List.generate(
+          amountOfUpdates,
+          (_) => _AppwriteRealtimeQuestionMessageModelMock(),
+        );
+
+        final stream = Stream.fromIterable(updateMessages);
+
+        mocktail
+            .when(
+                () => appwriteDataSourceMock.watchForQuestionCollectionUpdate())
+            .thenAnswer(
+              (_) => stream,
+            );
+
+        mocktail.when(() => appwriteQuestionListModelMock.total).thenReturn(0);
+        mocktail
+            .when(() => appwriteQuestionListModelMock.questions)
+            .thenReturn([]);
+
+        mocktail
+            .when(() => appwriteDataSourceMock.getAllQuestions())
+            .thenAnswer((_) async => appwriteQuestionListModelMock);
+
+        await repository.watchAll();
+
+        mocktail.verify(
+            () => appwriteDataSourceMock.watchForQuestionCollectionUpdate());
+
+        mocktail
+            .verify(() => appwriteDataSourceMock.getAllQuestions())
+            .called(amountOfUpdates + 1);
+      },
+    );
+
+    parameterizedTest(
+      'should emit expected',
+      ParameterizedSource.values([
+        [
+          const AppwriteQuestionListModel(total: 0, questions: []),
+          <Question>[]
+        ],
+        [
+          const AppwriteQuestionListModel(
+            total: 1,
+            questions: [
+              AppwriteQuestionModel(
+                id: '',
+                createdAt: '',
+                updatedAt: '',
+                permissions: [],
+                collectionId: '',
+                databaseId: '',
+                title: '',
+                description: '',
+                difficulty: '',
+                options: [],
+                categories: [],
+              )
+            ],
+          ),
+          <Question>[
+            const Question(
+              id: '',
+              shortDescription: '',
+              description: '',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.unknown,
+              categories: [],
+            )
+          ]
+        ],
+        [
+          const AppwriteQuestionListModel(
+            total: 3,
+            questions: [
+              AppwriteQuestionModel(
+                id: r'PfZ*N22$',
+                createdAt: 'J14ud1p^',
+                updatedAt: 'GhC86Sv',
+                permissions: ['OH@', '#k7', 'P3%9*Q9'],
+                collectionId: 'qqB',
+                databaseId: 'lJ4',
+                title: 'ZosGBFx3',
+                description: 'be%92n',
+                difficulty: 'easy',
+                options: [
+                  AppwriteQuestionOptionModel(
+                    description: '1Dj@',
+                    isCorrect: false,
+                  ),
+                  AppwriteQuestionOptionModel(
+                    description: 'Az^81FLU',
+                    isCorrect: true,
+                  ),
+                  AppwriteQuestionOptionModel(
+                    description: '6Wi',
+                    isCorrect: false,
+                  ),
+                ],
+                categories: ['@#Ij', '@s@urTl', '4UPz'],
+              )
+            ],
+          ),
+          <Question>[
+            const Question(
+              id: r'PfZ*N22$',
+              shortDescription: 'ZosGBFx3',
+              description: 'be%92n',
+              answerOptions: [
+                AnswerOption(description: '1Dj@', isCorrect: false),
+                AnswerOption(description: 'Az^81FLU', isCorrect: true),
+                AnswerOption(description: '6Wi', isCorrect: false),
+              ],
+              difficulty: QuestionDifficulty.easy,
+              categories: [
+                QuestionCategory(value: '@#Ij'),
+                QuestionCategory(value: '@s@urTl'),
+                QuestionCategory(value: '4UPz'),
+              ],
+            )
+          ]
+        ],
+      ]),
+      (values) async {
+        final appwriteQuestionListModel =
+            values[0] as AppwriteQuestionListModel;
+        final expected = values[1] as List<Question>;
+
+        mocktail
+            .when(
+                () => appwriteDataSourceMock.watchForQuestionCollectionUpdate())
+            .thenAnswer(
+              (_) => const Stream.empty(),
+            );
+
+        mocktail
+            .when(() => appwriteDataSourceMock.getAllQuestions())
+            .thenAnswer((_) async => appwriteQuestionListModel);
+
+        final result = await repository.watchAll();
+
+        expect(result.isOk, true);
+        expect(result.ok, emits(expected));
+      },
+    );
+  });
 }
 
 class _AppwriteDataSourceMock extends mocktail.Mock
@@ -183,3 +347,9 @@ class _AppwriteDataSourceMock extends mocktail.Mock
 
 class _AppwriteQuestionCreationModelMock extends mocktail.Mock
     implements AppwriteQuestionCreationModel {}
+
+class _AppwriteRealtimeQuestionMessageModelMock extends mocktail.Mock
+    implements AppwriteRealtimeQuestionMessageModel {}
+
+class _AppwriteQuestionListModelMock extends mocktail.Mock
+    implements AppwriteQuestionListModel {}

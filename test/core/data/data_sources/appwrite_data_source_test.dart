@@ -384,7 +384,7 @@ void main() {
     );
   });
 
-  group('watchQuestions()', () {
+  group('watchForQuestionCollectionUpdate()', () {
     group('err', () {});
 
     group('ok', () {
@@ -420,7 +420,7 @@ void main() {
               .when(() => appwriteRealtimeServiceMock.subscribe(mocktail.any()))
               .thenReturn(realtimeSubscriptionMock);
 
-          dummyAppwriteDataSource.watchQuestions();
+          dummyAppwriteDataSource.watchForQuestionCollectionUpdate();
 
           mocktail.verify(
             () => appwriteRealtimeServiceMock.subscribe([
@@ -556,7 +556,7 @@ void main() {
               .when(() => appwriteRealtimeServiceMock.subscribe(mocktail.any()))
               .thenReturn(realtimeSubscriptionMock);
 
-          final result = dataSource.watchQuestions();
+          final result = dataSource.watchForQuestionCollectionUpdate();
 
           expect(
             result,
@@ -642,20 +642,11 @@ void main() {
                   $permissions: ['sqG', r'Ft3a7I$v', 'KCfj'],
                   data: {
                     'title': 'v5l!@',
-                    'options': <Map<String, dynamic>>[
-                      {
-                        'description': '7T5Tm0p',
-                        'isCorrect': false,
-                      },
-                      {
-                        'description': '!D@g3',
-                        'isCorrect': true,
-                      },
-                      {
-                        'description': 'V%#BGZ',
-                        'isCorrect': false,
-                      },
-                    ],
+                    'options': '['
+                        '{"description":"7T5Tm0p","isCorrect":false},'
+                        '{"description":"!D@g3","isCorrect":true},'
+                        '{"description":"V%#BGZ","isCorrect":false}'
+                        ']',
                     'difficulty': 'Tw&N9dD',
                     'description': 'JLzh',
                     'categories': ['p4lM', r'#2$vxpA', 'cWnH2io'],

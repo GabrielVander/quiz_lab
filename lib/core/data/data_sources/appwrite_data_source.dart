@@ -110,8 +110,9 @@ class AppwriteDataSource {
     }
   }
 
-  Stream<AppwriteRealtimeQuestionMessageModel> watchQuestions() {
-    _logger.debug('Watching questions...');
+  Stream<AppwriteRealtimeQuestionMessageModel>
+      watchForQuestionCollectionUpdate() {
+    _logger.debug('Watching for question collection updates...');
 
     final s = _appwriteRealtimeService.subscribe([
       'databases'
