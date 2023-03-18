@@ -203,7 +203,8 @@ void main() {
 
         mocktail
             .when(
-                () => appwriteDataSourceMock.watchForQuestionCollectionUpdate())
+              () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+            )
             .thenAnswer(
               (_) => stream,
             );
@@ -220,7 +221,8 @@ void main() {
         await repository.watchAll();
 
         mocktail.verify(
-            () => appwriteDataSourceMock.watchForQuestionCollectionUpdate());
+          () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+        );
 
         mocktail
             .verify(() => appwriteDataSourceMock.getAllQuestions())
@@ -324,7 +326,8 @@ void main() {
 
         mocktail
             .when(
-                () => appwriteDataSourceMock.watchForQuestionCollectionUpdate())
+              () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+            )
             .thenAnswer(
               (_) => const Stream.empty(),
             );
