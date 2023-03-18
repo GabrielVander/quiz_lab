@@ -80,10 +80,6 @@ class AppwriteDataSource {
     } on AppwriteException catch (e) {
       _logger.error(e.toString());
 
-      if (e.message == 'Connection refused' && e.code == null) {
-        _logger.error('Connection refused');
-      }
-
       return Result.err(e.toString());
     }
   }
@@ -145,7 +141,7 @@ class AppwriteDataSource {
   }
 }
 
-class AppwriteDataSourceConfiguration extends Equatable {
+class AppwriteDataSourceConfiguration {
   const AppwriteDataSourceConfiguration({
     required this.databaseId,
     required this.questionsCollectionId,
@@ -153,12 +149,6 @@ class AppwriteDataSourceConfiguration extends Equatable {
 
   final String databaseId;
   final String questionsCollectionId;
-
-  @override
-  List<Object> get props => [
-        databaseId,
-        questionsCollectionId,
-      ];
 
   @override
   String toString() {
@@ -182,5 +172,7 @@ class AppwriteDataSourceUnexpectedFailure extends AppwriteDataSourceFailure {
   final Exception exception;
 
   @override
-  List<Object?> get props => [exception];
+  List<Object?> get props => [
+        exception,
+      ];
 }

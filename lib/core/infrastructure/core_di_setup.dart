@@ -22,13 +22,3 @@ void coreDependencyInjectionSetup(
     ..registerFactory<NetworkCubit>((_) => NetworkCubit())
     ..registerFactory<BottomNavigationCubit>((_) => BottomNavigationCubit());
 }
-
-class Configuration {
-  const Configuration({
-    required this.databaseId,
-    required this.questionsCollectionId,
-  });
-
-  final String databaseId;
-  final String questionsCollectionId;
-}

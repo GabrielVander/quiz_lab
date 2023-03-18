@@ -13,19 +13,6 @@ class AppwriteQuestionCreationModel extends Equatable {
     required this.categories,
   });
 
-  factory AppwriteQuestionCreationModel.fromMap(Map<String, dynamic> map) {
-    return AppwriteQuestionCreationModel(
-      id: map['id'] as String,
-      title: map['shortDescription'] as String,
-      description: map['description'] as String,
-      difficulty: map['difficulty'] as String,
-      options: (map['options'] as List<Map<String, dynamic>>)
-          .map(AppwriteQuestionOptionModel.fromMap)
-          .toList(),
-      categories: map['categories'] as List<String>,
-    );
-  }
-
   final String id;
   final String title;
   final String description;
