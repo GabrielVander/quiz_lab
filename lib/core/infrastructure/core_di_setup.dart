@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
@@ -8,15 +9,20 @@ void coreDependencyInjectionSetup(
   DependencyInjection di,
 ) {
   di
-    ..registerFactory<Account>((di) => Account(di.get<Client>()))
-    ..registerFactory<Databases>((di) => Databases(di.get<Client>()))
-    ..registerFactory<Realtime>((di) => Realtime(di.get<Client>()))
+    ..registerFactory<Account>((i) => Account(i.get<Client>()))
+    ..registerFactory<Databases>((i) => Databases(i.get<Client>()))
+    ..registerFactory<Realtime>((i) => Realtime(i.get<Client>()))
+    ..registerFactory<AppwriteConnector>(
+      (i) => AppwriteConnector(
+        databases: i.get<Databases>(),
+      ),
+    )
     ..registerFactory<AppwriteDataSource>(
-      (di) => AppwriteDataSource(
-        appwriteAccountService: di.get<Account>(),
-        appwriteDatabasesService: di.get<Databases>(),
-        configuration: di.get<AppwriteDataSourceConfiguration>(),
-        appwriteRealtimeService: di.get<Realtime>(),
+      (i) => AppwriteDataSource(
+        appwriteAccountService: i.get<Account>(),
+        appwriteDatabasesService: i.get<Databases>(),
+        configuration: i.get<AppwriteDataSourceConfiguration>(),
+        appwriteRealtimeService: i.get<Realtime>(),
       ),
     )
     ..registerFactory<NetworkCubit>((_) => NetworkCubit())
