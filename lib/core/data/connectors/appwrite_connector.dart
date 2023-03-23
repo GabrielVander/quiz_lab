@@ -56,8 +56,8 @@ class AppwriteConnector {
   }
 }
 
-class AppwriteDocumentReference {
-  AppwriteDocumentReference({
+class AppwriteDocumentReference extends Equatable {
+  const AppwriteDocumentReference({
     required this.databaseId,
     required this.collectionId,
     required this.documentId,
@@ -66,6 +66,13 @@ class AppwriteDocumentReference {
   final String databaseId;
   final String collectionId;
   final String documentId;
+
+  @override
+  List<Object?> get props => [
+        databaseId,
+        collectionId,
+        documentId,
+      ];
 }
 
 abstract class AppwriteConnectorFailure extends Equatable {}
