@@ -28,16 +28,16 @@ class QuestionRepositoryAppwriteImpl extends QuestionRepository {
 
     await _appwriteDataSource.createQuestion(
       AppwriteQuestionCreationModel(
-        id: question.id,
+        id: question.id.value,
         title: question.shortDescription,
         description: question.description,
         options: question.answerOptions
             .map(
               (o) => AppwriteQuestionOptionModel(
-            description: o.description,
-            isCorrect: o.isCorrect,
-          ),
-        )
+                description: o.description,
+                isCorrect: o.isCorrect,
+              ),
+            )
             .toList(),
         difficulty: question.difficulty.name,
         categories: question.categories.map((e) => e.value).toList(),
@@ -48,7 +48,7 @@ class QuestionRepositoryAppwriteImpl extends QuestionRepository {
   }
 
   @override
-  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(String id) {
+  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(QuestionId id) {
     throw UnimplementedError();
   }
 

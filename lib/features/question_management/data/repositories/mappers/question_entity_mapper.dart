@@ -19,7 +19,7 @@ class QuestionEntityMapper {
 
   Question _parseHiveModel(HiveQuestionModel model) {
     return Question(
-      id: _parseIdFromHiveModel(model),
+      id: QuestionId(_parseIdFromHiveModel(model)),
       shortDescription: _parseShortDescriptionFromHiveModel(model),
       description: _parseDescriptionFromHiveModel(model),
       difficulty: _parseDifficultyFromHiveModel(model),

@@ -51,7 +51,7 @@ class CreateQuestionUseCase {
   }
 
   Question _generateQuestionId(Question question) =>
-      question.copyWith(id: _uuidGenerator.generate());
+      question.copyWith(id: QuestionId(_uuidGenerator.generate()));
 }
 
 @immutable
@@ -111,7 +111,7 @@ class _InputParser {
 
     return Result.ok(
       Question(
-        id: '',
+        id: const QuestionId(''),
         shortDescription: input.shortDescription,
         description: input.description,
         answerOptions: input.options

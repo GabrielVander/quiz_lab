@@ -107,7 +107,7 @@ class AppwriteQuestionModel extends Equatable {
   }
 
   Question toQuestion() => Question(
-        id: id,
+        id: QuestionId(id),
         shortDescription: title,
         description: description,
         difficulty: _mapDifficulty(difficulty),

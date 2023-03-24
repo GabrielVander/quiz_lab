@@ -49,7 +49,7 @@ void main() {
         ParameterizedSource.values([
           [
             const Question(
-              id: '',
+              id: QuestionId(''),
               shortDescription: '',
               description: '',
               answerOptions: [],
@@ -67,7 +67,7 @@ void main() {
           ],
           [
             const Question(
-              id: 'hqWk^#',
+              id: QuestionId('hqWk^#'),
               shortDescription: r'1HFm$Ny',
               description: 'g18QU',
               answerOptions: [
@@ -96,7 +96,7 @@ void main() {
           ],
           [
             const Question(
-              id: 'H00D4',
+              id: QuestionId('H00D4'),
               shortDescription: '79FgDD',
               description: r'N915*v$R',
               answerOptions: [
@@ -166,7 +166,7 @@ void main() {
 
       final result = await repository.createSingle(
         const Question(
-          id: '',
+          id: QuestionId(''),
           shortDescription: '',
           description: '',
           answerOptions: [],
@@ -258,7 +258,7 @@ void main() {
           ),
           <Question>[
             const Question(
-              id: '',
+              id: QuestionId(''),
               shortDescription: '',
               description: '',
               answerOptions: [],
@@ -301,7 +301,7 @@ void main() {
           ),
           <Question>[
             const Question(
-              id: r'PfZ*N22$',
+              id: QuestionId(r'PfZ*N22$'),
               shortDescription: 'ZosGBFx3',
               description: 'be%92n',
               answerOptions: [
