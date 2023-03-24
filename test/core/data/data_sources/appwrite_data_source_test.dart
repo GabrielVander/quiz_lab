@@ -28,7 +28,7 @@ void main() {
       appwriteAccountService: appwriteAccountServiceMock,
       appwriteDatabasesService: appwriteDatabasesServiceMock,
       appwriteRealtimeService: appwriteRealtimeServiceMock,
-      configuration: const AppwriteDataSourceConfiguration(
+      configuration: const AppwriteReferencesConfig(
         databaseId: 'F4G9rL^G',
         questionsCollectionId: '8bD3Xy',
       ),
@@ -290,7 +290,7 @@ void main() {
       'should call Appwrite databases services correctly',
       ParameterizedSource.values([
         [
-          const AppwriteDataSourceConfiguration(
+          const AppwriteReferencesConfig(
             databaseId: '',
             questionsCollectionId: '',
           ),
@@ -304,7 +304,7 @@ void main() {
           ),
         ],
         [
-          const AppwriteDataSourceConfiguration(
+          const AppwriteReferencesConfig(
             databaseId: '@VwG4',
             questionsCollectionId: '1FpiQ%2',
           ),
@@ -337,7 +337,7 @@ void main() {
       ]),
       (values) async {
         final dummyAppwriteDataSourceConfiguration =
-            values[0] as AppwriteDataSourceConfiguration;
+            values[0] as AppwriteReferencesConfig;
         final dummyAppwriteQuestionCreationModel =
             values[1] as AppwriteQuestionCreationModel;
 
@@ -391,18 +391,18 @@ void main() {
       parameterizedTest(
         'should subscribe to realtime service correctly',
         ParameterizedSource.value([
-          const AppwriteDataSourceConfiguration(
+          const AppwriteReferencesConfig(
             databaseId: '',
             questionsCollectionId: '',
           ),
-          const AppwriteDataSourceConfiguration(
+          const AppwriteReferencesConfig(
             databaseId: 'JeGDX7',
             questionsCollectionId: 'fm6!',
           ),
         ]),
         (values) async {
           final dummyAppwriteDataSourceConfiguration =
-              values[0] as AppwriteDataSourceConfiguration;
+              values[0] as AppwriteReferencesConfig;
           final realtimeSubscriptionMock = _RealtimeSubscriptionMock();
 
           final dummyAppwriteDataSource = AppwriteDataSource(
@@ -572,18 +572,18 @@ void main() {
       parameterizedTest(
         'should call databases service correctly',
         ParameterizedSource.value([
-          const AppwriteDataSourceConfiguration(
+          const AppwriteReferencesConfig(
             databaseId: '',
             questionsCollectionId: '',
           ),
-          const AppwriteDataSourceConfiguration(
+          const AppwriteReferencesConfig(
             databaseId: 'wQD67',
             questionsCollectionId: r'$aDf',
           ),
         ]),
         (values) async {
           final dummyAppwriteDataSourceConfiguration =
-              values[0] as AppwriteDataSourceConfiguration;
+              values[0] as AppwriteReferencesConfig;
 
           final documentListMock = _DocumentListMock();
 

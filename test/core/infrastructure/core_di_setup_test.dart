@@ -35,7 +35,7 @@ void main() {
       mocktail.when(() => diMock.get<Databases>()).thenReturn(_DatabasesMock());
       mocktail.when(() => diMock.get<Realtime>()).thenReturn(_RealtimeMock());
       mocktail
-          .when(() => diMock.get<AppwriteDataSourceConfiguration>())
+          .when(() => diMock.get<AppwriteReferencesConfig>())
           .thenReturn(_AppwriteDataSourceConfigurationMock());
 
       check();
@@ -71,6 +71,6 @@ class _AccountMock extends mocktail.Mock implements Account {}
 class _DatabasesMock extends mocktail.Mock implements Databases {}
 
 class _AppwriteDataSourceConfigurationMock extends mocktail.Mock
-    implements AppwriteDataSourceConfiguration {}
+    implements AppwriteReferencesConfig {}
 
 class _RealtimeMock extends mocktail.Mock implements Realtime {}

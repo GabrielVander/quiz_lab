@@ -21,7 +21,7 @@ void coreDependencyInjectionSetup(
       (i) => AppwriteDataSource(
         appwriteAccountService: i.get<Account>(),
         appwriteDatabasesService: i.get<Databases>(),
-        configuration: i.get<AppwriteDataSourceConfiguration>(),
+        configuration: i.get<AppwriteReferencesConfig>(),
         appwriteRealtimeService: i.get<Realtime>(),
       ),
     )
