@@ -154,7 +154,7 @@ void main() {
             .thenThrow(exception);
 
         final result = await connector.deleteDocument(
-          AppwriteDocumentReference(
+          const AppwriteDocumentReference(
             databaseId: databaseId,
             collectionId: collectionId,
             documentId: documentId,
@@ -185,7 +185,7 @@ void main() {
             .thenThrow(_ExceptionMock());
 
         final result = await connector.deleteDocument(
-          AppwriteDocumentReference(
+          const AppwriteDocumentReference(
             databaseId: databaseId,
             collectionId: collectionId,
             documentId: documentId,
@@ -218,7 +218,7 @@ void main() {
             .thenAnswer((_) async => null);
 
         final result = await connector.deleteDocument(
-          AppwriteDocumentReference(
+          const AppwriteDocumentReference(
             databaseId: databaseId,
             collectionId: collectionId,
             documentId: documentId,
