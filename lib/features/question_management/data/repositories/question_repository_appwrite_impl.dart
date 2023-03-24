@@ -6,17 +6,22 @@ import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creatio
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/questions_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class QuestionRepositoryAppwriteImpl extends QuestionRepository {
   QuestionRepositoryAppwriteImpl({
     required AppwriteDataSource appwriteDataSource,
-  }) : _appwriteDataSource = appwriteDataSource;
+    required QuestionsAppwriteDataSource questionsAppwriteDataSource,
+  })  : _appwriteDataSource = appwriteDataSource,
+        _questionsAppwriteDataSource = questionsAppwriteDataSource;
+
   final _logger =
       QuizLabLoggerFactory.createLogger<QuestionRepositoryAppwriteImpl>();
 
   final AppwriteDataSource _appwriteDataSource;
+  final QuestionsAppwriteDataSource _questionsAppwriteDataSource;
 
   final _questionsStreamController = StreamController<List<Question>>();
 
@@ -48,8 +53,50 @@ class QuestionRepositoryAppwriteImpl extends QuestionRepository {
   }
 
   @override
-  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(QuestionId id) {
-    throw UnimplementedError();
+  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(
+    QuestionId id,
+  ) async {
+    _logger.debug('Deleting question...');
+
+    final deletionResult =
+        await _questionsAppwriteDataSource.deleteSingle(id.value);
+
+    return deletionResult.when(
+      ok: (_) {
+        _logger.debug('Question deleted successfully');
+        return const Result.ok(unit);
+      },
+      err: (failure) =>
+          Result.err(_mapQuestionsAppwriteDataSourceFailure(failure)),
+    );
+  }
+
+  QuestionRepositoryFailure _mapQuestionsAppwriteDataSourceFailure(
+    QuestionsAppwriteDataSourceFailure dataSourceFailure,
+  ) {
+    QuestionRepositoryFailure repoFailure = QuestionRepositoryUnexpectedFailure(
+      message: dataSourceFailure.toString(),
+    );
+
+    switch (dataSourceFailure.runtimeType) {
+      case QuestionsAppwriteDataSourceUnexpectedFailure:
+        repoFailure = QuestionRepositoryUnexpectedFailure(
+          message: (dataSourceFailure
+                  as QuestionsAppwriteDataSourceUnexpectedFailure)
+              .message,
+        );
+        break;
+      case QuestionsAppwriteDataSourceAppwriteFailure:
+        repoFailure = QuestionRepositoryExternalServiceErrorFailure(
+          message:
+              (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure)
+                  .message,
+        );
+        break;
+    }
+
+    _logger.error(repoFailure.toString());
+    return repoFailure;
   }
 
   @override

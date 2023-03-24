@@ -84,7 +84,9 @@ void main() {
         ],
         [
           AppwriteConnectorAppwriteFailure(const UnknownAppwriteError()),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const UnknownAppwriteError().toString(),
+          ),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -94,7 +96,13 @@ void main() {
               code: 0,
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const UnknownAppwriteError(
+              type: '',
+              message: '',
+              code: 0,
+            ).toString(),
+          ),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -104,7 +112,13 @@ void main() {
               code: 372,
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const UnknownAppwriteError(
+              type: 'FOq',
+              message: 'EYzmU%^',
+              code: 372,
+            ).toString(),
+          ),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -112,7 +126,11 @@ void main() {
               message: '',
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const GeneralArgumentInvalidAppwriteError(
+              message: '',
+            ).toString(),
+          ),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -120,7 +138,11 @@ void main() {
               message: 'L7B%927',
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const GeneralArgumentInvalidAppwriteError(
+              message: 'L7B%927',
+            ).toString(),
+          ),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -128,7 +150,11 @@ void main() {
               message: '',
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const DatabaseNotFoundAppwriteError(
+              message: '',
+            ).toString(),
+          ),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -136,7 +162,11 @@ void main() {
               message: 'm#6',
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const DatabaseNotFoundAppwriteError(
+              message: 'm#6',
+            ).toString(),
+          ),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -144,7 +174,11 @@ void main() {
               message: '',
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const CollectionNotFoundAppwriteError(
+              message: '',
+            ).toString(),
+          ),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -152,23 +186,11 @@ void main() {
               message: r'$A77j0*',
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
-        ],
-        [
-          AppwriteConnectorAppwriteFailure(
+          QuestionsAppwriteDataSourceAppwriteFailure(
             const CollectionNotFoundAppwriteError(
-              message: '',
-            ),
+              message: r'$A77j0*',
+            ).toString(),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
-        ],
-        [
-          AppwriteConnectorAppwriteFailure(
-            const CollectionNotFoundAppwriteError(
-              message: '*45',
-            ),
-          ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -176,7 +198,11 @@ void main() {
               message: '',
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const DocumentNotFoundAppwriteError(
+              message: '',
+            ).toString(),
+          ),
         ],
         [
           AppwriteConnectorAppwriteFailure(
@@ -184,7 +210,11 @@ void main() {
               message: 'mMke',
             ),
           ),
-          QuestionsAppwriteDataSourceAppwriteFailure(),
+          QuestionsAppwriteDataSourceAppwriteFailure(
+            const DocumentNotFoundAppwriteError(
+              message: 'mMke',
+            ).toString(),
+          ),
         ],
       ]),
       (values) async {

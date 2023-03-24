@@ -21,20 +21,21 @@ class QuestionsAppwriteDataSource {
   Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(
     String id,
   ) async {
-    _logger.debug('Deleting question with id: $id...');
+    _logger.debug('Deleting single question with id: $id from Appwrite...');
 
     final deletionResult = await _performAppwriteDeletion(id);
 
     return deletionResult.when(
       ok: (_) {
-        _logger.debug('Question with id: $id deleted successfully.');
+        _logger
+            .debug('Question with id: $id deleted successfully from Appwrite');
         return const Result.ok(unit);
       },
       err: (failure) {
         final connectorFailure = _mapAppwriteConnectorFailure(failure);
 
         _logger.error(
-          'Unable to delete question with id: $id due to failure: '
+          'Unable to delete question with id: $id on Appwrite due to failure: '
           '$connectorFailure',
         );
         return Result.err(connectorFailure);
@@ -61,7 +62,9 @@ class QuestionsAppwriteDataSource {
 
     return failure is AppwriteConnectorUnexpectedFailure
         ? QuestionsAppwriteDataSourceUnexpectedFailure(failure.message)
-        : QuestionsAppwriteDataSourceAppwriteFailure();
+        : QuestionsAppwriteDataSourceAppwriteFailure(
+            (failure as AppwriteConnectorAppwriteFailure).error.toString(),
+          );
   }
 }
 
@@ -89,7 +92,9 @@ class QuestionsAppwriteDataSourceUnexpectedFailure
 
 class QuestionsAppwriteDataSourceAppwriteFailure
     extends QuestionsAppwriteDataSourceFailure {
-  QuestionsAppwriteDataSourceAppwriteFailure();
+  QuestionsAppwriteDataSourceAppwriteFailure(this.message);
+
+  final String message;
 
   @override
   List<Object?> get props => [];
