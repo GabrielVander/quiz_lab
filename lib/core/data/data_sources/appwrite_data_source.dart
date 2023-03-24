@@ -13,7 +13,7 @@ class AppwriteDataSource {
   AppwriteDataSource({
     required Account appwriteAccountService,
     required Databases appwriteDatabasesService,
-    required AppwriteDataSourceConfiguration configuration,
+    required AppwriteReferencesConfig configuration,
     required Realtime appwriteRealtimeService,
   })  : _appwriteAccountService = appwriteAccountService,
         _appwriteDatabasesService = appwriteDatabasesService,

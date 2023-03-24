@@ -22,25 +22,35 @@ class AppwriteQuestionModel extends Equatable {
     required this.categories,
   });
 
-  factory AppwriteQuestionModel.fromMap(Map<String, dynamic> map,) {
+  factory AppwriteQuestionModel.fromMap(
+    Map<String, dynamic> map,
+  ) {
     return AppwriteQuestionModel(
       id: map[r'$id'] as String,
       createdAt: map[r'$createdAt'] as String,
       updatedAt: map[r'$updatedAt'] as String,
-      permissions: map[r'$permissions'] as List<String>,
+      permissions: (map[r'$permissions'] as List<dynamic>)
+          .map((p) => p as String)
+          .toList(),
       collectionId: map[r'$collectionId'] as String,
       databaseId: map[r'$databaseId'] as String,
       title: map['title'] as String,
       description: map['description'] as String,
       difficulty: map['difficulty'] as String,
-      options: (map['options'] as List<Map<String, dynamic>>)
-          .map(AppwriteQuestionOptionModel.fromMap)
+      options: (jsonDecode(map['options'] as String) as List<dynamic>)
+          .map(
+            (o) =>
+                AppwriteQuestionOptionModel.fromMap(o as Map<String, dynamic>),
+          )
           .toList(),
-      categories: map['categories'] as List<String>,
+      categories:
+          (map['categories'] as List<dynamic>).map((c) => c as String).toList(),
     );
   }
 
-  factory AppwriteQuestionModel.fromDocument(Document doc,) {
+  factory AppwriteQuestionModel.fromDocument(
+    Document doc,
+  ) {
     return AppwriteQuestionModel(
       id: doc.$id,
       createdAt: doc.$createdAt,
@@ -77,17 +87,17 @@ class AppwriteQuestionModel extends Equatable {
 
   @override
   List<Object> get props => [
-    id,
-    createdAt,
-    updatedAt,
-    collectionId,
-    databaseId,
-    title,
-    description,
-    difficulty,
-    options,
-    categories,
-  ];
+        id,
+        createdAt,
+        updatedAt,
+        collectionId,
+        databaseId,
+        title,
+        description,
+        difficulty,
+        options,
+        categories,
+      ];
 
   @override
   String toString() {

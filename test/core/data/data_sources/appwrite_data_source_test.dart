@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' hide Account;
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
@@ -37,7 +39,7 @@ void main() {
 
   group(
     'createEmailSession()',
-    () {
+        () {
       parameterizedTest(
         'should call createEmailSession on Appwrite Account service with given '
         'credentials',
@@ -75,7 +77,7 @@ void main() {
 
       test(
         'should fail with exception message if unexpected exception is thrown',
-        () async {
+            () async {
           mocktail
               .when(
                 () => appwriteAccountServiceMock.createEmailSession(
@@ -228,7 +230,7 @@ void main() {
             )
           ],
         ]),
-        (values) async {
+            (values) async {
           final appwriteSession = values[0] as Session;
           final expectedSessionModel = values[1] as SessionModel;
 
@@ -335,7 +337,7 @@ void main() {
           ),
         ],
       ]),
-      (values) async {
+          (values) async {
         final dummyAppwriteDataSourceConfiguration =
             values[0] as AppwriteReferencesConfig;
         final dummyAppwriteQuestionCreationModel =
@@ -400,7 +402,7 @@ void main() {
             questionsCollectionId: 'fm6!',
           ),
         ]),
-        (values) async {
+            (values) async {
           final dummyAppwriteDataSourceConfiguration =
               values[0] as AppwriteReferencesConfig;
           final realtimeSubscriptionMock = _RealtimeSubscriptionMock();
@@ -423,7 +425,7 @@ void main() {
           dummyAppwriteDataSource.watchForQuestionCollectionUpdate();
 
           mocktail.verify(
-            () => appwriteRealtimeServiceMock.subscribe([
+                () => appwriteRealtimeServiceMock.subscribe([
               'databases'
                   '.${dummyAppwriteDataSourceConfiguration.databaseId}'
                   '.collections'
@@ -444,11 +446,11 @@ void main() {
               payload: {
                 r'$id': '',
                 'title': '',
-                'options': <Map<String, dynamic>>[],
+                'options': jsonEncode([]),
                 'difficulty': '',
                 'description': '',
-                'categories': <String>[],
-                r'$permissions': <String>[],
+                'categories': <dynamic>[],
+                r'$permissions': <dynamic>[],
                 r'$databaseId': '',
                 r'$collectionId': '',
                 r'$createdAt': '',
@@ -482,7 +484,7 @@ void main() {
               payload: {
                 r'$id': 'k2Kao43',
                 'title': 'v5l!@',
-                'options': <Map<String, dynamic>>[
+                'options': jsonEncode([
                   {
                     'description': '7T5Tm0p',
                     'isCorrect': false,
@@ -495,7 +497,7 @@ void main() {
                     'description': 'V%#BGZ',
                     'isCorrect': false,
                   },
-                ],
+                ]),
                 'difficulty': 'Tw&N9dD',
                 'description': 'JLzh',
                 'categories': ['p4lM', r'#2$vxpA', 'cWnH2io'],
@@ -541,7 +543,7 @@ void main() {
             ),
           ],
         ]),
-        (values) async {
+            (values) async {
           final dummyRealtimeMessage = values[0] as RealtimeMessage;
           final expectedAppwriteRealtimeQuestionMessageModel =
               values[1] as AppwriteRealtimeQuestionMessageModel;
@@ -581,7 +583,7 @@ void main() {
             questionsCollectionId: r'$aDf',
           ),
         ]),
-        (values) async {
+            (values) async {
           final dummyAppwriteDataSourceConfiguration =
               values[0] as AppwriteReferencesConfig;
 
@@ -593,10 +595,10 @@ void main() {
           mocktail
               .when(
                 () => appwriteDatabasesServiceMock.listDocuments(
-                  databaseId: mocktail.any(named: 'databaseId'),
-                  collectionId: mocktail.any(named: 'collectionId'),
-                ),
-              )
+              databaseId: mocktail.any(named: 'databaseId'),
+              collectionId: mocktail.any(named: 'collectionId'),
+            ),
+          )
               .thenAnswer((_) async => documentListMock);
 
           await AppwriteDataSource(
@@ -607,7 +609,7 @@ void main() {
           ).getAllQuestions();
 
           mocktail.verify(
-            () => appwriteDatabasesServiceMock.listDocuments(
+                () => appwriteDatabasesServiceMock.listDocuments(
               databaseId: dummyAppwriteDataSourceConfiguration.databaseId,
               collectionId:
                   dummyAppwriteDataSourceConfiguration.questionsCollectionId,
@@ -687,7 +689,7 @@ void main() {
             ),
           ],
         ]),
-        (values) async {
+            (values) async {
           final dummyDocumentList = values[0] as DocumentList;
           final expectedAppwriteQuestionListModel =
               values[1] as AppwriteQuestionListModel;
