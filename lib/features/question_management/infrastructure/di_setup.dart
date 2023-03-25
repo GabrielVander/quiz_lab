@@ -19,77 +19,76 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 import 'package:uuid/uuid.dart';
 
 void questionManagementDiSetup(DependencyInjection di) {
-  di..registerBuilder<QuestionsAppwriteDataSource>(
-        (DependencyInjection i) =>
-        QuestionsAppwriteDataSource(
-          config: QuestionsAppwriteDataSourceConfig(
-            databaseId: i
-                .get<AppwriteReferencesConfig>()
-                .databaseId,
-            collectionId: i
-                .get<AppwriteReferencesConfig>()
-                .questionsCollectionId,
-          ),
-          appwriteConnector: i.get<AppwriteConnector>(),
+  di
+    ..registerBuilder<QuestionsAppwriteDataSource>(
+      (DependencyInjection i) => QuestionsAppwriteDataSource(
+        config: QuestionsAppwriteDataSourceConfig(
+          databaseId: i.get<AppwriteReferencesConfig>().databaseId,
+          collectionId: i.get<AppwriteReferencesConfig>().questionsCollectionId,
         ),
-  )..registerBuilder<QuestionRepository>(
-        (DependencyInjection i) =>
-            QuestionRepositoryImpl(
+        appwriteConnector: i.get<AppwriteConnector>(),
+      ),
+    )
+    ..registerBuilder<QuestionRepository>(
+      (DependencyInjection i) => QuestionRepositoryImpl(
         appwriteDataSource: i.get<AppwriteDataSource>(),
         questionsAppwriteDataSource: i.get<QuestionsAppwriteDataSource>(),
       ),
-  )..registerBuilder(
-        (i) =>
-        WatchAllQuestionsUseCase(
-          questionRepository: i.get<QuestionRepository>(),
-        ),
-  )..registerBuilder<CreateQuestionUseCase>(
-        (DependencyInjection i) => CreateQuestionUseCase(
+    )
+    ..registerBuilder(
+      (i) => WatchAllQuestionsUseCase(
+        questionRepository: i.get<QuestionRepository>(),
+      ),
+    )
+    ..registerBuilder<CreateQuestionUseCase>(
+      (DependencyInjection i) => CreateQuestionUseCase(
         uuidGenerator: const ResourceUuidGenerator(uuid: Uuid()),
         questionRepository: i.get<QuestionRepository>(),
       ),
-  )..registerBuilder<UpdateQuestionUseCase>(
-        (DependencyInjection i) =>
-        UpdateQuestionUseCase(
-          questionRepository: i.get<QuestionRepository>(),
-        ),
-  )..registerBuilder<DeleteQuestionUseCase>(
-        (DependencyInjection i) =>
-        DeleteQuestionUseCase(
-          questionRepository: i.get<QuestionRepository>(),
-        ),
-  )..registerBuilder<GetSingleQuestionUseCase>(
-        (DependencyInjection i) =>
-        GetSingleQuestionUseCase(
-          questionRepository: i.get<QuestionRepository>(),
-        ),
-  )..registerBuilder<UseCaseFactory>(
-        (DependencyInjection i) =>
-        UseCaseFactory(
-          watchAllQuestionsUseCase: i.get<WatchAllQuestionsUseCase>(),
-          createQuestionUseCase: i.get<CreateQuestionUseCase>(),
-          deleteQuestionUseCase: i.get<DeleteQuestionUseCase>(),
-          getSingleQuestionUseCase: i.get<GetSingleQuestionUseCase>(),
-          updateQuestionUseCase: i.get<UpdateQuestionUseCase>(),
-        ),
-  )..registerBuilder<PresentationMapperFactory>(
-        (i) => PresentationMapperFactory(),
-    )..registerBuilder<AssessmentsOverviewCubit>(
-        (DependencyInjection i) => AssessmentsOverviewCubit(),
-    )..registerBuilder<QuestionCreationCubit>(
-        (DependencyInjection i) =>
-        QuestionCreationCubit(
-          useCaseFactory: i.get(),
-        ),
-  )..registerBuilder<QuestionsOverviewCubit>(
-        (DependencyInjection i) =>
-        QuestionsOverviewCubit(
-          useCaseFactory: i.get<UseCaseFactory>(),
-          mapperFactory: i.get<PresentationMapperFactory>(),
-        ),
-  )..registerBuilder<QuestionDisplayCubit>(
-      (DependencyInjection i) => QuestionDisplayCubit(
+    )
+    ..registerBuilder<UpdateQuestionUseCase>(
+      (DependencyInjection i) => UpdateQuestionUseCase(
+        questionRepository: i.get<QuestionRepository>(),
+      ),
+    )
+    ..registerBuilder<DeleteQuestionUseCase>(
+      (DependencyInjection i) => DeleteQuestionUseCase(
+        questionRepository: i.get<QuestionRepository>(),
+      ),
+    )
+    ..registerBuilder<GetSingleQuestionUseCase>(
+      (DependencyInjection i) => GetSingleQuestionUseCase(
+        questionRepository: i.get<QuestionRepository>(),
+      ),
+    )
+    ..registerBuilder<UseCaseFactory>(
+      (DependencyInjection i) => UseCaseFactory(
+        watchAllQuestionsUseCase: i.get<WatchAllQuestionsUseCase>(),
+        createQuestionUseCase: i.get<CreateQuestionUseCase>(),
+        deleteQuestionUseCase: i.get<DeleteQuestionUseCase>(),
+        updateQuestionUseCase: i.get<UpdateQuestionUseCase>(),
+      ),
+    )
+    ..registerBuilder<PresentationMapperFactory>(
+      (i) => PresentationMapperFactory(),
+    )
+    ..registerBuilder<AssessmentsOverviewCubit>(
+      (DependencyInjection i) => AssessmentsOverviewCubit(),
+    )
+    ..registerBuilder<QuestionCreationCubit>(
+      (DependencyInjection i) => QuestionCreationCubit(
+        useCaseFactory: i.get(),
+      ),
+    )
+    ..registerBuilder<QuestionsOverviewCubit>(
+      (DependencyInjection i) => QuestionsOverviewCubit(
         useCaseFactory: i.get<UseCaseFactory>(),
+        mapperFactory: i.get<PresentationMapperFactory>(),
+      ),
+    )
+    ..registerBuilder<QuestionDisplayCubit>(
+      (DependencyInjection i) => QuestionDisplayCubit(
+        getSingleQuestionUseCase: i.get<GetSingleQuestionUseCase>(),
       ),
     );
 }

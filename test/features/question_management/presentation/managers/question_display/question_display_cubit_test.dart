@@ -8,19 +8,20 @@ import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
 
 void main() {
-  late UseCaseFactory useCaseFactoryMock;
+  late GetSingleQuestionUseCase getSingleQuestionUseCaseMock;
 
   late QuestionDisplayCubit cubit;
 
   setUp(() {
-    useCaseFactoryMock = _UseCaseFactoryMock();
-    cubit = QuestionDisplayCubit(useCaseFactory: useCaseFactoryMock);
+    getSingleQuestionUseCaseMock = _GetSingleQuestionUseCaseMock();
+    cubit = QuestionDisplayCubit(
+      getSingleQuestionUseCase: getSingleQuestionUseCaseMock,
+    );
   });
 
   tearDown(() {
@@ -38,15 +39,10 @@ void main() {
         'should emit QuestionDisplayFailure if GetSingleQuestionUseCase fails',
         () async {
           const questionId = 'tHqgcfIX';
-          final getSingleQuestionUseCaseMock = _GetSingleQuestionUseCaseMock();
 
           mocktail
               .when(() => getSingleQuestionUseCaseMock.execute(questionId))
               .thenAnswer((_) async => const Result.err(unit));
-
-          mocktail
-              .when(() => useCaseFactoryMock.makeGetSingleQuestionUseCase())
-              .thenReturn(getSingleQuestionUseCaseMock);
 
           unawaited(
             expectLater(
@@ -148,17 +144,11 @@ void main() {
           final question = values[0] as Question;
           final expectedViewModel = values[1] as QuestionDisplayViewModel;
 
-          final getSingleQuestionUseCaseMock = _GetSingleQuestionUseCaseMock();
-
           mocktail
               .when(
                 () => getSingleQuestionUseCaseMock.execute(question.id.value),
               )
               .thenAnswer((_) async => Result.ok(question));
-
-          mocktail
-              .when(() => useCaseFactoryMock.makeGetSingleQuestionUseCase())
-              .thenReturn(getSingleQuestionUseCaseMock);
 
           unawaited(
             expectLater(
@@ -202,8 +192,6 @@ void main() {
     });
   });
 }
-
-class _UseCaseFactoryMock extends mocktail.Mock implements UseCaseFactory {}
 
 class _GetSingleQuestionUseCaseMock extends mocktail.Mock
     implements GetSingleQuestionUseCase {}
