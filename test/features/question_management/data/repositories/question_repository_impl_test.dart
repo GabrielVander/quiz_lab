@@ -9,7 +9,7 @@ import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.d
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/questions_appwrite_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/questions__collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
@@ -19,7 +19,7 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 
 void main() {
   late AppwriteDataSource appwriteDataSourceMock;
-  late QuestionsAppwriteDataSource questionsAppwriteDataSourceMock;
+  late QuestionCollectionAppwriteDataSource questionsAppwriteDataSourceMock;
   late QuestionRepositoryImpl repository;
 
   setUp(() {
@@ -553,7 +553,7 @@ class _AppwriteQuestionListModelMock extends mocktail.Mock
     implements AppwriteQuestionListModel {}
 
 class _QuestionsAppwriteDataSourceMock extends mocktail.Mock
-    implements QuestionsAppwriteDataSource {}
+    implements QuestionCollectionAppwriteDataSource {}
 
 class _AppwriteQuestionModelMock extends mocktail.Mock
     implements AppwriteQuestionModel {}

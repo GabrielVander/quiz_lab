@@ -4,15 +4,15 @@ import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/questions_appwrite_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/questions__collection_appwrite_data_source.dart';
 
 void main() {
   late AppwriteConnector appwriteConnectorMock;
-  late QuestionsAppwriteDataSource dataSource;
+  late QuestionCollectionAppwriteDataSource dataSource;
 
   setUp(() {
     appwriteConnectorMock = _AppwriteConnectorMock();
-    dataSource = QuestionsAppwriteDataSource(
+    dataSource = QuestionCollectionAppwriteDataSource(
       config: QuestionsAppwriteDataSourceConfig(
         databaseId: 'G3Q',
         collectionId: 'A9MnFkz',
@@ -45,7 +45,7 @@ void main() {
         final config = values[0] as QuestionsAppwriteDataSourceConfig;
         final id = values[1] as String;
 
-        final dataSource = QuestionsAppwriteDataSource(
+        final dataSource = QuestionCollectionAppwriteDataSource(
           config: config,
           appwriteConnector: appwriteConnectorMock,
         );

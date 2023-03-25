@@ -6,15 +6,15 @@ import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 
-class QuestionsAppwriteDataSource {
-  QuestionsAppwriteDataSource({
+class QuestionCollectionAppwriteDataSource {
+  QuestionCollectionAppwriteDataSource({
     required QuestionsAppwriteDataSourceConfig config,
     required AppwriteConnector appwriteConnector,
   })  : _config = config,
         _appwriteConnector = appwriteConnector;
 
   final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<QuestionsAppwriteDataSource>();
+      QuizLabLoggerFactory.createLogger<QuestionCollectionAppwriteDataSource>();
 
   final QuestionsAppwriteDataSourceConfig _config;
   final AppwriteConnector _appwriteConnector;

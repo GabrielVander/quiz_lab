@@ -3,7 +3,7 @@ import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/questions_appwrite_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/questions__collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
@@ -20,8 +20,8 @@ import 'package:uuid/uuid.dart';
 
 void questionManagementDiSetup(DependencyInjection di) {
   di
-    ..registerBuilder<QuestionsAppwriteDataSource>(
-      (DependencyInjection i) => QuestionsAppwriteDataSource(
+    ..registerBuilder<QuestionCollectionAppwriteDataSource>(
+      (DependencyInjection i) => QuestionCollectionAppwriteDataSource(
         config: QuestionsAppwriteDataSourceConfig(
           databaseId: i.get<AppwriteReferencesConfig>().databaseId,
           collectionId: i.get<AppwriteReferencesConfig>().questionsCollectionId,
@@ -32,7 +32,8 @@ void questionManagementDiSetup(DependencyInjection di) {
     ..registerBuilder<QuestionRepository>(
       (DependencyInjection i) => QuestionRepositoryImpl(
         appwriteDataSource: i.get<AppwriteDataSource>(),
-        questionsAppwriteDataSource: i.get<QuestionsAppwriteDataSource>(),
+        questionsAppwriteDataSource:
+            i.get<QuestionCollectionAppwriteDataSource>(),
       ),
     )
     ..registerBuilder(

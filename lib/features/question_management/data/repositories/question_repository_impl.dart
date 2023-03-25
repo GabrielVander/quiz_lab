@@ -6,21 +6,21 @@ import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creatio
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/questions_appwrite_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/questions__collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class QuestionRepositoryImpl extends QuestionRepository {
   QuestionRepositoryImpl({
     required AppwriteDataSource appwriteDataSource,
-    required QuestionsAppwriteDataSource questionsAppwriteDataSource,
+    required QuestionCollectionAppwriteDataSource questionsAppwriteDataSource,
   })  : _appwriteDataSource = appwriteDataSource,
         _questionsAppwriteDataSource = questionsAppwriteDataSource;
 
   final _logger = QuizLabLoggerFactory.createLogger<QuestionRepositoryImpl>();
 
   final AppwriteDataSource _appwriteDataSource;
-  final QuestionsAppwriteDataSource _questionsAppwriteDataSource;
+  final QuestionCollectionAppwriteDataSource _questionsAppwriteDataSource;
 
   final _questionsStreamController = StreamController<List<Question>>();
 
