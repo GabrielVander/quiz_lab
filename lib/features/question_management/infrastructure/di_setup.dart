@@ -4,7 +4,7 @@ import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessme
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/question_repository_appwrite_impl.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
@@ -34,10 +34,10 @@ void questionManagementDiSetup(DependencyInjection di) {
         ),
   )..registerBuilder<QuestionRepository>(
         (DependencyInjection i) =>
-        QuestionRepositoryAppwriteImpl(
-          appwriteDataSource: i.get<AppwriteDataSource>(),
-          questionsAppwriteDataSource: i.get<QuestionsAppwriteDataSource>(),
-        ),
+            QuestionRepositoryImpl(
+        appwriteDataSource: i.get<AppwriteDataSource>(),
+        questionsAppwriteDataSource: i.get<QuestionsAppwriteDataSource>(),
+      ),
   )..registerBuilder(
         (i) =>
         WatchAllQuestionsUseCase(

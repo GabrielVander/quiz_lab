@@ -10,7 +10,7 @@ import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/question_repository_appwrite_impl.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
@@ -20,12 +20,12 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 void main() {
   late AppwriteDataSource appwriteDataSourceMock;
   late QuestionsAppwriteDataSource questionsAppwriteDataSourceMock;
-  late QuestionRepositoryAppwriteImpl repository;
+  late QuestionRepositoryImpl repository;
 
   setUp(() {
     appwriteDataSourceMock = _AppwriteDataSourceMock();
     questionsAppwriteDataSourceMock = _QuestionsAppwriteDataSourceMock();
-    repository = QuestionRepositoryAppwriteImpl(
+    repository = QuestionRepositoryImpl(
       appwriteDataSource: appwriteDataSourceMock,
       questionsAppwriteDataSource: questionsAppwriteDataSourceMock,
     );
