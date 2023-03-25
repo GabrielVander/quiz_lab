@@ -24,54 +24,53 @@ class AppwriteQuestionModel extends Equatable {
 
   factory AppwriteQuestionModel.fromMap(
     Map<String, dynamic> map,
-  ) {
-    return AppwriteQuestionModel(
-      id: map[r'$id'] as String,
-      createdAt: map[r'$createdAt'] as String,
-      updatedAt: map[r'$updatedAt'] as String,
-      permissions: (map[r'$permissions'] as List<dynamic>)
-          .map((p) => p as String)
-          .toList(),
-      collectionId: map[r'$collectionId'] as String,
-      databaseId: map[r'$databaseId'] as String,
-      title: map['title'] as String,
-      description: map['description'] as String,
-      difficulty: map['difficulty'] as String,
-      options: (jsonDecode(map['options'] as String) as List<dynamic>)
-          .map(
-            (o) =>
-                AppwriteQuestionOptionModel.fromMap(o as Map<String, dynamic>),
-          )
-          .toList(),
-      categories:
-          (map['categories'] as List<dynamic>).map((c) => c as String).toList(),
-    );
-  }
+  ) =>
+      AppwriteQuestionModel(
+        id: map[r'$id'] as String,
+        createdAt: map[r'$createdAt'] as String,
+        updatedAt: map[r'$updatedAt'] as String,
+        permissions: (map[r'$permissions'] as List<dynamic>)
+            .map((p) => p as String)
+            .toList(),
+        collectionId: map[r'$collectionId'] as String,
+        databaseId: map[r'$databaseId'] as String,
+        title: map['title'] as String,
+        description: map['description'] as String,
+        difficulty: map['difficulty'] as String,
+        options: (jsonDecode(map['options'] as String) as List<dynamic>)
+            .map(
+              (o) => AppwriteQuestionOptionModel.fromMap(
+                  o as Map<String, dynamic>),
+            )
+            .toList(),
+        categories: (map['categories'] as List<dynamic>)
+            .map((c) => c as String)
+            .toList(),
+      );
 
   factory AppwriteQuestionModel.fromDocument(
     Document doc,
-  ) {
-    return AppwriteQuestionModel(
-      id: doc.$id,
-      createdAt: doc.$createdAt,
-      updatedAt: doc.$updatedAt,
-      permissions: null,
-      collectionId: doc.$collectionId,
-      databaseId: doc.$databaseId,
-      title: doc.data['title'] as String,
-      description: doc.data['description'] as String,
-      difficulty: doc.data['difficulty'] as String,
-      options: (jsonDecode(doc.data['options'] as String) as List<dynamic>)
-          .map((o) => o as Map<String, dynamic>)
-          .map(AppwriteQuestionOptionModel.fromMap)
-          .toList(),
-      categories: (doc.data['categories'] as List<dynamic>)
-          .map((c) => c as String?)
-          .where((c) => c != null)
-          .map((c) => c!)
-          .toList(),
-    );
-  }
+  ) =>
+      AppwriteQuestionModel(
+        id: doc.$id,
+        createdAt: doc.$createdAt,
+        updatedAt: doc.$updatedAt,
+        permissions: null,
+        collectionId: doc.$collectionId,
+        databaseId: doc.$databaseId,
+        title: doc.data['title'] as String,
+        description: doc.data['description'] as String,
+        difficulty: doc.data['difficulty'] as String,
+        options: (jsonDecode(doc.data['options'] as String) as List<dynamic>)
+            .map((o) => o as Map<String, dynamic>)
+            .map(AppwriteQuestionOptionModel.fromMap)
+            .toList(),
+        categories: (doc.data['categories'] as List<dynamic>)
+            .map((c) => c as String?)
+            .where((c) => c != null)
+            .map((c) => c!)
+            .toList(),
+      );
 
   final String id;
   final String createdAt;
@@ -100,21 +99,19 @@ class AppwriteQuestionModel extends Equatable {
       ];
 
   @override
-  String toString() {
-    return 'AppwriteQuestionModel{'
-        'id: $id, '
-        'createdAt: $createdAt, '
-        'updatedAt: $updatedAt, '
-        'permissions: $permissions, '
-        'collectionId: $collectionId, '
-        'databaseId: $databaseId, '
-        'title: $title, '
-        'description: $description, '
-        'difficulty: $difficulty, '
-        'options: $options, '
-        'categories: $categories'
-        '}';
-  }
+  String toString() => 'AppwriteQuestionModel{'
+      'id: $id, '
+      'createdAt: $createdAt, '
+      'updatedAt: $updatedAt, '
+      'permissions: $permissions, '
+      'collectionId: $collectionId, '
+      'databaseId: $databaseId, '
+      'title: $title, '
+      'description: $description, '
+      'difficulty: $difficulty, '
+      'options: $options, '
+      'categories: $categories'
+      '}';
 
   Question toQuestion() => Question(
         id: QuestionId(id),

@@ -70,9 +70,29 @@ class QuestionRepositoryImpl extends QuestionRepository {
     );
   }
 
+  @override
+  Future<Result<Question, QuestionRepositoryFailure>> getSingle(
+    QuestionId id,
+  ) async {
+    _logger.debug('Getting question...');
+
+    final fetchResult = await _questionsAppwriteDataSource.getSingle(id.value);
+
+    return fetchResult.when(
+      ok: (model) {
+        _logger.debug('Question fetched successfully');
+        return Result.ok(model.toQuestion());
+      },
+      err: (failure) =>
+          Result.err(_mapQuestionsAppwriteDataSourceFailure(failure)),
+    );
+  }
+
   QuestionRepositoryFailure _mapQuestionsAppwriteDataSourceFailure(
     QuestionsAppwriteDataSourceFailure dataSourceFailure,
   ) {
+    _logger.debug('Mapping QuestionsAppwriteDataSourceFailure...');
+
     QuestionRepositoryFailure repoFailure = QuestionRepositoryUnexpectedFailure(
       message: dataSourceFailure.toString(),
     );
@@ -88,8 +108,8 @@ class QuestionRepositoryImpl extends QuestionRepository {
       case QuestionsAppwriteDataSourceAppwriteFailure:
         repoFailure = QuestionRepositoryExternalServiceErrorFailure(
           message:
-              (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure)
-                  .message,
+          (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure)
+              .message,
         );
         break;
     }

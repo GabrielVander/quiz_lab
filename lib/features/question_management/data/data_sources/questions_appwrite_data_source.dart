@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
@@ -42,6 +43,9 @@ class QuestionsAppwriteDataSource {
       },
     );
   }
+
+  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
+      getSingle(String id) => throw UnimplementedError();
 
   Future<Result<Unit, AppwriteConnectorFailure>> _performAppwriteDeletion(
     String id,
