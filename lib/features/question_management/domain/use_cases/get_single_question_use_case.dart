@@ -1,48 +1,41 @@
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class GetSingleQuestionUseCase {
-  const GetSingleQuestionUseCase({
+  GetSingleQuestionUseCase({
     required this.questionRepository,
   });
 
+  final QuizLabLogger _logger =
+      QuizLabLoggerFactory.createLogger<GetSingleQuestionUseCase>();
+
   final QuestionRepository questionRepository;
 
-  Future<Result<Question, String>> execute(String? id) async {
+  Future<Result<Question, Unit>> execute(String? id) async {
+    _logger.debug('Executing...');
+
     if (id == null) {
-      return const Result.err('Unable to find question');
+      _logger.error('Question id is null');
+      return const Result.err(unit);
     }
 
-    final result = await questionRepository.watchAll();
+    final questionResult = await questionRepository.getSingle(QuestionId(id));
 
-    if (result.isErr) {
-      return Result.err(result.err!.message);
-    }
-
-    final findResult = await _findTargetQuestionFromStream(id, result.ok!);
-
-    return findResult.mapErr((error) => 'Unable to find question');
-  }
-
-  Future<Result<Question, Unit>> _findTargetQuestionFromStream(
-    String id,
-    Stream<List<Question>> stream,
-  ) async {
-    final emittedQuestions = await stream.take(1).toList();
-
-    for (final questions in emittedQuestions) {
-      try {
-        final question = questions.firstWhere((q) => q.id.value == id);
+    return questionResult.when(
+      ok: (question) {
+        _logger.debug('Returning question...');
 
         return Result.ok(question);
-        // ignore: avoid_catching_errors
-      } on StateError {
-        continue;
-      }
-    }
+      },
+      err: (failure) {
+        _logger.error(failure.toString());
 
-    return const Result.err(unit);
+        return const Result.err(unit);
+      },
+    );
   }
 }

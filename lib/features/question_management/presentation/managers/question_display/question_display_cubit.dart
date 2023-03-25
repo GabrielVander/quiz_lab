@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
@@ -75,7 +76,7 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
     emit(QuestionDisplayState.questionAnsweredIncorrectly(correctOption));
   }
 
-  Future<Result<Question, String>> _getQuestionForId(String? questionId) async {
+  Future<Result<Question, Unit>> _getQuestionForId(String? questionId) async {
     final getSingleQuestionUseCase =
         _useCaseFactory.makeGetSingleQuestionUseCase();
 

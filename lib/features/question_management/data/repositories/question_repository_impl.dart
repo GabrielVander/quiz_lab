@@ -91,8 +91,6 @@ class QuestionRepositoryImpl extends QuestionRepository {
   QuestionRepositoryFailure _mapQuestionsAppwriteDataSourceFailure(
     QuestionsAppwriteDataSourceFailure dataSourceFailure,
   ) {
-    _logger.debug('Mapping QuestionsAppwriteDataSourceFailure...');
-
     QuestionRepositoryFailure repoFailure = QuestionRepositoryUnexpectedFailure(
       message: dataSourceFailure.toString(),
     );
@@ -108,8 +106,8 @@ class QuestionRepositoryImpl extends QuestionRepository {
       case QuestionsAppwriteDataSourceAppwriteFailure:
         repoFailure = QuestionRepositoryExternalServiceErrorFailure(
           message:
-          (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure)
-              .message,
+              (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure)
+                  .message,
         );
         break;
     }
