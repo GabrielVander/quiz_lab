@@ -15,7 +15,7 @@ abstract class QuestionRepository {
     Question question,
   );
 
-  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(String id);
+  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(QuestionId id);
 }
 
 @immutable
@@ -114,4 +114,17 @@ class UnexpectedErrorFailure extends QuestionRepositoryFailure {
 
   @override
   List<Object> get props => super.props..addAll([exception]);
+}
+
+@immutable
+class QuestionRepositoryUnexpectedFailure extends QuestionRepositoryFailure {
+  const QuestionRepositoryUnexpectedFailure({required super.message})
+      : super._();
+}
+
+@immutable
+class QuestionRepositoryExternalServiceErrorFailure
+    extends QuestionRepositoryFailure {
+  const QuestionRepositoryExternalServiceErrorFailure({required super.message})
+      : super._();
 }

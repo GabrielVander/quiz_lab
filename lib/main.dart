@@ -60,8 +60,8 @@ void _appwriteDependencyInjectionSetup(DependencyInjection di) {
 
   di
     ..registerInstance<appwrite.Client>((_) => client)
-    ..registerInstance<AppwriteDataSourceConfiguration>(
-      (_) => AppwriteDataSourceConfiguration(
+    ..registerInstance<AppwriteReferencesConfig>(
+      (_) => AppwriteReferencesConfig(
         databaseId: Environment.getRequiredEnvironmentVariable(
           EnvironmentVariable.appwriteDatabaseId,
         ),

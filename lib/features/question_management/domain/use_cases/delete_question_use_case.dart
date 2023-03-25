@@ -1,3 +1,4 @@
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class DeleteQuestionUseCase {
@@ -8,6 +9,6 @@ class DeleteQuestionUseCase {
   final QuestionRepository _questionRepository;
 
   Future<void> execute(String questionId) async {
-    await _questionRepository.deleteSingle(questionId);
+    await _questionRepository.deleteSingle(QuestionId(questionId));
   }
 }

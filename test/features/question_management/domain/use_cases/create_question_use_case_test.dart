@@ -199,7 +199,7 @@ void main() {
           ),
           '',
           const Question(
-            id: '',
+            id: QuestionId(''),
             shortDescription: 'shortDescription',
             description: 'description',
             answerOptions: [],
@@ -226,7 +226,7 @@ void main() {
           ),
           'LO^*8O*4',
           const Question(
-            id: 'LO^*8O*4',
+            id: QuestionId('LO^*8O*4'),
             shortDescription: 'nkl!',
             description: 'oaK',
             answerOptions: [

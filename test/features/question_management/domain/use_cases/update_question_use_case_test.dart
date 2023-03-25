@@ -70,7 +70,7 @@ void main() {
       'should return ok',
       ParameterizedSource.value([
         const Question(
-          id: '',
+          id: QuestionId(''),
           shortDescription: '',
           description: '',
           categories: [],
@@ -78,7 +78,7 @@ void main() {
           answerOptions: [],
         ),
         const Question(
-          id: 'a019cc50-db0b-42e2-895a-ac5a37a79faa',
+          id: QuestionId('a019cc50-db0b-42e2-895a-ac5a37a79faa'),
           shortDescription: 'hunger',
           description: 'Nuptias ire, tanquam superbus hippotoxota.',
           categories: [
@@ -112,12 +112,12 @@ void main() {
 class _QuestionRepositoryMock extends Mock implements QuestionRepository {}
 
 class _FakeQuestion extends Fake with EquatableMixin implements Question {
-  factory _FakeQuestion.id(String id) => _FakeQuestion._(id: id);
+  factory _FakeQuestion.id(String id) => _FakeQuestion._(id: QuestionId(id));
 
   _FakeQuestion._({required this.id});
 
   @override
-  final String id;
+  final QuestionId id;
 
   @override
   List<Object> get props => [id];

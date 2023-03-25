@@ -14,7 +14,7 @@ class HiveQuestionModelMapper {
         categories: _parseCategoriesFromQuestion(question),
       );
 
-  String? _parseIdFromQuestion(Question question) => question.id;
+  String? _parseIdFromQuestion(Question question) => question.id.value;
 
   String _parseDescriptionFromQuestion(Question question) =>
       question.description;

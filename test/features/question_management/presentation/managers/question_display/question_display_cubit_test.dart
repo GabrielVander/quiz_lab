@@ -70,7 +70,7 @@ void main() {
         ParameterizedSource.values([
           [
             const Question(
-              id: '',
+              id: QuestionId(''),
               shortDescription: '',
               description: '',
               difficulty: QuestionDifficulty.easy,
@@ -101,7 +101,7 @@ void main() {
           ],
           [
             const Question(
-              id: r'%$CvEPVq',
+              id: QuestionId(r'%$CvEPVq'),
               shortDescription: 'Equivalence',
               description: 'Which number is equivalent to 3^(4)÷3^(2)?',
               difficulty: QuestionDifficulty.easy,
@@ -150,7 +150,9 @@ void main() {
           final getSingleQuestionUseCaseMock = _GetSingleQuestionUseCaseMock();
 
           mocktail
-              .when(() => getSingleQuestionUseCaseMock.execute(question.id))
+              .when(
+                () => getSingleQuestionUseCaseMock.execute(question.id.value),
+              )
               .thenAnswer((_) async => Result.ok(question));
 
           mocktail
@@ -193,7 +195,7 @@ void main() {
             ),
           );
 
-          await cubit.loadQuestion(question.id);
+          await cubit.loadQuestion(question.id.value);
         },
       );
     });

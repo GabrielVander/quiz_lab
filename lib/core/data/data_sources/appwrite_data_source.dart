@@ -13,7 +13,7 @@ class AppwriteDataSource {
   AppwriteDataSource({
     required Account appwriteAccountService,
     required Databases appwriteDatabasesService,
-    required AppwriteDataSourceConfiguration configuration,
+    required AppwriteReferencesConfig configuration,
     required Realtime appwriteRealtimeService,
   })  : _appwriteAccountService = appwriteAccountService,
         _appwriteDatabasesService = appwriteDatabasesService,
@@ -25,7 +25,7 @@ class AppwriteDataSource {
   final Account _appwriteAccountService;
   final Databases _appwriteDatabasesService;
   final Realtime _appwriteRealtimeService;
-  final AppwriteDataSourceConfiguration _configuration;
+  final AppwriteReferencesConfig _configuration;
 
   Future<Result<SessionModel, String>> createEmailSession(
     EmailSessionCredentialsModel credentialsModel,
@@ -141,8 +141,8 @@ class AppwriteDataSource {
   }
 }
 
-class AppwriteDataSourceConfiguration {
-  const AppwriteDataSourceConfiguration({
+class AppwriteReferencesConfig {
+  const AppwriteReferencesConfig({
     required this.databaseId,
     required this.questionsCollectionId,
   });

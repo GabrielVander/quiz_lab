@@ -59,7 +59,7 @@ void main() {
         [
           [
             const Question(
-              id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
+              id: QuestionId('15e194a8-8fa9-4b04-af8f-8d71491ac7e8'),
               shortDescription: 'shortDescription',
               description: 'description',
               answerOptions: [],
@@ -71,7 +71,7 @@ void main() {
         [
           [
             const Question(
-              id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
+              id: QuestionId('15e194a8-8fa9-4b04-af8f-8d71491ac7e8'),
               shortDescription: 'shortDescription',
               description: 'description',
               answerOptions: [],
@@ -79,7 +79,7 @@ void main() {
               categories: [],
             ),
             const Question(
-              id: '56d6a3c9-ebd5-4572-9c86-da328b986927',
+              id: QuestionId('56d6a3c9-ebd5-4572-9c86-da328b986927'),
               shortDescription: 'shortDescription',
               description: 'description',
               answerOptions: [],
@@ -87,7 +87,7 @@ void main() {
               categories: [],
             ),
             const Question(
-              id: 'd377713b-dfb7-4c22-88a4-3f6d340285dc',
+              id: QuestionId('d377713b-dfb7-4c22-88a4-3f6d340285dc'),
               shortDescription: 'shortDescription',
               description: 'description',
               answerOptions: [],

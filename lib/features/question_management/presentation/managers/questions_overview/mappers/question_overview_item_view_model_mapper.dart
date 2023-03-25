@@ -6,7 +6,7 @@ class QuestionOverviewItemViewModelMapper {
     Question question,
   ) {
     return QuestionsOverviewItemViewModel(
-      id: question.id,
+      id: question.id.value,
       shortDescription: question.shortDescription,
       description: question.description,
       categories: question.categories.map((c) => c.value).toList(),

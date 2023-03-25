@@ -9,22 +9,25 @@ import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.d
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/questions_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_appwrite_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 void main() {
   late AppwriteDataSource appwriteDataSourceMock;
-
+  late QuestionsAppwriteDataSource questionsAppwriteDataSourceMock;
   late QuestionRepositoryAppwriteImpl repository;
 
   setUp(() {
     appwriteDataSourceMock = _AppwriteDataSourceMock();
-
+    questionsAppwriteDataSourceMock = _QuestionsAppwriteDataSourceMock();
     repository = QuestionRepositoryAppwriteImpl(
       appwriteDataSource: appwriteDataSourceMock,
+      questionsAppwriteDataSource: questionsAppwriteDataSourceMock,
     );
   });
 
@@ -49,7 +52,7 @@ void main() {
         ParameterizedSource.values([
           [
             const Question(
-              id: '',
+              id: QuestionId(''),
               shortDescription: '',
               description: '',
               answerOptions: [],
@@ -67,7 +70,7 @@ void main() {
           ],
           [
             const Question(
-              id: 'hqWk^#',
+              id: QuestionId('hqWk^#'),
               shortDescription: r'1HFm$Ny',
               description: 'g18QU',
               answerOptions: [
@@ -96,7 +99,7 @@ void main() {
           ],
           [
             const Question(
-              id: 'H00D4',
+              id: QuestionId('H00D4'),
               shortDescription: '79FgDD',
               description: r'N915*v$R',
               answerOptions: [
@@ -166,7 +169,7 @@ void main() {
 
       final result = await repository.createSingle(
         const Question(
-          id: '',
+          id: QuestionId(''),
           shortDescription: '',
           description: '',
           answerOptions: [],
@@ -258,7 +261,7 @@ void main() {
           ),
           <Question>[
             const Question(
-              id: '',
+              id: QuestionId(''),
               shortDescription: '',
               description: '',
               answerOptions: [],
@@ -301,7 +304,7 @@ void main() {
           ),
           <Question>[
             const Question(
-              id: r'PfZ*N22$',
+              id: QuestionId(r'PfZ*N22$'),
               shortDescription: 'ZosGBFx3',
               description: 'be%92n',
               answerOptions: [
@@ -343,6 +346,105 @@ void main() {
       },
     );
   });
+
+  group(
+    'deleteSingle()',
+    () {
+      parameterizedTest(
+        'should call questions Appwrite data source correctly',
+        ParameterizedSource.value([
+          const QuestionId(''),
+          const QuestionId('olp'),
+        ]),
+        (values) {
+          final questionId = values[0] as QuestionId;
+
+          mocktail
+              .when(
+                () => questionsAppwriteDataSourceMock
+                    .deleteSingle(mocktail.any()),
+              )
+              .thenAnswer(
+                (_) async => Result.err(
+                  QuestionsAppwriteDataSourceUnexpectedFailure(r'T8$W7'),
+                ),
+              );
+
+          repository.deleteSingle(questionId);
+
+          mocktail
+              .verify(
+                () => questionsAppwriteDataSourceMock
+                    .deleteSingle(questionId.value),
+              )
+              .called(1);
+        },
+      );
+
+      test(
+        'should call return nothing if questions Appwrite data source succeeds',
+        () async {
+          mocktail
+              .when(
+                () => questionsAppwriteDataSourceMock
+                    .deleteSingle(mocktail.any()),
+              )
+              .thenAnswer(
+                (_) async => const Result.ok(unit),
+              );
+
+          final result =
+              await repository.deleteSingle(const QuestionId('6xSamAUC'));
+
+          expect(result.isOk, true);
+          expect(result.ok, unit);
+        },
+      );
+
+      parameterizedTest(
+        'should return expected failure when questions Appwrite data source '
+        'fails',
+        ParameterizedSource.values([
+          [
+            QuestionsAppwriteDataSourceUnexpectedFailure(''),
+            const QuestionRepositoryUnexpectedFailure(message: ''),
+          ],
+          [
+            QuestionsAppwriteDataSourceUnexpectedFailure('Nl5af77'),
+            const QuestionRepositoryUnexpectedFailure(message: 'Nl5af77'),
+          ],
+          [
+            QuestionsAppwriteDataSourceAppwriteFailure(''),
+            const QuestionRepositoryExternalServiceErrorFailure(message: ''),
+          ],
+          [
+            QuestionsAppwriteDataSourceAppwriteFailure(r'E!!$'),
+            const QuestionRepositoryExternalServiceErrorFailure(
+              message: r'E!!$',
+            ),
+          ],
+        ]),
+        (values) async {
+          final dataSourceFailure =
+              values[0] as QuestionsAppwriteDataSourceFailure;
+          final expected = values[1] as QuestionRepositoryFailure;
+
+          mocktail
+              .when(
+                () => questionsAppwriteDataSourceMock
+                    .deleteSingle(mocktail.any()),
+              )
+              .thenAnswer((_) async => Result.err(dataSourceFailure));
+
+          final result =
+              await repository.deleteSingle(const QuestionId('cNPJl@*x'));
+
+          expect(result.isErr, true);
+          expect(result.err, expected);
+        },
+      );
+    },
+  );
 }
 
 class _AppwriteDataSourceMock extends mocktail.Mock
@@ -356,3 +458,6 @@ class _AppwriteRealtimeQuestionMessageModelMock extends mocktail.Mock
 
 class _AppwriteQuestionListModelMock extends mocktail.Mock
     implements AppwriteQuestionListModel {}
+
+class _QuestionsAppwriteDataSourceMock extends mocktail.Mock
+    implements QuestionsAppwriteDataSource {}

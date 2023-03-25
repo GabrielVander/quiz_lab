@@ -20,7 +20,7 @@ void main() {
       ParameterizedSource.values([
         [
           const Question(
-            id: '',
+            id: QuestionId(''),
             shortDescription: '',
             description: '',
             answerOptions: [],
@@ -37,7 +37,7 @@ void main() {
         ],
         [
           const Question(
-            id: 'b5h',
+            id: QuestionId('b5h'),
             shortDescription: 'ma8eVP%*',
             description: '0kt4S3',
             answerOptions: [
@@ -56,7 +56,7 @@ void main() {
         ],
         [
           const Question(
-            id: r'$U!',
+            id: QuestionId(r'$U!'),
             shortDescription: 'cT3u&e5a',
             description: '!nBfpz&6',
             answerOptions: [
@@ -85,7 +85,7 @@ void main() {
         ],
         [
           const Question(
-            id: r'$U!',
+            id: QuestionId(r'$U!'),
             shortDescription: 'cT3u&e5a',
             description: '!nBfpz&6',
             answerOptions: [],
@@ -119,7 +119,7 @@ void main() {
         [
           [
             const Question(
-              id: '',
+              id: QuestionId(''),
               shortDescription: '',
               description: '',
               answerOptions: [],
@@ -127,7 +127,7 @@ void main() {
               categories: [],
             ),
             const Question(
-              id: 'b5h',
+              id: QuestionId('b5h'),
               shortDescription: 'ma8eVP%*',
               description: '0kt4S3',
               answerOptions: [
@@ -137,7 +137,7 @@ void main() {
               categories: [QuestionCategory(value: r'7$P')],
             ),
             const Question(
-              id: r'$U!',
+              id: QuestionId(r'$U!'),
               shortDescription: 'cT3u&e5a',
               description: '!nBfpz&6',
               answerOptions: [
@@ -153,7 +153,7 @@ void main() {
               ],
             ),
             const Question(
-              id: r'$U!',
+              id: QuestionId(r'$U!'),
               shortDescription: 'cT3u&e5a',
               description: '!nBfpz&6',
               answerOptions: [],
