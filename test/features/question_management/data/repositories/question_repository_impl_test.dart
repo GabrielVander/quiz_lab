@@ -458,7 +458,7 @@ void main() {
 
         mocktail
             .when(
-              () => questionsAppwriteDataSourceMock.getSingle(mocktail.any()),
+              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
             )
             .thenAnswer(
               (_) async => Result.err(
@@ -469,7 +469,7 @@ void main() {
         repository.getSingle(QuestionId(questionId));
 
         mocktail.verify(
-          () => questionsAppwriteDataSourceMock.getSingle(questionId),
+              () => questionsAppwriteDataSourceMock.fetchSingle(questionId),
         );
       },
     );
@@ -486,7 +486,7 @@ void main() {
 
         mocktail
             .when(
-              () => questionsAppwriteDataSourceMock.getSingle(mocktail.any()),
+              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
             )
             .thenAnswer((_) async => Result.ok(appwriteQuestionModelMock));
 
@@ -527,7 +527,7 @@ void main() {
 
         mocktail
             .when(
-              () => questionsAppwriteDataSourceMock.getSingle(mocktail.any()),
+              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
             )
             .thenAnswer((_) async => Result.err(dataSourceFailure));
 

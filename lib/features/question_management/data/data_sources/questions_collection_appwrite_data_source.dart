@@ -45,7 +45,34 @@ class QuestionCollectionAppwriteDataSource {
   }
 
   Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
-      getSingle(String id) => throw UnimplementedError();
+      fetchSingle(String id) async {
+    _logger.debug('Fetching single question from Appwrite...');
+
+    final documentFetchingResult = await _appwriteConnector.getDocument(
+      AppwriteDocumentReference(
+        databaseId: _config.databaseId,
+        collectionId: _config.collectionId,
+        documentId: id,
+      ),
+    );
+
+    return documentFetchingResult.when(
+      ok: (document) {
+        _logger.debug('Question fetched from Appwrite successfully');
+
+        return Result.ok(
+          AppwriteQuestionModel.fromDocument(document),
+        );
+      },
+      err: (failure) {
+        _logger.error(failure.toString());
+
+        final mappedFailure = _mapAppwriteConnectorFailure(failure);
+
+        return Result.err(mappedFailure);
+      },
+    );
+  }
 
   Future<Result<Unit, AppwriteConnectorFailure>> _performAppwriteDeletion(
     String id,

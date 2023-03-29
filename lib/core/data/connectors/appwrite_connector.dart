@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
@@ -33,6 +34,11 @@ class AppwriteConnector {
       return Result.err(AppwriteConnectorUnexpectedFailure(e.toString()));
     }
   }
+
+  Future<Result<Document, AppwriteConnectorFailure>> getDocument(
+    AppwriteDocumentReference reference,
+  ) =>
+      throw UnimplementedError();
 
   Future<Result<Unit, AppwriteConnectorFailure>> _performDocumentDeletion(
     AppwriteDocumentReference reference,

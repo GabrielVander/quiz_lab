@@ -76,7 +76,8 @@ class QuestionRepositoryImpl extends QuestionRepository {
   ) async {
     _logger.debug('Getting question...');
 
-    final fetchResult = await _questionsAppwriteDataSource.getSingle(id.value);
+    final fetchResult =
+        await _questionsAppwriteDataSource.fetchSingle(id.value);
 
     return fetchResult.when(
       ok: (model) {
