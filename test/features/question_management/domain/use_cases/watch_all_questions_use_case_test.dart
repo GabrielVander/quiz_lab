@@ -6,18 +6,17 @@ import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
 void main() {
-  late RepositoryFactory mockRepositoryFactory;
+  late QuestionRepository questionRepositoryMock;
   late WatchAllQuestionsUseCase useCase;
 
   setUp(() {
-    mockRepositoryFactory = _MockRepositoryFactory();
+    questionRepositoryMock = _QuestionRepositoryMock();
     useCase = WatchAllQuestionsUseCase(
-      repositoryFactory: mockRepositoryFactory,
+      questionRepository: questionRepositoryMock,
     );
   });
 
@@ -36,21 +35,15 @@ void main() {
           WatchAllQuestionsFailure.generic(message: 'f9T')
         ],
       ]),
-      (values) {
+      (values) async {
         final repositoryFailure = values[0] as QuestionRepositoryFailure;
         final expectedFailure = values[1] as WatchAllQuestionsFailure;
 
-        final mockQuestionRepository = _MockQuestionRepository();
-
         mocktail
-            .when(() => mockRepositoryFactory.makeQuestionRepository())
-            .thenReturn(mockQuestionRepository);
+            .when(questionRepositoryMock.watchAll)
+            .thenAnswer((_) async => Result.err(repositoryFailure));
 
-        mocktail
-            .when(mockQuestionRepository.watchAll)
-            .thenReturn(Result.err(repositoryFailure));
-
-        final result = useCase.execute();
+        final result = await useCase.execute();
 
         expect(result.isErr, true);
         expect(result.err, expectedFailure);
@@ -66,7 +59,7 @@ void main() {
         [
           [
             const Question(
-              id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
+              id: QuestionId('15e194a8-8fa9-4b04-af8f-8d71491ac7e8'),
               shortDescription: 'shortDescription',
               description: 'description',
               answerOptions: [],
@@ -78,7 +71,7 @@ void main() {
         [
           [
             const Question(
-              id: '15e194a8-8fa9-4b04-af8f-8d71491ac7e8',
+              id: QuestionId('15e194a8-8fa9-4b04-af8f-8d71491ac7e8'),
               shortDescription: 'shortDescription',
               description: 'description',
               answerOptions: [],
@@ -86,7 +79,7 @@ void main() {
               categories: [],
             ),
             const Question(
-              id: '56d6a3c9-ebd5-4572-9c86-da328b986927',
+              id: QuestionId('56d6a3c9-ebd5-4572-9c86-da328b986927'),
               shortDescription: 'shortDescription',
               description: 'description',
               answerOptions: [],
@@ -94,7 +87,7 @@ void main() {
               categories: [],
             ),
             const Question(
-              id: 'd377713b-dfb7-4c22-88a4-3f6d340285dc',
+              id: QuestionId('d377713b-dfb7-4c22-88a4-3f6d340285dc'),
               shortDescription: 'shortDescription',
               description: 'description',
               answerOptions: [],
@@ -108,17 +101,11 @@ void main() {
         final streamValues = values[0] as List<List<Question>>;
         final stream = Stream.fromIterable(streamValues);
 
-        final mockQuestionRepository = _MockQuestionRepository();
-
         mocktail
-            .when(() => mockRepositoryFactory.makeQuestionRepository())
-            .thenReturn(mockQuestionRepository);
+            .when(questionRepositoryMock.watchAll)
+            .thenAnswer((_) async => Result.ok(stream));
 
-        mocktail
-            .when(mockQuestionRepository.watchAll)
-            .thenReturn(Result.ok(stream));
-
-        final result = useCase.execute();
+        final result = await useCase.execute();
 
         expect(result.isOk, isTrue);
 
@@ -129,8 +116,5 @@ void main() {
   });
 }
 
-class _MockRepositoryFactory extends mocktail.Mock
-    implements RepositoryFactory {}
-
-class _MockQuestionRepository extends mocktail.Mock
+class _QuestionRepositoryMock extends mocktail.Mock
     implements QuestionRepository {}

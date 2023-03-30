@@ -1,0 +1,23 @@
+name: 'Analyze and test code'
+'on':
+  pull_request:
+    branches:
+      - develop
+      - master
+      - feature/*
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Flutter
+        run: sudo snap install flutter --classic
+      - name: Get packages
+        run: flutter pub get
+      - name: Analyze code
+        run: flutter analyze
+      - name: Run tests
+        run: flutter test --coverage
+      - name: Check Coverage Percentage
+        run: flutter pub run coverde check ${{ vars.MININUM_TEST_COVERAGE }}

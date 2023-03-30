@@ -169,5 +169,14 @@
   "@questionDisplayIncorrectAnswer": {
     "description": "Message to display when the question is answered incorrectly"
   },
-  "openRandomQuestionButtonLabel": "Random"
+  "openRandomQuestionButtonLabel": "Random",
+  "loginPageDisplayTitle": "Login to your account",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "logInButtonLabel": "Log in",
+  "enterAnonymouslyButtonLabel": "Enter anonymously",
+  "dontHaveAnAccountPhrase": "Don't have an account?",
+  "loginPageSignUpButtonLabel": "Sign Up",
+  "genericErrorMessage": "Something went wrong",
+  "notYetImplemented": "Not yet implemented"
 }

@@ -101,11 +101,11 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     await deleteQuestionUseCase.execute(question.id);
   }
 
-  void _watchQuestions() {
+  Future<void> _watchQuestions() async {
     final watchAllQuestionsUseCase =
         _useCaseFactory.makeWatchAllQuestionsUseCase();
 
-    final watchResult = watchAllQuestionsUseCase.execute();
+    final watchResult = await watchAllQuestionsUseCase.execute();
 
     if (watchResult.isErr) {
       emit(
@@ -118,7 +118,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
     _questionStreamController.stream.listen(_emitNewQuestions);
 
-    watchResult.ok!.pipe(_questionStreamController);
+    await watchResult.ok!.pipe(_questionStreamController);
   }
 
   void _emitNewQuestions(List<Question> newQuestions) {

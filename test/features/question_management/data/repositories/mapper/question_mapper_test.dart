@@ -132,7 +132,7 @@ void main() {
               ],
             ),
             const Question(
-              id: 'dtBn',
+              id: QuestionId('dtBn'),
               shortDescription: 'n3Y2HS',
               description: 'c7c',
               difficulty: QuestionDifficulty.easy,
@@ -160,7 +160,7 @@ void main() {
               ],
             ),
             const Question(
-              id: '!!LY',
+              id: QuestionId('!!LY'),
               shortDescription: 'W7*',
               description: r'7$N8XGnF',
               difficulty: QuestionDifficulty.medium,
@@ -188,7 +188,7 @@ void main() {
               ],
             ),
             const Question(
-              id: 'd%6*k^',
+              id: QuestionId('d%6*k^'),
               shortDescription: '*ANk0',
               description: r'&$^@eZA3',
               difficulty: QuestionDifficulty.hard,
@@ -216,7 +216,7 @@ void main() {
               ],
             ),
             const Question(
-              id: 'd%6*k^',
+              id: QuestionId('d%6*k^'),
               shortDescription: '*ANk0',
               description: r'&$^@eZA3',
               difficulty: QuestionDifficulty.unknown,

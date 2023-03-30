@@ -48,9 +48,6 @@ class KeyAlreadyRegisteredFailure extends Equatable implements Exception {
 
   @override
   List<Object?> get props => [key];
-
-  @override
-  bool? get stringify => true;
 }
 
 class KeyNotRegisteredFailure extends Equatable implements Exception {
@@ -77,9 +74,6 @@ class KeyNotRegisteredFailure extends Equatable implements Exception {
 
   @override
   List<Object?> get props => [key];
-
-  @override
-  bool? get stringify => true;
 }
 
 typedef DiSetup = void Function(DependencyInjection di);

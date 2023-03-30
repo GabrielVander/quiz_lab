@@ -15,7 +15,7 @@ class GetSingleQuestionUseCase {
       return const Result.err('Unable to find question');
     }
 
-    final result = questionRepository.watchAll();
+    final result = await questionRepository.watchAll();
 
     if (result.isErr) {
       return Result.err(result.err!.message);
@@ -34,7 +34,7 @@ class GetSingleQuestionUseCase {
 
     for (final questions in emittedQuestions) {
       try {
-        final question = questions.firstWhere((q) => q.id == id);
+        final question = questions.firstWhere((q) => q.id.value == id);
 
         return Result.ok(question);
         // ignore: avoid_catching_errors

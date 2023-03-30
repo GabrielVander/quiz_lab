@@ -423,6 +423,96 @@ class S {
       args: [],
     );
   }
+
+  /// `Login to your account`
+  String get loginPageDisplayTitle {
+    return Intl.message(
+      'Login to your account',
+      name: 'loginPageDisplayTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email`
+  String get emailLabel {
+    return Intl.message(
+      'Email',
+      name: 'emailLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password`
+  String get passwordLabel {
+    return Intl.message(
+      'Password',
+      name: 'passwordLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Log in`
+  String get logInButtonLabel {
+    return Intl.message(
+      'Log in',
+      name: 'logInButtonLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter anonymously`
+  String get enterAnonymouslyButtonLabel {
+    return Intl.message(
+      'Enter anonymously',
+      name: 'enterAnonymouslyButtonLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Don't have an account?`
+  String get dontHaveAnAccountPhrase {
+    return Intl.message(
+      'Don\'t have an account?',
+      name: 'dontHaveAnAccountPhrase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign Up`
+  String get loginPageSignUpButtonLabel {
+    return Intl.message(
+      'Sign Up',
+      name: 'loginPageSignUpButtonLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Something went wrong`
+  String get genericErrorMessage {
+    return Intl.message(
+      'Something went wrong',
+      name: 'genericErrorMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not yet implemented`
+  String get notYetImplemented {
+    return Intl.message(
+      'Not yet implemented',
+      name: 'notYetImplemented',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -53,20 +53,35 @@ class MessageLookup extends MessageLookupByLibrary {
         "createLabel": MessageLookupByLibrary.simpleMessage("Create"),
         "createQuestionTitle":
             MessageLookupByLibrary.simpleMessage("Create Question"),
+        "dontHaveAnAccountPhrase":
+            MessageLookupByLibrary.simpleMessage("Don\'t have an account?"),
         "dueDateLabel": MessageLookupByLibrary.simpleMessage("Due Date"),
         "dueDateValue": m2,
+        "emailLabel": MessageLookupByLibrary.simpleMessage("Email"),
+        "enterAnonymouslyButtonLabel":
+            MessageLookupByLibrary.simpleMessage("Enter anonymously"),
+        "genericErrorMessage":
+            MessageLookupByLibrary.simpleMessage("Something went wrong"),
         "goBackLabel": MessageLookupByLibrary.simpleMessage("Go Back"),
         "goHomeLabel": MessageLookupByLibrary.simpleMessage("Go home"),
         "isOptionCorrectLabel":
             MessageLookupByLibrary.simpleMessage("Is Correct"),
+        "logInButtonLabel": MessageLookupByLibrary.simpleMessage("Log in"),
+        "loginPageDisplayTitle":
+            MessageLookupByLibrary.simpleMessage("Login to your account"),
+        "loginPageSignUpButtonLabel":
+            MessageLookupByLibrary.simpleMessage("Sign Up"),
         "mustBeSetMessage": MessageLookupByLibrary.simpleMessage("Must Be Set"),
         "noConnection": MessageLookupByLibrary.simpleMessage("No Connection"),
         "noDueDateLabel": MessageLookupByLibrary.simpleMessage("No Due Date"),
         "noQuestions": MessageLookupByLibrary.simpleMessage("No questions"),
+        "notYetImplemented":
+            MessageLookupByLibrary.simpleMessage("Not yet implemented"),
         "openRandomQuestionButtonLabel":
             MessageLookupByLibrary.simpleMessage("Random"),
         "optionInputLabel": MessageLookupByLibrary.simpleMessage("Option"),
         "optionsTitle": MessageLookupByLibrary.simpleMessage("Options"),
+        "passwordLabel": MessageLookupByLibrary.simpleMessage("Password"),
         "questionAmountLabel": m3,
         "questionAnswerPageTitle":
             MessageLookupByLibrary.simpleMessage("Answering..."),

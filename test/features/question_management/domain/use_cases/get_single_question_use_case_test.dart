@@ -37,7 +37,7 @@ void main() {
 
         mocktail
             .when(() => questionRepositoryMock.watchAll())
-            .thenAnswer((_) => Result.err(questionRepositoryFailure));
+            .thenAnswer((_) async => Result.err(questionRepositoryFailure));
 
         final result = await useCase.execute('5iPj@0V');
 
@@ -70,7 +70,7 @@ void main() {
 
         mocktail
             .when(() => questionRepositoryMock.watchAll())
-            .thenAnswer((_) => Result.ok(questionsStream));
+            .thenAnswer((_) async => Result.ok(questionsStream));
 
         final result = await useCase.execute('6EyuF!KL');
 
@@ -116,7 +116,7 @@ void main() {
 
         mocktail
             .when(() => questionRepositoryMock.watchAll())
-            .thenAnswer((_) => Result.ok(questionsStream));
+            .thenAnswer((_) async => Result.ok(questionsStream));
 
         final result = await useCase.execute(targetQuestionId);
 
@@ -135,7 +135,7 @@ class _QuestionRepositoryMock extends mocktail.Mock
 
 class _FakeQuestion extends mocktail.Fake implements Question {
   @override
-  String get id => 'Q4Rj35I';
+  QuestionId get id => const QuestionId('Q4Rj35I');
 }
 
 class _FakeTargetQuestion extends mocktail.Fake
@@ -146,7 +146,7 @@ class _FakeTargetQuestion extends mocktail.Fake
   final String targetQuestionId;
 
   @override
-  String get id => targetQuestionId;
+  QuestionId get id => QuestionId(targetQuestionId);
 
   @override
   List<Object?> get props => [id];

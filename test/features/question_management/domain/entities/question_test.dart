@@ -17,7 +17,7 @@ void main() {
         final newValue = values[0] as String;
 
         const question = Question(
-          id: 'id',
+          id: QuestionId('id'),
           shortDescription: 'shortDescription',
           description: 'description',
           answerOptions: [],
@@ -25,9 +25,9 @@ void main() {
           categories: [],
         );
 
-        final copy = question.copyWith(id: newValue);
+        final copy = question.copyWith(id: QuestionId(newValue));
 
-        expect(copy.id, newValue);
+        expect(copy.id.value, newValue);
         expect(copy.shortDescription, 'shortDescription');
         expect(copy.description, 'description');
         expect(copy.answerOptions, <AnswerOption>[]);
@@ -43,7 +43,7 @@ void main() {
         final newValue = values[0] as String;
 
         const entity = Question(
-          id: 'id',
+          id: QuestionId('id'),
           shortDescription: 'shortDescription',
           description: 'description',
           answerOptions: <AnswerOption>[],
@@ -68,7 +68,7 @@ void main() {
         final newValue = values[0] as String;
 
         const entity = Question(
-          id: 'id',
+          id: QuestionId('id'),
           shortDescription: 'shortDescription',
           description: 'description',
           answerOptions: <AnswerOption>[],
@@ -95,7 +95,7 @@ void main() {
       final newValue = values[0] as List<AnswerOption>;
 
       const entity = Question(
-        id: 'id',
+        id: QuestionId('id'),
         shortDescription: 'shortDescription',
         description: 'description',
         answerOptions: <AnswerOption>[],
@@ -124,7 +124,7 @@ void main() {
         final newValue = values[0] as QuestionDifficulty;
 
         const entity = Question(
-          id: 'id',
+          id: QuestionId('id'),
           shortDescription: 'shortDescription',
           description: 'description',
           answerOptions: <AnswerOption>[],
@@ -152,7 +152,7 @@ void main() {
         final newValue = values[0] as List<QuestionCategory>;
 
         const entity = Question(
-          id: 'id',
+          id: QuestionId('id'),
           shortDescription: 'shortDescription',
           description: 'description',
           answerOptions: <AnswerOption>[],

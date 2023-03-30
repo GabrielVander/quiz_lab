@@ -5,6 +5,7 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
+import 'package:quiz_lab/core/presentation/widgets/ghost_pill_text_button.dart';
 import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
@@ -16,8 +17,8 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionsOverviewPage extends HookWidget {
   QuestionsOverviewPage({
-    super.key,
     required QuestionsOverviewCubit questionsOverviewCubit,
+    super.key,
   }) {
     _cubit = questionsOverviewCubit;
   }
@@ -212,46 +213,15 @@ class _RandomQuestionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: enabled ? onClick : null,
-      style: _buildButtonStyle(context, enabled),
+    return GhostPillTextButton(
+      enabled: enabled,
+      onPressed: onClick,
       child: Row(
         children: [
           const Icon(Icons.shuffle),
           const SizedBox(width: 5),
           Text(S.of(context).openRandomQuestionButtonLabel),
         ],
-      ),
-    );
-  }
-
-  ButtonStyle _buildButtonStyle(BuildContext context, bool enabled) {
-    return ButtonStyle(
-      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: enabled
-                ? Theme.of(context).extension<ThemeColors>()!.mainColors.primary
-                : Theme.of(context)
-                    .extension<ThemeColors>()!
-                    .backgroundColors
-                    .disabled,
-          ),
-        ),
-      ),
-      backgroundColor: MaterialStateProperty.all<Color>(
-        enabled
-            ? Theme.of(context)
-                .extension<ThemeColors>()!
-                .mainColors
-                .primary
-                .withAlpha(20)
-            : Theme.of(context)
-                .extension<ThemeColors>()!
-                .backgroundColors
-                .disabled
-                .withAlpha(20),
       ),
     );
   }

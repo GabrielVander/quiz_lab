@@ -55,8 +55,8 @@ class AssessmentOverview extends StatelessWidget {
 
 class Title extends StatelessWidget {
   const Title({
-    super.key,
     required this.title,
+    super.key,
   });
 
   final String title;
@@ -111,8 +111,8 @@ class Title extends StatelessWidget {
 
 class Questions extends StatelessWidget {
   const Questions({
-    super.key,
     required this.amount,
+    super.key,
   });
 
   final int amount;
@@ -162,8 +162,8 @@ class Questions extends StatelessWidget {
 
 class Answers extends StatelessWidget {
   const Answers({
-    super.key,
     required this.answers,
+    super.key,
   });
 
   final AnswersViewModel answers;
@@ -219,10 +219,10 @@ class Answers extends StatelessWidget {
 
 class AnswersAmountNoLimit extends StatelessWidget {
   const AnswersAmountNoLimit({
-    super.key,
     required this.amount,
     required this.textColor,
     required this.fontSize,
+    super.key,
   });
 
   final int amount;
@@ -243,11 +243,11 @@ class AnswersAmountNoLimit extends StatelessWidget {
 
 class AnswersAmountWithLimit extends StatelessWidget {
   const AnswersAmountWithLimit({
-    super.key,
     required this.amount,
     required this.limit,
     required this.textColor,
     required this.fontSize,
+    super.key,
   });
 
   final int amount;
@@ -269,8 +269,8 @@ class AnswersAmountWithLimit extends StatelessWidget {
 
 class DueDate extends StatelessWidget {
   const DueDate({
-    super.key,
     required this.dueDate,
+    super.key,
   });
 
   final DueDateViewModel dueDate;
@@ -319,9 +319,9 @@ class DueDate extends StatelessWidget {
 
 class NoDueDate extends StatelessWidget {
   const NoDueDate({
-    super.key,
     required this.textColor,
     required this.fontSize,
+    super.key,
   });
 
   final Color? textColor;
@@ -342,10 +342,10 @@ class NoDueDate extends StatelessWidget {
 
 class DueDateWithValue extends StatelessWidget {
   const DueDateWithValue({
-    super.key,
     required this.textColor,
     required this.fontSize,
     required this.dueDate,
+    super.key,
   });
 
   final Color? textColor;

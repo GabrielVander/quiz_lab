@@ -13,27 +13,15 @@ class Question extends Equatable {
     required this.categories,
   });
 
-  final String id;
+  final QuestionId id;
   final String shortDescription;
   final String description;
   final List<AnswerOption> answerOptions;
   final QuestionDifficulty difficulty;
   final List<QuestionCategory> categories;
 
-  @override
-  String toString() {
-    return 'Question{ '
-        'id: $id, '
-        'shortDescription: $shortDescription, '
-        'description: $description, '
-        'answerOptions: $answerOptions, '
-        'difficulty: $difficulty, '
-        'categories: $categories, '
-        '}';
-  }
-
   Question copyWith({
-    String? id,
+    QuestionId? id,
     String? shortDescription,
     String? description,
     List<AnswerOption>? answerOptions,
@@ -51,6 +39,18 @@ class Question extends Equatable {
   }
 
   @override
+  String toString() {
+    return 'Question{'
+        'id: $id, '
+        'shortDescription: $shortDescription, '
+        'description: $description, '
+        'answerOptions: $answerOptions, '
+        'difficulty: $difficulty, '
+        'categories: $categories'
+        '}';
+  }
+
+  @override
   List<Object?> get props => [
         id,
         shortDescription,
@@ -59,4 +59,13 @@ class Question extends Equatable {
         difficulty,
         categories,
       ];
+}
+
+class QuestionId extends Equatable {
+  const QuestionId(this.value);
+
+  final String value;
+
+  @override
+  List<Object> get props => [value];
 }

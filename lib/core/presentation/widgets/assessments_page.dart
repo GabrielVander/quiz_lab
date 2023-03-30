@@ -9,8 +9,8 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class AssessmentsPage extends HookWidget {
   const AssessmentsPage({
-    super.key,
     required this.assessmentsOverviewCubit,
+    super.key,
   });
 
   final AssessmentsOverviewCubit assessmentsOverviewCubit;
@@ -72,8 +72,8 @@ class AssessmentsPage extends HookWidget {
 
 class Content extends StatelessWidget {
   const Content({
-    super.key,
     required this.state,
+    super.key,
   });
 
   final AssessmentsOverviewState state;

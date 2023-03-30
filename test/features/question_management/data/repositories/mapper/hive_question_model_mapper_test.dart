@@ -23,7 +23,7 @@ void main() {
         ParameterizedSource.values([
           [
             const Question(
-              id: 'Nd3t!fjX',
+              id: QuestionId('Nd3t!fjX'),
               shortDescription: '',
               description: '',
               answerOptions: [],
@@ -41,7 +41,7 @@ void main() {
           ],
           [
             const Question(
-              id: '@mWpWvZ',
+              id: QuestionId('@mWpWvZ'),
               shortDescription: 'wcS',
               description: 'ML9ZGlsr',
               answerOptions: [
