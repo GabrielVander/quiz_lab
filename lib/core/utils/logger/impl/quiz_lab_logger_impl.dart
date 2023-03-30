@@ -20,7 +20,7 @@ class QuizLabLoggerImpl implements QuizLabLogger {
   void warn(String message) => _logger.warning(message);
 
   @override
-  void debug(String message) => _logger.config(message);
+  void debug(String message) => _logger.fine(message);
 
   static void onListen(logging.LogRecord record) {
     final message =

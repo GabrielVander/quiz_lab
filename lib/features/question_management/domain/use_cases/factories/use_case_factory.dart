@@ -1,6 +1,5 @@
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
@@ -10,18 +9,15 @@ class UseCaseFactory {
     required CreateQuestionUseCase createQuestionUseCase,
     required UpdateQuestionUseCase updateQuestionUseCase,
     required DeleteQuestionUseCase deleteQuestionUseCase,
-    required GetSingleQuestionUseCase getSingleQuestionUseCase,
   })  : _watchAllQuestionsUseCase = watchAllQuestionsUseCase,
         _createQuestionUseCase = createQuestionUseCase,
         _updateQuestionUseCase = updateQuestionUseCase,
-        _deleteQuestionUseCase = deleteQuestionUseCase,
-        _getSingleQuestionUseCase = getSingleQuestionUseCase;
+        _deleteQuestionUseCase = deleteQuestionUseCase;
 
   final WatchAllQuestionsUseCase _watchAllQuestionsUseCase;
   final CreateQuestionUseCase _createQuestionUseCase;
   final UpdateQuestionUseCase _updateQuestionUseCase;
   final DeleteQuestionUseCase _deleteQuestionUseCase;
-  final GetSingleQuestionUseCase _getSingleQuestionUseCase;
 
   WatchAllQuestionsUseCase makeWatchAllQuestionsUseCase() =>
       _watchAllQuestionsUseCase;
@@ -31,7 +27,4 @@ class UseCaseFactory {
   UpdateQuestionUseCase makeUpdateQuestionUseCase() => _updateQuestionUseCase;
 
   DeleteQuestionUseCase makeDeleteQuestionUseCase() => _deleteQuestionUseCase;
-
-  GetSingleQuestionUseCase makeGetSingleQuestionUseCase() =>
-      _getSingleQuestionUseCase;
 }

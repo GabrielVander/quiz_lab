@@ -9,8 +9,8 @@ import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.d
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/questions_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/question_repository_appwrite_impl.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
@@ -19,13 +19,13 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 
 void main() {
   late AppwriteDataSource appwriteDataSourceMock;
-  late QuestionsAppwriteDataSource questionsAppwriteDataSourceMock;
-  late QuestionRepositoryAppwriteImpl repository;
+  late QuestionCollectionAppwriteDataSource questionsAppwriteDataSourceMock;
+  late QuestionRepositoryImpl repository;
 
   setUp(() {
     appwriteDataSourceMock = _AppwriteDataSourceMock();
     questionsAppwriteDataSourceMock = _QuestionsAppwriteDataSourceMock();
-    repository = QuestionRepositoryAppwriteImpl(
+    repository = QuestionRepositoryImpl(
       appwriteDataSource: appwriteDataSourceMock,
       questionsAppwriteDataSource: questionsAppwriteDataSourceMock,
     );
@@ -445,6 +445,99 @@ void main() {
       );
     },
   );
+
+  group('getSingle()', () {
+    parameterizedTest(
+      'should call questions Appwrite data source correctly',
+      ParameterizedSource.value([
+        '',
+        'P6m74A',
+      ]),
+      (values) {
+        final questionId = values[0] as String;
+
+        mocktail
+            .when(
+              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
+            )
+            .thenAnswer(
+              (_) async => Result.err(
+                QuestionsAppwriteDataSourceUnexpectedFailure('X90^#SU'),
+              ),
+            );
+
+        repository.getSingle(QuestionId(questionId));
+
+        mocktail.verify(
+              () => questionsAppwriteDataSourceMock.fetchSingle(questionId),
+        );
+      },
+    );
+
+    test(
+      'should map question appwrite model to question entity and return it',
+      () async {
+        final appwriteQuestionModelMock = _AppwriteQuestionModelMock();
+        final questionMock = _QuestionMock();
+
+        mocktail
+            .when(appwriteQuestionModelMock.toQuestion)
+            .thenReturn(questionMock);
+
+        mocktail
+            .when(
+              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
+            )
+            .thenAnswer((_) async => Result.ok(appwriteQuestionModelMock));
+
+        final result = await repository.getSingle(const QuestionId('o^Y*lN'));
+
+        expect(result.isOk, true);
+        expect(result.ok, questionMock);
+      },
+    );
+
+    parameterizedTest(
+      'should return expected failure when questions Appwrite data source '
+      'fails',
+      ParameterizedSource.values([
+        [
+          QuestionsAppwriteDataSourceUnexpectedFailure(''),
+          const QuestionRepositoryUnexpectedFailure(message: ''),
+        ],
+        [
+          QuestionsAppwriteDataSourceUnexpectedFailure('RdR'),
+          const QuestionRepositoryUnexpectedFailure(message: 'RdR'),
+        ],
+        [
+          QuestionsAppwriteDataSourceAppwriteFailure(''),
+          const QuestionRepositoryExternalServiceErrorFailure(message: ''),
+        ],
+        [
+          QuestionsAppwriteDataSourceAppwriteFailure('VD4'),
+          const QuestionRepositoryExternalServiceErrorFailure(
+            message: 'VD4',
+          ),
+        ],
+      ]),
+      (values) async {
+        final dataSourceFailure =
+            values[0] as QuestionsAppwriteDataSourceFailure;
+        final expected = values[1] as QuestionRepositoryFailure;
+
+        mocktail
+            .when(
+              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
+            )
+            .thenAnswer((_) async => Result.err(dataSourceFailure));
+
+        final result = await repository.getSingle(const QuestionId('2%E5%'));
+
+        expect(result.isErr, true);
+        expect(result.err, expected);
+      },
+    );
+  });
 }
 
 class _AppwriteDataSourceMock extends mocktail.Mock
@@ -460,4 +553,9 @@ class _AppwriteQuestionListModelMock extends mocktail.Mock
     implements AppwriteQuestionListModel {}
 
 class _QuestionsAppwriteDataSourceMock extends mocktail.Mock
-    implements QuestionsAppwriteDataSource {}
+    implements QuestionCollectionAppwriteDataSource {}
+
+class _AppwriteQuestionModelMock extends mocktail.Mock
+    implements AppwriteQuestionModel {}
+
+class _QuestionMock extends mocktail.Mock implements Question {}

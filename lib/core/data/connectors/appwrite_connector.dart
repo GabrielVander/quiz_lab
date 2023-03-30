@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
@@ -17,24 +18,32 @@ class AppwriteConnector {
   Future<Result<Unit, AppwriteConnectorFailure>> deleteDocument(
     AppwriteDocumentReference reference,
   ) async {
-    _logger.debug('Deleting document...');
+    _logger.debug('Deleting Appwrite document...');
 
     try {
-      return await _performDocumentDeletion(reference);
+      return Result.ok(await _performDocumentDeletion(reference));
     } on AppwriteException catch (e) {
-      _logger.error('Unable to delete due to Appwrite failure: $e');
-
-      final appwriteError = _mapAppwriteExceptionToAppwriteError(e);
-
-      return Result.err(AppwriteConnectorAppwriteFailure(appwriteError));
-    } on Exception catch (e) {
-      _logger.error('Unable to delete due to an unexpcted failure: $e');
-
-      return Result.err(AppwriteConnectorUnexpectedFailure(e.toString()));
+      return Result.err(_handleAppwriteException(e));
+    } catch (e) {
+      return Result.err(_handleUnexpectedException(e));
     }
   }
 
-  Future<Result<Unit, AppwriteConnectorFailure>> _performDocumentDeletion(
+  Future<Result<Document, AppwriteConnectorFailure>> getDocument(
+    AppwriteDocumentReference reference,
+  ) async {
+    _logger.debug('Retrieving Appwrite document...');
+
+    try {
+      return Result.ok(await _performDocumentRetrieval(reference));
+    } on AppwriteException catch (e) {
+      return Result.err(_handleAppwriteException(e));
+    } catch (e) {
+      return Result.err(_handleUnexpectedException(e));
+    }
+  }
+
+  Future<Unit> _performDocumentDeletion(
     AppwriteDocumentReference reference,
   ) async {
     await _databases.deleteDocument(
@@ -45,7 +54,30 @@ class AppwriteConnector {
 
     _logger.debug('Document deleted successfully');
 
-    return const Result.ok(unit);
+    return unit;
+  }
+
+  Future<Document> _performDocumentRetrieval(
+    AppwriteDocumentReference reference,
+  ) async =>
+      _databases.getDocument(
+        databaseId: reference.databaseId,
+        collectionId: reference.collectionId,
+        documentId: reference.documentId,
+      );
+
+  AppwriteConnectorFailure _handleAppwriteException(AppwriteException e) {
+    _logger.error(e.toString());
+
+    final appwriteError = _mapAppwriteExceptionToAppwriteError(e);
+
+    return AppwriteConnectorAppwriteFailure(appwriteError);
+  }
+
+  AppwriteConnectorUnexpectedFailure _handleUnexpectedException(Object e) {
+    _logger.error(e.toString());
+
+    return AppwriteConnectorUnexpectedFailure(e.toString());
   }
 
   AppwriteError _mapAppwriteExceptionToAppwriteError(AppwriteException e) {

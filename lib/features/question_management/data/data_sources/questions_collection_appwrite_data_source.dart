@@ -1,19 +1,20 @@
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 
-class QuestionsAppwriteDataSource {
-  QuestionsAppwriteDataSource({
+class QuestionCollectionAppwriteDataSource {
+  QuestionCollectionAppwriteDataSource({
     required QuestionsAppwriteDataSourceConfig config,
     required AppwriteConnector appwriteConnector,
   })  : _config = config,
         _appwriteConnector = appwriteConnector;
 
   final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<QuestionsAppwriteDataSource>();
+      QuizLabLoggerFactory.createLogger<QuestionCollectionAppwriteDataSource>();
 
   final QuestionsAppwriteDataSourceConfig _config;
   final AppwriteConnector _appwriteConnector;
@@ -39,6 +40,36 @@ class QuestionsAppwriteDataSource {
           '$connectorFailure',
         );
         return Result.err(connectorFailure);
+      },
+    );
+  }
+
+  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
+      fetchSingle(String id) async {
+    _logger.debug('Fetching single question from Appwrite...');
+
+    final documentFetchingResult = await _appwriteConnector.getDocument(
+      AppwriteDocumentReference(
+        databaseId: _config.databaseId,
+        collectionId: _config.collectionId,
+        documentId: id,
+      ),
+    );
+
+    return documentFetchingResult.when(
+      ok: (document) {
+        _logger.debug('Question fetched from Appwrite successfully');
+
+        return Result.ok(
+          AppwriteQuestionModel.fromDocument(document),
+        );
+      },
+      err: (failure) {
+        _logger.error(failure.toString());
+
+        final mappedFailure = _mapAppwriteConnectorFailure(failure);
+
+        return Result.err(mappedFailure);
       },
     );
   }

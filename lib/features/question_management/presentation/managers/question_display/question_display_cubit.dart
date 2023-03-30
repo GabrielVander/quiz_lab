@@ -1,20 +1,22 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
 
 part 'question_display_state.dart';
 
 class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
-  QuestionDisplayCubit({required UseCaseFactory useCaseFactory})
-      : _useCaseFactory = useCaseFactory,
+  QuestionDisplayCubit({
+    required GetSingleQuestionUseCase getSingleQuestionUseCase,
+  })  : _getSingleQuestionUseCase = getSingleQuestionUseCase,
         super(QuestionDisplayState.initial());
 
-  final UseCaseFactory _useCaseFactory;
+  final GetSingleQuestionUseCase _getSingleQuestionUseCase;
 
   final _defaultViewModel = const QuestionDisplayViewModel(
     title: '',
@@ -75,12 +77,10 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
     emit(QuestionDisplayState.questionAnsweredIncorrectly(correctOption));
   }
 
-  Future<Result<Question, String>> _getQuestionForId(String? questionId) async {
-    final getSingleQuestionUseCase =
-        _useCaseFactory.makeGetSingleQuestionUseCase();
+  void onGoHome() => emit(const QuestionDisplayGoHome());
 
-    return getSingleQuestionUseCase.execute(questionId);
-  }
+  Future<Result<Question, Unit>> _getQuestionForId(String? questionId) async =>
+      _getSingleQuestionUseCase.execute(questionId);
 
   void _emitSubjectWithGivenQuestion(Question question) {
     final questionViewModel = _mapQuestionToViewModel(question);

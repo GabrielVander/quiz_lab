@@ -50,3 +50,7 @@ class QuestionDisplayQuestionAnsweredIncorrectly extends QuestionDisplayState {
 class QuestionDisplayFailure extends QuestionDisplayState {
   const QuestionDisplayFailure._() : super._();
 }
+
+class QuestionDisplayGoHome extends QuestionDisplayState {
+  const QuestionDisplayGoHome() : super._();
+}
