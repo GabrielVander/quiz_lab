@@ -1,508 +1,561 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_list_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/factories/data_source_factory.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/mappers/factories/mapper_factory.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/mappers/hive_question_model_mapper.dart';
-import 'package:quiz_lab/features/question_management/data/repositories/mappers/question_entity_mapper.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 void main() {
-  late DataSourceFactory mockDataSourceFactory;
-  late MapperFactory mockMapperFactory;
+  late AppwriteDataSource appwriteDataSourceMock;
+  late QuestionCollectionAppwriteDataSource questionsAppwriteDataSourceMock;
   late QuestionRepositoryImpl repository;
 
   setUp(() {
-    registerFallbackValue(_FakeQuestionModel());
-
-    mockDataSourceFactory = _MockDataSourceFactory();
-    mockMapperFactory = _MockMapperFactory();
-
+    appwriteDataSourceMock = _AppwriteDataSourceMock();
+    questionsAppwriteDataSourceMock = _QuestionsAppwriteDataSourceMock();
     repository = QuestionRepositoryImpl(
-      dataSourceFactory: mockDataSourceFactory,
-      mapperFactory: mockMapperFactory,
+      appwriteDataSource: appwriteDataSourceMock,
+      questionsAppwriteDataSource: questionsAppwriteDataSourceMock,
     );
   });
 
-  tearDown(resetMocktailState);
+  tearDown(mocktail.resetMocktailState);
 
-  group('createSingle', () {
-    group('err flow', () {
-      parameterizedTest(
-          'hive data source failure',
-          ParameterizedSource.values([
-            [
-              HiveDataSourceFailure.hiveError(message: ''),
-              (Question question) => QuestionRepositoryFailure.unableToCreate(
-                    question: question,
-                    message: '',
-                  ),
-            ],
-          ]), (values) async {
-        final dataSourceFailure = values[0] as HiveDataSourceFailure;
-        final expectedRepositoryFailureBuilder =
-            values[1] as QuestionRepositoryFailure Function(Question question);
-
-        final mockHiveDataSource = _MockHiveDataSource();
-        final mockHiveQuestionModelMapper = _MockHiveQuestionModelMapper();
-
-        final fakeEntity = _FakeQuestion();
-        final fakeModel = _FakeQuestionModel();
-
-        when(() => mockDataSourceFactory.makeHiveDataSource())
-            .thenReturn(mockHiveDataSource);
-
-        when(() => mockMapperFactory.makeHiveQuestionModelMapper())
-            .thenReturn(mockHiveQuestionModelMapper);
-
-        when(() => mockHiveDataSource.saveQuestion(fakeModel))
-            .thenAnswer((_) async => Result.err(dataSourceFailure));
-
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(fakeModel);
-
-        final result = await repository.createSingle(fakeEntity);
-
-        expect(result.isErr, isTrue);
-        expect(
-          result.err,
-          equals(expectedRepositoryFailureBuilder(fakeEntity)),
-        );
-      });
-    });
-
-    group('ok flow', () {
-      test('should call dependencies correctly', () async {
-        final mockHiveDataSource = _MockHiveDataSource();
-        final mockHiveQuestionModelMapper = _MockHiveQuestionModelMapper();
-
-        final fakeEntity = _FakeQuestion();
-        final fakeHiveModel = _FakeQuestionModel();
-
-        when(() => mockDataSourceFactory.makeHiveDataSource())
-            .thenReturn(mockHiveDataSource);
-
-        when(() => mockMapperFactory.makeHiveQuestionModelMapper())
-            .thenReturn(mockHiveQuestionModelMapper);
-
-        when(() => mockHiveDataSource.saveQuestion(any()))
-            .thenAnswer((_) async => const Result.ok(unit));
-
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(fakeHiveModel);
-
-        await repository.createSingle(fakeEntity);
-
-        verify(() => mockHiveDataSource.saveQuestion(fakeHiveModel)).called(1);
-      });
-
-      test('should return Ok', () async {
-        final mockHiveDataSource = _MockHiveDataSource();
-        final mockHiveQuestionModelMapper = _MockHiveQuestionModelMapper();
-
-        final fakeEntity = _FakeQuestion();
-        final fakeHiveModel = _FakeQuestionModel();
-
-        when(() => mockDataSourceFactory.makeHiveDataSource())
-            .thenReturn(mockHiveDataSource);
-
-        when(() => mockMapperFactory.makeHiveQuestionModelMapper())
-            .thenReturn(mockHiveQuestionModelMapper);
-
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(fakeHiveModel);
-
-        when(() => mockHiveDataSource.saveQuestion(any()))
-            .thenAnswer((_) async => const Result.ok(unit));
-
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(fakeHiveModel);
-
-        final result = await repository.createSingle(fakeEntity);
-
-        expect(result.isOk, isTrue);
-      });
-    });
-  });
-
-  group('watchAll', () {
-    group('err flow', () {
-      parameterizedTest(
-          'hive data source failure',
-          ParameterizedSource.values([
-            [
-              HiveDataSourceFailure.hiveError(message: ''),
-              QuestionRepositoryFailure.unableToWatchAll(message: ''),
-            ],
-            [
-              HiveDataSourceFailure.hiveError(message: '%ae'),
-              QuestionRepositoryFailure.unableToWatchAll(message: '%ae'),
-            ],
-          ]), (values) {
-        final failure = values[0] as HiveDataSourceFailure;
-        final expectedFailure = values[1] as QuestionRepositoryFailure;
-
-        final mockHiveDataSource = _MockHiveDataSource();
-
-        when(() => mockDataSourceFactory.makeHiveDataSource())
-            .thenReturn(mockHiveDataSource);
-
-        when(mockHiveDataSource.watchAllQuestions)
-            .thenReturn(Result.err(failure));
-
-        final result = repository.watchAll();
-
-        expect(result.isErr, isTrue);
-        expect(result.err, expectedFailure);
-      });
-
-      parameterizedTest(
-          'Mapper failure',
-          ParameterizedSource.values([
-            [
-              <HiveQuestionModel>[_FakeQuestionModel()],
-              <Result<Question, QuestionMapperFailure>>[
-                Result.err(
-                  QuestionMapperFailure.missingId(),
-                ),
-              ],
-              <Question>[],
-            ],
-            [
-              <HiveQuestionModel>[
-                _FakeQuestionModel(),
-                _FakeQuestionModel(),
-                _FakeQuestionModel(),
-              ],
-              <Result<Question, QuestionMapperFailure>>[
-                Result.err(
-                  QuestionMapperFailure.missingCategories(),
-                ),
-                Result.err(
-                  QuestionMapperFailure.missingDifficulty(),
-                ),
-                Result.err(
-                  QuestionMapperFailure.missingDescription(),
-                ),
-              ],
-              <Question>[],
-            ],
-            [
-              <HiveQuestionModel>[
-                _FakeQuestionModel(),
-                _FakeQuestionModel(),
-                _FakeQuestionModel(),
-              ],
-              <Result<Question, QuestionMapperFailure>>[
-                Result.ok(_FakeQuestion()),
-                Result.err(
-                  QuestionMapperFailure.unableToParseDifficulty(
-                    receivedValue: r'$uqO8n5',
-                    possibleValues: const [],
-                  ),
-                ),
-                Result.ok(_FakeQuestion()),
-              ],
-              <Question>[_FakeQuestion(), _FakeQuestion()],
-            ],
-          ]), (values) {
-        final hiveModels = values[0] as List<HiveQuestionModel>;
-        final mapperResults =
-            values[1] as List<Result<Question, QuestionMapperFailure>>;
-        final expectedQuestions = values[2] as List<Question>;
-
-        final mockHiveDataSource = _MockHiveDataSource();
-        final mockQuestionEntityMapper = _MockQuestionEntityMapper();
-
-        when(() => mockDataSourceFactory.makeHiveDataSource())
-            .thenReturn(mockHiveDataSource);
-
-        when(() => mockMapperFactory.makeQuestionEntityMapper())
-            .thenReturn(mockQuestionEntityMapper);
-
-        when(mockHiveDataSource.watchAllQuestions)
-            .thenReturn(Result.ok(Stream.value(hiveModels)));
-
-        when(() => mockQuestionEntityMapper.fromHiveModel(any()))
-            .thenAnswer((_) => mapperResults.removeAt(0));
-
-        final result = repository.watchAll();
-        expect(result.isOk, isTrue);
-
-        expect(result.ok, emits(expectedQuestions));
-      });
-    });
-
-    group('ok flow', () {
-      test('should call hive data source correctly', () {
-        final mockHiveDataSource = _MockHiveDataSource();
-        final mockQuestionEntityMapper = _MockQuestionEntityMapper();
-
-        when(() => mockDataSourceFactory.makeHiveDataSource())
-            .thenReturn(mockHiveDataSource);
-
-        when(() => mockMapperFactory.makeQuestionEntityMapper())
-            .thenReturn(mockQuestionEntityMapper);
-
-        when(mockHiveDataSource.watchAllQuestions).thenReturn(
-          const Result.ok(Stream<List<HiveQuestionModel>>.empty()),
-        );
-
-        repository.watchAll();
-
-        verify(mockHiveDataSource.watchAllQuestions).called(1);
-      });
-
-      parameterizedTest(
-        'should handle hive data source ok result',
-        ParameterizedSource.value([
-          const Stream<List<HiveQuestionModel>>.empty(),
-          Stream<List<HiveQuestionModel>>.fromIterable([[]]),
-          Stream<List<HiveQuestionModel>>.fromIterable([
-            [_FakeQuestionModel()]
-          ]),
-          Stream<List<HiveQuestionModel>>.fromIterable([
-            [_FakeQuestionModel()],
-            [_FakeQuestionModel(), _FakeQuestionModel()],
-            [_FakeQuestionModel(), _FakeQuestionModel(), _FakeQuestionModel()],
-          ]),
-        ]),
-        (values) async {
-          final hiveModelStream = values[0] as Stream<List<HiveQuestionModel>>;
-
-          final mockHiveDataSource = _MockHiveDataSource();
-          final mockQuestionEntityMapper = _MockQuestionEntityMapper();
-
-          when(() => mockDataSourceFactory.makeHiveDataSource())
-              .thenReturn(mockHiveDataSource);
-
-          when(() => mockMapperFactory.makeQuestionEntityMapper())
-              .thenReturn(mockQuestionEntityMapper);
-
-          when(mockHiveDataSource.watchAllQuestions)
-              .thenReturn(Result.ok(hiveModelStream));
-
-          when(() => mockQuestionEntityMapper.fromHiveModel(any()))
-              .thenReturn(Result.ok(_FakeQuestion()));
-
-          final result = repository.watchAll();
-          expect(result.isOk, isTrue);
-
-          await expectLater(
-            result.ok,
-            emitsInOrder(
-              await hiveModelStream
-                  .map(
-                    (models) => models.map((_) => _FakeQuestion()).toList(),
-                  )
-                  .toList(),
-            ),
-          );
-        },
+  group('createSingle()', () {
+    setUp(() {
+      mocktail.registerFallbackValue(
+        const AppwriteQuestionCreationModel(
+          title: '',
+          description: '',
+          options: [],
+          difficulty: 'easy',
+          categories: [],
+          id: '',
+        ),
       );
     });
-  });
 
-  group('updateSingle', () {
-    group('err flow', () {
-      parameterizedTest(
-        'hive data source failure',
+    parameterizedTest(
+        'should call Appwrite data source correctly',
         ParameterizedSource.values([
           [
-            '',
-            HiveDataSourceFailure.hiveError(message: ''),
-            (Question question) =>
-                QuestionRepositoryFailure.unableToUpdate(id: '', details: ''),
+            const Question(
+              id: QuestionId(''),
+              shortDescription: '',
+              description: '',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.easy,
+              categories: [],
+            ),
+            const AppwriteQuestionCreationModel(
+              title: '',
+              description: '',
+              options: [],
+              difficulty: 'easy',
+              categories: [],
+              id: '',
+            )
           ],
           [
-            r'V$KkL',
-            HiveDataSourceFailure.hiveError(message: '2xWvVjk'),
-            (Question question) => QuestionRepositoryFailure.unableToUpdate(
-                  id: r'V$KkL',
-                  details: '2xWvVjk',
+            const Question(
+              id: QuestionId('hqWk^#'),
+              shortDescription: r'1HFm$Ny',
+              description: 'g18QU',
+              answerOptions: [
+                AnswerOption(description: '!nC#', isCorrect: false),
+              ],
+              difficulty: QuestionDifficulty.medium,
+              categories: [
+                QuestionCategory(value: 'Az75%p8'),
+              ],
+            ),
+            const AppwriteQuestionCreationModel(
+              id: 'hqWk^#',
+              title: r'1HFm$Ny',
+              description: 'g18QU',
+              options: [
+                AppwriteQuestionOptionModel(
+                  description: '!nC#',
+                  isCorrect: false,
                 ),
+              ],
+              difficulty: 'medium',
+              categories: [
+                'Az75%p8',
+              ],
+            )
+          ],
+          [
+            const Question(
+              id: QuestionId('H00D4'),
+              shortDescription: '79FgDD',
+              description: r'N915*v$R',
+              answerOptions: [
+                AnswerOption(description: 'nh92Pe6', isCorrect: true),
+                AnswerOption(description: r'0N2W%S$', isCorrect: true),
+                AnswerOption(description: '@W2', isCorrect: true),
+              ],
+              difficulty: QuestionDifficulty.hard,
+              categories: [
+                QuestionCategory(value: '40eb2q'),
+                QuestionCategory(value: 'k4h'),
+                QuestionCategory(value: '7h5M!fse'),
+                QuestionCategory(value: 'Ea5'),
+              ],
+            ),
+            const AppwriteQuestionCreationModel(
+              id: 'H00D4',
+              title: '79FgDD',
+              description: r'N915*v$R',
+              options: [
+                AppwriteQuestionOptionModel(
+                  description: 'nh92Pe6',
+                  isCorrect: true,
+                ),
+                AppwriteQuestionOptionModel(
+                  description: r'0N2W%S$',
+                  isCorrect: true,
+                ),
+                AppwriteQuestionOptionModel(
+                  description: '@W2',
+                  isCorrect: true,
+                ),
+              ],
+              difficulty: 'hard',
+              categories: [
+                '40eb2q',
+                'k4h',
+                '7h5M!fse',
+                'Ea5',
+              ],
+            )
+          ],
+        ]), (values) async {
+      final question = values[0] as Question;
+      final expected = values[1] as AppwriteQuestionCreationModel;
+
+      mocktail
+          .when(() => appwriteDataSourceMock.createQuestion(mocktail.any()))
+          .thenAnswer(
+            (_) async =>
+                Result.err(AppwriteDataSourceFailure.unexpected(Exception())),
+          );
+
+      await repository.createSingle(question);
+
+      mocktail
+          .verify(() => appwriteDataSourceMock.createQuestion(expected))
+          .called(1);
+    });
+
+    test('should return expected', () async {
+      mocktail
+          .when(() => appwriteDataSourceMock.createQuestion(mocktail.any()))
+          .thenAnswer(
+            (_) async => Result.ok(_AppwriteQuestionCreationModelMock()),
+          );
+
+      final result = await repository.createSingle(
+        const Question(
+          id: QuestionId(''),
+          shortDescription: '',
+          description: '',
+          answerOptions: [],
+          difficulty: QuestionDifficulty.easy,
+          categories: [],
+        ),
+      );
+
+      expect(result.isOk, true);
+      expect(result.ok, unit);
+    });
+  });
+
+  group('watchAll()', () {
+    parameterizedTest(
+      'should fetch questions on every update',
+      ParameterizedSource.value([
+        0,
+        // 1, mocktail does not register calls made inside a callback
+        // 3, mocktail does not register calls made inside a callback
+        // 99, mocktail does not register calls made inside a callback
+      ]),
+      (values) async {
+        final amountOfUpdates = values[0] as int;
+
+        final appwriteQuestionListModelMock = _AppwriteQuestionListModelMock();
+
+        final updateMessages = List.generate(
+          amountOfUpdates,
+          (_) => _AppwriteRealtimeQuestionMessageModelMock(),
+        );
+
+        final stream = Stream.fromIterable(updateMessages);
+
+        mocktail
+            .when(
+              () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+            )
+            .thenAnswer(
+              (_) => stream,
+            );
+
+        mocktail.when(() => appwriteQuestionListModelMock.total).thenReturn(0);
+        mocktail
+            .when(() => appwriteQuestionListModelMock.questions)
+            .thenReturn([]);
+
+        mocktail
+            .when(() => appwriteDataSourceMock.getAllQuestions())
+            .thenAnswer((_) async => appwriteQuestionListModelMock);
+
+        await repository.watchAll();
+
+        mocktail.verify(
+          () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+        );
+
+        mocktail
+            .verify(() => appwriteDataSourceMock.getAllQuestions())
+            .called(amountOfUpdates + 1);
+      },
+    );
+
+    parameterizedTest(
+      'should emit expected',
+      ParameterizedSource.values([
+        [
+          const AppwriteQuestionListModel(total: 0, questions: []),
+          <Question>[]
+        ],
+        [
+          const AppwriteQuestionListModel(
+            total: 1,
+            questions: [
+              AppwriteQuestionModel(
+                id: '',
+                createdAt: '',
+                updatedAt: '',
+                permissions: [],
+                collectionId: '',
+                databaseId: '',
+                title: '',
+                description: '',
+                difficulty: '',
+                options: [],
+                categories: [],
+              )
+            ],
+          ),
+          <Question>[
+            const Question(
+              id: QuestionId(''),
+              shortDescription: '',
+              description: '',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.unknown,
+              categories: [],
+            )
+          ]
+        ],
+        [
+          const AppwriteQuestionListModel(
+            total: 3,
+            questions: [
+              AppwriteQuestionModel(
+                id: r'PfZ*N22$',
+                createdAt: 'J14ud1p^',
+                updatedAt: 'GhC86Sv',
+                permissions: ['OH@', '#k7', 'P3%9*Q9'],
+                collectionId: 'qqB',
+                databaseId: 'lJ4',
+                title: 'ZosGBFx3',
+                description: 'be%92n',
+                difficulty: 'easy',
+                options: [
+                  AppwriteQuestionOptionModel(
+                    description: '1Dj@',
+                    isCorrect: false,
+                  ),
+                  AppwriteQuestionOptionModel(
+                    description: 'Az^81FLU',
+                    isCorrect: true,
+                  ),
+                  AppwriteQuestionOptionModel(
+                    description: '6Wi',
+                    isCorrect: false,
+                  ),
+                ],
+                categories: ['@#Ij', '@s@urTl', '4UPz'],
+              )
+            ],
+          ),
+          <Question>[
+            const Question(
+              id: QuestionId(r'PfZ*N22$'),
+              shortDescription: 'ZosGBFx3',
+              description: 'be%92n',
+              answerOptions: [
+                AnswerOption(description: '1Dj@', isCorrect: false),
+                AnswerOption(description: 'Az^81FLU', isCorrect: true),
+                AnswerOption(description: '6Wi', isCorrect: false),
+              ],
+              difficulty: QuestionDifficulty.easy,
+              categories: [
+                QuestionCategory(value: '@#Ij'),
+                QuestionCategory(value: '@s@urTl'),
+                QuestionCategory(value: '4UPz'),
+              ],
+            )
+          ]
+        ],
+      ]),
+      (values) async {
+        final appwriteQuestionListModel =
+            values[0] as AppwriteQuestionListModel;
+        final expected = values[1] as List<Question>;
+
+        mocktail
+            .when(
+              () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+            )
+            .thenAnswer(
+              (_) => const Stream.empty(),
+            );
+
+        mocktail
+            .when(() => appwriteDataSourceMock.getAllQuestions())
+            .thenAnswer((_) async => appwriteQuestionListModel);
+
+        final result = await repository.watchAll();
+
+        expect(result.isOk, true);
+        expect(result.ok, emits(expected));
+      },
+    );
+  });
+
+  group(
+    'deleteSingle()',
+    () {
+      parameterizedTest(
+        'should call questions Appwrite data source correctly',
+        ParameterizedSource.value([
+          const QuestionId(''),
+          const QuestionId('olp'),
+        ]),
+        (values) {
+          final questionId = values[0] as QuestionId;
+
+          mocktail
+              .when(
+                () => questionsAppwriteDataSourceMock
+                    .deleteSingle(mocktail.any()),
+              )
+              .thenAnswer(
+                (_) async => Result.err(
+                  QuestionsAppwriteDataSourceUnexpectedFailure(r'T8$W7'),
+                ),
+              );
+
+          repository.deleteSingle(questionId);
+
+          mocktail
+              .verify(
+                () => questionsAppwriteDataSourceMock
+                    .deleteSingle(questionId.value),
+              )
+              .called(1);
+        },
+      );
+
+      test(
+        'should call return nothing if questions Appwrite data source succeeds',
+        () async {
+          mocktail
+              .when(
+                () => questionsAppwriteDataSourceMock
+                    .deleteSingle(mocktail.any()),
+              )
+              .thenAnswer(
+                (_) async => const Result.ok(unit),
+              );
+
+          final result =
+              await repository.deleteSingle(const QuestionId('6xSamAUC'));
+
+          expect(result.isOk, true);
+          expect(result.ok, unit);
+        },
+      );
+
+      parameterizedTest(
+        'should return expected failure when questions Appwrite data source '
+        'fails',
+        ParameterizedSource.values([
+          [
+            QuestionsAppwriteDataSourceUnexpectedFailure(''),
+            const QuestionRepositoryUnexpectedFailure(message: ''),
+          ],
+          [
+            QuestionsAppwriteDataSourceUnexpectedFailure('Nl5af77'),
+            const QuestionRepositoryUnexpectedFailure(message: 'Nl5af77'),
+          ],
+          [
+            QuestionsAppwriteDataSourceAppwriteFailure(''),
+            const QuestionRepositoryExternalServiceErrorFailure(message: ''),
+          ],
+          [
+            QuestionsAppwriteDataSourceAppwriteFailure(r'E!!$'),
+            const QuestionRepositoryExternalServiceErrorFailure(
+              message: r'E!!$',
+            ),
           ],
         ]),
         (values) async {
-          final id = values[0] as String;
-          final dataSourceFailure = values[1] as HiveDataSourceFailure;
-          final expectedRepositoryFailureBuilder = values[2]
-              as QuestionRepositoryFailure Function(Question question);
+          final dataSourceFailure =
+              values[0] as QuestionsAppwriteDataSourceFailure;
+          final expected = values[1] as QuestionRepositoryFailure;
 
-          final mockHiveDataSource = _MockHiveDataSource();
-          final mockHiveQuestionModelMapper = _MockHiveQuestionModelMapper();
-
-          final fakeEntity = _FakeQuestion.id(id);
-          final fakeModel = _FakeQuestionModel();
-
-          when(() => mockDataSourceFactory.makeHiveDataSource())
-              .thenReturn(mockHiveDataSource);
-
-          when(() => mockMapperFactory.makeHiveQuestionModelMapper())
-              .thenReturn(mockHiveQuestionModelMapper);
-
-          when(() => mockHiveDataSource.saveQuestion(fakeModel))
+          mocktail
+              .when(
+                () => questionsAppwriteDataSourceMock
+                    .deleteSingle(mocktail.any()),
+              )
               .thenAnswer((_) async => Result.err(dataSourceFailure));
 
-          when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
-              .thenReturn(fakeModel);
+          final result =
+              await repository.deleteSingle(const QuestionId('cNPJl@*x'));
 
-          final result = await repository.updateSingle(fakeEntity);
-
-          expect(result.isErr, isTrue);
-          expect(
-            result.err,
-            equals(expectedRepositoryFailureBuilder(fakeEntity)),
-          );
+          expect(result.isErr, true);
+          expect(result.err, expected);
         },
       );
-    });
+    },
+  );
 
-    group('ok flow', () {
-      test('should call dependencies correctly and return Ok', () async {
-        final mockHiveDataSource = _MockHiveDataSource();
-        final mockHiveQuestionModelMapper = _MockHiveQuestionModelMapper();
+  group('getSingle()', () {
+    parameterizedTest(
+      'should call questions Appwrite data source correctly',
+      ParameterizedSource.value([
+        '',
+        'P6m74A',
+      ]),
+      (values) {
+        final questionId = values[0] as String;
 
-        final fakeEntity = _FakeQuestion();
-        final fakeModel = _FakeQuestionModel();
+        mocktail
+            .when(
+              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
+            )
+            .thenAnswer(
+              (_) async => Result.err(
+                QuestionsAppwriteDataSourceUnexpectedFailure('X90^#SU'),
+              ),
+            );
 
-        when(() => mockDataSourceFactory.makeHiveDataSource())
-            .thenReturn(mockHiveDataSource);
+        repository.getSingle(QuestionId(questionId));
 
-        when(() => mockMapperFactory.makeHiveQuestionModelMapper())
-            .thenReturn(mockHiveQuestionModelMapper);
+        mocktail.verify(
+              () => questionsAppwriteDataSourceMock.fetchSingle(questionId),
+        );
+      },
+    );
 
-        when(() => mockHiveDataSource.saveQuestion(fakeModel))
-            .thenAnswer((_) async => const Result.ok(unit));
+    test(
+      'should map question appwrite model to question entity and return it',
+      () async {
+        final appwriteQuestionModelMock = _AppwriteQuestionModelMock();
+        final questionMock = _QuestionMock();
 
-        when(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .thenReturn(fakeModel);
+        mocktail
+            .when(appwriteQuestionModelMock.toQuestion)
+            .thenReturn(questionMock);
 
-        final result = await repository.updateSingle(fakeEntity);
+        mocktail
+            .when(
+              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
+            )
+            .thenAnswer((_) async => Result.ok(appwriteQuestionModelMock));
 
-        expect(result.isOk, isTrue);
+        final result = await repository.getSingle(const QuestionId('o^Y*lN'));
 
-        verify(() => mockHiveQuestionModelMapper.fromQuestion(fakeEntity))
-            .called(1);
-        verify(() => mockHiveDataSource.saveQuestion(fakeModel)).called(1);
-      });
-    });
-  });
+        expect(result.isOk, true);
+        expect(result.ok, questionMock);
+      },
+    );
 
-  group('deleteSingle', () {
-    group('ok flow', () {
-      parameterizedTest(
-        'should call dependencies correctly and return Ok',
-        ParameterizedSource.value([
-          '6tzlq',
-          '8N5l87Qk',
-        ]),
-        (values) async {
-          final id = values[0] as String;
+    parameterizedTest(
+      'should return expected failure when questions Appwrite data source '
+      'fails',
+      ParameterizedSource.values([
+        [
+          QuestionsAppwriteDataSourceUnexpectedFailure(''),
+          const QuestionRepositoryUnexpectedFailure(message: ''),
+        ],
+        [
+          QuestionsAppwriteDataSourceUnexpectedFailure('RdR'),
+          const QuestionRepositoryUnexpectedFailure(message: 'RdR'),
+        ],
+        [
+          QuestionsAppwriteDataSourceAppwriteFailure(''),
+          const QuestionRepositoryExternalServiceErrorFailure(message: ''),
+        ],
+        [
+          QuestionsAppwriteDataSourceAppwriteFailure('VD4'),
+          const QuestionRepositoryExternalServiceErrorFailure(
+            message: 'VD4',
+          ),
+        ],
+      ]),
+      (values) async {
+        final dataSourceFailure =
+            values[0] as QuestionsAppwriteDataSourceFailure;
+        final expected = values[1] as QuestionRepositoryFailure;
 
-          final mockHiveDataSource = _MockHiveDataSource();
+        mocktail
+            .when(
+              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
+            )
+            .thenAnswer((_) async => Result.err(dataSourceFailure));
 
-          when(() => mockDataSourceFactory.makeHiveDataSource())
-              .thenReturn(mockHiveDataSource);
+        final result = await repository.getSingle(const QuestionId('2%E5%'));
 
-          when(() => mockHiveDataSource.deleteQuestion(any()))
-              .thenAnswer((_) async => const Result.ok(unit));
-
-          final result = await repository.deleteSingle(id);
-          expect(result.isOk, isTrue);
-
-          verify(
-            () => mockHiveDataSource.deleteQuestion(
-              any(that: predicate((q) => (q! as HiveQuestionModel).id == id)),
-            ),
-          ).called(1);
-        },
-      );
-    });
-
-    group('err flow', () {
-      parameterizedTest(
-        'hive data source failure',
-        ParameterizedSource.values([
-          [
-            '',
-            HiveDataSourceFailure.emptyId(),
-            QuestionRepositoryFailure.unableToDelete(id: '')
-          ],
-          [
-            'UT8^',
-            HiveDataSourceFailure.emptyId(),
-            QuestionRepositoryFailure.unableToDelete(id: 'UT8^')
-          ],
-          [
-            'UT8^',
-            HiveDataSourceFailure.emptyId(),
-            QuestionRepositoryFailure.unableToDelete(id: 'UT8^')
-          ],
-          [
-            'jn&@',
-            HiveDataSourceFailure.hiveError(message: ''),
-            QuestionRepositoryFailure.unableToDelete(id: 'jn&@')
-          ],
-          [
-            'jn&@',
-            HiveDataSourceFailure.hiveError(message: 'WOwT%'),
-            QuestionRepositoryFailure.unableToDelete(id: 'jn&@')
-          ],
-        ]),
-        (values) async {
-          final id = values[0] as String;
-          final failure = values[1] as HiveDataSourceFailure;
-          final expectedFailure = values[2] as QuestionRepositoryFailure;
-
-          final mockHiveDataSource = _MockHiveDataSource();
-
-          when(() => mockDataSourceFactory.makeHiveDataSource())
-              .thenReturn(mockHiveDataSource);
-
-          when(() => mockHiveDataSource.deleteQuestion(any()))
-              .thenAnswer((_) async => Result.err(failure));
-
-          final result = await repository.deleteSingle(id);
-          expect(result.isErr, isTrue);
-
-          expect(result.err, expectedFailure);
-        },
-      );
-    });
+        expect(result.isErr, true);
+        expect(result.err, expected);
+      },
+    );
   });
 }
 
-class _MockDataSourceFactory extends Mock implements DataSourceFactory {}
+class _AppwriteDataSourceMock extends mocktail.Mock
+    implements AppwriteDataSource {}
 
-class _MockMapperFactory extends Mock implements MapperFactory {}
+class _AppwriteQuestionCreationModelMock extends mocktail.Mock
+    implements AppwriteQuestionCreationModel {}
 
-class _MockHiveDataSource extends Mock implements HiveDataSource {}
+class _AppwriteRealtimeQuestionMessageModelMock extends mocktail.Mock
+    implements AppwriteRealtimeQuestionMessageModel {}
 
-class _MockQuestionEntityMapper extends Mock implements QuestionEntityMapper {}
+class _AppwriteQuestionListModelMock extends mocktail.Mock
+    implements AppwriteQuestionListModel {}
 
-class _MockHiveQuestionModelMapper extends Mock
-    implements HiveQuestionModelMapper {}
+class _QuestionsAppwriteDataSourceMock extends mocktail.Mock
+    implements QuestionCollectionAppwriteDataSource {}
 
-class _FakeQuestionModel extends Fake implements HiveQuestionModel {}
+class _AppwriteQuestionModelMock extends mocktail.Mock
+    implements AppwriteQuestionModel {}
 
-class _FakeQuestion extends Fake with EquatableMixin implements Question {
-  factory _FakeQuestion() => _FakeQuestion._(id: 'F3w5L');
-
-  factory _FakeQuestion.id(String id) => _FakeQuestion._(id: id);
-
-  _FakeQuestion._({required this.id});
-
-  @override
-  final String id;
-
-  @override
-  List<Object> get props => [];
-}
+class _QuestionMock extends mocktail.Mock implements Question {}

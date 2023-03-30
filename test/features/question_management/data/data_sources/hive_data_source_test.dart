@@ -675,5 +675,5 @@ class _FakeBoxEvent extends Fake implements BoxEvent {
 
 class _MockHiveBox extends Mock implements Box<String> {}
 
-class _MockJsonParser extends Mock implements JsonParser<Map<String, dynamic>> {
-}
+class _MockJsonParser extends Mock
+    implements JsonParser<Map<String, dynamic>> {}

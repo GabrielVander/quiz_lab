@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
@@ -10,13 +11,13 @@ part 'question_creation_state.dart';
 
 class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationCubit({
-    required QuizLabLogger logger,
     required UseCaseFactory useCaseFactory,
-  })  : _logger = logger,
-        _useCaseFactory = useCaseFactory,
+  })  : _useCaseFactory = useCaseFactory,
         super(QuestionCreationState.initial());
 
-  final QuizLabLogger _logger;
+  final QuizLabLogger _logger =
+      QuizLabLoggerFactory.createLogger<QuestionCreationCubit>();
+
   final UseCaseFactory _useCaseFactory;
   late QuestionCreationViewModel _viewModel = _defaultViewModel;
 
@@ -68,7 +69,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onTitleChanged(String newValue) {
-    _logger.logInfo('Title changed');
+    _logger.info('Title changed');
 
     final newViewModel = _viewModel.copyWith(
       title: _viewModel.title.copyWith(
@@ -82,7 +83,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onDescriptionChanged(String newValue) {
-    _logger.logInfo('Description changed');
+    _logger.info('Description changed');
 
     final newViewModel = _viewModel.copyWith(
       description: _viewModel.description.copyWith(
@@ -96,7 +97,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onDifficultyChanged(String? value) {
-    _logger.logInfo('Difficulty changed: $value');
+    _logger.info('Difficulty changed: $value');
 
     final newViewModel = _viewModel.copyWith(
       difficulty: _viewModel.difficulty.copyWith(
@@ -112,7 +113,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onOptionChanged(String id, String value) {
-    _logger.logInfo('Option changed');
+    _logger.info('Option changed');
 
     final newViewModel = _viewModel.copyWith(
       options: _viewModel.options.map(
@@ -136,7 +137,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void toggleOptionIsCorrect(String id) {
-    _logger.logInfo('Option toggled');
+    _logger.info('Option toggled');
 
     final newViewModel = _viewModel.copyWith(
       options: _viewModel.options.map(
@@ -157,12 +158,12 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onAddOption() {
-    _logger.logInfo('Adding option...');
+    _logger.info('Adding option...');
 
     const optionsLimit = 5;
 
     if (_viewModel.options.length >= optionsLimit) {
-      _logger.logInfo('Options limit reached');
+      _logger.info('Options limit reached');
       return;
     }
 
@@ -186,12 +187,12 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   Future<void> onCreateQuestion() async {
-    _logger.logInfo('Creating question...');
+    _logger.info('Creating question...');
 
     final isValid = _validateFields();
 
     if (!isValid) {
-      _logger.logWarning('Invalid fields');
+      _logger.warn('Invalid fields');
       return;
     }
 
@@ -199,7 +200,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void _updateViewModel(QuestionCreationViewModel newViewModel) {
-    _logger.logInfo('Updating view model...');
+    _logger.info('Updating view model...');
 
     _viewModel = newViewModel;
     emit(QuestionCreationState.viewModelUpdated(_viewModel));
@@ -228,7 +229,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     if (creationResult.isErr) {
       final errMessage = creationResult.err!.message;
 
-      _logger.logError(errMessage);
+      _logger.error(errMessage);
 
       final newViewModel = _viewModel.copyWith(
         message: QuestionCreationMessageViewModel(

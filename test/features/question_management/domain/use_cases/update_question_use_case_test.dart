@@ -8,18 +8,17 @@ import 'package:quiz_lab/features/question_management/domain/entities/answer_opt
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 
 void main() {
-  late RepositoryFactory mockRepositoryFactory;
+  late QuestionRepository questionRepositoryMock;
   late UpdateQuestionUseCase useCase;
 
   setUp(() {
-    mockRepositoryFactory = _MockRepositoryFactory();
+    questionRepositoryMock = _QuestionRepositoryMock();
     useCase = UpdateQuestionUseCase(
-      repositoryFactory: mockRepositoryFactory,
+      questionRepository: questionRepositoryMock,
     );
   });
 
@@ -55,12 +54,7 @@ void main() {
         final repoFailure = values[1] as QuestionRepositoryFailure;
         final expectedFailure = values[2] as UpdateQuestionUseCaseFailure;
 
-        final mockQuestionRepository = _MockQuestionRepository();
-
-        when(() => mockRepositoryFactory.makeQuestionRepository())
-            .thenReturn(mockQuestionRepository);
-
-        when(() => mockQuestionRepository.updateSingle(question))
+        when(() => questionRepositoryMock.updateSingle(question))
             .thenAnswer((_) async => Result.err(repoFailure));
 
         final result = await useCase.execute(question);
@@ -76,7 +70,7 @@ void main() {
       'should return ok',
       ParameterizedSource.value([
         const Question(
-          id: '',
+          id: QuestionId(''),
           shortDescription: '',
           description: '',
           categories: [],
@@ -84,7 +78,7 @@ void main() {
           answerOptions: [],
         ),
         const Question(
-          id: 'a019cc50-db0b-42e2-895a-ac5a37a79faa',
+          id: QuestionId('a019cc50-db0b-42e2-895a-ac5a37a79faa'),
           shortDescription: 'hunger',
           description: 'Nuptias ire, tanquam superbus hippotoxota.',
           categories: [
@@ -103,12 +97,7 @@ void main() {
       (values) async {
         final input = values[0] as Question;
 
-        final mockQuestionRepository = _MockQuestionRepository();
-
-        when(() => mockRepositoryFactory.makeQuestionRepository())
-            .thenReturn(mockQuestionRepository);
-
-        when(() => mockQuestionRepository.updateSingle(input))
+        when(() => questionRepositoryMock.updateSingle(input))
             .thenAnswer((_) async => const Result.ok(unit));
 
         final result = await useCase.execute(input);
@@ -120,17 +109,15 @@ void main() {
   });
 }
 
-class _MockRepositoryFactory extends Mock implements RepositoryFactory {}
-
-class _MockQuestionRepository extends Mock implements QuestionRepository {}
+class _QuestionRepositoryMock extends Mock implements QuestionRepository {}
 
 class _FakeQuestion extends Fake with EquatableMixin implements Question {
-  factory _FakeQuestion.id(String id) => _FakeQuestion._(id: id);
+  factory _FakeQuestion.id(String id) => _FakeQuestion._(id: QuestionId(id));
 
   _FakeQuestion._({required this.id});
 
   @override
-  final String id;
+  final QuestionId id;
 
   @override
   List<Object> get props => [id];

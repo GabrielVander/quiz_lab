@@ -28,7 +28,7 @@ void main() {
 
       mocktail.when(() => loggerMock.severe(message)).thenReturn(null);
 
-      loggerImpl.logError(message);
+      loggerImpl.error(message);
 
       mocktail.verify(() => loggerMock.severe(message)).called(1);
     },
@@ -45,7 +45,7 @@ void main() {
 
       mocktail.when(() => loggerMock.info(message)).thenReturn(null);
 
-      loggerImpl.logInfo(message);
+      loggerImpl.info(message);
 
       mocktail.verify(() => loggerMock.info(message)).called(1);
     },
@@ -62,7 +62,7 @@ void main() {
 
       mocktail.when(() => loggerMock.warning(message)).thenReturn(null);
 
-      loggerImpl.logWarning(message);
+      loggerImpl.warn(message);
 
       mocktail.verify(() => loggerMock.warning(message)).called(1);
     },

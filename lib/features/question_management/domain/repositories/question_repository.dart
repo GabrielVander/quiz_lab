@@ -9,13 +9,15 @@ abstract class QuestionRepository {
     Question question,
   );
 
-  Result<Stream<List<Question>>, QuestionRepositoryFailure> watchAll();
+  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll();
 
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,
   );
 
-  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(String id);
+  Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(QuestionId id);
+
+  Future<Result<Question, QuestionRepositoryFailure>> getSingle(QuestionId id);
 }
 
 @immutable
@@ -103,4 +105,28 @@ class UnableToDelete extends QuestionRepositoryFailure {
 
   @override
   List<Object> get props => super.props..addAll([id]);
+}
+
+@immutable
+class UnexpectedErrorFailure extends QuestionRepositoryFailure {
+  const UnexpectedErrorFailure({required this.exception})
+      : super._(message: 'Unexpected error: $exception');
+
+  final Exception exception;
+
+  @override
+  List<Object> get props => super.props..addAll([exception]);
+}
+
+@immutable
+class QuestionRepositoryUnexpectedFailure extends QuestionRepositoryFailure {
+  const QuestionRepositoryUnexpectedFailure({required super.message})
+      : super._();
+}
+
+@immutable
+class QuestionRepositoryExternalServiceErrorFailure
+    extends QuestionRepositoryFailure {
+  const QuestionRepositoryExternalServiceErrorFailure({required super.message})
+      : super._();
 }

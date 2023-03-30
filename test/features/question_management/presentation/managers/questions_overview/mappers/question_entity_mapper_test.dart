@@ -67,7 +67,7 @@ void main() {
               difficulty: 'unknown',
             ),
             const Question(
-              id: '',
+              id: QuestionId(''),
               shortDescription: '',
               description: '',
               answerOptions: [],
@@ -88,7 +88,7 @@ void main() {
               difficulty: 'easy',
             ),
             const Question(
-              id: 'hiTGMK',
+              id: QuestionId('hiTGMK'),
               shortDescription: 'Ico',
               description: '9J7c',
               answerOptions: [],

@@ -27,7 +27,7 @@ class QuestionEntityMapper {
 
     return Result.ok(
       Question(
-        id: viewModel.id,
+        id: QuestionId(viewModel.id),
         shortDescription: viewModel.shortDescription,
         description: viewModel.description,
         categories: viewModel.categories

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
@@ -12,15 +13,15 @@ part 'questions_overview_state.dart';
 
 class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   QuestionsOverviewCubit({
-    required QuizLabLogger logger,
     required UseCaseFactory useCaseFactory,
     required PresentationMapperFactory mapperFactory,
-  })  : _logger = logger,
-        _useCaseFactory = useCaseFactory,
+  })  : _useCaseFactory = useCaseFactory,
         _mapperFactory = mapperFactory,
         super(QuestionsOverviewState.initial());
 
-  final QuizLabLogger _logger;
+  final QuizLabLogger _logger =
+      QuizLabLoggerFactory.createLogger<QuestionsOverviewCubit>();
+
   final UseCaseFactory _useCaseFactory;
   final PresentationMapperFactory _mapperFactory;
 
@@ -32,7 +33,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   final _questionStreamController = StreamController<List<Question>>();
 
   void updateQuestions() {
-    _logger.logInfo('Updating questions...');
+    _logger.info('Updating questions...');
     emit(QuestionsOverviewState.loading());
 
     _watchQuestions();
@@ -81,12 +82,12 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
   void onOpenRandomQuestion() {
     emit(QuestionsOverviewState.loading());
-    _logger.logInfo('Opening random question...');
+    _logger.info('Opening random question...');
 
     final ids = _viewModel.questions.map((q) => q.id).toList()..shuffle();
     final randomQuestionId = ids.first;
 
-    _logger.logInfo('Opening question $randomQuestionId...');
+    _logger.info('Opening question $randomQuestionId...');
     emit(QuestionsOverviewState.openQuestion(randomQuestionId));
     emit(QuestionsOverviewState.viewModelUpdated(viewModel: _viewModel));
   }
@@ -100,11 +101,11 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     await deleteQuestionUseCase.execute(question.id);
   }
 
-  void _watchQuestions() {
+  Future<void> _watchQuestions() async {
     final watchAllQuestionsUseCase =
         _useCaseFactory.makeWatchAllQuestionsUseCase();
 
-    final watchResult = watchAllQuestionsUseCase.execute();
+    final watchResult = await watchAllQuestionsUseCase.execute();
 
     if (watchResult.isErr) {
       emit(
@@ -117,7 +118,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
     _questionStreamController.stream.listen(_emitNewQuestions);
 
-    watchResult.ok!.pipe(_questionStreamController);
+    await watchResult.ok!.pipe(_questionStreamController);
   }
 
   void _emitNewQuestions(List<Question> newQuestions) {

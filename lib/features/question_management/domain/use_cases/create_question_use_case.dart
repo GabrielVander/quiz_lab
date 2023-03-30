@@ -7,17 +7,16 @@ import 'package:quiz_lab/features/question_management/domain/entities/answer_opt
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/domain/repositories/factories/repository_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class CreateQuestionUseCase {
   const CreateQuestionUseCase({
-    required RepositoryFactory repositoryFactory,
+    required QuestionRepository questionRepository,
     required ResourceUuidGenerator uuidGenerator,
   })  : _uuidGenerator = uuidGenerator,
-        _repositoryFactory = repositoryFactory;
+        _questionRepository = questionRepository;
 
-  final RepositoryFactory _repositoryFactory;
+  final QuestionRepository _questionRepository;
   final ResourceUuidGenerator _uuidGenerator;
 
   Future<Result<Unit, CreateQuestionUseCaseFailure>> execute(
@@ -48,13 +47,11 @@ class CreateQuestionUseCase {
   Future<Result<Unit, QuestionRepositoryFailure>> _createQuestion(
     Question question,
   ) async {
-    final questionRepository = _repositoryFactory.makeQuestionRepository();
-
-    return questionRepository.createSingle(question);
+    return _questionRepository.createSingle(question);
   }
 
   Question _generateQuestionId(Question question) =>
-      question.copyWith(id: _uuidGenerator.generate());
+      question.copyWith(id: QuestionId(_uuidGenerator.generate()));
 }
 
 @immutable
@@ -114,7 +111,7 @@ class _InputParser {
 
     return Result.ok(
       Question(
-        id: '',
+        id: const QuestionId(''),
         shortDescription: input.shortDescription,
         description: input.description,
         answerOptions: input.options

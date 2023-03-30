@@ -1,36 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class QuestionDisplayPage extends HookWidget {
+class QuestionDisplayPage extends StatelessWidget {
   const QuestionDisplayPage({
+    required String? questionId,
+    required QuestionDisplayCubit cubit,
     super.key,
-    required this.questionId,
-    required this.cubit,
-  });
+  })  : _questionId = questionId,
+        _cubit = cubit;
 
-  final QuestionDisplayCubit cubit;
-  final String? questionId;
+  final QuestionDisplayCubit _cubit;
+  final String? _questionId;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(cubit);
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(S.of(context).questionAnswerPageTitle),
+          title: Text(
+            S.of(context).questionAnswerPageTitle,
+          ),
         ),
-        body: Builder(
-          builder: (context) {
+        body: BlocBuilder<QuestionDisplayCubit, QuestionDisplayState>(
+          bloc: _cubit,
+          builder: (context, QuestionDisplayState state) {
             if (state is QuestionDisplayInitial) {
-              cubit.loadQuestion(questionId);
+              _cubit.loadQuestion(_questionId);
             }
 
             if (state is QuestionDisplayFailure) {
@@ -39,20 +40,26 @@ class QuestionDisplayPage extends HookWidget {
               );
             }
 
+            if (state is QuestionDisplayGoHome) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                GoRouter.of(context).goNamed(Routes.home.name);
+              });
+            }
+
             if (state is QuestionDisplayViewModelUpdated) {
               return Padding(
                 padding: const EdgeInsets.all(10),
                 child: _QuestionDisplay(
                   viewModel: state.viewModel,
-                  onOptionSelected: (o) => cubit.onOptionSelected(o.title),
-                  onAnswer: cubit.onAnswer,
+                  onOptionSelected: (o) => _cubit.onOptionSelected(o.title),
+                  onAnswer: _cubit.onAnswer,
                 ),
               );
             }
 
             if (state is QuestionDisplayQuestionAnsweredCorrectly) {
               return _CorrectAnswer(
-                onGoHome: () => GoRouter.of(context).goNamed(Routes.home.name),
+                onGoHome: _cubit.onGoHome,
               );
             }
 
@@ -60,7 +67,7 @@ class QuestionDisplayPage extends HookWidget {
               return _IncorrectAnswer(
                 correctAnswer: state.correctAnswer.title,
                 shouldDisplayCorrectAnswer: true,
-                onGoHome: () => GoRouter.of(context).goNamed(Routes.home.name),
+                onGoHome: _cubit.onGoHome,
               );
             }
 
@@ -126,7 +133,7 @@ class _QuestionTitle extends StatelessWidget {
       children: [
         Text(
           viewModel.title,
-          style: Theme.of(context).textTheme.headline4,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
       ],
     );
@@ -149,7 +156,7 @@ class _QuestionDifficulty extends StatelessWidget {
         const SizedBox(width: 5),
         Text(
           S.of(context).questionDifficultyValue(viewModel.difficulty),
-          style: Theme.of(context).textTheme.bodyText1,
+          style: Theme.of(context).textTheme.bodyLarge,
           textScaleFactor: 1.2,
         ),
       ],
@@ -269,7 +276,7 @@ class _QuestionSingleOption extends StatelessWidget {
         ),
         Text(
           option.title,
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
       ],
     );
@@ -355,7 +362,7 @@ class _ResultDisplay extends StatelessWidget {
                   ),
                   Text(
                     message,
-                    style: Theme.of(context).textTheme.headline2?.copyWith(
+                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
                           color: Colors.white,
                         ),
                   ),
@@ -364,7 +371,9 @@ class _ResultDisplay extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: onGoHome,
-              child: Text(S.of(context).goHomeLabel),
+              child: Text(
+                S.of(context).goHomeLabel,
+              ),
             )
           ],
         ),

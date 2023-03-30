@@ -8,7 +8,7 @@ class NoQuestions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       S.of(context).noQuestions,
-      style: Theme.of(context).textTheme.headline6,
+      style: Theme.of(context).textTheme.titleLarge,
     );
   }
 }

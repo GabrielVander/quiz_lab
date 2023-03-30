@@ -12,8 +12,8 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionCreationPage extends HookWidget {
   const QuestionCreationPage({
-    super.key,
     required QuestionCreationCubit cubit,
+    super.key,
   }) : _cubit = cubit;
 
   final QuestionCreationCubit _cubit;
