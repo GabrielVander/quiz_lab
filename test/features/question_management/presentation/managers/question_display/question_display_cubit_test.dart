@@ -191,6 +191,23 @@ void main() {
       );
     });
   });
+
+  group('goHome', () {
+    test('should emit QuestionDisplayGoHome', () async {
+      unawaited(
+        expectLater(
+          cubit.stream,
+          emitsInOrder(
+            [
+              isA<QuestionDisplayGoHome>(),
+            ],
+          ),
+        ),
+      );
+
+      cubit.onGoHome();
+    });
+  });
 }
 
 class _GetSingleQuestionUseCaseMock extends mocktail.Mock

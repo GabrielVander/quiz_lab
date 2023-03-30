@@ -77,6 +77,8 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
     emit(QuestionDisplayState.questionAnsweredIncorrectly(correctOption));
   }
 
+  void onGoHome() => emit(const QuestionDisplayGoHome());
+
   Future<Result<Question, Unit>> _getQuestionForId(String? questionId) async =>
       _getSingleQuestionUseCase.execute(questionId);
 
