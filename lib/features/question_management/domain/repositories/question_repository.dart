@@ -16,6 +16,8 @@ abstract class QuestionRepository {
   );
 
   Future<Result<Unit, QuestionRepositoryFailure>> deleteSingle(QuestionId id);
+
+  Future<Result<Question, QuestionRepositoryFailure>> getSingle(QuestionId id);
 }
 
 @immutable

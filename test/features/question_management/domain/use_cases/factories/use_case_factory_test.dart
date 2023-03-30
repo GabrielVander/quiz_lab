@@ -3,7 +3,6 @@ import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 
@@ -12,7 +11,6 @@ void main() {
   late CreateQuestionUseCase createQuestionUseCaseMock;
   late UpdateQuestionUseCase updateQuestionUseCaseMock;
   late DeleteQuestionUseCase deleteQuestionUseCaseMock;
-  late GetSingleQuestionUseCase getSingleQuestionUseCaseMock;
 
   late UseCaseFactory useCaseFactory;
 
@@ -21,13 +19,11 @@ void main() {
     createQuestionUseCaseMock = _CreateQuestionUseCaseMock();
     updateQuestionUseCaseMock = _UpdateQuestionUseCaseMock();
     deleteQuestionUseCaseMock = _DeleteQuestionUseCaseMock();
-    getSingleQuestionUseCaseMock = _GetSingleQuestionUseCaseMock();
     useCaseFactory = UseCaseFactory(
       watchAllQuestionsUseCase: watchAllQuestionsUseCaseMock,
       createQuestionUseCase: createQuestionUseCaseMock,
       updateQuestionUseCase: updateQuestionUseCaseMock,
       deleteQuestionUseCase: deleteQuestionUseCaseMock,
-      getSingleQuestionUseCase: getSingleQuestionUseCaseMock,
     );
   });
 
@@ -64,14 +60,6 @@ void main() {
       expect(result, deleteQuestionUseCaseMock);
     });
   });
-
-  group('makeGetSingleQuestionUseCase', () {
-    test('should return GetSingleQuestionUseCase', () {
-      final result = useCaseFactory.makeGetSingleQuestionUseCase();
-
-      expect(result, getSingleQuestionUseCaseMock);
-    });
-  });
 }
 
 class _WatchAllQuestionsUseCaseMock extends mocktail.Mock
@@ -85,6 +73,3 @@ class _UpdateQuestionUseCaseMock extends mocktail.Mock
 
 class _DeleteQuestionUseCaseMock extends mocktail.Mock
     implements DeleteQuestionUseCase {}
-
-class _GetSingleQuestionUseCaseMock extends mocktail.Mock
-    implements GetSingleQuestionUseCase {}
