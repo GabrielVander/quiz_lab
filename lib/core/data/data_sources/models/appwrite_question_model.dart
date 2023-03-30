@@ -40,7 +40,8 @@ class AppwriteQuestionModel extends Equatable {
         options: (jsonDecode(map['options'] as String) as List<dynamic>)
             .map(
               (o) => AppwriteQuestionOptionModel.fromMap(
-                  o as Map<String, dynamic>),
+                o as Map<String, dynamic>,
+              ),
             )
             .toList(),
         categories: (map['categories'] as List<dynamic>)
