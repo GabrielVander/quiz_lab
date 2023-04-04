@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,14 +10,14 @@ part 'question_creation_state.dart';
 
 class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationCubit({
-    required UseCaseFactory useCaseFactory,
-  })  : _useCaseFactory = useCaseFactory,
+    required CreateQuestionUseCase createQuestionUseCase,
+  })  : _createQuestionUseCase = createQuestionUseCase,
         super(QuestionCreationState.initial());
 
   final QuizLabLogger _logger =
       QuizLabLoggerFactory.createLogger<QuestionCreationCubit>();
 
-  final UseCaseFactory _useCaseFactory;
+  final CreateQuestionUseCase _createQuestionUseCase;
   late QuestionCreationViewModel _viewModel = _defaultViewModel;
 
   final QuestionCreationViewModel _defaultViewModel = QuestionCreationViewModel(
@@ -64,9 +63,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     showMessage: false,
   );
 
-  void load() {
-    _updateViewModel(_defaultViewModel);
-  }
+  void load() => _updateViewModel(_defaultViewModel);
 
   void onTitleChanged(String newValue) {
     _logger.info('Title changed');
@@ -207,9 +204,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   Future<void> _createQuestion() async {
-    final createQuestionUseCase = _useCaseFactory.makeCreateQuestionUseCase();
-
-    final creationResult = await createQuestionUseCase.execute(
+    final creationResult = await _createQuestionUseCase.execute(
       QuestionCreationInput(
         shortDescription: _viewModel.title.value,
         description: _viewModel.description.value,
@@ -226,37 +221,40 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
       ),
     );
 
-    if (creationResult.isErr) {
-      final errMessage = creationResult.err!.message;
+    creationResult.when(
+      ok: (_) {
+        final newViewModel = _viewModel.copyWith(
+          message: const QuestionCreationMessageViewModel(
+            type: QuestionCreationMessageType.questionSavedSuccessfully,
+            isFailure: false,
+            details: null,
+          ),
+          showMessage: true,
+        );
 
-      _logger.error(errMessage);
+        _updateViewModel(newViewModel);
 
-      final newViewModel = _viewModel.copyWith(
-        message: QuestionCreationMessageViewModel(
-          type: QuestionCreationMessageType.unableToSaveQuestion,
-          isFailure: true,
-          details: errMessage,
-        ),
-        showMessage: true,
-      );
+        emit(QuestionCreationState.goBack());
+      },
+      err: (failure) {
+        final errMessage = failure.message;
 
-      _updateViewModel(newViewModel);
+        _logger.error(errMessage);
 
-      return;
-    }
+        final newViewModel = _viewModel.copyWith(
+          message: QuestionCreationMessageViewModel(
+            type: QuestionCreationMessageType.unableToSaveQuestion,
+            isFailure: true,
+            details: errMessage,
+          ),
+          showMessage: true,
+        );
 
-    final newViewModel = _viewModel.copyWith(
-      message: const QuestionCreationMessageViewModel(
-        type: QuestionCreationMessageType.questionSavedSuccessfully,
-        isFailure: false,
-        details: null,
-      ),
-      showMessage: true,
+        _updateViewModel(newViewModel);
+
+        return;
+      },
     );
-
-    _updateViewModel(newViewModel);
-
-    emit(QuestionCreationState.goBack());
   }
 
   bool _validateFields() {
