@@ -8,13 +8,11 @@ import 'package:quiz_lab/features/question_management/data/repositories/question
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/factories/use_case_factory.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/mappers/factories/presentation_mapper_factory.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:uuid/uuid.dart';
 
@@ -62,29 +60,19 @@ void questionManagementDiSetup(DependencyInjection di) {
         questionRepository: i.get<QuestionRepository>(),
       ),
     )
-    ..registerBuilder<UseCaseFactory>(
-      (DependencyInjection i) => UseCaseFactory(
-        watchAllQuestionsUseCase: i.get<WatchAllQuestionsUseCase>(),
-        createQuestionUseCase: i.get<CreateQuestionUseCase>(),
-        deleteQuestionUseCase: i.get<DeleteQuestionUseCase>(),
-        updateQuestionUseCase: i.get<UpdateQuestionUseCase>(),
-      ),
-    )
-    ..registerBuilder<PresentationMapperFactory>(
-      (i) => PresentationMapperFactory(),
-    )
     ..registerBuilder<AssessmentsOverviewCubit>(
       (DependencyInjection i) => AssessmentsOverviewCubit(),
     )
     ..registerBuilder<QuestionCreationCubit>(
       (DependencyInjection i) => QuestionCreationCubit(
-        useCaseFactory: i.get(),
+        createQuestionUseCase: i.get<CreateQuestionUseCase>(),
       ),
     )
     ..registerBuilder<QuestionsOverviewCubit>(
       (DependencyInjection i) => QuestionsOverviewCubit(
-        useCaseFactory: i.get<UseCaseFactory>(),
-        mapperFactory: i.get<PresentationMapperFactory>(),
+        updateQuestionUseCase: i.get<UpdateQuestionUseCase>(),
+        deleteQuestionUseCase: i.get<DeleteQuestionUseCase>(),
+        watchAllQuestionsUseCase: i.get<WatchAllQuestionsUseCase>(),
       ),
     )
     ..registerBuilder<QuestionDisplayCubit>(
