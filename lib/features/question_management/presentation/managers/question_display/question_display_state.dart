@@ -2,55 +2,35 @@ part of 'question_display_cubit.dart';
 
 @immutable
 abstract class QuestionDisplayState {
-  const QuestionDisplayState._();
-
-  factory QuestionDisplayState.initial() => const QuestionDisplayInitial._();
-
-  factory QuestionDisplayState.viewModelUpdated(
-    QuestionDisplayViewModel viewModel,
-  ) =>
-      QuestionDisplayViewModelUpdated._(viewModel: viewModel);
-
-  factory QuestionDisplayState.questionAnsweredCorrectly() =>
-      const QuestionDisplayQuestionAnsweredCorrectly._();
-
-  factory QuestionDisplayState.questionAnsweredIncorrectly(
-    QuestionDisplayOptionViewModel correctAnswer,
-  ) =>
-      QuestionDisplayQuestionAnsweredIncorrectly._(
-        correctAnswer: correctAnswer,
-      );
-
-  factory QuestionDisplayState.failure() => const QuestionDisplayFailure._();
+  const QuestionDisplayState();
 }
 
 class QuestionDisplayInitial extends QuestionDisplayState {
-  const QuestionDisplayInitial._() : super._();
+  const QuestionDisplayInitial() : super();
 }
 
 class QuestionDisplayViewModelUpdated extends QuestionDisplayState {
-  const QuestionDisplayViewModelUpdated._({required this.viewModel})
-      : super._();
+  const QuestionDisplayViewModelUpdated({required this.viewModel}) : super();
 
   final QuestionDisplayViewModel viewModel;
 }
 
 class QuestionDisplayQuestionAnsweredCorrectly extends QuestionDisplayState {
-  const QuestionDisplayQuestionAnsweredCorrectly._() : super._();
+  const QuestionDisplayQuestionAnsweredCorrectly() : super();
 }
 
 class QuestionDisplayQuestionAnsweredIncorrectly extends QuestionDisplayState {
-  const QuestionDisplayQuestionAnsweredIncorrectly._({
+  const QuestionDisplayQuestionAnsweredIncorrectly({
     required this.correctAnswer,
-  }) : super._();
+  }) : super();
 
   final QuestionDisplayOptionViewModel correctAnswer;
 }
 
 class QuestionDisplayFailure extends QuestionDisplayState {
-  const QuestionDisplayFailure._() : super._();
+  const QuestionDisplayFailure() : super();
 }
 
 class QuestionDisplayGoHome extends QuestionDisplayState {
-  const QuestionDisplayGoHome() : super._();
+  const QuestionDisplayGoHome() : super();
 }

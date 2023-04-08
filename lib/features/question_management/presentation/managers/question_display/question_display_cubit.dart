@@ -14,7 +14,7 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
   QuestionDisplayCubit({
     required GetSingleQuestionUseCase getSingleQuestionUseCase,
   })  : _getSingleQuestionUseCase = getSingleQuestionUseCase,
-        super(QuestionDisplayState.initial());
+        super(const QuestionDisplayInitial());
 
   final GetSingleQuestionUseCase _getSingleQuestionUseCase;
 
@@ -26,7 +26,7 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
     answerButtonIsEnabled: false,
   );
 
-  QuestionDisplayViewModel _viewModelSubject = const QuestionDisplayViewModel(
+  QuestionDisplayViewModel _currentViewModel = const QuestionDisplayViewModel(
     title: '',
     difficulty: '',
     description: '',
@@ -38,7 +38,7 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
     final questionResult = await _getQuestionForId(questionId);
 
     if (questionResult.isErr) {
-      emit(QuestionDisplayState.failure());
+      emit(const QuestionDisplayFailure());
       return;
     }
 
@@ -46,8 +46,8 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
   }
 
   void onOptionSelected(String option) {
-    _viewModelSubject = _viewModelSubject.copyWith(
-      options: _viewModelSubject.options.map((e) {
+    _currentViewModel = _currentViewModel.copyWith(
+      options: _currentViewModel.options.map((e) {
         if (e.title == option) {
           return e.copyWith(isSelected: true);
         }
@@ -57,24 +57,28 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
       answerButtonIsEnabled: true,
     );
 
-    emit(QuestionDisplayState.viewModelUpdated(_viewModelSubject));
+    emit(QuestionDisplayViewModelUpdated(viewModel: _currentViewModel));
   }
 
   void onAnswer() {
-    final selectedOption = _viewModelSubject.options.firstWhere(
+    final selectedOption = _currentViewModel.options.firstWhere(
       (element) => element.isSelected,
     );
 
     if (selectedOption.isCorrect) {
-      emit(QuestionDisplayState.questionAnsweredCorrectly());
+      emit(const QuestionDisplayQuestionAnsweredCorrectly());
       return;
     }
 
-    final correctOption = _viewModelSubject.options.firstWhere(
+    final correctOption = _currentViewModel.options.firstWhere(
       (element) => element.isCorrect,
     );
 
-    emit(QuestionDisplayState.questionAnsweredIncorrectly(correctOption));
+    emit(
+      QuestionDisplayQuestionAnsweredIncorrectly(
+        correctAnswer: correctOption,
+      ),
+    );
   }
 
   void onGoHome() => emit(const QuestionDisplayGoHome());
@@ -85,11 +89,11 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
   void _emitSubjectWithGivenQuestion(Question question) {
     final questionViewModel = _mapQuestionToViewModel(question);
 
-    _viewModelSubject = _randomizeOptionsOrder(questionViewModel);
+    _currentViewModel = _randomizeOptionsOrder(questionViewModel);
 
     emit(
-      QuestionDisplayState.viewModelUpdated(
-        _randomizeOptionsOrder(questionViewModel),
+      QuestionDisplayViewModelUpdated(
+        viewModel: _randomizeOptionsOrder(questionViewModel),
       ),
     );
   }

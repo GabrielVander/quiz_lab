@@ -27,21 +27,31 @@ class QuestionsOverviewPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    useEffect(
+      () {
+        _cubit.updateQuestions();
+
+        return () {};
+      },
+      [],
+    );
+
     useBlocListener(
       _cubit,
-      (_, QuestionsOverviewState current, BuildContext context) =>
-          _handleOpenQuestionState(current, context),
-      listenWhen: (QuestionsOverviewState currentState) =>
-          currentState is QuestionsOverviewOpenQuestion,
+      (bloc, current, context) => _handleOpenQuestionState(current, context),
+      listenWhen: (current) => current is QuestionsOverviewOpenQuestion,
     );
+
+    final rebuildWhen = [
+      QuestionsOverviewLoading,
+      QuestionsOverviewViewModelUpdated,
+      QuestionsOverviewErrorOccurred,
+    ];
 
     final state = useBlocBuilder(
       _cubit,
-      buildWhen: (QuestionsOverviewState current) => [
-        QuestionsOverviewLoading,
-        QuestionsOverviewViewModelUpdated,
-        QuestionsOverviewErrorOccurred,
-      ].contains(current.runtimeType),
+      buildWhen: (QuestionsOverviewState current) =>
+          rebuildWhen.contains(current.runtimeType),
     );
 
     return Padding(
@@ -56,18 +66,8 @@ class QuestionsOverviewPage extends HookWidget {
             ),
           ),
           Expanded(
-            child: Builder(
+            child: HookBuilder(
               builder: (context) {
-                if (state is QuestionsOverviewInitial) {
-                  _cubit.updateQuestions();
-                }
-
-                if (state is QuestionsOverviewLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
                 if (state is QuestionsOverviewErrorOccurred) {
                   return Center(
                     child: Text(state.message),
@@ -100,7 +100,9 @@ class QuestionsOverviewPage extends HookWidget {
                   );
                 }
 
-                return Container();
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               },
             ),
           ),
