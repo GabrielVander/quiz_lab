@@ -3,38 +3,21 @@ part of 'questions_overview_cubit.dart';
 @immutable
 abstract class QuestionsOverviewState {
   const QuestionsOverviewState();
-
-  factory QuestionsOverviewState.initial() =>
-      const QuestionsOverviewInitial._();
-
-  factory QuestionsOverviewState.loading() =>
-      const QuestionsOverviewLoading._();
-
-  factory QuestionsOverviewState.viewModelUpdated({
-    required QuestionsOverviewViewModel viewModel,
-  }) =>
-      QuestionsOverviewViewModelUpdated._(viewModel: viewModel);
-
-  factory QuestionsOverviewState.errorOccurred({required String message}) =>
-      QuestionsOverviewErrorOccurred._(message: message);
-
-  factory QuestionsOverviewState.openQuestion(String id) =>
-      QuestionsOverviewOpenQuestion._(questionId: id);
 }
 
 @immutable
 class QuestionsOverviewInitial extends QuestionsOverviewState {
-  const QuestionsOverviewInitial._();
+  const QuestionsOverviewInitial();
 }
 
 @immutable
 class QuestionsOverviewLoading extends QuestionsOverviewState {
-  const QuestionsOverviewLoading._();
+  const QuestionsOverviewLoading();
 }
 
 @immutable
 class QuestionsOverviewViewModelUpdated extends QuestionsOverviewState {
-  const QuestionsOverviewViewModelUpdated._({
+  const QuestionsOverviewViewModelUpdated({
     required this.viewModel,
   });
 
@@ -43,7 +26,7 @@ class QuestionsOverviewViewModelUpdated extends QuestionsOverviewState {
 
 @immutable
 class QuestionsOverviewErrorOccurred extends QuestionsOverviewState {
-  const QuestionsOverviewErrorOccurred._({
+  const QuestionsOverviewErrorOccurred({
     required this.message,
   }) : super();
 
@@ -52,7 +35,7 @@ class QuestionsOverviewErrorOccurred extends QuestionsOverviewState {
 
 @immutable
 class QuestionsOverviewOpenQuestion extends QuestionsOverviewState {
-  const QuestionsOverviewOpenQuestion._({
+  const QuestionsOverviewOpenQuestion({
     required this.questionId,
   }) : super();
 

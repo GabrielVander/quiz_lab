@@ -20,7 +20,9 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   })  : _updateQuestionUseCase = updateQuestionUseCase,
         _deleteQuestionUseCase = deleteQuestionUseCase,
         _watchAllQuestionsUseCase = watchAllQuestionsUseCase,
-        super(QuestionsOverviewState.initial());
+        super(const QuestionsOverviewInitial()) {
+    _viewModel = _defaultViewModel;
+  }
 
   final QuizLabLogger _logger =
       QuizLabLoggerFactory.createLogger<QuestionsOverviewCubit>();
@@ -29,29 +31,32 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   final DeleteQuestionUseCase _deleteQuestionUseCase;
   final WatchAllQuestionsUseCase _watchAllQuestionsUseCase;
 
-  QuestionsOverviewViewModel _viewModel = const QuestionsOverviewViewModel(
+  final QuestionsOverviewViewModel _defaultViewModel =
+      const QuestionsOverviewViewModel(
     questions: [],
     isRandomQuestionButtonEnabled: false,
   );
+
+  late QuestionsOverviewViewModel _viewModel;
 
   final _questionStreamController = StreamController<List<Question>>();
 
   void updateQuestions() {
     _logger.info('Updating questions...');
-    emit(QuestionsOverviewState.loading());
+    emit(const QuestionsOverviewLoading());
 
     _watchQuestions();
   }
 
   Future<void> removeQuestion(QuestionsOverviewItemViewModel question) async {
-    emit(QuestionsOverviewState.loading());
+    emit(const QuestionsOverviewLoading());
 
     await _deleteQuestion(question);
   }
 
   Future<void> onQuestionSaved(QuestionsOverviewItemViewModel viewModel) async {
     if (viewModel.shortDescription.isNotEmpty) {
-      emit(QuestionsOverviewState.loading());
+      emit(const QuestionsOverviewLoading());
       final viewModelAsQuestion = viewModel.toQuestion();
 
       final updateResult =
@@ -60,26 +65,24 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
       updateResult.when(
         ok: (_) {},
         err: (failure) => emit(
-          QuestionsOverviewState.errorOccurred(message: failure.message),
+          QuestionsOverviewErrorOccurred(message: failure.message),
         ),
       );
     }
   }
 
   void onOpenRandomQuestion() {
-    emit(QuestionsOverviewState.loading());
+    emit(const QuestionsOverviewLoading());
     _logger.info('Opening random question...');
 
     final ids = _viewModel.questions.map((q) => q.id).toList()..shuffle();
     final randomQuestionId = ids.first;
 
-    _logger.info('Opening question $randomQuestionId...');
-    emit(QuestionsOverviewState.openQuestion(randomQuestionId));
-    emit(QuestionsOverviewState.viewModelUpdated(viewModel: _viewModel));
+    _emitOpenQuestion(randomQuestionId);
   }
 
   void onQuestionClick(QuestionsOverviewItemViewModel viewModel) =>
-      emit(QuestionsOverviewState.openQuestion(viewModel.id));
+      _emitOpenQuestion(viewModel.id);
 
   Future<void> _watchQuestions() async {
     final watchResult = await _watchAllQuestionsUseCase.execute();
@@ -92,7 +95,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
       },
       err: (failure) {
         emit(
-          QuestionsOverviewState.errorOccurred(
+          QuestionsOverviewErrorOccurred(
             message: failure.message,
           ),
         );
@@ -114,6 +117,13 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
       isRandomQuestionButtonEnabled: viewModels.isNotEmpty,
     );
 
-    emit(QuestionsOverviewState.viewModelUpdated(viewModel: _viewModel));
+    emit(QuestionsOverviewViewModelUpdated(viewModel: _viewModel));
+  }
+
+  void _emitOpenQuestion(String id) {
+    _logger.info('Opening question $id...');
+
+    emit(QuestionsOverviewOpenQuestion(questionId: id));
+    emit(QuestionsOverviewViewModelUpdated(viewModel: _viewModel));
   }
 }
