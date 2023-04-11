@@ -151,14 +151,10 @@ class _QuestionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          viewModel.title,
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-      ],
+    return Text(
+      viewModel.title,
+      style: Theme.of(context).textTheme.headlineMedium,
+      softWrap: true,
     );
   }
 }
