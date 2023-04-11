@@ -50,8 +50,7 @@ class QuestionsOverviewPage extends HookWidget {
 
     final state = useBlocBuilder(
       _cubit,
-      buildWhen: (QuestionsOverviewState current) =>
-          rebuildWhen.contains(current.runtimeType),
+      buildWhen: (current) => rebuildWhen.contains(current.runtimeType),
     );
 
     return Padding(
@@ -114,12 +113,10 @@ class QuestionsOverviewPage extends HookWidget {
   void _handleOpenQuestionState(Object? current, BuildContext context) {
     final state = current! as QuestionsOverviewOpenQuestion;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      GoRouter.of(context).pushNamed(
-        Routes.displayQuestion.name,
-        params: {'id': state.questionId},
-      );
-    });
+    GoRouter.of(context).pushNamed(
+      Routes.displayQuestion.name,
+      params: {'id': state.questionId},
+    );
   }
 }
 
@@ -296,16 +293,18 @@ class _QuestionItem extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           child: InkWell(
             onTap: () => onClick(question),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    _QuestionItemTitle(title: question.shortDescription),
-                  ],
-                ),
-                _QuestionItemDifficulty(difficulty: question.difficulty),
-              ],
+            child: ClipRect(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: _QuestionItemTitle(title: question.shortDescription),
+                  ),
+                  _QuestionItemDifficulty(
+                    difficulty: question.difficulty,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -326,14 +325,18 @@ class _QuestionItemTitle extends StatelessWidget {
     final textColor = _getTextColor(context);
     final fontSize = _getFontSize(context);
 
-    return Row(
+    return Wrap(
       children: [
         Icon(
           MdiIcons.ballotOutline,
           color: textColor,
         ),
+        const SizedBox(
+          width: 10,
+        ),
         Text(
-          ' $title',
+          title,
+          softWrap: true,
           style: TextStyle(
             color: textColor,
             fontWeight: FontWeight.bold,
