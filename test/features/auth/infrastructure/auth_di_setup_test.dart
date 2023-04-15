@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
-import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/impl/login_with_credentials_use_case_impl.dart';
@@ -19,8 +19,8 @@ void main() {
   group('should register all dependencies', () {
     test('auth repository', () {
       mocktail
-          .when(() => diMock.get<AppwriteDataSource>())
-          .thenReturn(_FakeAppwriteDataSource());
+          .when(() => diMock.get<AuthAppwriteDataSource>())
+          .thenReturn(_AuthAppwriteDataSourceMock());
 
       authenticationDiSetup(diMock);
 
@@ -91,8 +91,8 @@ void main() {
 class _DependencyInjectionMock extends mocktail.Mock
     implements DependencyInjection {}
 
-class _FakeAppwriteDataSource extends mocktail.Fake
-    implements AppwriteDataSource {}
+class _AuthAppwriteDataSourceMock extends mocktail.Fake
+    implements AuthAppwriteDataSource {}
 
 class _FakeAuthRepository extends mocktail.Fake implements AuthRepository {}
 

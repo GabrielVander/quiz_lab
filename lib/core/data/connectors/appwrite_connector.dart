@@ -13,6 +13,7 @@ class AppwriteConnector {
 
   final QuizLabLogger _logger =
       QuizLabLoggerFactory.createLogger<AppwriteConnector>();
+
   final Databases _databases;
 
   Future<Result<Unit, AppwriteConnectorFailure>> deleteDocument(

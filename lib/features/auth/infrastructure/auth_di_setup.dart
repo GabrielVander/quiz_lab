@@ -8,8 +8,7 @@ import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/lo
 void authenticationDiSetup(DependencyInjection di) {
   di
     ..registerFactory<AuthRepository>(
-      (DependencyInjection di) =>
-          AuthRepositoryImpl(appwriteDataSource: di.get()),
+      (DependencyInjection di) => AuthRepositoryImpl(authDataSource: di.get()),
     )
     ..registerFactory<LoginWithCredentialsUseCase>(
       (di) => LoginWithCredentialsUseCaseImpl(
