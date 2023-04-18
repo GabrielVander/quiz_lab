@@ -1,6 +1,8 @@
+import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
@@ -16,8 +18,25 @@ class QuestionCollectionAppwriteDataSource {
   final QuizLabLogger _logger =
       QuizLabLoggerFactory.createLogger<QuestionCollectionAppwriteDataSource>();
 
-  final QuestionsAppwriteDataSourceConfig _config;
+  QuestionsAppwriteDataSourceConfig _config;
   final AppwriteConnector _appwriteConnector;
+
+  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
+      createSingle(AppwriteQuestionCreationModel creationModel) async {
+    _logger.debug('Creating single question on Appwrite...');
+    final creationResult = await _performDocumentCreation(creationModel);
+
+    return creationResult.when(
+      ok: (doc) {
+        _logger.debug('Question created successfully on Appwrite');
+        return Result.ok(AppwriteQuestionModel.fromDocument(doc));
+      },
+      err: (failure) {
+        _logger.error('Unable to create question on Appwrite');
+        return Result.err(_mapAppwriteConnectorFailure(failure));
+      },
+    );
+  }
 
   Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(
     String id,
@@ -28,24 +47,18 @@ class QuestionCollectionAppwriteDataSource {
 
     return deletionResult.when(
       ok: (_) {
-        _logger
-            .debug('Question with id: $id deleted successfully from Appwrite');
+        _logger.debug('Question deleted successfully from Appwrite');
         return const Result.ok(unit);
       },
       err: (failure) {
-        final connectorFailure = _mapAppwriteConnectorFailure(failure);
-
-        _logger.error(
-          'Unable to delete question with id: $id on Appwrite due to failure: '
-          '$connectorFailure',
-        );
-        return Result.err(connectorFailure);
+        _logger.error('Unable to delete question on Appwrite');
+        return Result.err(_mapAppwriteConnectorFailure(failure));
       },
     );
   }
 
   Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
-      fetchSingle(String id) async {
+  fetchSingle(String id) async {
     _logger.debug('Fetching single question from Appwrite...');
 
     final documentFetchingResult = await _appwriteConnector.getDocument(
@@ -60,19 +73,29 @@ class QuestionCollectionAppwriteDataSource {
       ok: (document) {
         _logger.debug('Question fetched from Appwrite successfully');
 
-        return Result.ok(
-          AppwriteQuestionModel.fromDocument(document),
-        );
+        return Result.ok(AppwriteQuestionModel.fromDocument(document));
       },
       err: (failure) {
-        _logger.error(failure.toString());
-
-        final mappedFailure = _mapAppwriteConnectorFailure(failure);
-
-        return Result.err(mappedFailure);
+        _logger.error('Unable to fetch question from Appwrite');
+        return Result.err(_mapAppwriteConnectorFailure(failure));
       },
     );
   }
+
+  // ignore: avoid_setters_without_getters
+  set config(QuestionsAppwriteDataSourceConfig config) => _config = config;
+
+  Future<Result<Document, AppwriteConnectorFailure>> _performDocumentCreation(
+    AppwriteQuestionCreationModel creationModel,
+  ) async =>
+      _appwriteConnector.createDocument(
+        AppwriteDocumentCreationRequest(
+          databaseId: _config.databaseId,
+          collectionId: _config.collectionId,
+          documentId: creationModel.id,
+          data: creationModel.toMap(),
+        ),
+      );
 
   Future<Result<Unit, AppwriteConnectorFailure>> _performAppwriteDeletion(
     String id,
@@ -86,16 +109,15 @@ class QuestionCollectionAppwriteDataSource {
       );
 
   QuestionsAppwriteDataSourceFailure _mapAppwriteConnectorFailure(
-    AppwriteConnectorFailure failure,
-  ) {
+      AppwriteConnectorFailure failure,) {
     _logger
         .debug('Mapping Appwrite connector failure to data source failure...');
 
     return failure is AppwriteConnectorUnexpectedFailure
         ? QuestionsAppwriteDataSourceUnexpectedFailure(failure.message)
         : QuestionsAppwriteDataSourceAppwriteFailure(
-            (failure as AppwriteConnectorAppwriteFailure).error.toString(),
-          );
+      (failure as AppwriteConnectorAppwriteFailure).error.toString(),
+    );
   }
 }
 
@@ -111,8 +133,7 @@ class QuestionsAppwriteDataSourceConfig {
 
 abstract class QuestionsAppwriteDataSourceFailure extends Equatable {}
 
-class QuestionsAppwriteDataSourceUnexpectedFailure
-    extends QuestionsAppwriteDataSourceFailure {
+class QuestionsAppwriteDataSourceUnexpectedFailure extends QuestionsAppwriteDataSourceFailure {
   QuestionsAppwriteDataSourceUnexpectedFailure(this.message);
 
   final String message;
@@ -121,8 +142,7 @@ class QuestionsAppwriteDataSourceUnexpectedFailure
   List<Object?> get props => [message];
 }
 
-class QuestionsAppwriteDataSourceAppwriteFailure
-    extends QuestionsAppwriteDataSourceFailure {
+class QuestionsAppwriteDataSourceAppwriteFailure extends QuestionsAppwriteDataSourceFailure {
   QuestionsAppwriteDataSourceAppwriteFailure(this.message);
 
   final String message;

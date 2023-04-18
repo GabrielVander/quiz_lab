@@ -1,7 +1,5 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_list_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
@@ -21,28 +19,6 @@ class AppwriteDataSource {
   final Databases _appwriteDatabasesService;
   final Realtime _appwriteRealtimeService;
   final AppwriteReferencesConfig _configuration;
-
-  Future<Result<AppwriteQuestionCreationModel, AppwriteDataSourceFailure>>
-      createQuestion(
-    AppwriteQuestionCreationModel question,
-  ) async {
-    _logger.debug('Creating question document...');
-
-    try {
-      await _appwriteDatabasesService.createDocument(
-        databaseId: _configuration.databaseId,
-        collectionId: _configuration.questionsCollectionId,
-        documentId: question.id,
-        data: question.toMap(),
-      );
-
-      _logger.debug('Question document created successfully');
-      return Result.ok(question);
-    } on Exception catch (e) {
-      _logger.error(e.toString());
-      return Result.err(AppwriteDataSourceFailure.unexpected(e));
-    }
-  }
 
   Stream<AppwriteRealtimeQuestionMessageModel>
       watchForQuestionCollectionUpdate() {

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
@@ -169,9 +170,212 @@ void main() {
     );
 
     mocktail.registerFallbackValue(_AppwriteDocumentReferenceMock());
+    mocktail.registerFallbackValue(_AppwriteDocumentCreationRequestMock());
   });
 
   tearDown(mocktail.resetMocktailState);
+
+  group('createSingle', () {
+    parameterizedTest(
+      'should call Appwrite connector correctly',
+      ParameterizedSource.values([
+        [
+          QuestionsAppwriteDataSourceConfig(databaseId: '', collectionId: ''),
+          const AppwriteQuestionCreationModel(
+            id: '',
+            title: '',
+            description: '',
+            difficulty: '',
+            options: [],
+            categories: [],
+          )
+        ],
+        [
+          QuestionsAppwriteDataSourceConfig(
+            databaseId: 'Q!3CTr',
+            collectionId: r'^NW8$',
+          ),
+          const AppwriteQuestionCreationModel(
+            id: 'HH%',
+            title: '#7d76V',
+            description: r'$7zCt%Z@',
+            difficulty: 'k4Y0r9p',
+            options: [
+              AppwriteQuestionOptionModel(
+                description: 'c1jh',
+                isCorrect: true,
+              ),
+              AppwriteQuestionOptionModel(
+                description: r'Q5&&n9$',
+                isCorrect: false,
+              ),
+            ],
+            categories: [
+              't0&',
+              'kzBmu',
+              'GRNY3!J9',
+            ],
+          )
+        ],
+      ]),
+      (values) {
+        final config = values[0] as QuestionsAppwriteDataSourceConfig;
+        final creationModel = values[1] as AppwriteQuestionCreationModel;
+
+        dataSource.config = config;
+
+        mocktail
+            .when(() => appwriteConnectorMock.createDocument(mocktail.any()))
+            .thenAnswer(
+              (_) async =>
+                  Result.err(AppwriteConnectorUnexpectedFailure('7S8W')),
+            );
+
+        dataSource.createSingle(creationModel);
+
+        mocktail.verify(
+          () => appwriteConnectorMock.createDocument(
+            AppwriteDocumentCreationRequest(
+              databaseId: config.databaseId,
+              collectionId: config.collectionId,
+              documentId: creationModel.id,
+              data: creationModel.toMap(),
+            ),
+          ),
+        );
+      },
+    );
+
+    parameterizedTest(
+      'should return expected failure if Appwrite connector fails',
+      ParameterizedSource.values(expectedAppwriteErrorMappings),
+      (values) async {
+        final appwriteConnectorFailure = values[0] as AppwriteConnectorFailure;
+        final expectedFailure = values[1] as QuestionsAppwriteDataSourceFailure;
+
+        final appwriteQuestionCreationModelMock =
+            _AppwriteQuestionCreationModelMock();
+
+        mocktail.when(appwriteQuestionCreationModelMock.toMap).thenReturn({});
+
+        mocktail
+            .when(() => appwriteQuestionCreationModelMock.id)
+            .thenReturn('yNg#');
+
+        mocktail
+            .when(() => appwriteConnectorMock.createDocument(mocktail.any()))
+            .thenAnswer((_) async => Result.err(appwriteConnectorFailure));
+
+        final result =
+            await dataSource.createSingle(appwriteQuestionCreationModelMock);
+
+        expect(result.isErr, true);
+        expect(result.err, expectedFailure);
+      },
+    );
+
+    parameterizedTest(
+      'should return expected',
+      ParameterizedSource.values([
+        [
+          Document(
+            $id: '',
+            $collectionId: '',
+            $databaseId: '',
+            $createdAt: '',
+            $updatedAt: '',
+            $permissions: [],
+            data: {
+              'title': '',
+              'options': '[]',
+              'difficulty': '',
+              'description': '',
+              'categories': <String>[],
+            },
+          ),
+          const AppwriteQuestionModel(
+            id: '',
+            title: '',
+            options: [],
+            difficulty: '',
+            description: '',
+            categories: [],
+            permissions: [],
+            databaseId: '',
+            collectionId: '',
+            createdAt: '',
+            updatedAt: '',
+          )
+        ],
+        [
+          Document(
+            $id: 'k2Kao43',
+            $collectionId: 'h^NjK84I',
+            $databaseId: 'Cxc#Y1Cj',
+            $createdAt: '516',
+            $updatedAt: 'D3y^k#Hw',
+            $permissions: ['sqG', r'Ft3a7I$v', 'KCfj'],
+            data: {
+              'title': 'v5l!@',
+              'options': '['
+                  '{"description":"7T5Tm0p","isCorrect":false},'
+                  '{"description":"!D@g3","isCorrect":true},'
+                  '{"description":"V%#BGZ","isCorrect":false}'
+                  ']',
+              'difficulty': 'Tw&N9dD',
+              'description': 'JLzh',
+              'categories': ['p4lM', r'#2$vxpA', 'cWnH2io'],
+            },
+          ),
+          const AppwriteQuestionModel(
+            id: 'k2Kao43',
+            title: 'v5l!@',
+            options: [
+              AppwriteQuestionOptionModel(
+                description: '7T5Tm0p',
+                isCorrect: false,
+              ),
+              AppwriteQuestionOptionModel(
+                description: '!D@g3',
+                isCorrect: true,
+              ),
+              AppwriteQuestionOptionModel(
+                description: 'V%#BGZ',
+                isCorrect: false,
+              ),
+            ],
+            difficulty: 'Tw&N9dD',
+            description: 'JLzh',
+            categories: ['p4lM', r'#2$vxpA', 'cWnH2io'],
+            permissions: ['sqG', r'Ft3a7I$v', 'KCfj'],
+            databaseId: 'Cxc#Y1Cj',
+            collectionId: 'h^NjK84I',
+            createdAt: '516',
+            updatedAt: 'D3y^k#Hw',
+          )
+        ],
+      ]),
+      (values) async {
+        final appwriteDocument = values[0] as Document;
+        final expectedModel = values[1] as AppwriteQuestionModel;
+
+        final creationModelMock = _AppwriteQuestionCreationModelMock();
+
+        mocktail.when(creationModelMock.toMap).thenReturn({});
+
+        mocktail.when(() => creationModelMock.id).thenReturn('&cY');
+
+        mocktail
+            .when(() => appwriteConnectorMock.createDocument(mocktail.any()))
+            .thenAnswer((_) async => Result.ok(appwriteDocument));
+
+        final result = await dataSource.createSingle(creationModelMock);
+
+        expect(result.isOk, true);
+        expect(result.ok, expectedModel);
+      },
+    );
+  });
 
   group('deleteSingle', () {
     parameterizedTest(
@@ -419,3 +623,9 @@ class _AppwriteConnectorMock extends mocktail.Mock
 
 class _AppwriteDocumentReferenceMock extends mocktail.Mock
     implements AppwriteDocumentReference {}
+
+class _AppwriteDocumentCreationRequestMock extends mocktail.Mock
+    implements AppwriteDocumentCreationRequest {}
+
+class _AppwriteQuestionCreationModelMock extends mocktail.Mock
+    implements AppwriteQuestionCreationModel {}

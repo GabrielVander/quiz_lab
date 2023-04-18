@@ -147,25 +147,27 @@ void main() {
       final expected = values[1] as AppwriteQuestionCreationModel;
 
       mocktail
-          .when(() => appwriteDataSourceMock.createQuestion(mocktail.any()))
+          .when(
+            () => questionsAppwriteDataSourceMock.createSingle(mocktail.any()),
+          )
           .thenAnswer(
             (_) async =>
-                Result.err(AppwriteDataSourceFailure.unexpected(Exception())),
+                Result.err(QuestionsAppwriteDataSourceUnexpectedFailure('')),
           );
 
       await repository.createSingle(question);
 
       mocktail
-          .verify(() => appwriteDataSourceMock.createQuestion(expected))
+          .verify(() => questionsAppwriteDataSourceMock.createSingle(expected))
           .called(1);
     });
 
     test('should return expected', () async {
       mocktail
-          .when(() => appwriteDataSourceMock.createQuestion(mocktail.any()))
-          .thenAnswer(
-            (_) async => Result.ok(_AppwriteQuestionCreationModelMock()),
-          );
+          .when(
+            () => questionsAppwriteDataSourceMock.createSingle(mocktail.any()),
+          )
+          .thenAnswer((_) async => Result.ok(_AppwriteQuestionModelMock()));
 
       final result = await repository.createSingle(
         const Question(
@@ -208,9 +210,7 @@ void main() {
             .when(
               () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
             )
-            .thenAnswer(
-              (_) => stream,
-            );
+            .thenAnswer((_) => stream);
 
         mocktail.when(() => appwriteQuestionListModelMock.total).thenReturn(0);
         mocktail
@@ -542,9 +542,6 @@ void main() {
 
 class _AppwriteDataSourceMock extends mocktail.Mock
     implements AppwriteDataSource {}
-
-class _AppwriteQuestionCreationModelMock extends mocktail.Mock
-    implements AppwriteQuestionCreationModel {}
 
 class _AppwriteRealtimeQuestionMessageModelMock extends mocktail.Mock
     implements AppwriteRealtimeQuestionMessageModel {}
