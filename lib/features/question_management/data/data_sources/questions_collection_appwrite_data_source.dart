@@ -58,7 +58,7 @@ class QuestionCollectionAppwriteDataSource {
   }
 
   Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
-  fetchSingle(String id) async {
+      fetchSingle(String id) async {
     _logger.debug('Fetching single question from Appwrite...');
 
     final documentFetchingResult = await _appwriteConnector.getDocument(
@@ -109,15 +109,16 @@ class QuestionCollectionAppwriteDataSource {
       );
 
   QuestionsAppwriteDataSourceFailure _mapAppwriteConnectorFailure(
-      AppwriteConnectorFailure failure,) {
+    AppwriteConnectorFailure failure,
+  ) {
     _logger
         .debug('Mapping Appwrite connector failure to data source failure...');
 
     return failure is AppwriteConnectorUnexpectedFailure
         ? QuestionsAppwriteDataSourceUnexpectedFailure(failure.message)
         : QuestionsAppwriteDataSourceAppwriteFailure(
-      (failure as AppwriteConnectorAppwriteFailure).error.toString(),
-    );
+            (failure as AppwriteConnectorAppwriteFailure).error.toString(),
+          );
   }
 }
 
@@ -133,7 +134,8 @@ class QuestionsAppwriteDataSourceConfig {
 
 abstract class QuestionsAppwriteDataSourceFailure extends Equatable {}
 
-class QuestionsAppwriteDataSourceUnexpectedFailure extends QuestionsAppwriteDataSourceFailure {
+class QuestionsAppwriteDataSourceUnexpectedFailure
+    extends QuestionsAppwriteDataSourceFailure {
   QuestionsAppwriteDataSourceUnexpectedFailure(this.message);
 
   final String message;
@@ -142,11 +144,12 @@ class QuestionsAppwriteDataSourceUnexpectedFailure extends QuestionsAppwriteData
   List<Object?> get props => [message];
 }
 
-class QuestionsAppwriteDataSourceAppwriteFailure extends QuestionsAppwriteDataSourceFailure {
+class QuestionsAppwriteDataSourceAppwriteFailure
+    extends QuestionsAppwriteDataSourceFailure {
   QuestionsAppwriteDataSourceAppwriteFailure(this.message);
 
   final String message;
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [message];
 }
