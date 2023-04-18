@@ -308,6 +308,7 @@ class _TitleField extends StatelessWidget {
     return TextField(
       decoration: InputDecoration(
         labelText: S.of(context).questionTitleLabel,
+        enabledBorder: const OutlineInputBorder(),
         border: const OutlineInputBorder(),
         errorText: errorMessage,
       ),
@@ -337,6 +338,7 @@ class _DescriptionField extends StatelessWidget {
     return TextField(
       decoration: InputDecoration(
         labelText: S.of(context).questionDescriptionLabel,
+        enabledBorder: const OutlineInputBorder(),
         border: const OutlineInputBorder(),
         errorText: errorMessage,
       ),
@@ -369,6 +371,7 @@ class _DifficultySelector extends StatelessWidget {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: S.of(context).questionDifficultyLabel,
+        enabledBorder: const OutlineInputBorder(),
         border: const OutlineInputBorder(),
         errorText: errorMessage,
       ),
@@ -487,6 +490,7 @@ class _Option extends StatelessWidget {
             onChanged: (v) => onChanged(viewModel.id, v),
             decoration: InputDecoration(
               labelText: S.of(context).optionInputLabel,
+              enabledBorder: const OutlineInputBorder(),
               border: const OutlineInputBorder(),
               errorText: errorMessage,
             ),
