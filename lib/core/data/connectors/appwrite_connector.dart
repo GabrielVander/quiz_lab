@@ -13,7 +13,25 @@ class AppwriteConnector {
 
   final QuizLabLogger _logger =
       QuizLabLoggerFactory.createLogger<AppwriteConnector>();
+
   final Databases _databases;
+
+  Future<Result<Document, AppwriteConnectorFailure>> createDocument(
+    AppwriteDocumentCreationRequest request,
+  ) async {
+    _logger.debug('Creating Appwrite document...');
+
+    try {
+      final createdDocument = await _performDocumentCreation(request);
+
+      _logger.debug('Appwrite document created successfully');
+      return Result.ok(createdDocument);
+    } on AppwriteException catch (e) {
+      return Result.err(_handleAppwriteException(e));
+    } catch (e) {
+      return Result.err(_handleUnexpectedException(e));
+    }
+  }
 
   Future<Result<Unit, AppwriteConnectorFailure>> deleteDocument(
     AppwriteDocumentReference reference,
@@ -42,6 +60,16 @@ class AppwriteConnector {
       return Result.err(_handleUnexpectedException(e));
     }
   }
+
+  Future<Document> _performDocumentCreation(
+    AppwriteDocumentCreationRequest request,
+  ) async =>
+      _databases.createDocument(
+        databaseId: request.databaseId,
+        collectionId: request.collectionId,
+        documentId: request.documentId,
+        data: request.data,
+      );
 
   Future<Unit> _performDocumentDeletion(
     AppwriteDocumentReference reference,
@@ -123,6 +151,28 @@ class AppwriteDocumentReference extends Equatable {
         databaseId,
         collectionId,
         documentId,
+      ];
+}
+
+class AppwriteDocumentCreationRequest extends Equatable {
+  const AppwriteDocumentCreationRequest({
+    required this.databaseId,
+    required this.collectionId,
+    required this.documentId,
+    required this.data,
+  });
+
+  final String databaseId;
+  final String collectionId;
+  final String documentId;
+  final Map<String, dynamic> data;
+
+  @override
+  List<Object?> get props => [
+        databaseId,
+        collectionId,
+        documentId,
+        data,
       ];
 }
 

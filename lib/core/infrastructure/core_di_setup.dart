@@ -19,7 +19,6 @@ void coreDependencyInjectionSetup(
     )
     ..registerFactory<AppwriteDataSource>(
       (i) => AppwriteDataSource(
-        appwriteAccountService: i.get<Account>(),
         appwriteDatabasesService: i.get<Databases>(),
         configuration: i.get<AppwriteReferencesConfig>(),
         appwriteRealtimeService: i.get<Realtime>(),
