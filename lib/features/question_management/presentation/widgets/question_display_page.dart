@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class QuestionDisplayPage extends StatelessWidget {
+class QuestionDisplayPage extends HookWidget {
   const QuestionDisplayPage({
     required String? questionId,
     required QuestionDisplayCubit cubit,
@@ -20,6 +21,39 @@ class QuestionDisplayPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    useEffect(
+      () {
+        _cubit.loadQuestion(_questionId);
+
+        return () {};
+      },
+      [],
+    );
+
+    useBlocListener(
+      _cubit,
+      (bloc, current, context) {
+        if (current is QuestionDisplayGoHome) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            GoRouter.of(context).goNamed(Routes.home.name);
+          });
+        }
+      },
+      listenWhen: (current) => current is QuestionDisplayGoHome,
+    );
+
+    final rebuildWhen = [
+      QuestionDisplayFailure,
+      QuestionDisplayViewModelUpdated,
+      QuestionDisplayQuestionAnsweredCorrectly,
+      QuestionDisplayQuestionAnsweredIncorrectly,
+    ];
+
+    final state = useBlocBuilder(
+      _cubit,
+      buildWhen: (current) => rebuildWhen.contains(current.runtimeType),
+    );
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -27,23 +61,12 @@ class QuestionDisplayPage extends StatelessWidget {
             S.of(context).questionAnswerPageTitle,
           ),
         ),
-        body: BlocBuilder<QuestionDisplayCubit, QuestionDisplayState>(
-          bloc: _cubit,
-          builder: (context, QuestionDisplayState state) {
-            if (state is QuestionDisplayInitial) {
-              _cubit.loadQuestion(_questionId);
-            }
-
+        body: HookBuilder(
+          builder: (context) {
             if (state is QuestionDisplayFailure) {
               return const Center(
                 child: Text('Oh no!'),
               );
-            }
-
-            if (state is QuestionDisplayGoHome) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                GoRouter.of(context).goNamed(Routes.home.name);
-              });
             }
 
             if (state is QuestionDisplayViewModelUpdated) {
@@ -128,14 +151,10 @@ class _QuestionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          viewModel.title,
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-      ],
+    return Text(
+      viewModel.title,
+      style: Theme.of(context).textTheme.headlineMedium,
+      softWrap: true,
     );
   }
 }

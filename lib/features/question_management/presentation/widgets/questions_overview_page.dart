@@ -27,21 +27,30 @@ class QuestionsOverviewPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    useEffect(
+      () {
+        _cubit.updateQuestions();
+
+        return () {};
+      },
+      [],
+    );
+
     useBlocListener(
       _cubit,
-      (_, QuestionsOverviewState current, BuildContext context) =>
-          _handleOpenQuestionState(current, context),
-      listenWhen: (QuestionsOverviewState currentState) =>
-          currentState is QuestionsOverviewOpenQuestion,
+      (bloc, current, context) => _handleOpenQuestionState(current, context),
+      listenWhen: (current) => current is QuestionsOverviewOpenQuestion,
     );
+
+    final rebuildWhen = [
+      QuestionsOverviewLoading,
+      QuestionsOverviewViewModelUpdated,
+      QuestionsOverviewErrorOccurred,
+    ];
 
     final state = useBlocBuilder(
       _cubit,
-      buildWhen: (QuestionsOverviewState current) => [
-        QuestionsOverviewLoading,
-        QuestionsOverviewViewModelUpdated,
-        QuestionsOverviewErrorOccurred,
-      ].contains(current.runtimeType),
+      buildWhen: (current) => rebuildWhen.contains(current.runtimeType),
     );
 
     return Padding(
@@ -56,18 +65,8 @@ class QuestionsOverviewPage extends HookWidget {
             ),
           ),
           Expanded(
-            child: Builder(
+            child: HookBuilder(
               builder: (context) {
-                if (state is QuestionsOverviewInitial) {
-                  _cubit.updateQuestions();
-                }
-
-                if (state is QuestionsOverviewLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
                 if (state is QuestionsOverviewErrorOccurred) {
                   return Center(
                     child: Text(state.message),
@@ -100,7 +99,9 @@ class QuestionsOverviewPage extends HookWidget {
                   );
                 }
 
-                return Container();
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               },
             ),
           ),
@@ -112,12 +113,10 @@ class QuestionsOverviewPage extends HookWidget {
   void _handleOpenQuestionState(Object? current, BuildContext context) {
     final state = current! as QuestionsOverviewOpenQuestion;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      GoRouter.of(context).pushNamed(
-        Routes.displayQuestion.name,
-        params: {'id': state.questionId},
-      );
-    });
+    GoRouter.of(context).pushNamed(
+      Routes.displayQuestion.name,
+      params: {'id': state.questionId},
+    );
   }
 }
 
@@ -294,16 +293,18 @@ class _QuestionItem extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           child: InkWell(
             onTap: () => onClick(question),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    _QuestionItemTitle(title: question.shortDescription),
-                  ],
-                ),
-                _QuestionItemDifficulty(difficulty: question.difficulty),
-              ],
+            child: ClipRect(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: _QuestionItemTitle(title: question.shortDescription),
+                  ),
+                  _QuestionItemDifficulty(
+                    difficulty: question.difficulty,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -324,14 +325,18 @@ class _QuestionItemTitle extends StatelessWidget {
     final textColor = _getTextColor(context);
     final fontSize = _getFontSize(context);
 
-    return Row(
+    return Wrap(
       children: [
         Icon(
           MdiIcons.ballotOutline,
           color: textColor,
         ),
+        const SizedBox(
+          width: 10,
+        ),
         Text(
-          ' $title',
+          title,
+          softWrap: true,
           style: TextStyle(
             color: textColor,
             fontWeight: FontWeight.bold,

@@ -46,11 +46,6 @@ abstract class QuestionRepositoryFailure extends Equatable {
   }) =>
       UnableToUpdateQuestion._(id: id, details: details);
 
-  factory QuestionRepositoryFailure.unableToDelete({
-    required String id,
-  }) =>
-      UnableToDelete._(id: id);
-
   final String message;
 
   @override
@@ -94,28 +89,6 @@ class UnableToUpdateQuestion extends QuestionRepositoryFailure {
 
   @override
   List<Object> get props => super.props..addAll([id]);
-}
-
-@immutable
-class UnableToDelete extends QuestionRepositoryFailure {
-  const UnableToDelete._({required this.id})
-      : super._(message: 'Unable to delete question with id: $id');
-
-  final String id;
-
-  @override
-  List<Object> get props => super.props..addAll([id]);
-}
-
-@immutable
-class UnexpectedErrorFailure extends QuestionRepositoryFailure {
-  const UnexpectedErrorFailure({required this.exception})
-      : super._(message: 'Unexpected error: $exception');
-
-  final Exception exception;
-
-  @override
-  List<Object> get props => super.props..addAll([exception]);
 }
 
 @immutable

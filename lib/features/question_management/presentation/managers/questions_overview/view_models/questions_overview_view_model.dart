@@ -1,5 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 
 @immutable
 class QuestionsOverviewViewModel {
@@ -32,6 +35,15 @@ class QuestionsOverviewItemViewModel extends Equatable {
     required this.difficulty,
   });
 
+  factory QuestionsOverviewItemViewModel.fromQuestion(Question question) =>
+      QuestionsOverviewItemViewModel(
+        id: question.id.value,
+        shortDescription: question.shortDescription,
+        description: question.description,
+        categories: question.categories.map((c) => c.value).toList(),
+        difficulty: question.difficulty.name,
+      );
+
   final String id;
   final String shortDescription;
   final String description;
@@ -44,15 +56,26 @@ class QuestionsOverviewItemViewModel extends Equatable {
     String? description,
     List<String>? categories,
     String? difficulty,
-  }) {
-    return QuestionsOverviewItemViewModel(
-      id: id ?? this.id,
-      shortDescription: shortDescription ?? this.shortDescription,
-      description: description ?? this.description,
-      categories: categories ?? this.categories,
-      difficulty: difficulty ?? this.difficulty,
-    );
-  }
+  }) =>
+      QuestionsOverviewItemViewModel(
+        id: id ?? this.id,
+        shortDescription: shortDescription ?? this.shortDescription,
+        description: description ?? this.description,
+        categories: categories ?? this.categories,
+        difficulty: difficulty ?? this.difficulty,
+      );
+
+  Question toQuestion() => Question(
+        id: QuestionId(id),
+        shortDescription: shortDescription,
+        description: description,
+        categories: categories.map((c) => QuestionCategory(value: c)).toList(),
+        difficulty: QuestionDifficulty.values.firstWhere(
+          (d) => describeEnum(d) == difficulty,
+          orElse: () => QuestionDifficulty.unknown,
+        ),
+        answerOptions: const [],
+      );
 
   @override
   List<Object?> get props => [
@@ -64,5 +87,13 @@ class QuestionsOverviewItemViewModel extends Equatable {
       ];
 
   @override
-  bool get stringify => true;
+  String toString() {
+    return 'QuestionsOverviewItemViewModel{'
+        'id: $id, '
+        'shortDescription: $shortDescription, '
+        'description: $description, '
+        'categories: $categories, '
+        'difficulty: $difficulty'
+        '}';
+  }
 }

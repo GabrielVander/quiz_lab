@@ -3,6 +3,7 @@ import 'package:quiz_lab/core/presentation/themes/colors.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 
 final ThemeData lightTheme = ThemeData.light().copyWith(
+  useMaterial3: true,
   extensions: <ThemeExtension<dynamic>>[
     ThemeColors(
       textColors: _LightThemeTextColors(),

@@ -34,7 +34,7 @@ class HomePage extends HookWidget {
 
     if (bottomNavigationState is BottomNavigationInitial) {
       bottomNavigationCubit.transitionTo(
-        newIndex: NavigationIndex.assessments.index,
+        newIndex: NavigationIndex.questions.index,
       );
 
       return const Center(child: CircularProgressIndicator());
