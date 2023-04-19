@@ -30,7 +30,7 @@ class QuestionRepositoryImpl extends QuestionRepository {
   ) async {
     _logger.debug('Creating question...');
 
-    await _appwriteDataSource.createQuestion(
+    await _questionsAppwriteDataSource.createSingle(
       AppwriteQuestionCreationModel(
         id: question.id.value,
         title: question.shortDescription,

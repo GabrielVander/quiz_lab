@@ -2,21 +2,21 @@ import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
-import 'package:quiz_lab/core/data/data_sources/models/email_session_credentials_model.dart';
-import 'package:quiz_lab/core/data/data_sources/models/session_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
+import 'package:quiz_lab/features/auth/data/data_sources/models/email_session_credentials_model.dart';
+import 'package:quiz_lab/features/auth/data/data_sources/models/session_model.dart';
 import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 
 void main() {
-  late AppwriteDataSource appwriteDataSourceMock;
+  late AuthAppwriteDataSource authDataSourceMock;
   late AuthRepositoryImpl repository;
 
   setUp(() {
-    appwriteDataSourceMock = _AppwriteDataSourceMock();
+    authDataSourceMock = _AuthAppwriteDataSourceMock();
     repository = AuthRepositoryImpl(
-      appwriteDataSource: appwriteDataSourceMock,
+      authDataSource: authDataSourceMock,
     );
 
     mocktail.registerFallbackValue(_FakeEmailSessionCredentialsModel());
@@ -34,7 +34,7 @@ void main() {
 
         mocktail
             .when(
-              () => appwriteDataSourceMock.createEmailSession(mocktail.any()),
+              () => authDataSourceMock.createEmailSession(mocktail.any()),
             )
             .thenAnswer((_) async => Result.err(errorMessage));
 
@@ -62,7 +62,7 @@ void main() {
 
         mocktail
             .when(
-              () => appwriteDataSourceMock.createEmailSession(
+              () => authDataSourceMock.createEmailSession(
                 EmailSessionCredentialsModel(
                   email: email,
                   password: password,
@@ -82,8 +82,8 @@ void main() {
   });
 }
 
-class _AppwriteDataSourceMock extends mocktail.Mock
-    implements AppwriteDataSource {}
+class _AuthAppwriteDataSourceMock extends mocktail.Mock
+    implements AuthAppwriteDataSource {}
 
 class _FakeEmailSessionCredentialsModel extends mocktail.Fake
     implements EmailSessionCredentialsModel {}
