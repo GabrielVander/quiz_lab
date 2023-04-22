@@ -35,7 +35,7 @@ class QuestionDisplayPage extends HookWidget {
       (bloc, current, context) {
         if (current is QuestionDisplayGoHome) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            GoRouter.of(context).goNamed(Routes.home.name);
+            GoRouter.of(context).goNamed(Routes.questionsOverview.name);
           });
         }
       },

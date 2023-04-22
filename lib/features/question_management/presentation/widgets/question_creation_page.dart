@@ -37,7 +37,7 @@ class QuestionCreationPage extends HookWidget {
                   if (GoRouter.of(context).canPop()) {
                     GoRouter.of(context).pop();
                   } else {
-                    GoRouter.of(context).goNamed(Routes.home.name);
+                    GoRouter.of(context).goNamed(Routes.questionsOverview.name);
                   }
                 });
               }
@@ -255,7 +255,8 @@ class _Form extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               OutlinedButton(
-                onPressed: () => GoRouter.of(context).goNamed(Routes.home.name),
+                onPressed: () =>
+                    GoRouter.of(context).goNamed(Routes.questionsOverview.name),
                 child: Text(S.of(context).goBackLabel),
               ),
               const SizedBox(

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
 
 void main() {
   late BottomNavigationCubit cubit;
@@ -18,19 +19,30 @@ void main() {
 
   group('transitionTo', () {
     group('emits correct state', () {
-      <NavigationIndex, BottomNavigationIndexChangedState>{
-        NavigationIndex.assessments: BottomNavigationIndexChangedState(
-          newIndex: NavigationIndex.assessments.indexNumber,
-        ),
-        NavigationIndex.questions: BottomNavigationIndexChangedState(
-          newIndex: NavigationIndex.questions.indexNumber,
-        ),
-        NavigationIndex.results: BottomNavigationIndexChangedState(
-          newIndex: NavigationIndex.results.indexNumber,
-        ),
+      <NavigationIndex, List<BottomNavigationState>>{
+        NavigationIndex.assessments: [
+          BottomNavigationIndexChangedState(
+            newIndex: NavigationIndex.assessments.indexNumber,
+          ),
+          const BottomNavigationNavigateToRoute(route: Routes.assessments)
+        ],
+        NavigationIndex.questions: [
+          BottomNavigationIndexChangedState(
+            newIndex: NavigationIndex.questions.indexNumber,
+          ),
+          const BottomNavigationNavigateToRoute(
+            route: Routes.questionsOverview,
+          ),
+        ],
+        NavigationIndex.results: [
+          BottomNavigationIndexChangedState(
+            newIndex: NavigationIndex.results.indexNumber,
+          ),
+          const BottomNavigationNavigateToRoute(route: Routes.resultsOverview),
+        ],
       }.forEach((key, value) {
         test('$key -> $value', () {
-          expectLater(cubit.stream, emits(value));
+          expectLater(cubit.stream, emitsInAnyOrder(value));
 
           cubit
             ..transitionTo(newIndex: key.indexNumber)
@@ -40,7 +52,7 @@ void main() {
     });
 
     group('emits in order', () {
-      <List<NavigationIndex>, List<BottomNavigationIndexChangedState>>{
+      <List<NavigationIndex>, List<BottomNavigationState>>{
         [
           NavigationIndex.assessments,
           NavigationIndex.questions,
@@ -49,14 +61,19 @@ void main() {
           BottomNavigationIndexChangedState(
             newIndex: NavigationIndex.assessments.indexNumber,
           ),
+          const BottomNavigationNavigateToRoute(route: Routes.assessments),
           BottomNavigationIndexChangedState(
             previousIndex: NavigationIndex.assessments.indexNumber,
             newIndex: NavigationIndex.questions.indexNumber,
           ),
+          const BottomNavigationNavigateToRoute(
+            route: Routes.questionsOverview,
+          ),
           BottomNavigationIndexChangedState(
             previousIndex: NavigationIndex.questions.indexNumber,
             newIndex: NavigationIndex.results.indexNumber,
-          )
+          ),
+          const BottomNavigationNavigateToRoute(route: Routes.resultsOverview),
         ],
         [
           NavigationIndex.questions,
@@ -66,14 +83,19 @@ void main() {
           BottomNavigationIndexChangedState(
             newIndex: NavigationIndex.questions.indexNumber,
           ),
+          const BottomNavigationNavigateToRoute(
+            route: Routes.questionsOverview,
+          ),
           BottomNavigationIndexChangedState(
             previousIndex: NavigationIndex.questions.indexNumber,
             newIndex: NavigationIndex.assessments.indexNumber,
           ),
+          const BottomNavigationNavigateToRoute(route: Routes.assessments),
           BottomNavigationIndexChangedState(
             previousIndex: NavigationIndex.assessments.indexNumber,
             newIndex: NavigationIndex.results.indexNumber,
-          )
+          ),
+          const BottomNavigationNavigateToRoute(route: Routes.resultsOverview),
         ],
         [
           NavigationIndex.results,
@@ -83,14 +105,19 @@ void main() {
           BottomNavigationIndexChangedState(
             newIndex: NavigationIndex.results.indexNumber,
           ),
+          const BottomNavigationNavigateToRoute(route: Routes.resultsOverview),
           BottomNavigationIndexChangedState(
             previousIndex: NavigationIndex.results.indexNumber,
             newIndex: NavigationIndex.questions.indexNumber,
           ),
+          const BottomNavigationNavigateToRoute(
+            route: Routes.questionsOverview,
+          ),
           BottomNavigationIndexChangedState(
             previousIndex: NavigationIndex.questions.indexNumber,
             newIndex: NavigationIndex.assessments.indexNumber,
-          )
+          ),
+          const BottomNavigationNavigateToRoute(route: Routes.assessments),
         ]
       }.forEach((List<NavigationIndex> indexes, value) {
         test('$indexes -> $value', () {

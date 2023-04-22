@@ -1,5 +1,7 @@
 enum Routes {
-  home(name: 'home', path: '/'),
+  assessments(name: 'assessments', path: '/assessments'),
+  questionsOverview(name: 'questionsOverview', path: '/questions'),
+  resultsOverview(name: 'resultsOverview', path: '/results'),
   createQuestion(name: 'createQuestion', path: '/question/new'),
   displayQuestion(name: 'displayQuestion', path: '/question/:id'),
   login(name: 'login', path: '/login');
