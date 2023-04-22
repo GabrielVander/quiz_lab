@@ -58,7 +58,7 @@ dev_dependencies:
   bloc_test: ^9.1.1
   coverde: ^0.1.0+1
   flutter_launcher_icons: ^0.13.1
-  flutter_parameterized_test: ^0.2.1
+  flutter_parameterized_test: ^0.3.0
   flutter_test:
     sdk: flutter
   mocktail: ^0.3.0
