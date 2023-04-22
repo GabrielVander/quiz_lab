@@ -33,7 +33,7 @@ class LoginPage extends StatelessWidget {
             listener: (context, state) {
               if (state is LoginPagePushRouteReplacing) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  GoRouter.of(context).pushReplacementNamed(state.route.name);
+                  GoRouter.of(context).goNamed(state.route.name);
                 });
               }
 

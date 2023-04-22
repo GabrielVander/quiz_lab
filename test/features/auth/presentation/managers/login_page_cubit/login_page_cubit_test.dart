@@ -249,8 +249,11 @@ void main() {
                     isA<LoginPageViewModelUpdated>(),
                     isA<LoginPageLoading>(),
                     isA<LoginPageDisplayLoggedInMessage>(),
-                    isA<LoginPagePushRouteReplacing>()
-                        .having((s) => s.route, 'route', Routes.home),
+                    isA<LoginPagePushRouteReplacing>().having(
+                      (s) => s.route,
+                      'route',
+                      Routes.questionsOverview,
+                    ),
                   ],
                 ),
               ),
