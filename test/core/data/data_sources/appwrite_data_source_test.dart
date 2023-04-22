@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/models.dart' hide Account;
+import 'package:appwrite/models.dart';
 import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;

@@ -104,9 +104,7 @@ void main() {
 
         widgetTester.binding.scheduleWarmUpFrame();
 
-        mocktail
-            .verify(() => goRouterMock.pushReplacementNamed(route.name))
-            .called(1);
+        mocktail.verify(() => goRouterMock.goNamed(route.name)).called(1);
       },
     );
   }
@@ -207,9 +205,7 @@ void main() {
 
         widgetTester.binding.scheduleWarmUpFrame();
 
-        mocktail
-            .verify(() => goRouterMock.pushReplacementNamed(route.name))
-            .called(1);
+        mocktail.verify(() => goRouterMock.goNamed(route.name)).called(1);
       },
     );
   }

@@ -21,16 +21,18 @@ class BottomNavigationIndexChangedState extends BottomNavigationState {
   final int? previousIndex;
   final int newIndex;
 
-  BottomNavigationIndexChangedState copyWith({
-    int? previousIndex,
-    int? newIndex,
-  }) {
-    return BottomNavigationIndexChangedState(
-      previousIndex: previousIndex ?? this.previousIndex,
-      newIndex: newIndex ?? this.newIndex,
-    );
-  }
-
   @override
   List<Object> get props => [newIndex];
+}
+
+@immutable
+class BottomNavigationNavigateToRoute extends BottomNavigationState {
+  const BottomNavigationNavigateToRoute({
+    required this.route,
+  });
+
+  final Routes route;
+
+  @override
+  List<Object> get props => [route];
 }
