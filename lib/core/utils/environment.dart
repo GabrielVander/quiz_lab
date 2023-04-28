@@ -1,10 +1,4 @@
-import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
-import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-
 class Environment {
-  static final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<Environment>();
-
   static String getRequiredEnvironmentVariable(EnvironmentVariable variable) {
     final value = getOptionalEnvironmentVariable(variable);
     if (value == null) {
@@ -18,7 +12,7 @@ class Environment {
 
   static EnvironmentType getEnvironmentType() {
     final environmentType =
-    getOptionalEnvironmentVariable(EnvironmentVariable.environment);
+        getOptionalEnvironmentVariable(EnvironmentVariable.environment);
 
     if (environmentType == null) {
       return EnvironmentType.development;
@@ -49,34 +43,48 @@ class Environment {
     }
   }
 
-  static String? _appwriteEndpoint() =>
-      const bool.hasEnvironment('APPWRITE_ENDPOINT')
-          ? const String.fromEnvironment('APPWRITE_ENDPOINT')
-          : null;
+  static String? _appwriteEndpoint() {
+    const key = 'APPWRITE_ENDPOINT';
 
-  static String? _appwriteProjectId() =>
-      const bool.hasEnvironment('APPWRITE_PROJECT_ID')
-          ? const String.fromEnvironment('APPWRITE_PROJECT_ID')
-          : null;
+    return const bool.hasEnvironment(key)
+        ? const String.fromEnvironment(key)
+        : null;
+  }
 
-  static String? _environment() => const bool.hasEnvironment('ENVIRONMENT')
-      ? const String.fromEnvironment('ENVIRONMENT')
-      : null;
+  static String? _appwriteProjectId() {
+    const key = 'APPWRITE_PROJECT_ID';
 
-  static String? _appwriteDatabaseId() =>
-      const bool.hasEnvironment('APPWRITE_DATABASE_ID')
-          ? const String.fromEnvironment('APPWRITE_DATABASE_ID')
-          : null;
+    return const bool.hasEnvironment(key)
+        ? const String.fromEnvironment(key)
+        : null;
+  }
 
-  static String? _appwriteQuestionCollectionId() =>
-      const bool.hasEnvironment('APPWRITE_QUESTION_COLLECTION_ID')
-          ? const String.fromEnvironment('APPWRITE_QUESTION_COLLECTION_ID')
-          : null;
+  static String? _environment() {
+    const key = 'ENVIRONMENT';
+
+    return const bool.hasEnvironment(key)
+        ? const String.fromEnvironment(key)
+        : null;
+  }
+
+  static String? _appwriteDatabaseId() {
+    const key = 'APPWRITE_DATABASE_ID';
+
+    return const bool.hasEnvironment(key)
+        ? const String.fromEnvironment(key)
+        : null;
+  }
+
+  static String? _appwriteQuestionCollectionId() {
+    const key = 'APPWRITE_QUESTION_COLLECTION_ID';
+
+    return const bool.hasEnvironment(key)
+        ? const String.fromEnvironment(key)
+        : null;
+  }
 
   static String? _isBeta() {
     const key = 'IS_BETA';
-
-    _logger.debug('Checking for environment variable $key');
 
     return const bool.hasEnvironment(key)
         ? const String.fromEnvironment(key)
