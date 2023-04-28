@@ -1,4 +1,10 @@
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
+
 class Environment {
+  static final QuizLabLogger _logger =
+      QuizLabLoggerFactory.createLogger<Environment>();
+
   static String getRequiredEnvironmentVariable(EnvironmentVariable variable) {
     final value = getOptionalEnvironmentVariable(variable);
     if (value == null) {
@@ -12,7 +18,7 @@ class Environment {
 
   static EnvironmentType getEnvironmentType() {
     final environmentType =
-        getOptionalEnvironmentVariable(EnvironmentVariable.environment);
+    getOptionalEnvironmentVariable(EnvironmentVariable.environment);
 
     if (environmentType == null) {
       return EnvironmentType.development;
@@ -38,6 +44,8 @@ class Environment {
         return _appwriteDatabaseId();
       case EnvironmentVariable.appwriteQuestionCollectionId:
         return _appwriteQuestionCollectionId();
+      case EnvironmentVariable.isBeta:
+        return _isBeta();
     }
   }
 
@@ -64,6 +72,16 @@ class Environment {
       const bool.hasEnvironment('APPWRITE_QUESTION_COLLECTION_ID')
           ? const String.fromEnvironment('APPWRITE_QUESTION_COLLECTION_ID')
           : null;
+
+  static String? _isBeta() {
+    const key = 'IS_BETA';
+
+    _logger.debug('Checking for environment variable $key');
+
+    return const bool.hasEnvironment(key)
+        ? const String.fromEnvironment(key)
+        : null;
+  }
 }
 
 enum EnvironmentVariable {
@@ -72,6 +90,7 @@ enum EnvironmentVariable {
   environment,
   appwriteDatabaseId,
   appwriteQuestionCollectionId,
+  isBeta,
 }
 
 enum EnvironmentType {
