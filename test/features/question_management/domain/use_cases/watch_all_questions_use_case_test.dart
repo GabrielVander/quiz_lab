@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
@@ -23,94 +22,99 @@ void main() {
   tearDown(mocktail.resetMocktailState);
 
   group('err flow', () {
-    parameterizedTest(
+    group(
       'question repository fails',
-      ParameterizedSource.values([
-        [
-          QuestionRepositoryFailure.unableToWatchAll(message: ''),
-          WatchAllQuestionsFailure.generic(message: '')
-        ],
-        [
-          QuestionRepositoryFailure.unableToWatchAll(message: 'f9T'),
-          WatchAllQuestionsFailure.generic(message: 'f9T')
-        ],
-      ]),
-      (values) async {
-        final repositoryFailure = values[0] as QuestionRepositoryFailure;
-        final expectedFailure = values[1] as WatchAllQuestionsFailure;
+      () {
+        for (final values in [
+          [
+            QuestionRepositoryFailure.unableToWatchAll(message: ''),
+            WatchAllQuestionsFailure.generic(message: '')
+          ],
+          [
+            QuestionRepositoryFailure.unableToWatchAll(message: 'f9T'),
+            WatchAllQuestionsFailure.generic(message: 'f9T')
+          ],
+        ]) {
+          test(values.toString(), () async {
+            final repositoryFailure = values[0] as QuestionRepositoryFailure;
+            final expectedFailure = values[1] as WatchAllQuestionsFailure;
 
-        mocktail
-            .when(questionRepositoryMock.watchAll)
-            .thenAnswer((_) async => Result.err(repositoryFailure));
+            mocktail
+                .when(questionRepositoryMock.watchAll)
+                .thenAnswer((_) async => Result.err(repositoryFailure));
 
-        final result = await useCase.execute();
+            final result = await useCase.execute();
 
-        expect(result.isErr, true);
-        expect(result.err, expectedFailure);
+            expect(result.isErr, true);
+            expect(result.err, expectedFailure);
+          });
+        }
       },
     );
   });
 
   group('ok flow', () {
-    parameterizedTest(
+    group(
       'Use case should return stream from repository',
-      ParameterizedSource.value([
-        <List<Question>>[],
-        [
+      () {
+        for (final streamValues in [
+          <List<Question>>[],
           [
-            const Question(
-              id: QuestionId('15e194a8-8fa9-4b04-af8f-8d71491ac7e8'),
-              shortDescription: 'shortDescription',
-              description: 'description',
-              answerOptions: [],
-              difficulty: QuestionDifficulty.hard,
-              categories: [],
-            )
-          ]
-        ],
-        [
+            [
+              const Question(
+                id: QuestionId('15e194a8-8fa9-4b04-af8f-8d71491ac7e8'),
+                shortDescription: 'shortDescription',
+                description: 'description',
+                answerOptions: [],
+                difficulty: QuestionDifficulty.hard,
+                categories: [],
+              )
+            ]
+          ],
           [
-            const Question(
-              id: QuestionId('15e194a8-8fa9-4b04-af8f-8d71491ac7e8'),
-              shortDescription: 'shortDescription',
-              description: 'description',
-              answerOptions: [],
-              difficulty: QuestionDifficulty.hard,
-              categories: [],
-            ),
-            const Question(
-              id: QuestionId('56d6a3c9-ebd5-4572-9c86-da328b986927'),
-              shortDescription: 'shortDescription',
-              description: 'description',
-              answerOptions: [],
-              difficulty: QuestionDifficulty.hard,
-              categories: [],
-            ),
-            const Question(
-              id: QuestionId('d377713b-dfb7-4c22-88a4-3f6d340285dc'),
-              shortDescription: 'shortDescription',
-              description: 'description',
-              answerOptions: [],
-              difficulty: QuestionDifficulty.hard,
-              categories: [],
-            ),
-          ]
-        ],
-      ]),
-      (values) async {
-        final streamValues = values[0] as List<List<Question>>;
-        final stream = Stream.fromIterable(streamValues);
+            [
+              const Question(
+                id: QuestionId('15e194a8-8fa9-4b04-af8f-8d71491ac7e8'),
+                shortDescription: 'shortDescription',
+                description: 'description',
+                answerOptions: [],
+                difficulty: QuestionDifficulty.hard,
+                categories: [],
+              ),
+              const Question(
+                id: QuestionId('56d6a3c9-ebd5-4572-9c86-da328b986927'),
+                shortDescription: 'shortDescription',
+                description: 'description',
+                answerOptions: [],
+                difficulty: QuestionDifficulty.hard,
+                categories: [],
+              ),
+              const Question(
+                id: QuestionId('d377713b-dfb7-4c22-88a4-3f6d340285dc'),
+                shortDescription: 'shortDescription',
+                description: 'description',
+                answerOptions: [],
+                difficulty: QuestionDifficulty.hard,
+                categories: [],
+              ),
+            ]
+          ],
+        ]) {
+          test(streamValues.toString(), () async {
+            final stream = Stream.fromIterable(streamValues);
 
-        mocktail
-            .when(questionRepositoryMock.watchAll)
-            .thenAnswer((_) async => Result.ok(stream));
+            mocktail
+                .when(questionRepositoryMock.watchAll)
+                .thenAnswer((_) async => Result.ok(stream));
 
-        final result = await useCase.execute();
+            final result = await useCase.execute();
 
-        expect(result.isOk, isTrue);
+            expect(result.isOk, isTrue);
 
-        final actualStream = result.ok;
-        unawaited(expectLater(actualStream, emitsInOrder(streamValues)));
+            final actualStream = result.ok;
+            unawaited(expectLater(actualStream, emitsInOrder(streamValues)));
+          });
+        }
       },
     );
   });

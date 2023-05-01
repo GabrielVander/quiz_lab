@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
@@ -49,27 +48,29 @@ void main() {
   });
 
   group('ok flow', () {
-    parameterizedTest(
+    group(
       'should return question from question repository',
-      ParameterizedSource.value([
-        '',
-        'bjS',
-      ]),
-      (values) async {
-        final targetQuestionId = values[0] as String;
-        final questionMock = _QuestionMock();
+      () {
+        for (final targetQuestionId in [
+          '',
+          'bjS',
+        ]) {
+          test(targetQuestionId, () async {
+            final questionMock = _QuestionMock();
 
-        mocktail
-            .when(
-              () => questionRepositoryMock
-                  .getSingle(QuestionId(targetQuestionId)),
-            )
-            .thenAnswer((_) async => Result.ok(questionMock));
+            mocktail
+                .when(
+                  () => questionRepositoryMock
+                      .getSingle(QuestionId(targetQuestionId)),
+                )
+                .thenAnswer((_) async => Result.ok(questionMock));
 
-        final result = await useCase.execute(targetQuestionId);
+            final result = await useCase.execute(targetQuestionId);
 
-        expect(result.isOk, true);
-        expect(result.ok, questionMock);
+            expect(result.isOk, true);
+            expect(result.ok, questionMock);
+          });
+        }
       },
     );
   });

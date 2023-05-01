@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
@@ -47,9 +46,10 @@ void main() {
       );
     });
 
-    parameterizedTest(
-        'should call Appwrite data source correctly',
-        ParameterizedSource.values([
+    group(
+      'should call Appwrite data source correctly',
+      () {
+        for (final values in [
           [
             const Question(
               id: QuestionId(''),
@@ -142,25 +142,33 @@ void main() {
               ],
             )
           ],
-        ]), (values) async {
-      final question = values[0] as Question;
-      final expected = values[1] as AppwriteQuestionCreationModel;
+        ]) {
+          test(values.toString(), () async {
+            final question = values[0] as Question;
+            final expected = values[1] as AppwriteQuestionCreationModel;
 
-      mocktail
-          .when(
-            () => questionsAppwriteDataSourceMock.createSingle(mocktail.any()),
-          )
-          .thenAnswer(
-            (_) async =>
-                Result.err(QuestionsAppwriteDataSourceUnexpectedFailure('')),
-          );
+            mocktail
+                .when(
+                  () => questionsAppwriteDataSourceMock
+                      .createSingle(mocktail.any()),
+                )
+                .thenAnswer(
+                  (_) async => Result.err(
+                    QuestionsAppwriteDataSourceUnexpectedFailure(''),
+                  ),
+                );
 
-      await repository.createSingle(question);
+            await repository.createSingle(question);
 
-      mocktail
-          .verify(() => questionsAppwriteDataSourceMock.createSingle(expected))
-          .called(1);
-    });
+            mocktail
+                .verify(
+                  () => questionsAppwriteDataSourceMock.createSingle(expected),
+                )
+                .called(1);
+          });
+        }
+      },
+    );
 
     test('should return expected', () async {
       mocktail
@@ -186,163 +194,172 @@ void main() {
   });
 
   group('watchAll()', () {
-    parameterizedTest(
+    group(
       'should fetch questions on every update',
-      ParameterizedSource.value([
-        0,
-        // 1, mocktail does not register calls made inside a callback
-        // 3, mocktail does not register calls made inside a callback
-        // 99, mocktail does not register calls made inside a callback
-      ]),
-      (values) async {
-        final amountOfUpdates = values[0] as int;
+      () {
+        for (final amountOfUpdates in [
+          0,
+          // 1, mocktail does not register calls made inside a callback
+          // 3, mocktail does not register calls made inside a callback
+          // 99, mocktail does not register calls made inside a callback
+        ]) {
+          test(amountOfUpdates.toString(), () async {
+            final appwriteQuestionListModelMock =
+                _AppwriteQuestionListModelMock();
 
-        final appwriteQuestionListModelMock = _AppwriteQuestionListModelMock();
+            final updateMessages = List.generate(
+              amountOfUpdates,
+              (_) => _AppwriteRealtimeQuestionMessageModelMock(),
+            );
 
-        final updateMessages = List.generate(
-          amountOfUpdates,
-          (_) => _AppwriteRealtimeQuestionMessageModelMock(),
-        );
+            final stream = Stream.fromIterable(updateMessages);
 
-        final stream = Stream.fromIterable(updateMessages);
+            mocktail
+                .when(
+                  () =>
+                      appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+                )
+                .thenAnswer((_) => stream);
 
-        mocktail
-            .when(
+            mocktail
+                .when(() => appwriteQuestionListModelMock.total)
+                .thenReturn(0);
+            mocktail
+                .when(() => appwriteQuestionListModelMock.questions)
+                .thenReturn([]);
+
+            mocktail
+                .when(() => appwriteDataSourceMock.getAllQuestions())
+                .thenAnswer((_) async => appwriteQuestionListModelMock);
+
+            await repository.watchAll();
+
+            mocktail.verify(
               () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
-            )
-            .thenAnswer((_) => stream);
+            );
 
-        mocktail.when(() => appwriteQuestionListModelMock.total).thenReturn(0);
-        mocktail
-            .when(() => appwriteQuestionListModelMock.questions)
-            .thenReturn([]);
-
-        mocktail
-            .when(() => appwriteDataSourceMock.getAllQuestions())
-            .thenAnswer((_) async => appwriteQuestionListModelMock);
-
-        await repository.watchAll();
-
-        mocktail.verify(
-          () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
-        );
-
-        mocktail
-            .verify(() => appwriteDataSourceMock.getAllQuestions())
-            .called(amountOfUpdates + 1);
+            mocktail
+                .verify(() => appwriteDataSourceMock.getAllQuestions())
+                .called(amountOfUpdates + 1);
+          });
+        }
       },
     );
 
-    parameterizedTest(
+    group(
       'should emit expected',
-      ParameterizedSource.values([
-        [
-          const AppwriteQuestionListModel(total: 0, questions: []),
-          <Question>[]
-        ],
-        [
-          const AppwriteQuestionListModel(
-            total: 1,
-            questions: [
-              AppwriteQuestionModel(
-                id: '',
-                createdAt: '',
-                updatedAt: '',
-                permissions: [],
-                collectionId: '',
-                databaseId: '',
-                title: '',
+      () {
+        for (final values in [
+          [
+            const AppwriteQuestionListModel(total: 0, questions: []),
+            <Question>[]
+          ],
+          [
+            const AppwriteQuestionListModel(
+              total: 1,
+              questions: [
+                AppwriteQuestionModel(
+                  id: '',
+                  createdAt: '',
+                  updatedAt: '',
+                  permissions: [],
+                  collectionId: '',
+                  databaseId: '',
+                  title: '',
+                  description: '',
+                  difficulty: '',
+                  options: [],
+                  categories: [],
+                )
+              ],
+            ),
+            <Question>[
+              const Question(
+                id: QuestionId(''),
+                shortDescription: '',
                 description: '',
-                difficulty: '',
-                options: [],
+                answerOptions: [],
+                difficulty: QuestionDifficulty.unknown,
                 categories: [],
               )
-            ],
-          ),
-          <Question>[
-            const Question(
-              id: QuestionId(''),
-              shortDescription: '',
-              description: '',
-              answerOptions: [],
-              difficulty: QuestionDifficulty.unknown,
-              categories: [],
-            )
-          ]
-        ],
-        [
-          const AppwriteQuestionListModel(
-            total: 3,
-            questions: [
-              AppwriteQuestionModel(
-                id: r'PfZ*N22$',
-                createdAt: 'J14ud1p^',
-                updatedAt: 'GhC86Sv',
-                permissions: ['OH@', '#k7', 'P3%9*Q9'],
-                collectionId: 'qqB',
-                databaseId: 'lJ4',
-                title: 'ZosGBFx3',
+            ]
+          ],
+          [
+            const AppwriteQuestionListModel(
+              total: 3,
+              questions: [
+                AppwriteQuestionModel(
+                  id: r'PfZ*N22$',
+                  createdAt: 'J14ud1p^',
+                  updatedAt: 'GhC86Sv',
+                  permissions: ['OH@', '#k7', 'P3%9*Q9'],
+                  collectionId: 'qqB',
+                  databaseId: 'lJ4',
+                  title: 'ZosGBFx3',
+                  description: 'be%92n',
+                  difficulty: 'easy',
+                  options: [
+                    AppwriteQuestionOptionModel(
+                      description: '1Dj@',
+                      isCorrect: false,
+                    ),
+                    AppwriteQuestionOptionModel(
+                      description: 'Az^81FLU',
+                      isCorrect: true,
+                    ),
+                    AppwriteQuestionOptionModel(
+                      description: '6Wi',
+                      isCorrect: false,
+                    ),
+                  ],
+                  categories: ['@#Ij', '@s@urTl', '4UPz'],
+                )
+              ],
+            ),
+            <Question>[
+              const Question(
+                id: QuestionId(r'PfZ*N22$'),
+                shortDescription: 'ZosGBFx3',
                 description: 'be%92n',
-                difficulty: 'easy',
-                options: [
-                  AppwriteQuestionOptionModel(
-                    description: '1Dj@',
-                    isCorrect: false,
-                  ),
-                  AppwriteQuestionOptionModel(
-                    description: 'Az^81FLU',
-                    isCorrect: true,
-                  ),
-                  AppwriteQuestionOptionModel(
-                    description: '6Wi',
-                    isCorrect: false,
-                  ),
+                answerOptions: [
+                  AnswerOption(description: '1Dj@', isCorrect: false),
+                  AnswerOption(description: 'Az^81FLU', isCorrect: true),
+                  AnswerOption(description: '6Wi', isCorrect: false),
                 ],
-                categories: ['@#Ij', '@s@urTl', '4UPz'],
+                difficulty: QuestionDifficulty.easy,
+                categories: [
+                  QuestionCategory(value: '@#Ij'),
+                  QuestionCategory(value: '@s@urTl'),
+                  QuestionCategory(value: '4UPz'),
+                ],
               )
-            ],
-          ),
-          <Question>[
-            const Question(
-              id: QuestionId(r'PfZ*N22$'),
-              shortDescription: 'ZosGBFx3',
-              description: 'be%92n',
-              answerOptions: [
-                AnswerOption(description: '1Dj@', isCorrect: false),
-                AnswerOption(description: 'Az^81FLU', isCorrect: true),
-                AnswerOption(description: '6Wi', isCorrect: false),
-              ],
-              difficulty: QuestionDifficulty.easy,
-              categories: [
-                QuestionCategory(value: '@#Ij'),
-                QuestionCategory(value: '@s@urTl'),
-                QuestionCategory(value: '4UPz'),
-              ],
-            )
-          ]
-        ],
-      ]),
-      (values) async {
-        final appwriteQuestionListModel =
-            values[0] as AppwriteQuestionListModel;
-        final expected = values[1] as List<Question>;
+            ]
+          ],
+        ]) {
+          test(values.toString(), () async {
+            final appwriteQuestionListModel =
+                values[0] as AppwriteQuestionListModel;
+            final expected = values[1] as List<Question>;
 
-        mocktail
-            .when(
-              () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
-            )
-            .thenAnswer(
-              (_) => const Stream.empty(),
-            );
+            mocktail
+                .when(
+                  () =>
+                      appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+                )
+                .thenAnswer(
+                  (_) => const Stream.empty(),
+                );
 
-        mocktail
-            .when(() => appwriteDataSourceMock.getAllQuestions())
-            .thenAnswer((_) async => appwriteQuestionListModel);
+            mocktail
+                .when(() => appwriteDataSourceMock.getAllQuestions())
+                .thenAnswer((_) async => appwriteQuestionListModel);
 
-        final result = await repository.watchAll();
+            final result = await repository.watchAll();
 
-        expect(result.isOk, true);
-        expect(result.ok, emits(expected));
+            expect(result.isOk, true);
+            expect(result.ok, emits(expected));
+          });
+        }
       },
     );
   });
@@ -350,34 +367,35 @@ void main() {
   group(
     'deleteSingle()',
     () {
-      parameterizedTest(
+      group(
         'should call questions Appwrite data source correctly',
-        ParameterizedSource.value([
-          const QuestionId(''),
-          const QuestionId('olp'),
-        ]),
-        (values) {
-          final questionId = values[0] as QuestionId;
+        () {
+          for (final questionId in [
+            const QuestionId(''),
+            const QuestionId('olp'),
+          ]) {
+            test(questionId.toString(), () {
+              mocktail
+                  .when(
+                    () => questionsAppwriteDataSourceMock
+                        .deleteSingle(mocktail.any()),
+                  )
+                  .thenAnswer(
+                    (_) async => Result.err(
+                      QuestionsAppwriteDataSourceUnexpectedFailure(r'T8$W7'),
+                    ),
+                  );
 
-          mocktail
-              .when(
-                () => questionsAppwriteDataSourceMock
-                    .deleteSingle(mocktail.any()),
-              )
-              .thenAnswer(
-                (_) async => Result.err(
-                  QuestionsAppwriteDataSourceUnexpectedFailure(r'T8$W7'),
-                ),
-              );
+              repository.deleteSingle(questionId);
 
-          repository.deleteSingle(questionId);
-
-          mocktail
-              .verify(
-                () => questionsAppwriteDataSourceMock
-                    .deleteSingle(questionId.value),
-              )
-              .called(1);
+              mocktail
+                  .verify(
+                    () => questionsAppwriteDataSourceMock
+                        .deleteSingle(questionId.value),
+                  )
+                  .called(1);
+            });
+          }
         },
       );
 
@@ -401,76 +419,81 @@ void main() {
         },
       );
 
-      parameterizedTest(
+      group(
         'should return expected failure when questions Appwrite data source '
         'fails',
-        ParameterizedSource.values([
-          [
-            QuestionsAppwriteDataSourceUnexpectedFailure(''),
-            const QuestionRepositoryUnexpectedFailure(message: ''),
-          ],
-          [
-            QuestionsAppwriteDataSourceUnexpectedFailure('Nl5af77'),
-            const QuestionRepositoryUnexpectedFailure(message: 'Nl5af77'),
-          ],
-          [
-            QuestionsAppwriteDataSourceAppwriteFailure(''),
-            const QuestionRepositoryExternalServiceErrorFailure(message: ''),
-          ],
-          [
-            QuestionsAppwriteDataSourceAppwriteFailure(r'E!!$'),
-            const QuestionRepositoryExternalServiceErrorFailure(
-              message: r'E!!$',
-            ),
-          ],
-        ]),
-        (values) async {
-          final dataSourceFailure =
-              values[0] as QuestionsAppwriteDataSourceFailure;
-          final expected = values[1] as QuestionRepositoryFailure;
+        () {
+          for (final values in [
+            [
+              QuestionsAppwriteDataSourceUnexpectedFailure(''),
+              const QuestionRepositoryUnexpectedFailure(message: ''),
+            ],
+            [
+              QuestionsAppwriteDataSourceUnexpectedFailure('Nl5af77'),
+              const QuestionRepositoryUnexpectedFailure(message: 'Nl5af77'),
+            ],
+            [
+              QuestionsAppwriteDataSourceAppwriteFailure(''),
+              const QuestionRepositoryExternalServiceErrorFailure(message: ''),
+            ],
+            [
+              QuestionsAppwriteDataSourceAppwriteFailure(r'E!!$'),
+              const QuestionRepositoryExternalServiceErrorFailure(
+                message: r'E!!$',
+              ),
+            ],
+          ]) {
+            test(values.toString(), () async {
+              final dataSourceFailure =
+                  values[0] as QuestionsAppwriteDataSourceFailure;
+              final expected = values[1] as QuestionRepositoryFailure;
 
-          mocktail
-              .when(
-                () => questionsAppwriteDataSourceMock
-                    .deleteSingle(mocktail.any()),
-              )
-              .thenAnswer((_) async => Result.err(dataSourceFailure));
+              mocktail
+                  .when(
+                    () => questionsAppwriteDataSourceMock
+                        .deleteSingle(mocktail.any()),
+                  )
+                  .thenAnswer((_) async => Result.err(dataSourceFailure));
 
-          final result =
-              await repository.deleteSingle(const QuestionId('cNPJl@*x'));
+              final result =
+                  await repository.deleteSingle(const QuestionId('cNPJl@*x'));
 
-          expect(result.isErr, true);
-          expect(result.err, expected);
+              expect(result.isErr, true);
+              expect(result.err, expected);
+            });
+          }
         },
       );
     },
   );
 
   group('getSingle()', () {
-    parameterizedTest(
+    group(
       'should call questions Appwrite data source correctly',
-      ParameterizedSource.value([
-        '',
-        'P6m74A',
-      ]),
-      (values) {
-        final questionId = values[0] as String;
+      () {
+        for (final questionId in [
+          '',
+          'P6m74A',
+        ]) {
+          test(questionId, () {
+            mocktail
+                .when(
+                  () => questionsAppwriteDataSourceMock
+                      .fetchSingle(mocktail.any()),
+                )
+                .thenAnswer(
+                  (_) async => Result.err(
+                    QuestionsAppwriteDataSourceUnexpectedFailure('X90^#SU'),
+                  ),
+                );
 
-        mocktail
-            .when(
-              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
-            )
-            .thenAnswer(
-              (_) async => Result.err(
-                QuestionsAppwriteDataSourceUnexpectedFailure('X90^#SU'),
-              ),
-            );
+            repository.getSingle(QuestionId(questionId));
 
-        repository.getSingle(QuestionId(questionId));
-
-        mocktail.verify(
+            mocktail.verify(
               () => questionsAppwriteDataSourceMock.fetchSingle(questionId),
-        );
+            );
+          });
+        }
       },
     );
 
@@ -497,44 +520,49 @@ void main() {
       },
     );
 
-    parameterizedTest(
+    group(
       'should return expected failure when questions Appwrite data source '
       'fails',
-      ParameterizedSource.values([
-        [
-          QuestionsAppwriteDataSourceUnexpectedFailure(''),
-          const QuestionRepositoryUnexpectedFailure(message: ''),
-        ],
-        [
-          QuestionsAppwriteDataSourceUnexpectedFailure('RdR'),
-          const QuestionRepositoryUnexpectedFailure(message: 'RdR'),
-        ],
-        [
-          QuestionsAppwriteDataSourceAppwriteFailure(''),
-          const QuestionRepositoryExternalServiceErrorFailure(message: ''),
-        ],
-        [
-          QuestionsAppwriteDataSourceAppwriteFailure('VD4'),
-          const QuestionRepositoryExternalServiceErrorFailure(
-            message: 'VD4',
-          ),
-        ],
-      ]),
-      (values) async {
-        final dataSourceFailure =
-            values[0] as QuestionsAppwriteDataSourceFailure;
-        final expected = values[1] as QuestionRepositoryFailure;
+      () {
+        for (final values in [
+          [
+            QuestionsAppwriteDataSourceUnexpectedFailure(''),
+            const QuestionRepositoryUnexpectedFailure(message: ''),
+          ],
+          [
+            QuestionsAppwriteDataSourceUnexpectedFailure('RdR'),
+            const QuestionRepositoryUnexpectedFailure(message: 'RdR'),
+          ],
+          [
+            QuestionsAppwriteDataSourceAppwriteFailure(''),
+            const QuestionRepositoryExternalServiceErrorFailure(message: ''),
+          ],
+          [
+            QuestionsAppwriteDataSourceAppwriteFailure('VD4'),
+            const QuestionRepositoryExternalServiceErrorFailure(
+              message: 'VD4',
+            ),
+          ],
+        ]) {
+          test(values.toString(), () async {
+            final dataSourceFailure =
+                values[0] as QuestionsAppwriteDataSourceFailure;
+            final expected = values[1] as QuestionRepositoryFailure;
 
-        mocktail
-            .when(
-              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
-            )
-            .thenAnswer((_) async => Result.err(dataSourceFailure));
+            mocktail
+                .when(
+                  () => questionsAppwriteDataSourceMock
+                      .fetchSingle(mocktail.any()),
+                )
+                .thenAnswer((_) async => Result.err(dataSourceFailure));
 
-        final result = await repository.getSingle(const QuestionId('2%E5%'));
+            final result =
+                await repository.getSingle(const QuestionId('2%E5%'));
 
-        expect(result.isErr, true);
-        expect(result.err, expected);
+            expect(result.isErr, true);
+            expect(result.err, expected);
+          });
+        }
       },
     );
   });

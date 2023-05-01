@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
@@ -8,9 +7,8 @@ import 'package:quiz_lab/features/question_management/presentation/managers/ques
 
 void main() {
   group('fromQuestion', () {
-    parameterizedTest(
-      'should return a valid QuestionOverviewViewModel',
-      ParameterizedSource.values([
+    group('should return a valid QuestionOverviewViewModel', () {
+      for (final values in [
         [
           const Question(
             id: QuestionId(''),
@@ -93,71 +91,75 @@ void main() {
             categories: [],
           ),
         ],
-      ]),
-      (values) {
-        final question = values[0] as Question;
-        final expected = values[1] as QuestionsOverviewItemViewModel;
+      ]) {
+        test(values.toString(), () {
+          final question = values[0] as Question;
+          final expected = values[1] as QuestionsOverviewItemViewModel;
 
-        final result = QuestionsOverviewItemViewModel.fromQuestion(question);
+          final result = QuestionsOverviewItemViewModel.fromQuestion(question);
 
-        expect(result, expected);
-      },
-    );
+          expect(result, expected);
+        });
+      }
+    });
   });
 
-  parameterizedTest(
+  group(
     'toQuestion should map correctly',
-    ParameterizedSource.values([
-      [
-        const QuestionsOverviewItemViewModel(
-          id: '',
-          shortDescription: '',
-          description: '',
-          categories: [],
-          difficulty: 'unknown',
-        ),
-        const Question(
-          id: QuestionId(''),
-          shortDescription: '',
-          description: '',
-          answerOptions: [],
-          categories: [],
-          difficulty: QuestionDifficulty.unknown,
-        )
-      ],
-      [
-        const QuestionsOverviewItemViewModel(
-          id: 'hiTGMK',
-          shortDescription: 'Ico',
-          description: '9J7c',
-          categories: [
-            'GcroY&',
-            '9vmI4c',
-            'Zra7R#',
-          ],
-          difficulty: 'easy',
-        ),
-        const Question(
-          id: QuestionId('hiTGMK'),
-          shortDescription: 'Ico',
-          description: '9J7c',
-          answerOptions: [],
-          categories: [
-            QuestionCategory(value: 'GcroY&'),
-            QuestionCategory(value: '9vmI4c'),
-            QuestionCategory(value: 'Zra7R#'),
-          ],
-          difficulty: QuestionDifficulty.easy,
-        )
-      ],
-    ]),
-    (values) {
-      final viewModel = values[0] as QuestionsOverviewItemViewModel;
-      final expectedQuestion = values[1] as Question;
+    () {
+      for (final values in [
+        [
+          const QuestionsOverviewItemViewModel(
+            id: '',
+            shortDescription: '',
+            description: '',
+            categories: [],
+            difficulty: 'unknown',
+          ),
+          const Question(
+            id: QuestionId(''),
+            shortDescription: '',
+            description: '',
+            answerOptions: [],
+            categories: [],
+            difficulty: QuestionDifficulty.unknown,
+          )
+        ],
+        [
+          const QuestionsOverviewItemViewModel(
+            id: 'hiTGMK',
+            shortDescription: 'Ico',
+            description: '9J7c',
+            categories: [
+              'GcroY&',
+              '9vmI4c',
+              'Zra7R#',
+            ],
+            difficulty: 'easy',
+          ),
+          const Question(
+            id: QuestionId('hiTGMK'),
+            shortDescription: 'Ico',
+            description: '9J7c',
+            answerOptions: [],
+            categories: [
+              QuestionCategory(value: 'GcroY&'),
+              QuestionCategory(value: '9vmI4c'),
+              QuestionCategory(value: 'Zra7R#'),
+            ],
+            difficulty: QuestionDifficulty.easy,
+          )
+        ],
+      ]) {
+        test(values.toString(), () {
+          final viewModel = values[0] as QuestionsOverviewItemViewModel;
+          final expectedQuestion = values[1] as Question;
 
-      final result = viewModel.toQuestion();
+          final result = viewModel.toQuestion();
 
-      expect(result, expectedQuestion);
+          expect(result, expectedQuestion);
+        });
+      }
     },
   );
 }

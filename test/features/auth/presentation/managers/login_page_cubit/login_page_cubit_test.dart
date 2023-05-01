@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
@@ -39,105 +38,23 @@ void main() {
   );
 
   group('onEmailChange', () {
-    parameterizedTest(
+    group(
       'should emit [LoginPageViewModelUpdated] with given email value and '
       'should be showing errors',
-      ParameterizedSource.value([
-        '',
-        '6bpedZ*',
-      ]),
-      (values) {
-        final email = values[0] as String;
+      () {
+        for (final email in [
+          '',
+          '6bpedZ*',
+        ]) {
+          test(email, () {
+            cubit.onEmailChange(email);
 
-        cubit.onEmailChange(email);
-
-        expect(
-          cubit.state,
-          isA<LoginPageViewModelUpdated>().having(
-            (state) => state.viewModel,
-            'viewModel',
-            isA<LoginPageViewModel>().having(
-              (viewModel) => viewModel.email,
-              'email',
-              isA<EmailViewModel>()
-                  .having(
-                    (vm) => vm.value,
-                    'value',
-                    email,
-                  )
-                  .having(
-                    (vm) => vm.showError,
-                    'showError',
-                    true,
-                  ),
-            ),
-          ),
-        );
-      },
-    );
-  });
-
-  group('onPasswordChange', () {
-    parameterizedTest(
-      'should emit [LoginPageViewModelUpdated] with given password value and '
-      'should be showing errors',
-      ParameterizedSource.value([
-        '',
-        'NE#o%',
-      ]),
-      (values) {
-        final password = values[0] as String;
-
-        cubit.onPasswordChange(password);
-
-        expect(
-          cubit.state,
-          isA<LoginPageViewModelUpdated>().having(
-            (state) => state.viewModel,
-            'viewModel',
-            isA<LoginPageViewModel>().having(
-              (viewModel) => viewModel.password,
-              'password',
-              isA<PasswordViewModel>()
-                  .having(
-                    (vm) => vm.value,
-                    'value',
-                    password,
-                  )
-                  .having(
-                    (vm) => vm.showError,
-                    'showError',
-                    true,
-                  ),
-            ),
-          ),
-        );
-      },
-    );
-  });
-
-  group('onLogin', () {
-    parameterizedTest(
-      'should emit [LoginPageViewModelUpdated] showing errors if email/password have issues',
-      ParameterizedSource.values([
-        ['', ''],
-      ]),
-      (values) {
-        final email = values[0] as String;
-        final password = values[1] as String;
-
-        cubit
-          ..onEmailChange(email)
-          ..onPasswordChange(password)
-          ..onLogin();
-
-        expect(
-          cubit.state,
-          isA<LoginPageViewModelUpdated>().having(
-            (state) => state.viewModel,
-            'viewModel',
-            isA<LoginPageViewModel>()
-                .having(
+            expect(
+              cubit.state,
+              isA<LoginPageViewModelUpdated>().having(
+                (state) => state.viewModel,
+                'viewModel',
+                isA<LoginPageViewModel>().having(
                   (viewModel) => viewModel.email,
                   'email',
                   isA<EmailViewModel>()
@@ -151,8 +68,33 @@ void main() {
                         'showError',
                         true,
                       ),
-                )
-                .having(
+                ),
+              ),
+            );
+          });
+        }
+      },
+    );
+  });
+
+  group('onPasswordChange', () {
+    group(
+      'should emit [LoginPageViewModelUpdated] with given password value and '
+      'should be showing errors',
+      () {
+        for (final password in [
+          '',
+          'NE#o%',
+        ]) {
+          test(password, () {
+            cubit.onPasswordChange(password);
+
+            expect(
+              cubit.state,
+              isA<LoginPageViewModelUpdated>().having(
+                (state) => state.viewModel,
+                'viewModel',
+                isA<LoginPageViewModel>().having(
                   (viewModel) => viewModel.password,
                   'password',
                   isA<PasswordViewModel>()
@@ -167,8 +109,70 @@ void main() {
                         true,
                       ),
                 ),
-          ),
-        );
+              ),
+            );
+          });
+        }
+      },
+    );
+  });
+
+  group('onLogin', () {
+    group(
+      'should emit [LoginPageViewModelUpdated] showing errors if email/password have issues',
+      () {
+        for (final values in [
+          ['', ''],
+        ]) {
+          test(values.toString(), () {
+            final email = values[0];
+            final password = values[1];
+
+            cubit
+              ..onEmailChange(email)
+              ..onPasswordChange(password)
+              ..onLogin();
+
+            expect(
+              cubit.state,
+              isA<LoginPageViewModelUpdated>().having(
+                (state) => state.viewModel,
+                'viewModel',
+                isA<LoginPageViewModel>()
+                    .having(
+                      (viewModel) => viewModel.email,
+                      'email',
+                      isA<EmailViewModel>()
+                          .having(
+                            (vm) => vm.value,
+                            'value',
+                            email,
+                          )
+                          .having(
+                            (vm) => vm.showError,
+                            'showError',
+                            true,
+                          ),
+                    )
+                    .having(
+                      (viewModel) => viewModel.password,
+                      'password',
+                      isA<PasswordViewModel>()
+                          .having(
+                            (vm) => vm.value,
+                            'value',
+                            password,
+                          )
+                          .having(
+                            (vm) => vm.showError,
+                            'showError',
+                            true,
+                          ),
+                    ),
+              ),
+            );
+          });
+        }
       },
     );
 

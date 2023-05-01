@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
@@ -131,84 +130,90 @@ void main() {
       });
     }
 
-    parameterizedTest(
+    group(
       'should emit error if use case fails',
-      ParameterizedSource.values([
-        [
-          '',
+      () {
+        for (final values in [
           [
-            isA<QuestionsOverviewLoading>(),
-            isA<QuestionsOverviewErrorOccurred>().having(
-              (state) => state.message,
-              'message',
-              '',
-            ),
-          ],
-        ],
-        [
-          'v^s',
-          [
-            isA<QuestionsOverviewLoading>(),
-            isA<QuestionsOverviewErrorOccurred>().having(
-              (state) => state.message,
-              'message',
-              'v^s',
-            ),
-          ],
-        ],
-      ]),
-      (values) {
-        final message = values[0] as String;
-        final expectedStates = values[1] as List<Matcher>;
-
-        mocktail.when(watchAllQuestionsUseCaseMock.execute).thenAnswer(
-              (_) async => Result.err(
-                WatchAllQuestionsFailure.generic(message: message),
+            '',
+            [
+              isA<QuestionsOverviewLoading>(),
+              isA<QuestionsOverviewErrorOccurred>().having(
+                (state) => state.message,
+                'message',
+                '',
               ),
-            );
+            ],
+          ],
+          [
+            'v^s',
+            [
+              isA<QuestionsOverviewLoading>(),
+              isA<QuestionsOverviewErrorOccurred>().having(
+                (state) => state.message,
+                'message',
+                'v^s',
+              ),
+            ],
+          ],
+        ]) {
+          test(values.toString(), () {
+            final message = values[0] as String;
+            final expectedStates = values[1] as List<Matcher>;
 
-        expectLater(cubit.stream, emitsInOrder(expectedStates));
+            mocktail.when(watchAllQuestionsUseCaseMock.execute).thenAnswer(
+                  (_) async => Result.err(
+                    WatchAllQuestionsFailure.generic(message: message),
+                  ),
+                );
 
-        cubit.updateQuestions();
+            expectLater(cubit.stream, emitsInOrder(expectedStates));
+
+            cubit.updateQuestions();
+          });
+        }
       },
     );
   });
 
   group('removeQuestion', () {
-    parameterizedTest(
+    group(
       'should emit expected states',
-      ParameterizedSource.values([
-        [
-          '',
+      () {
+        for (final values in [
           [
-            isA<QuestionsOverviewLoading>(),
-          ]
-        ],
-        [
-          '@Js',
+            '',
+            [
+              isA<QuestionsOverviewLoading>(),
+            ]
+          ],
           [
-            isA<QuestionsOverviewLoading>(),
-          ]
-        ],
-      ]),
-      (values) {
-        final questionId = values[0] as String;
-        final expectedStates = values[1] as List<Matcher>;
+            '@Js',
+            [
+              isA<QuestionsOverviewLoading>(),
+            ]
+          ],
+        ]) {
+          test(values.toString(), () {
+            final questionId = values[0] as String;
+            final expectedStates = values[1] as List<Matcher>;
 
-        final questionOverviewItemViewModelMock =
-            _QuestionOverviewItemViewModelMock();
+            final questionOverviewItemViewModelMock =
+                _QuestionOverviewItemViewModelMock();
 
-        mocktail
-            .when(() => questionOverviewItemViewModelMock.id)
-            .thenReturn(questionId);
+            mocktail
+                .when(() => questionOverviewItemViewModelMock.id)
+                .thenReturn(questionId);
 
-        mocktail
-            .when(() => deleteQuestionUseCaseMock.execute(questionId))
-            .thenAnswer((_) async {});
+            mocktail
+                .when(() => deleteQuestionUseCaseMock.execute(questionId))
+                .thenAnswer((_) async {});
 
-        expectLater(cubit.stream, emitsInOrder(expectedStates));
+            expectLater(cubit.stream, emitsInOrder(expectedStates));
 
-        cubit.removeQuestion(questionOverviewItemViewModelMock);
+            cubit.removeQuestion(questionOverviewItemViewModelMock);
+          });
+        }
       },
     );
   });
@@ -229,73 +234,76 @@ void main() {
       },
     );
 
-    parameterizedTest(
+    group(
       'should emit expected states',
-      ParameterizedSource.values([
-        [
-          Result<Unit, UpdateQuestionUseCaseFailure>.err(
-            UpdateQuestionUseCaseFailure.repositoryFailure(''),
-          ),
+      () {
+        for (final values in [
           [
-            isA<QuestionsOverviewLoading>(),
-          ]
-        ],
-        [
-          Result<Unit, UpdateQuestionUseCaseFailure>.err(
-            UpdateQuestionUseCaseFailure.repositoryFailure(''),
-          ),
-          [
-            isA<QuestionsOverviewLoading>(),
-          ]
-        ],
-        [
-          Result<Unit, UpdateQuestionUseCaseFailure>.err(
-            UpdateQuestionUseCaseFailure.repositoryFailure(''),
-          ),
-          [
-            isA<QuestionsOverviewLoading>(),
-            isA<QuestionsOverviewErrorOccurred>().having(
-              (state) => state.message,
-              'message',
-              UpdateQuestionUseCaseFailure.repositoryFailure('').message,
+            Result<Unit, UpdateQuestionUseCaseFailure>.err(
+              UpdateQuestionUseCaseFailure.repositoryFailure(''),
             ),
-          ]
-        ],
-        [
-          Result<Unit, UpdateQuestionUseCaseFailure>.err(
-            UpdateQuestionUseCaseFailure.repositoryFailure('#1q'),
-          ),
+            [
+              isA<QuestionsOverviewLoading>(),
+            ]
+          ],
           [
-            isA<QuestionsOverviewLoading>(),
-            isA<QuestionsOverviewErrorOccurred>().having(
-              (state) => state.message,
-              'message',
-              UpdateQuestionUseCaseFailure.repositoryFailure('#1q').message,
+            Result<Unit, UpdateQuestionUseCaseFailure>.err(
+              UpdateQuestionUseCaseFailure.repositoryFailure(''),
             ),
-          ]
-        ],
-      ]),
-      (values) {
-        final updateQuestionUseCaseResult =
-            values[0] as Result<Unit, UpdateQuestionUseCaseFailure>;
-        final expectedStates = values[1] as List<Matcher>;
+            [
+              isA<QuestionsOverviewLoading>(),
+            ]
+          ],
+          [
+            Result<Unit, UpdateQuestionUseCaseFailure>.err(
+              UpdateQuestionUseCaseFailure.repositoryFailure(''),
+            ),
+            [
+              isA<QuestionsOverviewLoading>(),
+              isA<QuestionsOverviewErrorOccurred>().having(
+                (state) => state.message,
+                'message',
+                UpdateQuestionUseCaseFailure.repositoryFailure('').message,
+              ),
+            ]
+          ],
+          [
+            Result<Unit, UpdateQuestionUseCaseFailure>.err(
+              UpdateQuestionUseCaseFailure.repositoryFailure('#1q'),
+            ),
+            [
+              isA<QuestionsOverviewLoading>(),
+              isA<QuestionsOverviewErrorOccurred>().having(
+                (state) => state.message,
+                'message',
+                UpdateQuestionUseCaseFailure.repositoryFailure('#1q').message,
+              ),
+            ]
+          ],
+        ]) {
+          test(values.toString(), () {
+            final updateQuestionUseCaseResult =
+                values[0] as Result<Unit, UpdateQuestionUseCaseFailure>;
+            final expectedStates = values[1] as List<Matcher>;
 
-        final viewModelMock = _QuestionOverviewItemViewModelMock();
-        final questionMock = _QuestionMock();
+            final viewModelMock = _QuestionOverviewItemViewModelMock();
+            final questionMock = _QuestionMock();
 
-        mocktail
-            .when(() => viewModelMock.shortDescription)
-            .thenReturn('gImVFe1#');
+            mocktail
+                .when(() => viewModelMock.shortDescription)
+                .thenReturn('gImVFe1#');
 
-        mocktail.when(viewModelMock.toQuestion).thenReturn(questionMock);
+            mocktail.when(viewModelMock.toQuestion).thenReturn(questionMock);
 
-        mocktail
-            .when(() => updateQuestionUseCaseMock.execute(mocktail.any()))
-            .thenAnswer((_) async => updateQuestionUseCaseResult);
+            mocktail
+                .when(() => updateQuestionUseCaseMock.execute(mocktail.any()))
+                .thenAnswer((_) async => updateQuestionUseCaseResult);
 
-        expectLater(cubit.stream, emitsInOrder(expectedStates));
+            expectLater(cubit.stream, emitsInOrder(expectedStates));
 
-        cubit.onQuestionSaved(viewModelMock);
+            cubit.onQuestionSaved(viewModelMock);
+          });
+        }
       },
     );
   });

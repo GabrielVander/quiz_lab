@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
@@ -17,54 +16,57 @@ void main() {
 
   tearDown(mocktail.resetMocktailState);
 
-  parameterizedTest(
-    'logError',
-    ParameterizedSource.value([
-      '',
-      'NQJ9LFrX',
-    ]),
-    (values) {
-      final message = values[0] as String;
+  group(
+    'error',
+    () {
+      for (final message in [
+        '',
+        'NQJ9LFrX',
+      ]) {
+        test(message, () {
+          mocktail.when(() => loggerMock.severe(message)).thenReturn(null);
 
-      mocktail.when(() => loggerMock.severe(message)).thenReturn(null);
+          loggerImpl.error(message);
 
-      loggerImpl.error(message);
-
-      mocktail.verify(() => loggerMock.severe(message)).called(1);
+          mocktail.verify(() => loggerMock.severe(message)).called(1);
+        });
+      }
     },
   );
 
-  parameterizedTest(
-    'logInfo',
-    ParameterizedSource.value([
-      '',
-      '0R#',
-    ]),
-    (values) {
-      final message = values[0] as String;
+  group(
+    'info',
+    () {
+      for (final message in [
+        '',
+        '0R#',
+      ]) {
+        test(message, () {
+          mocktail.when(() => loggerMock.info(message)).thenReturn(null);
 
-      mocktail.when(() => loggerMock.info(message)).thenReturn(null);
+          loggerImpl.info(message);
 
-      loggerImpl.info(message);
-
-      mocktail.verify(() => loggerMock.info(message)).called(1);
+          mocktail.verify(() => loggerMock.info(message)).called(1);
+        });
+      }
     },
   );
 
-  parameterizedTest(
-    'logWarning',
-    ParameterizedSource.value([
-      '',
-      '@%y^^',
-    ]),
-    (values) {
-      final message = values[0] as String;
+  group(
+    'warn',
+    () {
+      for (final message in [
+        '',
+        '@%y^^',
+      ]) {
+        test(message, () {
+          mocktail.when(() => loggerMock.warning(message)).thenReturn(null);
 
-      mocktail.when(() => loggerMock.warning(message)).thenReturn(null);
+          loggerImpl.warn(message);
 
-      loggerImpl.warn(message);
-
-      mocktail.verify(() => loggerMock.warning(message)).called(1);
+          mocktail.verify(() => loggerMock.warning(message)).called(1);
+        });
+      }
     },
   );
 }

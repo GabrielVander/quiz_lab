@@ -1,5 +1,4 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
@@ -16,29 +15,36 @@ void main() {
     diMock = _DependencyInjectionMock();
   });
 
-  parameterizedTest(
+  group(
     'should register all dependencies',
-    ParameterizedSource.values([
-      [Account, () => _check<Account>(diMock)],
-      [Databases, () => _check<Databases>(diMock)],
-      [Realtime, () => _check<Realtime>(diMock)],
-      [AppwriteConnector, () => _check<AppwriteConnector>(diMock)],
-      [AppwriteDataSource, () => _check<AppwriteDataSource>(diMock)],
-      [NetworkCubit, () => _check<NetworkCubit>(diMock)],
-      [BottomNavigationCubit, () => _check<BottomNavigationCubit>(diMock)],
-    ]),
-    (values) {
-      final check = values[1] as void Function();
+    () {
+      for (final values in [
+        [Account, () => _check<Account>(diMock)],
+        [Databases, () => _check<Databases>(diMock)],
+        [Realtime, () => _check<Realtime>(diMock)],
+        [AppwriteConnector, () => _check<AppwriteConnector>(diMock)],
+        [AppwriteDataSource, () => _check<AppwriteDataSource>(diMock)],
+        [NetworkCubit, () => _check<NetworkCubit>(diMock)],
+        [BottomNavigationCubit, () => _check<BottomNavigationCubit>(diMock)],
+      ]) {
+        test(values.toString(), () {
+          final check = values[1] as void Function();
 
-      mocktail.when(() => diMock.get<Client>()).thenReturn(_FakeClient());
-      mocktail.when(() => diMock.get<Account>()).thenReturn(_AccountMock());
-      mocktail.when(() => diMock.get<Databases>()).thenReturn(_DatabasesMock());
-      mocktail.when(() => diMock.get<Realtime>()).thenReturn(_RealtimeMock());
-      mocktail
-          .when(() => diMock.get<AppwriteReferencesConfig>())
-          .thenReturn(_AppwriteDataSourceConfigurationMock());
+          mocktail.when(() => diMock.get<Client>()).thenReturn(_FakeClient());
+          mocktail.when(() => diMock.get<Account>()).thenReturn(_AccountMock());
+          mocktail
+              .when(() => diMock.get<Databases>())
+              .thenReturn(_DatabasesMock());
+          mocktail
+              .when(() => diMock.get<Realtime>())
+              .thenReturn(_RealtimeMock());
+          mocktail
+              .when(() => diMock.get<AppwriteReferencesConfig>())
+              .thenReturn(_AppwriteDataSourceConfigurationMock());
 
-      check();
+          check();
+        });
+      }
     },
   );
 }

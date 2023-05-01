@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
@@ -7,166 +6,180 @@ import 'package:quiz_lab/features/question_management/domain/entities/question_d
 
 void main() {
   group('copyWith', () {
-    parameterizedTest(
+    group(
       'id',
-      ParameterizedSource.value([
-        '',
-        '0h*GnqDx',
-      ]),
-      (values) {
-        final newValue = values[0] as String;
+      () {
+        for (final newValue in [
+          '',
+          '0h*GnqDx',
+        ]) {
+          test(newValue, () {
+            const question = Question(
+              id: QuestionId('id'),
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.easy,
+              categories: [],
+            );
 
-        const question = Question(
-          id: QuestionId('id'),
-          shortDescription: 'shortDescription',
-          description: 'description',
-          answerOptions: [],
-          difficulty: QuestionDifficulty.easy,
-          categories: [],
-        );
+            final copy = question.copyWith(id: QuestionId(newValue));
 
-        final copy = question.copyWith(id: QuestionId(newValue));
-
-        expect(copy.id.value, newValue);
-        expect(copy.shortDescription, 'shortDescription');
-        expect(copy.description, 'description');
-        expect(copy.answerOptions, <AnswerOption>[]);
-        expect(copy.difficulty, QuestionDifficulty.easy);
-        expect(copy.categories, <QuestionCategory>[]);
+            expect(copy.id.value, newValue);
+            expect(copy.shortDescription, 'shortDescription');
+            expect(copy.description, 'description');
+            expect(copy.answerOptions, <AnswerOption>[]);
+            expect(copy.difficulty, QuestionDifficulty.easy);
+            expect(copy.categories, <QuestionCategory>[]);
+          });
+        }
       },
     );
 
-    parameterizedTest(
+    group(
       'shortDescription',
-      ParameterizedSource.value(['gift', 'prompt']),
-      (values) {
-        final newValue = values[0] as String;
+      () {
+        for (final newValue in [
+          'gift',
+          'prompt',
+        ]) {
+          test(newValue, () {
+            const entity = Question(
+              id: QuestionId('id'),
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: <AnswerOption>[],
+              difficulty: QuestionDifficulty.easy,
+              categories: <QuestionCategory>[],
+            );
 
-        const entity = Question(
-          id: QuestionId('id'),
-          shortDescription: 'shortDescription',
-          description: 'description',
-          answerOptions: <AnswerOption>[],
-          difficulty: QuestionDifficulty.easy,
-          categories: <QuestionCategory>[],
-        );
+            final copy = entity.copyWith(shortDescription: newValue);
 
-        final copy = entity.copyWith(shortDescription: newValue);
-
-        expect(copy.shortDescription, newValue);
-        expect(copy.description, 'description');
-        expect(copy.answerOptions, <AnswerOption>[]);
-        expect(copy.difficulty, QuestionDifficulty.easy);
-        expect(copy.categories, <QuestionCategory>[]);
+            expect(copy.shortDescription, newValue);
+            expect(copy.description, 'description');
+            expect(copy.answerOptions, <AnswerOption>[]);
+            expect(copy.difficulty, QuestionDifficulty.easy);
+            expect(copy.categories, <QuestionCategory>[]);
+          });
+        }
       },
     );
 
-    parameterizedTest(
+    group(
       'description',
-      ParameterizedSource.value(['customer', 'aside']),
-      (values) {
-        final newValue = values[0] as String;
+      () {
+        for (final newValue in [
+          'customer',
+          'aside',
+        ]) {
+          test(newValue, () {
+            const entity = Question(
+              id: QuestionId('id'),
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: <AnswerOption>[],
+              difficulty: QuestionDifficulty.easy,
+              categories: <QuestionCategory>[],
+            );
 
-        const entity = Question(
-          id: QuestionId('id'),
-          shortDescription: 'shortDescription',
-          description: 'description',
-          answerOptions: <AnswerOption>[],
-          difficulty: QuestionDifficulty.easy,
-          categories: <QuestionCategory>[],
-        );
+            final copy = entity.copyWith(description: newValue);
 
-        final copy = entity.copyWith(description: newValue);
-
-        expect(copy.description, newValue);
-        expect(copy.shortDescription, 'shortDescription');
-        expect(copy.answerOptions, <AnswerOption>[]);
-        expect(copy.difficulty, QuestionDifficulty.easy);
-        expect(copy.categories, <QuestionCategory>[]);
+            expect(copy.description, newValue);
+            expect(copy.shortDescription, 'shortDescription');
+            expect(copy.answerOptions, <AnswerOption>[]);
+            expect(copy.difficulty, QuestionDifficulty.easy);
+            expect(copy.categories, <QuestionCategory>[]);
+          });
+        }
       },
     );
 
-    parameterizedTest(
-        'answerOptions',
-        ParameterizedSource.value([
+    group(
+      'answerOptions',
+      () {
+        for (final newValue in [
           <AnswerOption>[],
           [const AnswerOption(description: 'feel', isCorrect: true)]
-        ]), (values) {
-      final newValue = values[0] as List<AnswerOption>;
+        ]) {
+          test(newValue.toString(), () {
+            const entity = Question(
+              id: QuestionId('id'),
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: <AnswerOption>[],
+              difficulty: QuestionDifficulty.easy,
+              categories: <QuestionCategory>[],
+            );
 
-      const entity = Question(
-        id: QuestionId('id'),
-        shortDescription: 'shortDescription',
-        description: 'description',
-        answerOptions: <AnswerOption>[],
-        difficulty: QuestionDifficulty.easy,
-        categories: <QuestionCategory>[],
-      );
+            final copy = entity.copyWith(answerOptions: newValue);
 
-      final copy = entity.copyWith(answerOptions: newValue);
-
-      expect(copy.answerOptions, newValue);
-      expect(copy.shortDescription, 'shortDescription');
-      expect(copy.description, 'description');
-      expect(copy.difficulty, QuestionDifficulty.easy);
-      expect(copy.categories, <QuestionCategory>[]);
-    });
-
-    parameterizedTest(
-      'difficulty',
-      ParameterizedSource.value([
-        QuestionDifficulty.unknown,
-        QuestionDifficulty.easy,
-        QuestionDifficulty.medium,
-        QuestionDifficulty.hard,
-      ]),
-      (values) {
-        final newValue = values[0] as QuestionDifficulty;
-
-        const entity = Question(
-          id: QuestionId('id'),
-          shortDescription: 'shortDescription',
-          description: 'description',
-          answerOptions: <AnswerOption>[],
-          difficulty: QuestionDifficulty.easy,
-          categories: <QuestionCategory>[],
-        );
-
-        final copy = entity.copyWith(difficulty: newValue);
-
-        expect(copy.difficulty, newValue);
-        expect(copy.shortDescription, 'shortDescription');
-        expect(copy.description, 'description');
-        expect(copy.answerOptions, <AnswerOption>[]);
-        expect(copy.categories, <QuestionCategory>[]);
+            expect(copy.answerOptions, newValue);
+            expect(copy.shortDescription, 'shortDescription');
+            expect(copy.description, 'description');
+            expect(copy.difficulty, QuestionDifficulty.easy);
+            expect(copy.categories, <QuestionCategory>[]);
+          });
+        }
       },
     );
 
-    parameterizedTest(
+    group(
+      'difficulty',
+      () {
+        for (final newValue in [
+          QuestionDifficulty.unknown,
+          QuestionDifficulty.easy,
+          QuestionDifficulty.medium,
+          QuestionDifficulty.hard,
+        ]) {
+          test(newValue.toString(), () {
+            const entity = Question(
+              id: QuestionId('id'),
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: <AnswerOption>[],
+              difficulty: QuestionDifficulty.easy,
+              categories: <QuestionCategory>[],
+            );
+
+            final copy = entity.copyWith(difficulty: newValue);
+
+            expect(copy.difficulty, newValue);
+            expect(copy.shortDescription, 'shortDescription');
+            expect(copy.description, 'description');
+            expect(copy.answerOptions, <AnswerOption>[]);
+            expect(copy.categories, <QuestionCategory>[]);
+          });
+        }
+      },
+    );
+
+    group(
       'categories',
-      ParameterizedSource.value([
-        <QuestionCategory>[],
-        [const QuestionCategory(value: 'dot')]
-      ]),
-      (values) {
-        final newValue = values[0] as List<QuestionCategory>;
+      () {
+        for (final newValue in [
+          <QuestionCategory>[],
+          [const QuestionCategory(value: 'dot')]
+        ]) {
+          test(newValue.toString(), () {
+            const entity = Question(
+              id: QuestionId('id'),
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: <AnswerOption>[],
+              difficulty: QuestionDifficulty.easy,
+              categories: <QuestionCategory>[],
+            );
 
-        const entity = Question(
-          id: QuestionId('id'),
-          shortDescription: 'shortDescription',
-          description: 'description',
-          answerOptions: <AnswerOption>[],
-          difficulty: QuestionDifficulty.easy,
-          categories: <QuestionCategory>[],
-        );
+            final copy = entity.copyWith(categories: newValue);
 
-        final copy = entity.copyWith(categories: newValue);
-
-        expect(copy.categories, newValue);
-        expect(copy.shortDescription, 'shortDescription');
-        expect(copy.description, 'description');
-        expect(copy.answerOptions, <AnswerOption>[]);
-        expect(copy.difficulty, QuestionDifficulty.easy);
+            expect(copy.categories, newValue);
+            expect(copy.shortDescription, 'shortDescription');
+            expect(copy.description, 'description');
+            expect(copy.answerOptions, <AnswerOption>[]);
+            expect(copy.difficulty, QuestionDifficulty.easy);
+          });
+        }
       },
     );
   });

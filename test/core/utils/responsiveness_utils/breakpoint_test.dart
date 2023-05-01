@@ -1,5 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart'
-    show ParameterizedSource, parameterizedTest;
 import 'package:flutter_test/flutter_test.dart' show expect, group, setUp, test;
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart'
     show BoundType, DesktopBreakpoint, MobileBreakpoint, TabletBreakpoint;
@@ -20,26 +18,29 @@ void main() {
       expect(breakpoint.boundType, BoundType.upperBound);
     });
 
-    parameterizedTest(
+    group(
       'applies',
-      ParameterizedSource.values([
-        [.0, true],
-        [.9, true],
-        [1.0, true],
-        [300.0, true],
-        [599.9, true],
-        [600.0, true],
-        [600.1, false],
-        [601.0, false],
-        [999.9, false],
-      ]),
-      (List<dynamic> testCases) {
-        final measurement = testCases[0] as double;
-        final shouldApply = testCases[1] as bool;
+      () {
+        for (final values in [
+          [.0, true],
+          [.9, true],
+          [1.0, true],
+          [300.0, true],
+          [599.9, true],
+          [600.0, true],
+          [600.1, false],
+          [601.0, false],
+          [999.9, false],
+        ]) {
+          test(values.toString(), () {
+            final measurement = values[0] as double;
+            final shouldApply = values[1] as bool;
 
-        final result = breakpoint.applies(measurement);
+            final result = breakpoint.applies(measurement);
 
-        expect(result, shouldApply);
+            expect(result, shouldApply);
+          });
+        }
       },
     );
   });
@@ -59,23 +60,26 @@ void main() {
       expect(breakpoint.boundType, BoundType.lowerBound);
     });
 
-    parameterizedTest(
+    group(
       'applies',
-      ParameterizedSource.values([
-        [599.0, false],
-        [599.9, false],
-        [600.0, true],
-        [600.1, true],
-        [601.0, true],
-        [999.9, true],
-      ]),
-      (List<dynamic> testCases) {
-        final measurement = testCases[0] as double;
-        final shouldApply = testCases[1] as bool;
+      () {
+        for (final values in [
+          [599.0, false],
+          [599.9, false],
+          [600.0, true],
+          [600.1, true],
+          [601.0, true],
+          [999.9, true],
+        ]) {
+          test(values.toString(), () {
+            final measurement = values[0] as double;
+            final shouldApply = values[1] as bool;
 
-        final result = breakpoint.applies(measurement);
+            final result = breakpoint.applies(measurement);
 
-        expect(result, shouldApply);
+            expect(result, shouldApply);
+          });
+        }
       },
     );
   });
@@ -95,22 +99,25 @@ void main() {
       expect(breakpoint.boundType, BoundType.lowerBound);
     });
 
-    parameterizedTest(
+    group(
       'applies',
-      ParameterizedSource.values([
-        [991.0, false],
-        [991.9, false],
-        [992.0, true],
-        [992.1, true],
-        [999.9, true],
-      ]),
-      (List<dynamic> testCases) {
-        final measurement = testCases[0] as double;
-        final shouldApply = testCases[1] as bool;
+      () {
+        for (final values in [
+          [991.0, false],
+          [991.9, false],
+          [992.0, true],
+          [992.1, true],
+          [999.9, true],
+        ]) {
+          test(values.toString(), () {
+            final measurement = values[0] as double;
+            final shouldApply = values[1] as bool;
 
-        final result = breakpoint.applies(measurement);
+            final result = breakpoint.applies(measurement);
 
-        expect(result, shouldApply);
+            expect(result, shouldApply);
+          });
+        }
       },
     );
   });

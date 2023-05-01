@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
@@ -25,85 +24,89 @@ void main() {
   tearDown(resetMocktailState);
 
   group('err flow', () {
-    parameterizedTest(
+    group(
       'should fail if repository fails',
-      ParameterizedSource.values([
-        [
-          _FakeQuestion.id(''),
-          QuestionRepositoryFailure.unableToUpdate(
-            id: '',
-            details: '',
-          ),
-          UpdateQuestionUseCaseFailure.repositoryFailure(
-            'Unable to update question with id : ',
-          ),
-        ],
-        [
-          _FakeQuestion.id('&RV'),
-          QuestionRepositoryFailure.unableToUpdate(
-            id: '&RV',
-            details: 'eg3381',
-          ),
-          UpdateQuestionUseCaseFailure.repositoryFailure(
-            'Unable to update question with id &RV: eg3381',
-          ),
-        ],
-      ]),
-      (values) async {
-        final question = values[0] as Question;
-        final repoFailure = values[1] as QuestionRepositoryFailure;
-        final expectedFailure = values[2] as UpdateQuestionUseCaseFailure;
+      () {
+        for (final values in [
+          [
+            _FakeQuestion.id(''),
+            QuestionRepositoryFailure.unableToUpdate(
+              id: '',
+              details: '',
+            ),
+            UpdateQuestionUseCaseFailure.repositoryFailure(
+              'Unable to update question with id : ',
+            ),
+          ],
+          [
+            _FakeQuestion.id('&RV'),
+            QuestionRepositoryFailure.unableToUpdate(
+              id: '&RV',
+              details: 'eg3381',
+            ),
+            UpdateQuestionUseCaseFailure.repositoryFailure(
+              'Unable to update question with id &RV: eg3381',
+            ),
+          ],
+        ]) {
+          test(values.toString(), () async {
+            final question = values[0] as Question;
+            final repoFailure = values[1] as QuestionRepositoryFailure;
+            final expectedFailure = values[2] as UpdateQuestionUseCaseFailure;
 
-        when(() => questionRepositoryMock.updateSingle(question))
-            .thenAnswer((_) async => Result.err(repoFailure));
+            when(() => questionRepositoryMock.updateSingle(question))
+                .thenAnswer((_) async => Result.err(repoFailure));
 
-        final result = await useCase.execute(question);
+            final result = await useCase.execute(question);
 
-        expect(result.isErr, isTrue);
-        expect(result.err, expectedFailure);
+            expect(result.isErr, isTrue);
+            expect(result.err, expectedFailure);
+          });
+        }
       },
     );
   });
 
   group('ok flow', () {
-    parameterizedTest(
+    group(
       'should return ok',
-      ParameterizedSource.value([
-        const Question(
-          id: QuestionId(''),
-          shortDescription: '',
-          description: '',
-          categories: [],
-          difficulty: QuestionDifficulty.unknown,
-          answerOptions: [],
-        ),
-        const Question(
-          id: QuestionId('a019cc50-db0b-42e2-895a-ac5a37a79faa'),
-          shortDescription: 'hunger',
-          description: 'Nuptias ire, tanquam superbus hippotoxota.',
-          categories: [
-            QuestionCategory(value: 'sail'),
-            QuestionCategory(value: 'pen'),
-            QuestionCategory(value: 'station'),
-          ],
-          difficulty: QuestionDifficulty.hard,
-          answerOptions: [
-            AnswerOption(description: 'fort charles ', isCorrect: false),
-            AnswerOption(description: 'yardarm ', isCorrect: true),
-            AnswerOption(description: 'fortune ', isCorrect: false),
-          ],
-        )
-      ]),
-      (values) async {
-        final input = values[0] as Question;
+      () {
+        for (final input in [
+          const Question(
+            id: QuestionId(''),
+            shortDescription: '',
+            description: '',
+            categories: [],
+            difficulty: QuestionDifficulty.unknown,
+            answerOptions: [],
+          ),
+          const Question(
+            id: QuestionId('a019cc50-db0b-42e2-895a-ac5a37a79faa'),
+            shortDescription: 'hunger',
+            description: 'Nuptias ire, tanquam superbus hippotoxota.',
+            categories: [
+              QuestionCategory(value: 'sail'),
+              QuestionCategory(value: 'pen'),
+              QuestionCategory(value: 'station'),
+            ],
+            difficulty: QuestionDifficulty.hard,
+            answerOptions: [
+              AnswerOption(description: 'fort charles ', isCorrect: false),
+              AnswerOption(description: 'yardarm ', isCorrect: true),
+              AnswerOption(description: 'fortune ', isCorrect: false),
+            ],
+          )
+        ]) {
+          test(input.toString(), () async {
+            when(() => questionRepositoryMock.updateSingle(input))
+                .thenAnswer((_) async => const Result.ok(unit));
 
-        when(() => questionRepositoryMock.updateSingle(input))
-            .thenAnswer((_) async => const Result.ok(unit));
+            final result = await useCase.execute(input);
 
-        final result = await useCase.execute(input);
-
-        expect(result.isOk, isTrue);
-        expect(result.ok, unit);
+            expect(result.isOk, isTrue);
+            expect(result.ok, unit);
+          });
+        }
       },
     );
   });
