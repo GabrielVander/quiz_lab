@@ -1,0 +1,9 @@
+v0.3.2
+
+Ajustes
+* Dependências atualizadas
+* Melhoras na lógica de rotas
+* Adição de banner para versão em Beta
+
+Bugs Arrumados
+* Arrumado bug que deixava a tela em branco após "hot-reload"

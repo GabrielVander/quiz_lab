@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
 
 part 'bottom_navigation_state.dart';
 
@@ -17,6 +18,8 @@ class BottomNavigationCubit extends Cubit<BottomNavigationState> {
       ),
     );
 
+    emit(BottomNavigationNavigateToRoute(route: _getRouteForIndex(newIndex)));
+
     previousIndex = _intAsNavIndex(newIndex);
   }
 
@@ -30,6 +33,19 @@ class BottomNavigationCubit extends Cubit<BottomNavigationState> {
         return NavigationIndex.results;
       default:
         return NavigationIndex.assessments;
+    }
+  }
+
+  Routes _getRouteForIndex(int newIndex) {
+    switch (newIndex) {
+      case 0:
+        return Routes.assessments;
+      case 1:
+        return Routes.questionsOverview;
+      case 2:
+        return Routes.resultsOverview;
+      default:
+        return Routes.assessments;
     }
   }
 }

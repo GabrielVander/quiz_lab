@@ -111,18 +111,12 @@ class LoginPageCubit extends Cubit<LoginPageState> {
       return;
     }
 
-    emit(
-      LoginPageState.displayLoggedInMessage(),
-    );
+    emit(LoginPageState.displayLoggedInMessage());
 
-    emit(
-      LoginPageState.pushRouteReplacing(
-        Routes.home,
-      ),
-    );
+    emit(LoginPageState.pushRouteReplacing(Routes.questionsOverview));
   }
 
-  void onEnterAnonymously() {}
+  void onEnterAnonymously() => throw UnimplementedError();
 
   void onSignUp() {
     emit(LoginPageState.displayNotYetImplementedMessage());

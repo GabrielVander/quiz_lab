@@ -1,0 +1,9 @@
+v0.3.2
+
+Adjustments
+* Updated dependencies
+* Improved routing
+* Added Beta status display
+
+Bug fixes
+* Fixed "blank screen on hot reload" issue

@@ -120,9 +120,8 @@ class QuestionRepositoryImpl extends QuestionRepository {
   @override
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,
-  ) {
-    throw UnimplementedError();
-  }
+  ) =>
+      throw UnimplementedError();
 
   @override
   Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>>

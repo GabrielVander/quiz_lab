@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
@@ -14,20 +13,21 @@ void main() {
   });
 
   group('generate', () {
-    parameterizedTest(
+    group(
       'should return a valid uuid',
-      ParameterizedSource.value([
-        '',
-        r'd85$4',
-      ]),
-      (values) {
-        final expectedUuid = values[0] as String;
+      () {
+        for (final expectedUuid in [
+          '',
+          r'd85$4',
+        ]) {
+          test(expectedUuid, () {
+            when(() => dummyUuid.v4()).thenReturn(expectedUuid);
 
-        when(() => dummyUuid.v4()).thenReturn(expectedUuid);
+            final result = generator.generate();
 
-        final result = generator.generate();
-
-        expect(result, expectedUuid);
+            expect(result, expectedUuid);
+          });
+        }
       },
     );
   });

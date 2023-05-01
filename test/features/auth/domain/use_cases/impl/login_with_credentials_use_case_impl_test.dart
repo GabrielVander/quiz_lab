@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
@@ -23,41 +22,42 @@ void main() {
   );
 
   group('err flow', () {
-    parameterizedTest(
+    group(
       'should return expected error message if auth repository fails',
-      ParameterizedSource.value([
-        AuthRepositoryError.unexpected(message: ''),
-        AuthRepositoryError.unexpected(message: '#SG'),
-        _FakeAuthRepositoryError(),
-      ]),
-      (values) async {
-        const dummyEmail = 'N3GKON@F';
-        const dummyPassword = 's5o';
+      () {
+        for (final authError in [
+          AuthRepositoryError.unexpected(message: ''),
+          AuthRepositoryError.unexpected(message: '#SG'),
+          _FakeAuthRepositoryError(),
+        ]) {
+          test(authError.toString(), () async {
+            const dummyEmail = 'N3GKON@F';
+            const dummyPassword = 's5o';
 
-        final authError = values[0] as AuthRepositoryError;
+            mocktail
+                .when(
+                  () => authRepository.loginWithEmailCredentials(
+                    const EmailCredentials(
+                      email: dummyEmail,
+                      password: dummyPassword,
+                    ),
+                  ),
+                )
+                .thenAnswer(
+                  (_) async => Result.err(authError),
+                );
 
-        mocktail
-            .when(
-              () => authRepository.loginWithEmailCredentials(
-                const EmailCredentials(
-                  email: dummyEmail,
-                  password: dummyPassword,
-                ),
+            final result = await useCase(
+              const LoginWithCredentialsUseCaseInput(
+                email: dummyEmail,
+                password: dummyPassword,
               ),
-            )
-            .thenAnswer(
-              (_) async => Result.err(authError),
             );
 
-        final result = await useCase(
-          const LoginWithCredentialsUseCaseInput(
-            email: dummyEmail,
-            password: dummyPassword,
-          ),
-        );
-
-        expect(result.isErr, true);
-        expect(result.err, 'Login failed');
+            expect(result.isErr, true);
+            expect(result.err, 'Login failed');
+          });
+        }
       },
     );
   });

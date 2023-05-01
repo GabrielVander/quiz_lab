@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
@@ -33,85 +32,74 @@ void main() {
   group('err flow', () {
     setUp(() => registerFallbackValue(_FakeQuestion()));
 
-    parameterizedTest(
+    group(
       'unable to parse input',
-      ParameterizedSource.values([
-        [
-          const QuestionCreationInput(
-            shortDescription: '',
-            description: '',
-            difficulty: '',
-            options: [],
-            categories: [],
-          ),
-          CreateQuestionUseCaseFailure.unableToParseDifficulty(value: ''),
-        ],
-        [
-          const QuestionCreationInput(
-            shortDescription: '3Yd0',
-            description: 'f19!t',
-            difficulty: '8Fy',
-            options: [],
-            categories: ['Du0QQGO', 'O95eCUO'],
-          ),
-          CreateQuestionUseCaseFailure.unableToParseDifficulty(value: '8Fy'),
-        ]
-      ]),
-      (values) async {
-        final input = values[0] as QuestionCreationInput;
-        final expectedFailure = values[1] as CreateQuestionUseCaseFailure;
+      () {
+        for (final values in [
+          [
+            const QuestionCreationInput(
+              shortDescription: '',
+              description: '',
+              difficulty: '',
+              options: [],
+              categories: [],
+            ),
+            CreateQuestionUseCaseFailure.unableToParseDifficulty(value: ''),
+          ],
+          [
+            const QuestionCreationInput(
+              shortDescription: '3Yd0',
+              description: 'f19!t',
+              difficulty: '8Fy',
+              options: [],
+              categories: ['Du0QQGO', 'O95eCUO'],
+            ),
+            CreateQuestionUseCaseFailure.unableToParseDifficulty(value: '8Fy'),
+          ]
+        ]) {
+          test(values.toString(), () async {
+            final input = values[0] as QuestionCreationInput;
+            final expectedFailure = values[1] as CreateQuestionUseCaseFailure;
 
-        final result = await useCase.execute(input);
+            final result = await useCase.execute(input);
 
-        expect(result.isErr, isTrue);
-        expect(result.err, expectedFailure);
+            expect(result.isErr, isTrue);
+            expect(result.err, expectedFailure);
+          });
+        }
       },
     );
 
-    parameterizedTest(
+    group(
       'question repository fails',
-      ParameterizedSource.values([
-        [
-          const QuestionCreationInput(
-            shortDescription: '',
-            description: '',
-            difficulty: 'medium',
-            options: [],
-            categories: [],
-          ),
-          '',
-          QuestionRepositoryFailure.unableToCreate(
-            question: _FakeQuestion(),
-            message: '8&tL6xjE',
-          ),
-          CreateQuestionUseCaseFailure.unableToCreate(
-            receivedInput: const QuestionCreationInput(
+      () {
+        for (final values in [
+          [
+            const QuestionCreationInput(
               shortDescription: '',
               description: '',
               difficulty: 'medium',
               options: [],
               categories: [],
             ),
-            message: '8&tL6xjE',
-          ),
-        ],
-        [
-          const QuestionCreationInput(
-            shortDescription: 'short',
-            description: 'description',
-            difficulty: 'easy',
-            options: [
-              QuestionCreationOptionInput(
-                description: 'description',
-                isCorrect: false,
-              )
-            ],
-            categories: ['category'],
-          ),
-          'uuid',
-          QuestionRepositoryFailure.unableToParseEntity(message: ''),
-          CreateQuestionUseCaseFailure.unableToCreate(
-            receivedInput: const QuestionCreationInput(
+            '',
+            QuestionRepositoryFailure.unableToCreate(
+              question: _FakeQuestion(),
+              message: '8&tL6xjE',
+            ),
+            CreateQuestionUseCaseFailure.unableToCreate(
+              receivedInput: const QuestionCreationInput(
+                shortDescription: '',
+                description: '',
+                difficulty: 'medium',
+                options: [],
+                categories: [],
+              ),
+              message: '8&tL6xjE',
+            ),
+          ],
+          [
+            const QuestionCreationInput(
               shortDescription: 'short',
               description: 'description',
               difficulty: 'easy',
@@ -123,30 +111,26 @@ void main() {
               ],
               categories: ['category'],
             ),
-            message: '',
-          ),
-        ],
-        [
-          const QuestionCreationInput(
-            shortDescription: '336dhR',
-            description: '91A^*#Z',
-            difficulty: 'hard',
-            options: [
-              QuestionCreationOptionInput(
-                description: '3W55p',
-                isCorrect: false,
+            'uuid',
+            QuestionRepositoryFailure.unableToParseEntity(message: ''),
+            CreateQuestionUseCaseFailure.unableToCreate(
+              receivedInput: const QuestionCreationInput(
+                shortDescription: 'short',
+                description: 'description',
+                difficulty: 'easy',
+                options: [
+                  QuestionCreationOptionInput(
+                    description: 'description',
+                    isCorrect: false,
+                  )
+                ],
+                categories: ['category'],
               ),
-              QuestionCreationOptionInput(
-                description: 'n&!MLH1',
-                isCorrect: true,
-              ),
-            ],
-            categories: ['y6q729L', '3^*#Z'],
-          ),
-          'pvx',
-          QuestionRepositoryFailure.unableToParseEntity(message: '4p&'),
-          CreateQuestionUseCaseFailure.unableToCreate(
-            receivedInput: const QuestionCreationInput(
+              message: '',
+            ),
+          ],
+          [
+            const QuestionCreationInput(
               shortDescription: '336dhR',
               description: '91A^*#Z',
               difficulty: 'hard',
@@ -162,98 +146,123 @@ void main() {
               ],
               categories: ['y6q729L', '3^*#Z'],
             ),
-            message: '4p&',
-          ),
-        ],
-      ]),
-      (values) async {
-        final input = values[0] as QuestionCreationInput;
-        final uuid = values[1] as String;
-        final repositoryFailure = values[2] as QuestionRepositoryFailure;
-        final expectedFailure = values[3] as CreateQuestionUseCaseFailure;
+            'pvx',
+            QuestionRepositoryFailure.unableToParseEntity(message: '4p&'),
+            CreateQuestionUseCaseFailure.unableToCreate(
+              receivedInput: const QuestionCreationInput(
+                shortDescription: '336dhR',
+                description: '91A^*#Z',
+                difficulty: 'hard',
+                options: [
+                  QuestionCreationOptionInput(
+                    description: '3W55p',
+                    isCorrect: false,
+                  ),
+                  QuestionCreationOptionInput(
+                    description: 'n&!MLH1',
+                    isCorrect: true,
+                  ),
+                ],
+                categories: ['y6q729L', '3^*#Z'],
+              ),
+              message: '4p&',
+            ),
+          ],
+        ]) {
+          test(values.toString(), () async {
+            final input = values[0] as QuestionCreationInput;
+            final uuid = values[1] as String;
+            final repositoryFailure = values[2] as QuestionRepositoryFailure;
+            final expectedFailure = values[3] as CreateQuestionUseCaseFailure;
 
-        when(() => mockUuidGenerator.generate()).thenReturn(uuid);
+            when(() => mockUuidGenerator.generate()).thenReturn(uuid);
 
-        when(() => questionRepositoryMock.createSingle(any()))
-            .thenAnswer((_) async => Result.err(repositoryFailure));
+            when(() => questionRepositoryMock.createSingle(any()))
+                .thenAnswer((_) async => Result.err(repositoryFailure));
 
-        final result = await useCase.execute(input);
+            final result = await useCase.execute(input);
 
-        expect(result.isErr, isTrue);
-        expect(result.err, expectedFailure);
+            expect(result.isErr, isTrue);
+            expect(result.err, expectedFailure);
+          });
+        }
       },
     );
   });
 
   group('ok flow', () {
-    parameterizedTest(
+    group(
       'should call repository correctly',
-      ParameterizedSource.values([
-        [
-          const QuestionCreationInput(
-            shortDescription: 'shortDescription',
-            description: 'description',
-            difficulty: 'easy',
-            options: [],
-            categories: [],
-          ),
-          '',
-          const Question(
-            id: QuestionId(''),
-            shortDescription: 'shortDescription',
-            description: 'description',
-            answerOptions: [],
-            difficulty: QuestionDifficulty.easy,
-            categories: [],
-          )
-        ],
-        [
-          const QuestionCreationInput(
-            shortDescription: 'nkl!',
-            description: 'oaK',
-            difficulty: 'medium',
-            options: [
-              QuestionCreationOptionInput(
-                description: '!Iu6RU',
-                isCorrect: false,
-              ),
-              QuestionCreationOptionInput(
-                description: 'xBq',
-                isCorrect: true,
-              )
-            ],
-            categories: ['3@0lv*ip', '@1H7'],
-          ),
-          'LO^*8O*4',
-          const Question(
-            id: QuestionId('LO^*8O*4'),
-            shortDescription: 'nkl!',
-            description: 'oaK',
-            answerOptions: [
-              AnswerOption(description: '!Iu6RU', isCorrect: false),
-              AnswerOption(description: 'xBq', isCorrect: true),
-            ],
-            difficulty: QuestionDifficulty.medium,
-            categories: [
-              QuestionCategory(value: '3@0lv*ip'),
-              QuestionCategory(value: '@1H7')
-            ],
-          )
-        ],
-      ]),
-      (values) async {
-        final input = values[0] as QuestionCreationInput;
-        final uuid = values[1] as String;
-        final expected = values[2] as Question;
+      () {
+        for (final values in [
+          [
+            const QuestionCreationInput(
+              shortDescription: 'shortDescription',
+              description: 'description',
+              difficulty: 'easy',
+              options: [],
+              categories: [],
+            ),
+            '',
+            const Question(
+              id: QuestionId(''),
+              shortDescription: 'shortDescription',
+              description: 'description',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.easy,
+              categories: [],
+            )
+          ],
+          [
+            const QuestionCreationInput(
+              shortDescription: 'nkl!',
+              description: 'oaK',
+              difficulty: 'medium',
+              options: [
+                QuestionCreationOptionInput(
+                  description: '!Iu6RU',
+                  isCorrect: false,
+                ),
+                QuestionCreationOptionInput(
+                  description: 'xBq',
+                  isCorrect: true,
+                )
+              ],
+              categories: ['3@0lv*ip', '@1H7'],
+            ),
+            'LO^*8O*4',
+            const Question(
+              id: QuestionId('LO^*8O*4'),
+              shortDescription: 'nkl!',
+              description: 'oaK',
+              answerOptions: [
+                AnswerOption(description: '!Iu6RU', isCorrect: false),
+                AnswerOption(description: 'xBq', isCorrect: true),
+              ],
+              difficulty: QuestionDifficulty.medium,
+              categories: [
+                QuestionCategory(value: '3@0lv*ip'),
+                QuestionCategory(value: '@1H7')
+              ],
+            )
+          ],
+        ]) {
+          test(values.toString(), () async {
+            final input = values[0] as QuestionCreationInput;
+            final uuid = values[1] as String;
+            final expected = values[2] as Question;
 
-        when(() => mockUuidGenerator.generate()).thenReturn(uuid);
+            when(() => mockUuidGenerator.generate()).thenReturn(uuid);
 
-        when(() => questionRepositoryMock.createSingle(any()))
-            .thenAnswer((_) async => const Result.ok(unit));
+            when(() => questionRepositoryMock.createSingle(any()))
+                .thenAnswer((_) async => const Result.ok(unit));
 
-        await useCase.execute(input);
+            await useCase.execute(input);
 
-        verify(() => questionRepositoryMock.createSingle(expected)).called(1);
+            verify(() => questionRepositoryMock.createSingle(expected))
+                .called(1);
+          });
+        }
       },
     );
   });

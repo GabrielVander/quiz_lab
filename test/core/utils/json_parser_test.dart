@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/utils/json_parser.dart';
@@ -16,58 +15,64 @@ void main() {
 
   group('encode', () {
     group('Err flow', () {
-      parameterizedTest(
+      group(
         'should return failure when exception occurs',
-        ParameterizedSource.values([
-          [
-            <String, Object>{},
-            Exception(''),
-            EncodeFailure.exception(message: 'Exception: ')
-          ],
-          [
-            {'D5N': 'QLGG', 'QPuP!Dnd': 23},
-            Exception(r'lK1$BDx'),
-            EncodeFailure.exception(message: r'Exception: lK1$BDx')
-          ],
-        ]),
-        (values) {
-          final input = values[0] as Map<String, Object>;
-          final exception = values[1] as Exception;
-          final expectedFailure = values[2] as EncodeFailure;
+        () {
+          for (final values in [
+            [
+              <String, Object>{},
+              Exception(''),
+              EncodeFailure.exception(message: 'Exception: ')
+            ],
+            [
+              {'D5N': 'QLGG', 'QPuP!Dnd': 23},
+              Exception(r'lK1$BDx'),
+              EncodeFailure.exception(message: r'Exception: lK1$BDx')
+            ],
+          ]) {
+            test(values.toString(), () {
+              final input = values[0] as Map<String, Object>;
+              final exception = values[1] as Exception;
+              final expectedFailure = values[2] as EncodeFailure;
 
-          when(() => mockEncoder(input)).thenThrow(exception);
+              when(() => mockEncoder(input)).thenThrow(exception);
 
-          final actual = parser.encode(input);
+              final actual = parser.encode(input);
 
-          expect(actual.isErr, isTrue);
-          expect(actual.err, expectedFailure);
+              expect(actual.isErr, isTrue);
+              expect(actual.err, expectedFailure);
+            });
+          }
         },
       );
     });
 
     group('Ok flow', () {
-      parameterizedTest(
+      group(
         'should return success when no exception occurs',
-        ParameterizedSource.values([
-          [
-            <String, Object>{},
-            '',
-          ],
-          [
-            {'D5N': 'QLGG', 'QPuP!Dnd': 23},
-            'au87U4D',
-          ],
-        ]),
-        (values) {
-          final input = values[0] as Map<String, Object>;
-          final expected = values[1] as String;
+        () {
+          for (final values in [
+            [
+              <String, Object>{},
+              '',
+            ],
+            [
+              {'D5N': 'QLGG', 'QPuP!Dnd': 23},
+              'au87U4D',
+            ],
+          ]) {
+            test(values.toString(), () {
+              final input = values[0] as Map<String, Object>;
+              final expected = values[1] as String;
 
-          when(() => mockEncoder(input)).thenReturn(expected);
+              when(() => mockEncoder(input)).thenReturn(expected);
 
-          final actual = parser.encode(input);
+              final actual = parser.encode(input);
 
-          expect(actual.isOk, isTrue);
-          expect(actual.ok, expected);
+              expect(actual.isOk, isTrue);
+              expect(actual.ok, expected);
+            });
+          }
         },
       );
     });
@@ -75,54 +80,64 @@ void main() {
 
   group('decode', () {
     group('Err flow', () {
-      parameterizedTest(
+      group(
         'should return failure when exception occurs',
-        ParameterizedSource.values([
-          ['', Exception(''), DecodeFailure.exception(message: 'Exception: ')],
-          [
-            'EOQ86',
-            Exception('*uDo5B9r'),
-            DecodeFailure.exception(message: 'Exception: *uDo5B9r')
-          ],
-        ]),
-        (values) {
-          final input = values[0] as String;
-          final exception = values[1] as Exception;
-          final expectedFailure = values[2] as DecodeFailure;
+        () {
+          for (final values in [
+            [
+              '',
+              Exception(''),
+              DecodeFailure.exception(message: 'Exception: ')
+            ],
+            [
+              'EOQ86',
+              Exception('*uDo5B9r'),
+              DecodeFailure.exception(message: 'Exception: *uDo5B9r')
+            ],
+          ]) {
+            test(values.toString(), () {
+              final input = values[0] as String;
+              final exception = values[1] as Exception;
+              final expectedFailure = values[2] as DecodeFailure;
 
-          when(() => mockDecoder(input)).thenThrow(exception);
+              when(() => mockDecoder(input)).thenThrow(exception);
 
-          final actual = parser.decode(input);
+              final actual = parser.decode(input);
 
-          expect(actual.isErr, isTrue);
-          expect(actual.err, expectedFailure);
+              expect(actual.isErr, isTrue);
+              expect(actual.err, expectedFailure);
+            });
+          }
         },
       );
     });
 
     group('Ok flow', () {
-      parameterizedTest(
+      group(
         'should return success when no exception occurs',
-        ParameterizedSource.values([
-          [
-            '',
-            <String, Object>{},
-          ],
-          [
-            'au87U4D',
-            {'D5N': 'QLGG', 'QPuP!Dnd': 23},
-          ],
-        ]),
-        (values) {
-          final input = values[0] as String;
-          final expected = values[1] as Map<String, Object>;
+        () {
+          for (final values in [
+            [
+              '',
+              <String, Object>{},
+            ],
+            [
+              'au87U4D',
+              {'D5N': 'QLGG', 'QPuP!Dnd': 23},
+            ],
+          ]) {
+            test(values.toString(), () {
+              final input = values[0] as String;
+              final expected = values[1] as Map<String, Object>;
 
-          when(() => mockDecoder(input)).thenReturn(expected);
+              when(() => mockDecoder(input)).thenReturn(expected);
 
-          final actual = parser.decode(input);
+              final actual = parser.decode(input);
 
-          expect(actual.isOk, isTrue);
-          expect(actual.ok, expected);
+              expect(actual.isOk, isTrue);
+              expect(actual.ok, expected);
+            });
+          }
         },
       );
     });

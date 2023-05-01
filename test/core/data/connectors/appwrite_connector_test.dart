@@ -1,6 +1,5 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
@@ -20,9 +19,8 @@ void main() {
   });
 
   group('createDocument', () {
-    parameterizedTest(
-      'should call Appwrite databases services correctly',
-      ParameterizedSource.value([
+    group('should call Appwrite databases services correctly', () {
+      for (final creationRequest in [
         const AppwriteDocumentCreationRequest(
           databaseId: '',
           collectionId: '',
@@ -42,39 +40,38 @@ void main() {
             },
           },
         ),
-      ]),
-      (values) {
-        final creationRequest = values[0] as AppwriteDocumentCreationRequest;
+      ]) {
+        test(creationRequest.toString(), () {
+          mocktail
+              .when(
+                () => databasesMock.createDocument(
+                  databaseId: creationRequest.databaseId,
+                  collectionId: creationRequest.collectionId,
+                  documentId: creationRequest.documentId,
+                  data: creationRequest.data,
+                ),
+              )
+              .thenAnswer((_) async => _DocumentMock());
 
-        mocktail
-            .when(
-              () => databasesMock.createDocument(
-                databaseId: creationRequest.databaseId,
-                collectionId: creationRequest.collectionId,
-                documentId: creationRequest.documentId,
-                data: creationRequest.data,
-              ),
-            )
-            .thenAnswer((_) async => _DocumentMock());
+          connector.createDocument(creationRequest);
 
-        connector.createDocument(creationRequest);
-
-        mocktail.verify(
-          () => databasesMock.createDocument(
-            databaseId: creationRequest.databaseId,
-            collectionId: creationRequest.collectionId,
-            documentId: creationRequest.documentId,
-            data: creationRequest.data,
-          ),
-        );
-      },
-    );
+          mocktail.verify(
+            () => databasesMock.createDocument(
+              databaseId: creationRequest.databaseId,
+              collectionId: creationRequest.collectionId,
+              documentId: creationRequest.documentId,
+              data: creationRequest.data,
+            ),
+          );
+        });
+      }
+    });
 
     group('failure', () {
-      parameterizedTest(
-        'should return expected failure when Databases service throws given '
-        'exceptions',
-        ParameterizedSource.values([
+      group(
+          'should return expected failure when Databases service throws given '
+          'exceptions', () {
+        for (final values in [
           [
             AppwriteException('', 500, ''),
             AppwriteConnectorAppwriteFailure(
@@ -147,42 +144,43 @@ void main() {
               const DocumentNotFoundAppwriteError(message: 'XG##3R'),
             )
           ],
-        ]),
-        (values) async {
-          final exception = values[0] as AppwriteException;
-          final expectedFailure = values[1] as AppwriteConnectorFailure;
+        ]) {
+          test(values.toString(), () async {
+            final exception = values[0] as AppwriteException;
+            final expectedFailure = values[1] as AppwriteConnectorFailure;
 
-          mocktail
-              .when(
-                () => databasesMock.createDocument(
-                  databaseId: mocktail.any(named: 'databaseId'),
-                  collectionId: mocktail.any(named: 'collectionId'),
-                  documentId: mocktail.any(named: 'documentId'),
-                  data: mocktail.any(named: 'data'),
-                ),
-              )
-              .thenThrow(exception);
+            mocktail
+                .when(
+                  () => databasesMock.createDocument(
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                    data: mocktail.any(named: 'data'),
+                  ),
+                )
+                .thenThrow(exception);
 
-          final result = await connector.createDocument(
-            const AppwriteDocumentCreationRequest(
-              databaseId: 'O68JS0u',
-              collectionId: 'zVIev',
-              documentId: '^Z9@Cm',
-              data: {
-                '38W1t': 459,
-                r'#o#N$Y*J': r'X$qh6xIT',
-                'ETc!x#A': {
-                  'rkj&pTSv': 3,
-                  'BmW7r': 4,
+            final result = await connector.createDocument(
+              const AppwriteDocumentCreationRequest(
+                databaseId: 'O68JS0u',
+                collectionId: 'zVIev',
+                documentId: '^Z9@Cm',
+                data: {
+                  '38W1t': 459,
+                  r'#o#N$Y*J': r'X$qh6xIT',
+                  'ETc!x#A': {
+                    'rkj&pTSv': 3,
+                    'BmW7r': 4,
+                  },
                 },
-              },
-            ),
-          );
+              ),
+            );
 
-          expect(result.isErr, true);
-          expect(result.err, expectedFailure);
-        },
-      );
+            expect(result.isErr, true);
+            expect(result.err, expectedFailure);
+          });
+        }
+      });
 
       test(
         'should return unexpected failure when an non-Appwrite exception is '
@@ -265,150 +263,156 @@ void main() {
   });
 
   group('deleteDocument', () {
-    parameterizedTest(
+    group(
       'should call Databases service correctly',
-      ParameterizedSource.values([
-        ['', '', ''],
-        ['2M%', 'ecC', '447Z'],
-      ]),
-      (values) async {
-        final databaseId = values[0] as String;
-        final collectionId = values[1] as String;
-        final documentId = values[2] as String;
+      () {
+        for (final values in [
+          ['', '', ''],
+          ['2M%', 'ecC', '447Z'],
+        ]) {
+          test(values.toString(), () async {
+            final databaseId = values[0];
+            final collectionId = values[1];
+            final documentId = values[2];
 
-        mocktail
-            .when(
-              () => databasesMock.deleteDocument(
-                databaseId: mocktail.any(named: 'databaseId'),
-                collectionId: mocktail.any(named: 'collectionId'),
-                documentId: mocktail.any(named: 'documentId'),
+            mocktail
+                .when(
+                  () => databasesMock.deleteDocument(
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
+                )
+                .thenThrow(_AppwriteExceptionMock());
+
+            await connector.deleteDocument(
+              AppwriteDocumentReference(
+                databaseId: databaseId,
+                collectionId: collectionId,
+                documentId: documentId,
               ),
-            )
-            .thenThrow(_AppwriteExceptionMock());
+            );
 
-        await connector.deleteDocument(
-          AppwriteDocumentReference(
-            databaseId: databaseId,
-            collectionId: collectionId,
-            documentId: documentId,
-          ),
-        );
-
-        mocktail.verify(
-          () => databasesMock.deleteDocument(
-            databaseId: databaseId,
-            collectionId: collectionId,
-            documentId: documentId,
-          ),
-        );
-      },
-    );
-
-    parameterizedTest(
-      'should return expected failure when Databases service throws given '
-      'exceptions',
-      ParameterizedSource.values([
-        [
-          AppwriteException('', 500, ''),
-          AppwriteConnectorAppwriteFailure(
-            const UnknownAppwriteError(
-              message: '',
-              code: 500,
-              type: '',
-            ),
-          )
-        ],
-        [
-          _AppwriteExceptionMock(),
-          AppwriteConnectorAppwriteFailure(const UnknownAppwriteError())
-        ],
-        [
-          AppwriteException('T0J!phB5', 22, 'y640p89'),
-          AppwriteConnectorAppwriteFailure(
-            const UnknownAppwriteError(
-              message: 'T0J!phB5',
-              code: 22,
-              type: 'y640p89',
-            ),
-          )
-        ],
-        [
-          AppwriteException('', 400, 'general_argument_invalid'),
-          AppwriteConnectorAppwriteFailure(
-            const GeneralArgumentInvalidAppwriteError(message: ''),
-          )
-        ],
-        [
-          AppwriteException(r'Q$@!yG', 400, 'general_argument_invalid'),
-          AppwriteConnectorAppwriteFailure(
-            const GeneralArgumentInvalidAppwriteError(message: r'Q$@!yG'),
-          )
-        ],
-        [
-          AppwriteException('', 404, 'database_not_found'),
-          AppwriteConnectorAppwriteFailure(
-            const DatabaseNotFoundAppwriteError(message: ''),
-          )
-        ],
-        [
-          AppwriteException('45S6hm@', 404, 'database_not_found'),
-          AppwriteConnectorAppwriteFailure(
-            const DatabaseNotFoundAppwriteError(message: '45S6hm@'),
-          )
-        ],
-        [
-          AppwriteException('', 404, 'collection_not_found'),
-          AppwriteConnectorAppwriteFailure(
-            const CollectionNotFoundAppwriteError(message: ''),
-          )
-        ],
-        [
-          AppwriteException('7o2', 404, 'collection_not_found'),
-          AppwriteConnectorAppwriteFailure(
-            const CollectionNotFoundAppwriteError(message: '7o2'),
-          )
-        ],
-        [
-          AppwriteException('', 404, 'document_not_found'),
-          AppwriteConnectorAppwriteFailure(
-            const DocumentNotFoundAppwriteError(message: ''),
-          )
-        ],
-        [
-          AppwriteException('#G#5K@', 404, 'document_not_found'),
-          AppwriteConnectorAppwriteFailure(
-            const DocumentNotFoundAppwriteError(message: '#G#5K@'),
-          )
-        ],
-      ]),
-      (values) async {
-        final exception = values[0] as AppwriteException;
-        final expectedFailure = values[1] as AppwriteConnectorFailure;
-
-        const databaseId = '*49';
-        const collectionId = 'wgujt0';
-        const documentId = 'o&TO@L';
-
-        mocktail
-            .when(
+            mocktail.verify(
               () => databasesMock.deleteDocument(
                 databaseId: databaseId,
                 collectionId: collectionId,
                 documentId: documentId,
               ),
+            );
+          });
+        }
+      },
+    );
+
+    group(
+      'should return expected failure when Databases service throws given '
+      'exceptions',
+      () {
+        for (final values in [
+          [
+            AppwriteException('', 500, ''),
+            AppwriteConnectorAppwriteFailure(
+              const UnknownAppwriteError(
+                message: '',
+                code: 500,
+                type: '',
+              ),
             )
-            .thenThrow(exception);
+          ],
+          [
+            _AppwriteExceptionMock(),
+            AppwriteConnectorAppwriteFailure(const UnknownAppwriteError())
+          ],
+          [
+            AppwriteException('T0J!phB5', 22, 'y640p89'),
+            AppwriteConnectorAppwriteFailure(
+              const UnknownAppwriteError(
+                message: 'T0J!phB5',
+                code: 22,
+                type: 'y640p89',
+              ),
+            )
+          ],
+          [
+            AppwriteException('', 400, 'general_argument_invalid'),
+            AppwriteConnectorAppwriteFailure(
+              const GeneralArgumentInvalidAppwriteError(message: ''),
+            )
+          ],
+          [
+            AppwriteException(r'Q$@!yG', 400, 'general_argument_invalid'),
+            AppwriteConnectorAppwriteFailure(
+              const GeneralArgumentInvalidAppwriteError(message: r'Q$@!yG'),
+            )
+          ],
+          [
+            AppwriteException('', 404, 'database_not_found'),
+            AppwriteConnectorAppwriteFailure(
+              const DatabaseNotFoundAppwriteError(message: ''),
+            )
+          ],
+          [
+            AppwriteException('45S6hm@', 404, 'database_not_found'),
+            AppwriteConnectorAppwriteFailure(
+              const DatabaseNotFoundAppwriteError(message: '45S6hm@'),
+            )
+          ],
+          [
+            AppwriteException('', 404, 'collection_not_found'),
+            AppwriteConnectorAppwriteFailure(
+              const CollectionNotFoundAppwriteError(message: ''),
+            )
+          ],
+          [
+            AppwriteException('7o2', 404, 'collection_not_found'),
+            AppwriteConnectorAppwriteFailure(
+              const CollectionNotFoundAppwriteError(message: '7o2'),
+            )
+          ],
+          [
+            AppwriteException('', 404, 'document_not_found'),
+            AppwriteConnectorAppwriteFailure(
+              const DocumentNotFoundAppwriteError(message: ''),
+            )
+          ],
+          [
+            AppwriteException('#G#5K@', 404, 'document_not_found'),
+            AppwriteConnectorAppwriteFailure(
+              const DocumentNotFoundAppwriteError(message: '#G#5K@'),
+            )
+          ],
+        ]) {
+          test(values.toString(), () async {
+            final exception = values[0] as AppwriteException;
+            final expectedFailure = values[1] as AppwriteConnectorFailure;
 
-        final result = await connector.deleteDocument(
-          const AppwriteDocumentReference(
-            databaseId: databaseId,
-            collectionId: collectionId,
-            documentId: documentId,
-          ),
-        );
+            const databaseId = '*49';
+            const collectionId = 'wgujt0';
+            const documentId = 'o&TO@L';
 
-        expect(result.isErr, true);
-        expect(result.err, expectedFailure);
+            mocktail
+                .when(
+                  () => databasesMock.deleteDocument(
+                    databaseId: databaseId,
+                    collectionId: collectionId,
+                    documentId: documentId,
+                  ),
+                )
+                .thenThrow(exception);
+
+            final result = await connector.deleteDocument(
+              const AppwriteDocumentReference(
+                databaseId: databaseId,
+                collectionId: collectionId,
+                documentId: documentId,
+              ),
+            );
+
+            expect(result.isErr, true);
+            expect(result.err, expectedFailure);
+          });
+        }
       },
     );
 
@@ -478,147 +482,151 @@ void main() {
   });
 
   group('getDocument', () {
-    parameterizedTest(
+    group(
       'should call Appwrite databases services correctly',
-      ParameterizedSource.value([
-        const AppwriteDocumentReference(
-          databaseId: '',
-          collectionId: '',
-          documentId: '',
-        ),
-        const AppwriteDocumentReference(
-          databaseId: '5Pko',
-          collectionId: 'S^*s',
-          documentId: 'ePU3b',
-        ),
-      ]),
-      (values) {
-        final documentReference = values[0] as AppwriteDocumentReference;
-
-        mocktail
-            .when(
-              () => databasesMock.getDocument(
-                databaseId: documentReference.databaseId,
-                collectionId: documentReference.collectionId,
-                documentId: documentReference.documentId,
-              ),
-            )
-            .thenAnswer((_) async => _DocumentMock());
-
-        connector.getDocument(documentReference);
-
-        mocktail.verify(
-          () => databasesMock.getDocument(
-            databaseId: documentReference.databaseId,
-            collectionId: documentReference.collectionId,
-            documentId: documentReference.documentId,
+      () {
+        for (final docReference in [
+          const AppwriteDocumentReference(
+            databaseId: '',
+            collectionId: '',
+            documentId: '',
           ),
-        );
+          const AppwriteDocumentReference(
+            databaseId: '5Pko',
+            collectionId: 'S^*s',
+            documentId: 'ePU3b',
+          ),
+        ]) {
+          test(docReference.toString(), () {
+            mocktail
+                .when(
+                  () => databasesMock.getDocument(
+                    databaseId: docReference.databaseId,
+                    collectionId: docReference.collectionId,
+                    documentId: docReference.documentId,
+                  ),
+                )
+                .thenAnswer((_) async => _DocumentMock());
+
+            connector.getDocument(docReference);
+
+            mocktail.verify(
+              () => databasesMock.getDocument(
+                databaseId: docReference.databaseId,
+                collectionId: docReference.collectionId,
+                documentId: docReference.documentId,
+              ),
+            );
+          });
+        }
       },
     );
 
     group('failure', () {
-      parameterizedTest(
+      group(
         'should return expected failure when Databases service throws given '
         'exceptions',
-        ParameterizedSource.values([
-          [
-            AppwriteException('', 500, ''),
-            AppwriteConnectorAppwriteFailure(
-              const UnknownAppwriteError(
-                message: '',
-                code: 500,
-                type: '',
-              ),
-            )
-          ],
-          [
-            _AppwriteExceptionMock(),
-            AppwriteConnectorAppwriteFailure(const UnknownAppwriteError())
-          ],
-          [
-            AppwriteException(r'Azz3$P', 32, 'tB*g#'),
-            AppwriteConnectorAppwriteFailure(
-              const UnknownAppwriteError(
-                message: r'Azz3$P',
-                code: 32,
-                type: 'tB*g#',
-              ),
-            )
-          ],
-          [
-            AppwriteException('', 400, 'general_argument_invalid'),
-            AppwriteConnectorAppwriteFailure(
-              const GeneralArgumentInvalidAppwriteError(message: ''),
-            )
-          ],
-          [
-            AppwriteException('#FsFcWB', 400, 'general_argument_invalid'),
-            AppwriteConnectorAppwriteFailure(
-              const GeneralArgumentInvalidAppwriteError(message: '#FsFcWB'),
-            )
-          ],
-          [
-            AppwriteException('', 404, 'database_not_found'),
-            AppwriteConnectorAppwriteFailure(
-              const DatabaseNotFoundAppwriteError(message: ''),
-            )
-          ],
-          [
-            AppwriteException('9aoF4', 404, 'database_not_found'),
-            AppwriteConnectorAppwriteFailure(
-              const DatabaseNotFoundAppwriteError(message: '9aoF4'),
-            )
-          ],
-          [
-            AppwriteException('', 404, 'collection_not_found'),
-            AppwriteConnectorAppwriteFailure(
-              const CollectionNotFoundAppwriteError(message: ''),
-            )
-          ],
-          [
-            AppwriteException('&!LBR', 404, 'collection_not_found'),
-            AppwriteConnectorAppwriteFailure(
-              const CollectionNotFoundAppwriteError(message: '&!LBR'),
-            )
-          ],
-          [
-            AppwriteException('', 404, 'document_not_found'),
-            AppwriteConnectorAppwriteFailure(
-              const DocumentNotFoundAppwriteError(message: ''),
-            )
-          ],
-          [
-            AppwriteException('XG##3R', 404, 'document_not_found'),
-            AppwriteConnectorAppwriteFailure(
-              const DocumentNotFoundAppwriteError(message: 'XG##3R'),
-            )
-          ],
-        ]),
-        (values) async {
-          final exception = values[0] as AppwriteException;
-          final expectedFailure = values[1] as AppwriteConnectorFailure;
-
-          mocktail
-              .when(
-                () => databasesMock.getDocument(
-                  databaseId: mocktail.any(named: 'databaseId'),
-                  collectionId: mocktail.any(named: 'collectionId'),
-                  documentId: mocktail.any(named: 'documentId'),
+        () {
+          for (final values in [
+            [
+              AppwriteException('', 500, ''),
+              AppwriteConnectorAppwriteFailure(
+                const UnknownAppwriteError(
+                  message: '',
+                  code: 500,
+                  type: '',
                 ),
               )
-              .thenThrow(exception);
+            ],
+            [
+              _AppwriteExceptionMock(),
+              AppwriteConnectorAppwriteFailure(const UnknownAppwriteError())
+            ],
+            [
+              AppwriteException(r'Azz3$P', 32, 'tB*g#'),
+              AppwriteConnectorAppwriteFailure(
+                const UnknownAppwriteError(
+                  message: r'Azz3$P',
+                  code: 32,
+                  type: 'tB*g#',
+                ),
+              )
+            ],
+            [
+              AppwriteException('', 400, 'general_argument_invalid'),
+              AppwriteConnectorAppwriteFailure(
+                const GeneralArgumentInvalidAppwriteError(message: ''),
+              )
+            ],
+            [
+              AppwriteException('#FsFcWB', 400, 'general_argument_invalid'),
+              AppwriteConnectorAppwriteFailure(
+                const GeneralArgumentInvalidAppwriteError(message: '#FsFcWB'),
+              )
+            ],
+            [
+              AppwriteException('', 404, 'database_not_found'),
+              AppwriteConnectorAppwriteFailure(
+                const DatabaseNotFoundAppwriteError(message: ''),
+              )
+            ],
+            [
+              AppwriteException('9aoF4', 404, 'database_not_found'),
+              AppwriteConnectorAppwriteFailure(
+                const DatabaseNotFoundAppwriteError(message: '9aoF4'),
+              )
+            ],
+            [
+              AppwriteException('', 404, 'collection_not_found'),
+              AppwriteConnectorAppwriteFailure(
+                const CollectionNotFoundAppwriteError(message: ''),
+              )
+            ],
+            [
+              AppwriteException('&!LBR', 404, 'collection_not_found'),
+              AppwriteConnectorAppwriteFailure(
+                const CollectionNotFoundAppwriteError(message: '&!LBR'),
+              )
+            ],
+            [
+              AppwriteException('', 404, 'document_not_found'),
+              AppwriteConnectorAppwriteFailure(
+                const DocumentNotFoundAppwriteError(message: ''),
+              )
+            ],
+            [
+              AppwriteException('XG##3R', 404, 'document_not_found'),
+              AppwriteConnectorAppwriteFailure(
+                const DocumentNotFoundAppwriteError(message: 'XG##3R'),
+              )
+            ],
+          ]) {
+            test(values.toString(), () async {
+              final exception = values[0] as AppwriteException;
+              final expectedFailure = values[1] as AppwriteConnectorFailure;
 
-          final result = await connector.getDocument(
-            const AppwriteDocumentReference(
-              databaseId: 'O68JS0u',
-              collectionId: 'zVIev',
-              documentId: '^Z9@Cm',
-            ),
-          );
+              mocktail
+                  .when(
+                    () => databasesMock.getDocument(
+                      databaseId: mocktail.any(named: 'databaseId'),
+                      collectionId: mocktail.any(named: 'collectionId'),
+                      documentId: mocktail.any(named: 'documentId'),
+                    ),
+                  )
+                  .thenThrow(exception);
 
-          expect(result.isErr, true);
-          expect(result.err, expectedFailure);
+              final result = await connector.getDocument(
+                const AppwriteDocumentReference(
+                  databaseId: 'O68JS0u',
+                  collectionId: 'zVIev',
+                  documentId: '^Z9@Cm',
+                ),
+              );
+
+              expect(result.isErr, true);
+              expect(result.err, expectedFailure);
+            });
+          }
         },
       );
 

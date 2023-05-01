@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
@@ -15,25 +16,27 @@ class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Column(
-            children: const [
-              Expanded(
-                child: QuizLabIcon(
-                  key: ValueKey('appBarIcon'),
+    return BetaBannerDisplay(
+      child: Padding(
+        padding: padding,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              children: const [
+                Expanded(
+                  child: QuizLabIcon(
+                    key: ValueKey('appBarIcon'),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const Expanded(
-            child: Title(),
-          ),
-          const SettingsAction(),
-        ],
+              ],
+            ),
+            const Expanded(
+              child: Title(),
+            ),
+            const SettingsAction(),
+          ],
+        ),
       ),
     );
   }

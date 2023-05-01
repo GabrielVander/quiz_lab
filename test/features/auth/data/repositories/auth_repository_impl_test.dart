@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
@@ -23,60 +22,65 @@ void main() {
   });
 
   group('loginWithEmailCredentials', () {
-    parameterizedTest(
+    group(
       'should return unexpected error',
-      ParameterizedSource.value([
-        '',
-        'R02!OA',
-      ]),
-      (values) async {
-        final errorMessage = values[0] as String;
+      () {
+        for (final errorMessage in [
+          '',
+          'R02!OA',
+        ]) {
+          test(errorMessage, () async {
+            mocktail
+                .when(
+                  () => authDataSourceMock.createEmailSession(mocktail.any()),
+                )
+                .thenAnswer((_) async => Result.err(errorMessage));
 
-        mocktail
-            .when(
-              () => authDataSourceMock.createEmailSession(mocktail.any()),
-            )
-            .thenAnswer((_) async => Result.err(errorMessage));
+            final result = await repository
+                .loginWithEmailCredentials(_FakeEmailCredentials());
 
-        final result =
-            await repository.loginWithEmailCredentials(_FakeEmailCredentials());
+            expect(result.isErr, true);
 
-        expect(result.isErr, true);
-
-        final expected = AuthRepositoryError.unexpected(message: errorMessage);
-        expect(result.err, expected);
-        expect(result.err.hashCode, expected.hashCode);
+            final expected =
+                AuthRepositoryError.unexpected(message: errorMessage);
+            expect(result.err, expected);
+            expect(result.err.hashCode, expected.hashCode);
+          });
+        }
       },
     );
 
-    parameterizedTest(
+    group(
       'should call appwrite data source with given credentials and return ok if'
       ' data source returns ok',
-      ParameterizedSource.values([
-        ['', ''],
-        ['Vhn', 'u4N6'],
-      ]),
-      (values) async {
-        final email = values[0] as String;
-        final password = values[1] as String;
+      () {
+        for (final values in [
+          ['', ''],
+          ['Vhn', 'u4N6'],
+        ]) {
+          test(values.toString(), () async {
+            final email = values[0];
+            final password = values[1];
 
-        mocktail
-            .when(
-              () => authDataSourceMock.createEmailSession(
-                EmailSessionCredentialsModel(
-                  email: email,
-                  password: password,
-                ),
-              ),
-            )
-            .thenAnswer((_) async => Result.ok(_FakeSessionModel()));
+            mocktail
+                .when(
+                  () => authDataSourceMock.createEmailSession(
+                    EmailSessionCredentialsModel(
+                      email: email,
+                      password: password,
+                    ),
+                  ),
+                )
+                .thenAnswer((_) async => Result.ok(_FakeSessionModel()));
 
-        final result = await repository.loginWithEmailCredentials(
-          EmailCredentials(email: email, password: password),
-        );
+            final result = await repository.loginWithEmailCredentials(
+              EmailCredentials(email: email, password: password),
+            );
 
-        expect(result.isOk, true);
-        expect(result.ok, unit);
+            expect(result.isOk, true);
+            expect(result.ok, unit);
+          });
+        }
       },
     );
   });

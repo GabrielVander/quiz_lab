@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
+import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
@@ -24,50 +25,53 @@ class QuestionCreationPage extends HookWidget {
 
     return SafeArea(
       child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Builder(
-            builder: (context) {
-              if (state is QuestionCreationInitial) {
-                _cubit.load();
-              }
+        body: BetaBannerDisplay(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Builder(
+              builder: (context) {
+                if (state is QuestionCreationInitial) {
+                  _cubit.load();
+                }
 
-              if (state is QuestionCreationGoBack) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (GoRouter.of(context).canPop()) {
-                    GoRouter.of(context).pop();
-                  } else {
-                    GoRouter.of(context).goNamed(Routes.home.name);
-                  }
-                });
-              }
-
-              if (state is QuestionCreationViewModelUpdated) {
-                final viewModel = state.viewModel;
-
-                if (viewModel.message != null && viewModel.showMessage) {
+                if (state is QuestionCreationGoBack) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    ScaffoldMessenger.of(context).clearSnackBars();
-                    _showSnackBarMessage(context, viewModel.message!);
+                    if (GoRouter.of(context).canPop()) {
+                      GoRouter.of(context).pop();
+                    } else {
+                      GoRouter.of(context)
+                          .goNamed(Routes.questionsOverview.name);
+                    }
                   });
                 }
 
-                return _Body(
-                  viewModel: viewModel,
-                  onTitleChanged: _cubit.onTitleChanged,
-                  onDescriptionChanged: _cubit.onDescriptionChanged,
-                  onDifficultyChanged: _cubit.onDifficultyChanged,
-                  onOptionChanged: _cubit.onOptionChanged,
-                  onToggleOptionIsCorrect: _cubit.toggleOptionIsCorrect,
-                  onAddOption: _cubit.onAddOption,
-                  onCreateQuestion: _cubit.onCreateQuestion,
-                );
-              }
+                if (state is QuestionCreationViewModelUpdated) {
+                  final viewModel = state.viewModel;
 
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+                  if (viewModel.message != null && viewModel.showMessage) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      _showSnackBarMessage(context, viewModel.message!);
+                    });
+                  }
+
+                  return _Body(
+                    viewModel: viewModel,
+                    onTitleChanged: _cubit.onTitleChanged,
+                    onDescriptionChanged: _cubit.onDescriptionChanged,
+                    onDifficultyChanged: _cubit.onDifficultyChanged,
+                    onOptionChanged: _cubit.onOptionChanged,
+                    onToggleOptionIsCorrect: _cubit.toggleOptionIsCorrect,
+                    onAddOption: _cubit.onAddOption,
+                    onCreateQuestion: _cubit.onCreateQuestion,
+                  );
+                }
+
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -255,7 +259,8 @@ class _Form extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               OutlinedButton(
-                onPressed: () => GoRouter.of(context).goNamed(Routes.home.name),
+                onPressed: () =>
+                    GoRouter.of(context).goNamed(Routes.questionsOverview.name),
                 child: Text(S.of(context).goBackLabel),
               ),
               const SizedBox(
