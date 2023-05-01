@@ -29,21 +29,8 @@ class QuizLabApplication extends StatelessWidget {
     required this.questionDisplayCubit,
     required this.loginPageCubit,
     super.key,
-  });
-
-  final NetworkCubit networkCubit;
-  final BottomNavigationCubit bottomNavigationCubit;
-  final QuestionCreationCubit questionCreationCubit;
-  final QuestionsOverviewCubit questionsOverviewCubit;
-  final QuestionDisplayCubit questionDisplayCubit;
-  final LoginPageCubit loginPageCubit;
-
-  final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
-  final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
-
-  @override
-  Widget build(BuildContext context) {
-    final router = GoRouter(
+  }) {
+    router = GoRouter(
       initialLocation: Routes.login.path,
       navigatorKey: _rootNavigatorKey,
       debugLogDiagnostics: true,
@@ -124,7 +111,24 @@ class QuizLabApplication extends StatelessWidget {
         ),
       ],
     );
+  }
 
+  final NetworkCubit networkCubit;
+  final BottomNavigationCubit bottomNavigationCubit;
+  final QuestionCreationCubit questionCreationCubit;
+  final QuestionsOverviewCubit questionsOverviewCubit;
+  final QuestionDisplayCubit questionDisplayCubit;
+  final LoginPageCubit loginPageCubit;
+
+  static final _shellNavigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'root');
+  static final _rootNavigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'shell');
+
+  late final GoRouter router;
+
+  @override
+  Widget build(BuildContext context) {
     return HookedBlocConfigProvider(
       child: MaterialApp.router(
         title: 'Quiz Lab',
@@ -132,6 +136,7 @@ class QuizLabApplication extends StatelessWidget {
         routeInformationProvider: router.routeInformationProvider,
         routeInformationParser: router.routeInformationParser,
         routerDelegate: router.routerDelegate,
+        debugShowCheckedModeBanner: false,
         localizationsDelegates: const [
           S.delegate,
           GlobalMaterialLocalizations.delegate,

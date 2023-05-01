@@ -116,7 +116,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     emit(LoginPageState.pushRouteReplacing(Routes.questionsOverview));
   }
 
-  void onEnterAnonymously() {}
+  void onEnterAnonymously() => throw UnimplementedError();
 
   void onSignUp() {
     emit(LoginPageState.displayNotYetImplementedMessage());

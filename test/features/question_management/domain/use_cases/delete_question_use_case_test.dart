@@ -1,4 +1,3 @@
-import 'package:flutter_parameterized_test/flutter_parameterized_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
@@ -22,19 +21,25 @@ void main() {
 
   tearDown(resetMocktailState);
 
-  parameterizedTest(
+  group(
     'should call repository correctly',
-    ParameterizedSource.value(['', '!ocOs9d', '*k^rVV']),
-    (values) async {
-      final questionId = values[0] as String;
+    () {
+      for (final questionId in [
+        '',
+        '!ocOs9d',
+        '*k^rVV',
+      ]) {
+        test(questionId, () async {
+          when(() => questionRepositoryMock.deleteSingle(any()))
+              .thenAnswer((_) async => const Result.ok(unit));
 
-      when(() => questionRepositoryMock.deleteSingle(any()))
-          .thenAnswer((_) async => const Result.ok(unit));
+          await useCase.execute(questionId);
 
-      await useCase.execute(questionId);
-
-      verify(() => questionRepositoryMock.deleteSingle(QuestionId(questionId)))
-          .called(1);
+          verify(
+            () => questionRepositoryMock.deleteSingle(QuestionId(questionId)),
+          ).called(1);
+        });
+      }
     },
   );
 }
