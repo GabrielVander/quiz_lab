@@ -1,13 +1,9 @@
-v0.3.1
-
-New Features
-* Enabled Material 3 support
+v0.3.2
 
 Adjustments
-* Refactored dependencies management
-* Code improvements
-* Minor UI adjustments
+* Updated dependencies
+* Improved routing
+* Added Beta status display
 
 Bug fixes
-* Fixed long question titles not displaying correctly
-* Fixed questions overview section not displaying questions after a route pop
+* Fixed "blank screen on hot reload" issue

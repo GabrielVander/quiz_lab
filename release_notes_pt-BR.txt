@@ -1,13 +1,9 @@
-v0.3.1
-
-Novas Funcionalidades
-* Habilitado suporte ao Material 3
+v0.3.2
 
 Ajustes
-* Refatoraento no gerenciamento de dependências
-* Melhorias no código
-* Pequenos ajustes na UI
+* Dependências atualizadas
+* Melhoras na lógica de rotas
+* Adição de banner para versão em Beta
 
-Ajustes de Bugs
-* Arrumado a visualização de títulos de questões longos
-* Arrumado a não-renderização de questões na seção de visão geral após um pop de rota
+Bugs Arrumados
+* Arrumado bug que deixava a tela em branco após "hot-reload"
