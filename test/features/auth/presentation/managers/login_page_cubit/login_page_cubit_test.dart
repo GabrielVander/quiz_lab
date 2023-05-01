@@ -284,6 +284,12 @@ void main() {
 
     cubit.onSignUp();
   });
+
+  group('onEnterAnonymously', () {
+    test('not implemented', () {
+      expect(() => cubit.onEnterAnonymously(), throwsUnimplementedError);
+    });
+  });
 }
 
 TypeMatcher<LoginPageViewModel> _defaultViewModelMatcher() {

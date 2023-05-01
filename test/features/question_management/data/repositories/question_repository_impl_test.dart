@@ -566,6 +566,15 @@ void main() {
       },
     );
   });
+
+  group('updateSingle', () {
+    test('unimplemented', () {
+      expect(
+        () async => repository.updateSingle(_QuestionMock()),
+        throwsUnimplementedError,
+      );
+    });
+  });
 }
 
 class _AppwriteDataSourceMock extends mocktail.Mock

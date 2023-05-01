@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -22,7 +23,7 @@ class LoginPageViewModel {
 }
 
 @immutable
-class EmailViewModel {
+class EmailViewModel extends Equatable {
   const EmailViewModel({
     required this.value,
     this.showError = false,
@@ -42,10 +43,13 @@ class EmailViewModel {
       showError: showError ?? this.showError,
     );
   }
+
+  @override
+  List<Object> get props => [value, showError];
 }
 
 @immutable
-class PasswordViewModel {
+class PasswordViewModel extends Equatable {
   const PasswordViewModel({
     required this.value,
     this.showError = false,
@@ -65,6 +69,9 @@ class PasswordViewModel {
       showError: showError ?? this.showError,
     );
   }
+
+  @override
+  List<Object> get props => [value, showError];
 }
 
 enum LoginPageErrorTypeViewModel {
