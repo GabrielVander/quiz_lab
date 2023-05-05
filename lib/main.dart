@@ -3,6 +3,7 @@ import 'package:appwrite/appwrite.dart' as appwrite;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:logging/logging.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
@@ -32,7 +33,7 @@ void main() async {
 Future<void> _setUp() async {
   _setUpLogger();
   await _setUpHive();
-  _setUpInjections();
+  await _setUpInjections();
 }
 
 Future<void> _setUpHive() async {
@@ -46,7 +47,9 @@ void _setUpLogger() {
   Logger.root.onRecord.listen(QuizLabLoggerImpl.onListen);
 }
 
-void _setUpInjections() {
+Future<void> _setUpInjections() async {
+  await _miscellaneousDependencyInjectionSetup(dependencyInjection);
+
   dependencyInjection
     ..addSetup(_appwriteDependencyInjectionSetup)
     ..addSetup(coreDependencyInjectionSetup)
@@ -70,6 +73,14 @@ void _appwriteDependencyInjectionSetup(DependencyInjection di) {
         ),
       ),
     );
+}
+
+Future<void> _miscellaneousDependencyInjectionSetup(
+  DependencyInjection di,
+) async {
+  final packageInfo = await PackageInfo.fromPlatform();
+
+  di.registerInstance<PackageInfo>((_) => packageInfo);
 }
 
 appwrite.Client _setUpAppwriteClient() {

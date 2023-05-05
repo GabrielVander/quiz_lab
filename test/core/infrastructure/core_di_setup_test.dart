@@ -1,12 +1,14 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
 import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
+import 'package:quiz_lab/core/wrappers/package_info_wrapper.dart';
 
 void main() {
   late _DependencyInjectionMock diMock;
@@ -26,6 +28,7 @@ void main() {
         [AppwriteDataSource, () => _check<AppwriteDataSource>(diMock)],
         [NetworkCubit, () => _check<NetworkCubit>(diMock)],
         [BottomNavigationCubit, () => _check<BottomNavigationCubit>(diMock)],
+        [PackageInfoWrapper, () => _check<PackageInfoWrapper>(diMock)],
       ]) {
         test(values.toString(), () {
           final check = values[1] as void Function();
@@ -41,6 +44,9 @@ void main() {
           mocktail
               .when(() => diMock.get<AppwriteReferencesConfig>())
               .thenReturn(_AppwriteDataSourceConfigurationMock());
+          mocktail
+              .when(() => diMock.get<PackageInfo>())
+              .thenReturn(_PackageInfoMock());
 
           check();
         });
@@ -80,3 +86,5 @@ class _AppwriteDataSourceConfigurationMock extends mocktail.Mock
     implements AppwriteReferencesConfig {}
 
 class _RealtimeMock extends mocktail.Mock implements Realtime {}
+
+class _PackageInfoMock extends mocktail.Mock implements PackageInfo {}
