@@ -62,11 +62,9 @@ class QuestionCollectionAppwriteDataSource {
     _logger.debug('Fetching single question from Appwrite...');
 
     final documentFetchingResult = await _appwriteWrapper.getDocument(
-      AppwriteDocumentReference(
-        databaseId: _config.databaseId,
-        collectionId: _config.collectionId,
-        documentId: id,
-      ),
+      databaseId: _config.databaseId,
+      collectionId: _config.collectionId,
+      documentId: id,
     );
 
     return documentFetchingResult.when(
@@ -99,11 +97,9 @@ class QuestionCollectionAppwriteDataSource {
     String id,
   ) async =>
       _appwriteWrapper.deleteDocument(
-        AppwriteDocumentReference(
-          databaseId: _config.databaseId,
-          collectionId: _config.collectionId,
-          documentId: id,
-        ),
+        databaseId: _config.databaseId,
+        collectionId: _config.collectionId,
+        documentId: id,
       );
 
   QuestionsAppwriteDataSourceFailure _mapAppwriteWrapperFailure(

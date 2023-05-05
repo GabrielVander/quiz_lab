@@ -167,8 +167,6 @@ void main() {
       ),
       appwriteWrapper: appwriteWrapperMock,
     );
-
-    mocktail.registerFallbackValue(_AppwriteDocumentReferenceMock());
   });
 
   tearDown(mocktail.resetMocktailState);
@@ -240,7 +238,7 @@ void main() {
             dataSource.createSingle(creationModel);
 
             mocktail.verify(
-                  () => appwriteWrapperMock.createDocument(
+              () => appwriteWrapperMock.createDocument(
                 databaseId: config.databaseId,
                 collectionId: config.collectionId,
                 documentId: creationModel.id,
@@ -434,7 +432,11 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteWrapperMock.deleteDocument(mocktail.any()),
+                  () => appwriteWrapperMock.deleteDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
                 )
                 .thenAnswer(
                   (_) async =>
@@ -444,12 +446,10 @@ void main() {
             dataSource.deleteSingle(id);
 
             mocktail.verify(
-                  () => appwriteWrapperMock.deleteDocument(
-                AppwriteDocumentReference(
-                  databaseId: config.databaseId,
-                  collectionId: config.collectionId,
-                  documentId: id,
-                ),
+              () => appwriteWrapperMock.deleteDocument(
+                databaseId: config.databaseId,
+                collectionId: config.collectionId,
+                documentId: id,
               ),
             );
           });
@@ -468,7 +468,11 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteWrapperMock.deleteDocument(mocktail.any()),
+                  () => appwriteWrapperMock.deleteDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
                 )
                 .thenAnswer((_) async => Result.err(wrapperFailure));
 
@@ -485,7 +489,13 @@ void main() {
       'should return nothing if Appwrite wrapper returns nothing',
       () async {
         mocktail
-            .when(() => appwriteWrapperMock.deleteDocument(mocktail.any()))
+            .when(
+              () => appwriteWrapperMock.deleteDocument(
+                collectionId: mocktail.any(named: 'collectionId'),
+                databaseId: mocktail.any(named: 'databaseId'),
+                documentId: mocktail.any(named: 'documentId'),
+              ),
+            )
             .thenAnswer((_) async => const Result.ok(unit));
 
         final result = await dataSource.deleteSingle('vJk60VoW');
@@ -523,7 +533,13 @@ void main() {
             );
 
             mocktail
-                .when(() => appwriteWrapperMock.getDocument(mocktail.any()))
+                .when(
+                  () => appwriteWrapperMock.getDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
+                )
                 .thenAnswer(
                   (_) async =>
                       Result.err(AppwriteWrapperUnexpectedFailure('k7^&M')),
@@ -532,12 +548,10 @@ void main() {
             dataSource.fetchSingle(id);
 
             mocktail.verify(
-                  () => appwriteWrapperMock.getDocument(
-                AppwriteDocumentReference(
-                  databaseId: config.databaseId,
-                  collectionId: config.collectionId,
-                  documentId: id,
-                ),
+              () => appwriteWrapperMock.getDocument(
+                databaseId: config.databaseId,
+                collectionId: config.collectionId,
+                documentId: id,
               ),
             );
           });
@@ -555,7 +569,13 @@ void main() {
                 values[1] as QuestionsAppwriteDataSourceFailure;
 
             mocktail
-                .when(() => appwriteWrapperMock.getDocument(mocktail.any()))
+                .when(
+                  () => appwriteWrapperMock.getDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
+                )
                 .thenAnswer((_) async => Result.err(wrapperFailure));
 
             final result = await dataSource.fetchSingle('9m8v3W');
@@ -654,7 +674,13 @@ void main() {
             final expectedModel = values[1] as AppwriteQuestionModel;
 
             mocktail
-                .when(() => appwriteWrapperMock.getDocument(mocktail.any()))
+                .when(
+                  () => appwriteWrapperMock.getDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
+                )
                 .thenAnswer((_) async => Result.ok(appwriteDocument));
 
             final result = await dataSource.fetchSingle('!K8@');
@@ -669,9 +695,6 @@ void main() {
 }
 
 class _AppwriteWrapperMock extends mocktail.Mock implements AppwriteWrapper {}
-
-class _AppwriteDocumentReferenceMock extends mocktail.Mock
-    implements AppwriteDocumentReference {}
 
 class _AppwriteQuestionCreationModelMock extends mocktail.Mock
     implements AppwriteQuestionCreationModel {}

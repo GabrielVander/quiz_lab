@@ -53,13 +53,30 @@ class AppwriteWrapper {
     }
   }
 
-  Future<Result<Unit, AppwriteWrapperFailure>> deleteDocument(
-    AppwriteDocumentReference reference,
-  ) async {
+  /// Appwrite Doc:
+  ///
+  /// Delete a document by its unique ID.
+  ///
+  // Rate Limits
+  // This endpoint is limited to 60 requests in every 1 minutes per IP address,
+  // method and user account. We use rate limits to avoid service abuse by users
+  // and as a security practice.
+  Future<Result<Unit, AppwriteWrapperFailure>> deleteDocument({
+    required String databaseId,
+    required String collectionId,
+    required String documentId,
+  }) async {
     _logger.debug('Deleting Appwrite document...');
 
     try {
-      return Result.ok(await _performDocumentDeletion(reference));
+      await _databases.deleteDocument(
+        databaseId: databaseId,
+        collectionId: collectionId,
+        documentId: documentId,
+      );
+
+      _logger.debug('Document deleted successfully');
+      return const Result.ok(unit);
     } on AppwriteException catch (e) {
       return Result.err(_handleAppwriteException(e));
     } catch (e) {
@@ -67,42 +84,31 @@ class AppwriteWrapper {
     }
   }
 
-  Future<Result<Document, AppwriteWrapperFailure>> getDocument(
-    AppwriteDocumentReference reference,
-  ) async {
+  /// Appwrite Doc:
+  ///
+  /// Get a document by its unique ID. This endpoint response returns a JSON
+  /// object with the document data.
+  Future<Result<Document, AppwriteWrapperFailure>> getDocument({
+    required String databaseId,
+    required String collectionId,
+    required String documentId,
+  }) async {
     _logger.debug('Retrieving Appwrite document...');
 
     try {
-      return Result.ok(await _performDocumentRetrieval(reference));
+      return Result.ok(
+        await _databases.getDocument(
+          databaseId: databaseId,
+          collectionId: collectionId,
+          documentId: documentId,
+        ),
+      );
     } on AppwriteException catch (e) {
       return Result.err(_handleAppwriteException(e));
     } catch (e) {
       return Result.err(_handleUnexpectedException(e));
     }
   }
-
-  Future<Unit> _performDocumentDeletion(
-    AppwriteDocumentReference reference,
-  ) async {
-    await _databases.deleteDocument(
-      databaseId: reference.databaseId,
-      collectionId: reference.collectionId,
-      documentId: reference.documentId,
-    );
-
-    _logger.debug('Document deleted successfully');
-
-    return unit;
-  }
-
-  Future<Document> _performDocumentRetrieval(
-    AppwriteDocumentReference reference,
-  ) async =>
-      _databases.getDocument(
-        databaseId: reference.databaseId,
-        collectionId: reference.collectionId,
-        documentId: reference.documentId,
-      );
 
   AppwriteWrapperFailure _handleAppwriteException(AppwriteException e) {
     _logger.error(e.toString());
@@ -143,25 +149,6 @@ class AppwriteWrapper {
         );
     }
   }
-}
-
-class AppwriteDocumentReference extends Equatable {
-  const AppwriteDocumentReference({
-    required this.databaseId,
-    required this.collectionId,
-    required this.documentId,
-  });
-
-  final String databaseId;
-  final String collectionId;
-  final String documentId;
-
-  @override
-  List<Object?> get props => [
-        databaseId,
-        collectionId,
-        documentId,
-      ];
 }
 
 abstract class AppwriteWrapperFailure extends Equatable {}

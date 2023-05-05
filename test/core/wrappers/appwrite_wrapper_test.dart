@@ -307,11 +307,9 @@ void main() {
                 .thenThrow(_AppwriteExceptionMock());
 
             await wrapper.deleteDocument(
-              AppwriteDocumentReference(
-                databaseId: databaseId,
-                collectionId: collectionId,
-                documentId: documentId,
-              ),
+              databaseId: databaseId,
+              collectionId: collectionId,
+              documentId: documentId,
             );
 
             mocktail.verify(
@@ -423,11 +421,9 @@ void main() {
                 .thenThrow(exception);
 
             final result = await wrapper.deleteDocument(
-              const AppwriteDocumentReference(
-                databaseId: databaseId,
-                collectionId: collectionId,
-                documentId: documentId,
-              ),
+              databaseId: databaseId,
+              collectionId: collectionId,
+              documentId: documentId,
             );
 
             expect(result.isErr, true);
@@ -456,11 +452,9 @@ void main() {
             .thenThrow(_ExceptionMock());
 
         final result = await wrapper.deleteDocument(
-          const AppwriteDocumentReference(
-            databaseId: databaseId,
-            collectionId: collectionId,
-            documentId: documentId,
-          ),
+          databaseId: databaseId,
+          collectionId: collectionId,
+          documentId: documentId,
         );
 
         expect(result.isErr, true);
@@ -489,11 +483,9 @@ void main() {
             .thenAnswer((_) async => null);
 
         final result = await wrapper.deleteDocument(
-          const AppwriteDocumentReference(
-            databaseId: databaseId,
-            collectionId: collectionId,
-            documentId: documentId,
-          ),
+          databaseId: databaseId,
+          collectionId: collectionId,
+          documentId: documentId,
         );
 
         expect(result.isOk, true);
@@ -507,12 +499,12 @@ void main() {
       'should call Appwrite databases services correctly',
       () {
         for (final docReference in [
-          const AppwriteDocumentReference(
+          const _AppwriteDocumentReference(
             databaseId: '',
             collectionId: '',
             documentId: '',
           ),
-          const AppwriteDocumentReference(
+          const _AppwriteDocumentReference(
             databaseId: '5Pko',
             collectionId: 'S^*s',
             documentId: 'ePU3b',
@@ -529,7 +521,11 @@ void main() {
                 )
                 .thenAnswer((_) async => _DocumentMock());
 
-            wrapper.getDocument(docReference);
+            wrapper.getDocument(
+              databaseId: docReference.databaseId,
+              collectionId: docReference.collectionId,
+              documentId: docReference.documentId,
+            );
 
             mocktail.verify(
               () => databasesMock.getDocument(
@@ -637,11 +633,9 @@ void main() {
                   .thenThrow(exception);
 
               final result = await wrapper.getDocument(
-                const AppwriteDocumentReference(
-                  databaseId: 'O68JS0u',
-                  collectionId: 'zVIev',
-                  documentId: '^Z9@Cm',
-                ),
+                databaseId: 'O68JS0u',
+                collectionId: 'zVIev',
+                documentId: '^Z9@Cm',
               );
 
               expect(result.isErr, true);
@@ -666,11 +660,9 @@ void main() {
               .thenThrow(_ExceptionMock());
 
           final result = await wrapper.getDocument(
-            const AppwriteDocumentReference(
-              databaseId: 'm%oWh3&',
-              collectionId: 'Wpj0tk',
-              documentId: r'$j651f',
-            ),
+            databaseId: 'm%oWh3&',
+            collectionId: 'Wpj0tk',
+            documentId: r'$j651f',
           );
 
           expect(result.isErr, true);
@@ -699,11 +691,9 @@ void main() {
               .thenAnswer((_) async => dummyDocument);
 
           final result = await wrapper.getDocument(
-            const AppwriteDocumentReference(
-              databaseId: 'FMGb&',
-              collectionId: '9NXDK',
-              documentId: '6ZCK',
-            ),
+            databaseId: 'FMGb&',
+            collectionId: '9NXDK',
+            documentId: '6ZCK',
           );
 
           expect(result.isOk, true);
@@ -745,5 +735,24 @@ class _AppwriteDocumentCreationRequest extends Equatable {
         documentId,
         data,
         permissions,
+      ];
+}
+
+class _AppwriteDocumentReference extends Equatable {
+  const _AppwriteDocumentReference({
+    required this.databaseId,
+    required this.collectionId,
+    required this.documentId,
+  });
+
+  final String databaseId;
+  final String collectionId;
+  final String documentId;
+
+  @override
+  List<Object?> get props => [
+        databaseId,
+        collectionId,
+        documentId,
       ];
 }
