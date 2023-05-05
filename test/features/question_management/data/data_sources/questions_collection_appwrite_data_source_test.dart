@@ -169,7 +169,6 @@ void main() {
     );
 
     mocktail.registerFallbackValue(_AppwriteDocumentReferenceMock());
-    mocktail.registerFallbackValue(_AppwriteDocumentCreationRequestMock());
   });
 
   tearDown(mocktail.resetMocktailState);
@@ -226,7 +225,12 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.createDocument(mocktail.any()),
+                  () => appwriteConnectorMock.createDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                    data: mocktail.any(named: 'data'),
+                  ),
                 )
                 .thenAnswer(
                   (_) async =>
@@ -237,12 +241,10 @@ void main() {
 
             mocktail.verify(
               () => appwriteConnectorMock.createDocument(
-                AppwriteDocumentCreationRequest(
-                  databaseId: config.databaseId,
-                  collectionId: config.collectionId,
-                  documentId: creationModel.id,
-                  data: creationModel.toMap(),
-                ),
+                databaseId: config.databaseId,
+                collectionId: config.collectionId,
+                documentId: creationModel.id,
+                data: creationModel.toMap(),
               ),
             );
           });
@@ -273,7 +275,12 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.createDocument(mocktail.any()),
+                  () => appwriteConnectorMock.createDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                    data: mocktail.any(named: 'data'),
+                  ),
                 )
                 .thenAnswer((_) async => Result.err(appwriteConnectorFailure));
 
@@ -381,7 +388,12 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.createDocument(mocktail.any()),
+                  () => appwriteConnectorMock.createDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                    data: mocktail.any(named: 'data'),
+                  ),
                 )
                 .thenAnswer((_) async => Result.ok(appwriteDocument));
 
@@ -664,9 +676,6 @@ class _AppwriteConnectorMock extends mocktail.Mock
 
 class _AppwriteDocumentReferenceMock extends mocktail.Mock
     implements AppwriteDocumentReference {}
-
-class _AppwriteDocumentCreationRequestMock extends mocktail.Mock
-    implements AppwriteDocumentCreationRequest {}
 
 class _AppwriteQuestionCreationModelMock extends mocktail.Mock
     implements AppwriteQuestionCreationModel {}

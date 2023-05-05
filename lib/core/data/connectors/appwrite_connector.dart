@@ -16,13 +16,33 @@ class AppwriteConnector {
 
   final Databases _databases;
 
-  Future<Result<Document, AppwriteConnectorFailure>> createDocument(
-    AppwriteDocumentCreationRequest request,
-  ) async {
+  /// Appwrite Doc:
+  ///
+  /// Create a new Document. Before using this route, you should create a new
+  /// collection resource using either a server integration API or directly from
+  /// your database console.
+  ///
+  // Rate Limits
+  // This endpoint is limited to 120 requests in every 1 minutes per IP address,
+  // method and user account. We use rate limits to avoid service abuse by users
+  // and as a security practice. Learn more about rate limiting.
+  Future<Result<Document, AppwriteConnectorFailure>> createDocument({
+    required String databaseId,
+    required String collectionId,
+    required String documentId,
+    required Map<dynamic, dynamic> data,
+    List<String>? permissions,
+  }) async {
     _logger.debug('Creating Appwrite document...');
 
     try {
-      final createdDocument = await _performDocumentCreation(request);
+      final createdDocument = await _databases.createDocument(
+        databaseId: databaseId,
+        collectionId: collectionId,
+        documentId: documentId,
+        data: data,
+        permissions: permissions,
+      );
 
       _logger.debug('Appwrite document created successfully');
       return Result.ok(createdDocument);
@@ -60,16 +80,6 @@ class AppwriteConnector {
       return Result.err(_handleUnexpectedException(e));
     }
   }
-
-  Future<Document> _performDocumentCreation(
-    AppwriteDocumentCreationRequest request,
-  ) async =>
-      _databases.createDocument(
-        databaseId: request.databaseId,
-        collectionId: request.collectionId,
-        documentId: request.documentId,
-        data: request.data,
-      );
 
   Future<Unit> _performDocumentDeletion(
     AppwriteDocumentReference reference,
@@ -151,28 +161,6 @@ class AppwriteDocumentReference extends Equatable {
         databaseId,
         collectionId,
         documentId,
-      ];
-}
-
-class AppwriteDocumentCreationRequest extends Equatable {
-  const AppwriteDocumentCreationRequest({
-    required this.databaseId,
-    required this.collectionId,
-    required this.documentId,
-    required this.data,
-  });
-
-  final String databaseId;
-  final String collectionId;
-  final String documentId;
-  final Map<String, dynamic> data;
-
-  @override
-  List<Object?> get props => [
-        databaseId,
-        collectionId,
-        documentId,
-        data,
       ];
 }
 

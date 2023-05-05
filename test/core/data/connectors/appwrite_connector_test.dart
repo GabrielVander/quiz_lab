@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
@@ -21,13 +22,13 @@ void main() {
   group('createDocument', () {
     group('should call Appwrite databases services correctly', () {
       for (final creationRequest in [
-        const AppwriteDocumentCreationRequest(
+        const _AppwriteDocumentCreationRequest(
           databaseId: '',
           collectionId: '',
           documentId: '',
           data: {},
         ),
-        const AppwriteDocumentCreationRequest(
+        const _AppwriteDocumentCreationRequest(
           databaseId: '5Pko',
           collectionId: 'S^*s',
           documentId: 'ePU3b',
@@ -39,6 +40,25 @@ void main() {
               'e': 4,
             },
           },
+          permissions: [],
+        ),
+        const _AppwriteDocumentCreationRequest(
+          databaseId: '5Pko',
+          collectionId: 'S^*s',
+          documentId: 'ePU3b',
+          data: {
+            'a': 1,
+            'b': 2,
+            'c': {
+              'd': 3,
+              'e': 4,
+            },
+          },
+          permissions: [
+            'wHCt',
+            '8H%J',
+            'N56OR6',
+          ],
         ),
       ]) {
         test(creationRequest.toString(), () {
@@ -53,7 +73,13 @@ void main() {
               )
               .thenAnswer((_) async => _DocumentMock());
 
-          connector.createDocument(creationRequest);
+          connector.createDocument(
+            databaseId: creationRequest.databaseId,
+            collectionId: creationRequest.collectionId,
+            documentId: creationRequest.documentId,
+            data: creationRequest.data,
+            permissions: creationRequest.permissions,
+          );
 
           mocktail.verify(
             () => databasesMock.createDocument(
@@ -61,6 +87,7 @@ void main() {
               collectionId: creationRequest.collectionId,
               documentId: creationRequest.documentId,
               data: creationRequest.data,
+              permissions: creationRequest.permissions,
             ),
           );
         });
@@ -161,19 +188,17 @@ void main() {
                 .thenThrow(exception);
 
             final result = await connector.createDocument(
-              const AppwriteDocumentCreationRequest(
-                databaseId: 'O68JS0u',
-                collectionId: 'zVIev',
-                documentId: '^Z9@Cm',
-                data: {
-                  '38W1t': 459,
-                  r'#o#N$Y*J': r'X$qh6xIT',
-                  'ETc!x#A': {
-                    'rkj&pTSv': 3,
-                    'BmW7r': 4,
-                  },
+              databaseId: 'O68JS0u',
+              collectionId: 'zVIev',
+              documentId: '^Z9@Cm',
+              data: {
+                '38W1t': 459,
+                r'#o#N$Y*J': r'X$qh6xIT',
+                'ETc!x#A': {
+                  'rkj&pTSv': 3,
+                  'BmW7r': 4,
                 },
-              ),
+              },
             );
 
             expect(result.isErr, true);
@@ -198,19 +223,17 @@ void main() {
               .thenThrow(_ExceptionMock());
 
           final result = await connector.createDocument(
-            const AppwriteDocumentCreationRequest(
-              databaseId: 'O68JS0u',
-              collectionId: 'zVIev',
-              documentId: '^Z9@Cm',
-              data: {
-                '38W1t': 459,
-                r'#o#N$Y*J': r'X$qh6xIT',
-                'ETc!x#A': {
-                  'rkj&pTSv': 3,
-                  'BmW7r': 4,
-                },
+            databaseId: 'O68JS0u',
+            collectionId: 'zVIev',
+            documentId: '^Z9@Cm',
+            data: {
+              '38W1t': 459,
+              r'#o#N$Y*J': r'X$qh6xIT',
+              'ETc!x#A': {
+                'rkj&pTSv': 3,
+                'BmW7r': 4,
               },
-            ),
+            },
           );
 
           expect(result.isErr, true);
@@ -240,19 +263,17 @@ void main() {
               .thenAnswer((_) async => dummyDocument);
 
           final result = await connector.createDocument(
-            const AppwriteDocumentCreationRequest(
-              databaseId: 'O68JS0u',
-              collectionId: 'zVIev',
-              documentId: '^Z9@Cm',
-              data: {
-                '38W1t': 459,
-                r'#o#N$Y*J': r'X$qh6xIT',
-                'ETc!x#A': {
-                  'rkj&pTSv': 3,
-                  'BmW7r': 4,
-                },
+            databaseId: 'O68JS0u',
+            collectionId: 'zVIev',
+            documentId: '^Z9@Cm',
+            data: {
+              '38W1t': 459,
+              r'#o#N$Y*J': r'X$qh6xIT',
+              'ETc!x#A': {
+                'rkj&pTSv': 3,
+                'BmW7r': 4,
               },
-            ),
+            },
           );
 
           expect(result.isOk, true);
@@ -701,3 +722,28 @@ class _AppwriteExceptionMock extends mocktail.Mock
 class _ExceptionMock extends mocktail.Mock implements Exception {}
 
 class _DocumentMock extends mocktail.Mock implements Document {}
+
+class _AppwriteDocumentCreationRequest extends Equatable {
+  const _AppwriteDocumentCreationRequest({
+    required this.databaseId,
+    required this.collectionId,
+    required this.documentId,
+    required this.data,
+    this.permissions,
+  });
+
+  final String databaseId;
+  final String collectionId;
+  final String documentId;
+  final Map<String, dynamic> data;
+  final List<String>? permissions;
+
+  @override
+  List<Object?> get props => [
+        databaseId,
+        collectionId,
+        documentId,
+        data,
+        permissions,
+      ];
+}

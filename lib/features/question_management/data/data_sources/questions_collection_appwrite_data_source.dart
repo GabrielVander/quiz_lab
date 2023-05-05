@@ -89,12 +89,10 @@ class QuestionCollectionAppwriteDataSource {
     AppwriteQuestionCreationModel creationModel,
   ) async =>
       _appwriteConnector.createDocument(
-        AppwriteDocumentCreationRequest(
-          databaseId: _config.databaseId,
-          collectionId: _config.collectionId,
-          documentId: creationModel.id,
-          data: creationModel.toMap(),
-        ),
+        databaseId: _config.databaseId,
+        collectionId: _config.collectionId,
+        documentId: creationModel.id,
+        data: creationModel.toMap(),
       );
 
   Future<Result<Unit, AppwriteConnectorFailure>> _performAppwriteDeletion(
