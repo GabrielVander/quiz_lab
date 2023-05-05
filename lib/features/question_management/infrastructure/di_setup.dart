@@ -1,9 +1,9 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
+import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
@@ -26,7 +26,7 @@ void questionManagementDiSetup(DependencyInjection di) {
           databaseId: i.get<AppwriteReferencesConfig>().databaseId,
           collectionId: i.get<AppwriteReferencesConfig>().questionsCollectionId,
         ),
-        appwriteConnector: i.get<AppwriteConnector>(),
+        appwriteWrapper: i.get<AppwriteWrapper>(),
       ),
     )
     ..registerBuilder<AuthAppwriteDataSource>(

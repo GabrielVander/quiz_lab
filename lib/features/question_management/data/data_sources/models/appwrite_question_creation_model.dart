@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_permission_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 
 class AppwriteQuestionCreationModel extends Equatable {
@@ -11,6 +12,7 @@ class AppwriteQuestionCreationModel extends Equatable {
     required this.difficulty,
     required this.options,
     required this.categories,
+    this.permissions,
   });
 
   final String id;
@@ -19,6 +21,7 @@ class AppwriteQuestionCreationModel extends Equatable {
   final String difficulty;
   final List<AppwriteQuestionOptionModel> options;
   final List<String> categories;
+  final List<AppwritePermissionTypeModel>? permissions;
 
   @override
   List<Object> get props => [
@@ -28,6 +31,7 @@ class AppwriteQuestionCreationModel extends Equatable {
         difficulty,
         options,
         categories,
+        permissions ?? [],
       ];
 
   Map<String, dynamic> toMap() {

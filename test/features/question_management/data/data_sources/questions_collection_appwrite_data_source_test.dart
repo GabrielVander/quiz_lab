@@ -2,34 +2,35 @@ import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
-import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_permission_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 
 void main() {
-  late AppwriteConnector appwriteConnectorMock;
+  late AppwriteWrapper appwriteWrapperMock;
   late QuestionCollectionAppwriteDataSource dataSource;
 
   final expectedAppwriteErrorMappings = [
     [
-      AppwriteConnectorUnexpectedFailure(''),
+      AppwriteWrapperUnexpectedFailure(''),
       QuestionsAppwriteDataSourceUnexpectedFailure(''),
     ],
     [
-      AppwriteConnectorUnexpectedFailure(r'$4*'),
+      AppwriteWrapperUnexpectedFailure(r'$4*'),
       QuestionsAppwriteDataSourceUnexpectedFailure(r'$4*'),
     ],
     [
-      AppwriteConnectorAppwriteFailure(const UnknownAppwriteError()),
+      AppwriteWrapperServiceFailure(const UnknownAppwriteError()),
       QuestionsAppwriteDataSourceAppwriteFailure(
         const UnknownAppwriteError().toString(),
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const UnknownAppwriteError(
           type: '',
           message: '',
@@ -45,7 +46,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const UnknownAppwriteError(
           type: 'FOq',
           message: 'EYzmU%^',
@@ -61,7 +62,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const GeneralArgumentInvalidAppwriteError(
           message: '',
         ),
@@ -73,7 +74,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const GeneralArgumentInvalidAppwriteError(
           message: 'L7B%927',
         ),
@@ -85,7 +86,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const DatabaseNotFoundAppwriteError(
           message: '',
         ),
@@ -97,7 +98,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const DatabaseNotFoundAppwriteError(
           message: 'm#6',
         ),
@@ -109,7 +110,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const CollectionNotFoundAppwriteError(
           message: '',
         ),
@@ -121,7 +122,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const CollectionNotFoundAppwriteError(
           message: r'$A77j0*',
         ),
@@ -133,7 +134,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const DocumentNotFoundAppwriteError(
           message: '',
         ),
@@ -145,7 +146,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const DocumentNotFoundAppwriteError(
           message: 'mMke',
         ),
@@ -159,24 +160,21 @@ void main() {
   ];
 
   setUp(() {
-    appwriteConnectorMock = _AppwriteConnectorMock();
+    appwriteWrapperMock = _AppwriteWrapperMock();
     dataSource = QuestionCollectionAppwriteDataSource(
       config: QuestionsAppwriteDataSourceConfig(
         databaseId: 'G3Q',
         collectionId: 'A9MnFkz',
       ),
-      appwriteConnector: appwriteConnectorMock,
+      appwriteWrapper: appwriteWrapperMock,
     );
-
-    mocktail.registerFallbackValue(_AppwriteDocumentReferenceMock());
-    mocktail.registerFallbackValue(_AppwriteDocumentCreationRequestMock());
   });
 
   tearDown(mocktail.resetMocktailState);
 
   group('createSingle', () {
     group(
-      'should call Appwrite connector correctly',
+      'should call Appwrite wrapper correctly',
       () {
         for (final values in [
           [
@@ -217,6 +215,363 @@ void main() {
               ],
             )
           ],
+          [
+            QuestionsAppwriteDataSourceConfig(
+              databaseId: 'jbM3Wi',
+              collectionId: 'Fuh#',
+            ),
+            const AppwriteQuestionCreationModel(
+              id: 'v5ZD#0s@',
+              title: 'P7R9',
+              description: 'oOx',
+              difficulty: '8n34Tg5I',
+              options: [
+                AppwriteQuestionOptionModel(
+                  description: 'k1aU7',
+                  isCorrect: false,
+                ),
+                AppwriteQuestionOptionModel(
+                  description: '4kNB',
+                  isCorrect: false,
+                ),
+              ],
+              categories: [
+                '5kF',
+                'kegq',
+                'dRTs',
+              ],
+              permissions: [],
+            )
+          ],
+          [
+            QuestionsAppwriteDataSourceConfig(
+              databaseId: 'jbM3Wi',
+              collectionId: 'Fuh#',
+            ),
+            AppwriteQuestionCreationModel(
+              id: 'v5ZD#0s@',
+              title: 'P7R9',
+              description: 'oOx',
+              difficulty: '8n34Tg5I',
+              options: const [
+                AppwriteQuestionOptionModel(
+                  description: 'k1aU7',
+                  isCorrect: false,
+                ),
+                AppwriteQuestionOptionModel(
+                  description: '4kNB',
+                  isCorrect: false,
+                ),
+              ],
+              categories: const [
+                '5kF',
+                'kegq',
+                'dRTs',
+              ],
+              permissions: [
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.any(),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.guests(),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.users(),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.users(verified: false),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.user(userId: ''),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.user(userId: 'e58&4'),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.user(userId: '', verified: false),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.user(
+                    userId: 'd#N',
+                    verified: false,
+                  ),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.team(teamId: ''),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.team(teamId: 'vcx'),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.teamRole(teamId: '', role: ''),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '*rYi3wP',
+                    role: '',
+                  ),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '',
+                    role: 'WQYWru',
+                  ),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: 'u65M3r',
+                    role: '^g8@',
+                  ),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.member(membershipId: ''),
+                ),
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.member(membershipId: '#&*5'),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.any(),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.guests(),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.users(),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.users(verified: false),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.user(userId: ''),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.user(userId: 'e58&4'),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.user(userId: '', verified: false),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.user(
+                    userId: 'd#N',
+                    verified: false,
+                  ),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.team(teamId: ''),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.team(teamId: 'vcx'),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.teamRole(teamId: '', role: ''),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '*rYi3wP',
+                    role: '',
+                  ),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '',
+                    role: 'WQYWru',
+                  ),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: 'u65M3r',
+                    role: '^g8@',
+                  ),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.member(membershipId: ''),
+                ),
+                AppwritePermissionTypeModel.create(
+                  AppwritePermissionRoleModel.member(membershipId: '#&*5'),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.any(),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.guests(),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.users(),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.users(verified: false),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.user(userId: ''),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.user(userId: 'e58&4'),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.user(userId: '', verified: false),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.user(
+                    userId: 'd#N',
+                    verified: false,
+                  ),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.team(teamId: ''),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.team(teamId: 'vcx'),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.teamRole(teamId: '', role: ''),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '*rYi3wP',
+                    role: '',
+                  ),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '',
+                    role: 'WQYWru',
+                  ),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: 'u65M3r',
+                    role: '^g8@',
+                  ),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.member(membershipId: ''),
+                ),
+                AppwritePermissionTypeModel.update(
+                  AppwritePermissionRoleModel.member(membershipId: '#&*5'),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.any(),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.guests(),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.users(),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.users(verified: false),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.user(userId: ''),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.user(userId: 'e58&4'),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.user(userId: '', verified: false),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.user(
+                    userId: 'd#N',
+                    verified: false,
+                  ),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.team(teamId: ''),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.team(teamId: 'vcx'),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.teamRole(teamId: '', role: ''),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '*rYi3wP',
+                    role: '',
+                  ),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '',
+                    role: 'WQYWru',
+                  ),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: 'u65M3r',
+                    role: '^g8@',
+                  ),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.member(membershipId: ''),
+                ),
+                AppwritePermissionTypeModel.delete(
+                  AppwritePermissionRoleModel.member(membershipId: '#&*5'),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.any(),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.guests(),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.users(),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.users(verified: false),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.user(userId: ''),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.user(userId: 'e58&4'),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.user(userId: '', verified: false),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.user(
+                    userId: 'd#N',
+                    verified: false,
+                  ),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.team(teamId: ''),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.team(teamId: 'vcx'),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.teamRole(teamId: '', role: ''),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '*rYi3wP',
+                    role: '',
+                  ),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: '',
+                    role: 'WQYWru',
+                  ),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.teamRole(
+                    teamId: 'u65M3r',
+                    role: '^g8@',
+                  ),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.member(membershipId: ''),
+                ),
+                AppwritePermissionTypeModel.write(
+                  AppwritePermissionRoleModel.member(membershipId: '#&*5'),
+                ),
+              ],
+            )
+          ],
         ]) {
           test(values.toString(), () {
             final config = values[0] as QuestionsAppwriteDataSourceConfig;
@@ -226,23 +581,30 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.createDocument(mocktail.any()),
+                  () => appwriteWrapperMock.createDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                    data: mocktail.any(named: 'data'),
+                    permissions: mocktail.any(named: 'permissions'),
+                  ),
                 )
                 .thenAnswer(
                   (_) async =>
-                      Result.err(AppwriteConnectorUnexpectedFailure('7S8W')),
+                      Result.err(AppwriteWrapperUnexpectedFailure('7S8W')),
                 );
 
             dataSource.createSingle(creationModel);
 
             mocktail.verify(
-              () => appwriteConnectorMock.createDocument(
-                AppwriteDocumentCreationRequest(
-                  databaseId: config.databaseId,
-                  collectionId: config.collectionId,
-                  documentId: creationModel.id,
-                  data: creationModel.toMap(),
-                ),
+              () => appwriteWrapperMock.createDocument(
+                databaseId: config.databaseId,
+                collectionId: config.collectionId,
+                documentId: creationModel.id,
+                data: creationModel.toMap(),
+                permissions: creationModel.permissions
+                    ?.map((p) => p.toString())
+                    .toList(),
               ),
             );
           });
@@ -251,12 +613,11 @@ void main() {
     );
 
     group(
-      'should return expected failure if Appwrite connector fails',
+      'should return expected failure if Appwrite wrapper fails',
       () {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
-            final appwriteConnectorFailure =
-                values[0] as AppwriteConnectorFailure;
+            final wrapperFailure = values[0] as AppwriteWrapperFailure;
             final expectedFailure =
                 values[1] as QuestionsAppwriteDataSourceFailure;
 
@@ -273,9 +634,14 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.createDocument(mocktail.any()),
+                  () => appwriteWrapperMock.createDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                    data: mocktail.any(named: 'data'),
+                  ),
                 )
-                .thenAnswer((_) async => Result.err(appwriteConnectorFailure));
+                .thenAnswer((_) async => Result.err(wrapperFailure));
 
             final result = await dataSource
                 .createSingle(appwriteQuestionCreationModelMock);
@@ -381,7 +747,12 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.createDocument(mocktail.any()),
+                  () => appwriteWrapperMock.createDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                    data: mocktail.any(named: 'data'),
+                  ),
                 )
                 .thenAnswer((_) async => Result.ok(appwriteDocument));
 
@@ -397,7 +768,7 @@ void main() {
 
   group('deleteSingle', () {
     group(
-      'should call Appwrite connector correctly',
+      'should call Appwrite wrapper correctly',
       () {
         for (final values in [
           [
@@ -418,27 +789,29 @@ void main() {
 
             final dataSource = QuestionCollectionAppwriteDataSource(
               config: config,
-              appwriteConnector: appwriteConnectorMock,
+              appwriteWrapper: appwriteWrapperMock,
             );
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.deleteDocument(mocktail.any()),
+                  () => appwriteWrapperMock.deleteDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
                 )
                 .thenAnswer(
                   (_) async =>
-                      Result.err(AppwriteConnectorUnexpectedFailure('k7^&M')),
+                      Result.err(AppwriteWrapperUnexpectedFailure('k7^&M')),
                 );
 
             dataSource.deleteSingle(id);
 
             mocktail.verify(
-              () => appwriteConnectorMock.deleteDocument(
-                AppwriteDocumentReference(
-                  databaseId: config.databaseId,
-                  collectionId: config.collectionId,
-                  documentId: id,
-                ),
+              () => appwriteWrapperMock.deleteDocument(
+                databaseId: config.databaseId,
+                collectionId: config.collectionId,
+                documentId: id,
               ),
             );
           });
@@ -447,20 +820,23 @@ void main() {
     );
 
     group(
-      'should return expected failure if Appwrite connector fails',
+      'should return expected failure if Appwrite wrapper fails',
       () {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
-            final appwriteConnectorFailure =
-                values[0] as AppwriteConnectorFailure;
+            final wrapperFailure = values[0] as AppwriteWrapperFailure;
             final expectedFailure =
                 values[1] as QuestionsAppwriteDataSourceFailure;
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.deleteDocument(mocktail.any()),
+                  () => appwriteWrapperMock.deleteDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
                 )
-                .thenAnswer((_) async => Result.err(appwriteConnectorFailure));
+                .thenAnswer((_) async => Result.err(wrapperFailure));
 
             final result = await dataSource.deleteSingle('*1Kl!M2q');
 
@@ -472,10 +848,16 @@ void main() {
     );
 
     test(
-      'should return nothing if Appwrite connector returns nothing',
-          () async {
+      'should return nothing if Appwrite wrapper returns nothing',
+      () async {
         mocktail
-            .when(() => appwriteConnectorMock.deleteDocument(mocktail.any()))
+            .when(
+              () => appwriteWrapperMock.deleteDocument(
+                collectionId: mocktail.any(named: 'collectionId'),
+                databaseId: mocktail.any(named: 'databaseId'),
+                documentId: mocktail.any(named: 'documentId'),
+              ),
+            )
             .thenAnswer((_) async => const Result.ok(unit));
 
         final result = await dataSource.deleteSingle('vJk60VoW');
@@ -488,7 +870,7 @@ void main() {
 
   group('fetchSingle', () {
     group(
-      'should call Appwrite connector correctly',
+      'should call Appwrite wrapper correctly',
       () {
         for (final values in [
           [
@@ -509,25 +891,29 @@ void main() {
 
             final dataSource = QuestionCollectionAppwriteDataSource(
               config: config,
-              appwriteConnector: appwriteConnectorMock,
+              appwriteWrapper: appwriteWrapperMock,
             );
 
             mocktail
-                .when(() => appwriteConnectorMock.getDocument(mocktail.any()))
+                .when(
+                  () => appwriteWrapperMock.getDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
+                )
                 .thenAnswer(
                   (_) async =>
-                      Result.err(AppwriteConnectorUnexpectedFailure('k7^&M')),
+                      Result.err(AppwriteWrapperUnexpectedFailure('k7^&M')),
                 );
 
             dataSource.fetchSingle(id);
 
             mocktail.verify(
-              () => appwriteConnectorMock.getDocument(
-                AppwriteDocumentReference(
-                  databaseId: config.databaseId,
-                  collectionId: config.collectionId,
-                  documentId: id,
-                ),
+              () => appwriteWrapperMock.getDocument(
+                databaseId: config.databaseId,
+                collectionId: config.collectionId,
+                documentId: id,
               ),
             );
           });
@@ -536,18 +922,23 @@ void main() {
     );
 
     group(
-      'should return expected failure if Appwrite connector fails',
+      'should return expected failure if Appwrite wrapper fails',
       () {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
-            final appwriteConnectorFailure =
-                values[0] as AppwriteConnectorFailure;
+            final wrapperFailure = values[0] as AppwriteWrapperFailure;
             final expectedFailure =
                 values[1] as QuestionsAppwriteDataSourceFailure;
 
             mocktail
-                .when(() => appwriteConnectorMock.getDocument(mocktail.any()))
-                .thenAnswer((_) async => Result.err(appwriteConnectorFailure));
+                .when(
+                  () => appwriteWrapperMock.getDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
+                )
+                .thenAnswer((_) async => Result.err(wrapperFailure));
 
             final result = await dataSource.fetchSingle('9m8v3W');
 
@@ -645,7 +1036,13 @@ void main() {
             final expectedModel = values[1] as AppwriteQuestionModel;
 
             mocktail
-                .when(() => appwriteConnectorMock.getDocument(mocktail.any()))
+                .when(
+                  () => appwriteWrapperMock.getDocument(
+                    collectionId: mocktail.any(named: 'collectionId'),
+                    databaseId: mocktail.any(named: 'databaseId'),
+                    documentId: mocktail.any(named: 'documentId'),
+                  ),
+                )
                 .thenAnswer((_) async => Result.ok(appwriteDocument));
 
             final result = await dataSource.fetchSingle('!K8@');
@@ -659,14 +1056,7 @@ void main() {
   });
 }
 
-class _AppwriteConnectorMock extends mocktail.Mock
-    implements AppwriteConnector {}
-
-class _AppwriteDocumentReferenceMock extends mocktail.Mock
-    implements AppwriteDocumentReference {}
-
-class _AppwriteDocumentCreationRequestMock extends mocktail.Mock
-    implements AppwriteDocumentCreationRequest {}
+class _AppwriteWrapperMock extends mocktail.Mock implements AppwriteWrapper {}
 
 class _AppwriteQuestionCreationModelMock extends mocktail.Mock
     implements AppwriteQuestionCreationModel {}
