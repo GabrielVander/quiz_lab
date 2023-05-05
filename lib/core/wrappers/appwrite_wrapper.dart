@@ -6,13 +6,13 @@ import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 
-class AppwriteConnector {
-  AppwriteConnector({
+class AppwriteWrapper {
+  AppwriteWrapper({
     required Databases databases,
   }) : _databases = databases;
 
   final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<AppwriteConnector>();
+      QuizLabLoggerFactory.createLogger<AppwriteWrapper>();
 
   final Databases _databases;
 
@@ -26,7 +26,7 @@ class AppwriteConnector {
   // This endpoint is limited to 120 requests in every 1 minutes per IP address,
   // method and user account. We use rate limits to avoid service abuse by users
   // and as a security practice. Learn more about rate limiting.
-  Future<Result<Document, AppwriteConnectorFailure>> createDocument({
+  Future<Result<Document, AppwriteWrapperFailure>> createDocument({
     required String databaseId,
     required String collectionId,
     required String documentId,
@@ -53,7 +53,7 @@ class AppwriteConnector {
     }
   }
 
-  Future<Result<Unit, AppwriteConnectorFailure>> deleteDocument(
+  Future<Result<Unit, AppwriteWrapperFailure>> deleteDocument(
     AppwriteDocumentReference reference,
   ) async {
     _logger.debug('Deleting Appwrite document...');
@@ -67,7 +67,7 @@ class AppwriteConnector {
     }
   }
 
-  Future<Result<Document, AppwriteConnectorFailure>> getDocument(
+  Future<Result<Document, AppwriteWrapperFailure>> getDocument(
     AppwriteDocumentReference reference,
   ) async {
     _logger.debug('Retrieving Appwrite document...');
@@ -104,18 +104,18 @@ class AppwriteConnector {
         documentId: reference.documentId,
       );
 
-  AppwriteConnectorFailure _handleAppwriteException(AppwriteException e) {
+  AppwriteWrapperFailure _handleAppwriteException(AppwriteException e) {
     _logger.error(e.toString());
 
     final appwriteError = _mapAppwriteExceptionToAppwriteError(e);
 
-    return AppwriteConnectorAppwriteFailure(appwriteError);
+    return AppwriteWrapperServiceFailure(appwriteError);
   }
 
-  AppwriteConnectorUnexpectedFailure _handleUnexpectedException(Object e) {
+  AppwriteWrapperUnexpectedFailure _handleUnexpectedException(Object e) {
     _logger.error(e.toString());
 
-    return AppwriteConnectorUnexpectedFailure(e.toString());
+    return AppwriteWrapperUnexpectedFailure(e.toString());
   }
 
   AppwriteError _mapAppwriteExceptionToAppwriteError(AppwriteException e) {
@@ -164,10 +164,10 @@ class AppwriteDocumentReference extends Equatable {
       ];
 }
 
-abstract class AppwriteConnectorFailure extends Equatable {}
+abstract class AppwriteWrapperFailure extends Equatable {}
 
-class AppwriteConnectorUnexpectedFailure extends AppwriteConnectorFailure {
-  AppwriteConnectorUnexpectedFailure(this.message);
+class AppwriteWrapperUnexpectedFailure extends AppwriteWrapperFailure {
+  AppwriteWrapperUnexpectedFailure(this.message);
 
   final String message;
 
@@ -175,8 +175,8 @@ class AppwriteConnectorUnexpectedFailure extends AppwriteConnectorFailure {
   List<Object?> get props => [message];
 }
 
-class AppwriteConnectorAppwriteFailure extends AppwriteConnectorFailure {
-  AppwriteConnectorAppwriteFailure(this.error);
+class AppwriteWrapperServiceFailure extends AppwriteWrapperFailure {
+  AppwriteWrapperServiceFailure(this.error);
 
   final AppwriteError error;
 

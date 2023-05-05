@@ -2,34 +2,34 @@ import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 
 void main() {
-  late AppwriteConnector appwriteConnectorMock;
+  late AppwriteWrapper appwriteWrapperMock;
   late QuestionCollectionAppwriteDataSource dataSource;
 
   final expectedAppwriteErrorMappings = [
     [
-      AppwriteConnectorUnexpectedFailure(''),
+      AppwriteWrapperUnexpectedFailure(''),
       QuestionsAppwriteDataSourceUnexpectedFailure(''),
     ],
     [
-      AppwriteConnectorUnexpectedFailure(r'$4*'),
+      AppwriteWrapperUnexpectedFailure(r'$4*'),
       QuestionsAppwriteDataSourceUnexpectedFailure(r'$4*'),
     ],
     [
-      AppwriteConnectorAppwriteFailure(const UnknownAppwriteError()),
+      AppwriteWrapperServiceFailure(const UnknownAppwriteError()),
       QuestionsAppwriteDataSourceAppwriteFailure(
         const UnknownAppwriteError().toString(),
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const UnknownAppwriteError(
           type: '',
           message: '',
@@ -45,7 +45,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const UnknownAppwriteError(
           type: 'FOq',
           message: 'EYzmU%^',
@@ -61,7 +61,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const GeneralArgumentInvalidAppwriteError(
           message: '',
         ),
@@ -73,7 +73,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const GeneralArgumentInvalidAppwriteError(
           message: 'L7B%927',
         ),
@@ -85,7 +85,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const DatabaseNotFoundAppwriteError(
           message: '',
         ),
@@ -97,7 +97,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const DatabaseNotFoundAppwriteError(
           message: 'm#6',
         ),
@@ -109,7 +109,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const CollectionNotFoundAppwriteError(
           message: '',
         ),
@@ -121,7 +121,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const CollectionNotFoundAppwriteError(
           message: r'$A77j0*',
         ),
@@ -133,7 +133,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const DocumentNotFoundAppwriteError(
           message: '',
         ),
@@ -145,7 +145,7 @@ void main() {
       ),
     ],
     [
-      AppwriteConnectorAppwriteFailure(
+      AppwriteWrapperServiceFailure(
         const DocumentNotFoundAppwriteError(
           message: 'mMke',
         ),
@@ -159,13 +159,13 @@ void main() {
   ];
 
   setUp(() {
-    appwriteConnectorMock = _AppwriteConnectorMock();
+    appwriteWrapperMock = _AppwriteWrapperMock();
     dataSource = QuestionCollectionAppwriteDataSource(
       config: QuestionsAppwriteDataSourceConfig(
         databaseId: 'G3Q',
         collectionId: 'A9MnFkz',
       ),
-      appwriteConnector: appwriteConnectorMock,
+      appwriteWrapper: appwriteWrapperMock,
     );
 
     mocktail.registerFallbackValue(_AppwriteDocumentReferenceMock());
@@ -175,7 +175,7 @@ void main() {
 
   group('createSingle', () {
     group(
-      'should call Appwrite connector correctly',
+      'should call Appwrite wrapper correctly',
       () {
         for (final values in [
           [
@@ -225,7 +225,7 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.createDocument(
+                  () => appwriteWrapperMock.createDocument(
                     collectionId: mocktail.any(named: 'collectionId'),
                     databaseId: mocktail.any(named: 'databaseId'),
                     documentId: mocktail.any(named: 'documentId'),
@@ -234,13 +234,13 @@ void main() {
                 )
                 .thenAnswer(
                   (_) async =>
-                      Result.err(AppwriteConnectorUnexpectedFailure('7S8W')),
+                      Result.err(AppwriteWrapperUnexpectedFailure('7S8W')),
                 );
 
             dataSource.createSingle(creationModel);
 
             mocktail.verify(
-              () => appwriteConnectorMock.createDocument(
+                  () => appwriteWrapperMock.createDocument(
                 databaseId: config.databaseId,
                 collectionId: config.collectionId,
                 documentId: creationModel.id,
@@ -253,12 +253,11 @@ void main() {
     );
 
     group(
-      'should return expected failure if Appwrite connector fails',
+      'should return expected failure if Appwrite wrapper fails',
       () {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
-            final appwriteConnectorFailure =
-                values[0] as AppwriteConnectorFailure;
+            final wrapperFailure = values[0] as AppwriteWrapperFailure;
             final expectedFailure =
                 values[1] as QuestionsAppwriteDataSourceFailure;
 
@@ -275,14 +274,14 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.createDocument(
+                  () => appwriteWrapperMock.createDocument(
                     collectionId: mocktail.any(named: 'collectionId'),
                     databaseId: mocktail.any(named: 'databaseId'),
                     documentId: mocktail.any(named: 'documentId'),
                     data: mocktail.any(named: 'data'),
                   ),
                 )
-                .thenAnswer((_) async => Result.err(appwriteConnectorFailure));
+                .thenAnswer((_) async => Result.err(wrapperFailure));
 
             final result = await dataSource
                 .createSingle(appwriteQuestionCreationModelMock);
@@ -388,7 +387,7 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.createDocument(
+                  () => appwriteWrapperMock.createDocument(
                     collectionId: mocktail.any(named: 'collectionId'),
                     databaseId: mocktail.any(named: 'databaseId'),
                     documentId: mocktail.any(named: 'documentId'),
@@ -409,7 +408,7 @@ void main() {
 
   group('deleteSingle', () {
     group(
-      'should call Appwrite connector correctly',
+      'should call Appwrite wrapper correctly',
       () {
         for (final values in [
           [
@@ -430,22 +429,22 @@ void main() {
 
             final dataSource = QuestionCollectionAppwriteDataSource(
               config: config,
-              appwriteConnector: appwriteConnectorMock,
+              appwriteWrapper: appwriteWrapperMock,
             );
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.deleteDocument(mocktail.any()),
+                  () => appwriteWrapperMock.deleteDocument(mocktail.any()),
                 )
                 .thenAnswer(
                   (_) async =>
-                      Result.err(AppwriteConnectorUnexpectedFailure('k7^&M')),
+                      Result.err(AppwriteWrapperUnexpectedFailure('k7^&M')),
                 );
 
             dataSource.deleteSingle(id);
 
             mocktail.verify(
-              () => appwriteConnectorMock.deleteDocument(
+                  () => appwriteWrapperMock.deleteDocument(
                 AppwriteDocumentReference(
                   databaseId: config.databaseId,
                   collectionId: config.collectionId,
@@ -459,20 +458,19 @@ void main() {
     );
 
     group(
-      'should return expected failure if Appwrite connector fails',
+      'should return expected failure if Appwrite wrapper fails',
       () {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
-            final appwriteConnectorFailure =
-                values[0] as AppwriteConnectorFailure;
+            final wrapperFailure = values[0] as AppwriteWrapperFailure;
             final expectedFailure =
                 values[1] as QuestionsAppwriteDataSourceFailure;
 
             mocktail
                 .when(
-                  () => appwriteConnectorMock.deleteDocument(mocktail.any()),
+                  () => appwriteWrapperMock.deleteDocument(mocktail.any()),
                 )
-                .thenAnswer((_) async => Result.err(appwriteConnectorFailure));
+                .thenAnswer((_) async => Result.err(wrapperFailure));
 
             final result = await dataSource.deleteSingle('*1Kl!M2q');
 
@@ -484,10 +482,10 @@ void main() {
     );
 
     test(
-      'should return nothing if Appwrite connector returns nothing',
-          () async {
+      'should return nothing if Appwrite wrapper returns nothing',
+      () async {
         mocktail
-            .when(() => appwriteConnectorMock.deleteDocument(mocktail.any()))
+            .when(() => appwriteWrapperMock.deleteDocument(mocktail.any()))
             .thenAnswer((_) async => const Result.ok(unit));
 
         final result = await dataSource.deleteSingle('vJk60VoW');
@@ -500,7 +498,7 @@ void main() {
 
   group('fetchSingle', () {
     group(
-      'should call Appwrite connector correctly',
+      'should call Appwrite wrapper correctly',
       () {
         for (final values in [
           [
@@ -521,20 +519,20 @@ void main() {
 
             final dataSource = QuestionCollectionAppwriteDataSource(
               config: config,
-              appwriteConnector: appwriteConnectorMock,
+              appwriteWrapper: appwriteWrapperMock,
             );
 
             mocktail
-                .when(() => appwriteConnectorMock.getDocument(mocktail.any()))
+                .when(() => appwriteWrapperMock.getDocument(mocktail.any()))
                 .thenAnswer(
                   (_) async =>
-                      Result.err(AppwriteConnectorUnexpectedFailure('k7^&M')),
+                      Result.err(AppwriteWrapperUnexpectedFailure('k7^&M')),
                 );
 
             dataSource.fetchSingle(id);
 
             mocktail.verify(
-              () => appwriteConnectorMock.getDocument(
+                  () => appwriteWrapperMock.getDocument(
                 AppwriteDocumentReference(
                   databaseId: config.databaseId,
                   collectionId: config.collectionId,
@@ -548,18 +546,17 @@ void main() {
     );
 
     group(
-      'should return expected failure if Appwrite connector fails',
+      'should return expected failure if Appwrite wrapper fails',
       () {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
-            final appwriteConnectorFailure =
-                values[0] as AppwriteConnectorFailure;
+            final wrapperFailure = values[0] as AppwriteWrapperFailure;
             final expectedFailure =
                 values[1] as QuestionsAppwriteDataSourceFailure;
 
             mocktail
-                .when(() => appwriteConnectorMock.getDocument(mocktail.any()))
-                .thenAnswer((_) async => Result.err(appwriteConnectorFailure));
+                .when(() => appwriteWrapperMock.getDocument(mocktail.any()))
+                .thenAnswer((_) async => Result.err(wrapperFailure));
 
             final result = await dataSource.fetchSingle('9m8v3W');
 
@@ -657,7 +654,7 @@ void main() {
             final expectedModel = values[1] as AppwriteQuestionModel;
 
             mocktail
-                .when(() => appwriteConnectorMock.getDocument(mocktail.any()))
+                .when(() => appwriteWrapperMock.getDocument(mocktail.any()))
                 .thenAnswer((_) async => Result.ok(appwriteDocument));
 
             final result = await dataSource.fetchSingle('!K8@');
@@ -671,8 +668,7 @@ void main() {
   });
 }
 
-class _AppwriteConnectorMock extends mocktail.Mock
-    implements AppwriteConnector {}
+class _AppwriteWrapperMock extends mocktail.Mock implements AppwriteWrapper {}
 
 class _AppwriteDocumentReferenceMock extends mocktail.Mock
     implements AppwriteDocumentReference {}

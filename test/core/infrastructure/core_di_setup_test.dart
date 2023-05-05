@@ -1,12 +1,12 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
-import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
 import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 
 void main() {
   late _DependencyInjectionMock diMock;
@@ -22,7 +22,7 @@ void main() {
         [Account, () => _check<Account>(diMock)],
         [Databases, () => _check<Databases>(diMock)],
         [Realtime, () => _check<Realtime>(diMock)],
-        [AppwriteConnector, () => _check<AppwriteConnector>(diMock)],
+        [AppwriteWrapper, () => _check<AppwriteWrapper>(diMock)],
         [AppwriteDataSource, () => _check<AppwriteDataSource>(diMock)],
         [NetworkCubit, () => _check<NetworkCubit>(diMock)],
         [BottomNavigationCubit, () => _check<BottomNavigationCubit>(diMock)],
