@@ -91,6 +91,8 @@ class QuestionCollectionAppwriteDataSource {
         collectionId: _config.collectionId,
         documentId: creationModel.id,
         data: creationModel.toMap(),
+        permissions:
+            creationModel.permissions?.map((p) => p.toString()).toList(),
       );
 
   Future<Result<Unit, AppwriteWrapperFailure>> _performAppwriteDeletion(
