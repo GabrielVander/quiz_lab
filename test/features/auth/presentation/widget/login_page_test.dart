@@ -32,10 +32,10 @@ void main() {
 
   testWidgets(
     'should display a circular progress indicator if cubit state is '
-    '[LoginPageInitial]',
+    '[LoginPageInitial] and call cubit.hydrate()',
     (widgetTester) async {
       mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-            (_) => const Stream.empty(),
+            (_) => Stream.value(const LoginPageInitial()),
           );
       mocktail
           .when(() => loginPageCubitMock.state)
@@ -52,6 +52,8 @@ void main() {
         find.byType(CircularProgressIndicator),
         findsAtLeastNWidgets(1),
       );
+
+      mocktail.verify(() => loginPageCubitMock.hydrate()).called(1);
     },
   );
 

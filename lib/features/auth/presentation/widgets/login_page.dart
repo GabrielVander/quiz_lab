@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
@@ -8,7 +9,7 @@ import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/lo
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends HookWidget {
   const LoginPage({
     required LoginPageCubit loginPageCubit,
     super.key,
@@ -18,106 +19,122 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    useBlocListener(
+      _cubit,
+      (bloc, current, context) {
+        if (current is LoginPageDisplayNotYetImplementedMessage) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(S.of(context).notYetImplemented),
+              ),
+            );
+          });
+        }
+      },
+      listenWhen: (current) =>
+          current is LoginPageDisplayNotYetImplementedMessage,
+    );
+
+    useBlocListener(
+      _cubit,
+      (bloc, current, context) {
+        if (current is LoginPageDisplayErrorMessage) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                content: Text(S.of(context).genericErrorMessage),
+              ),
+            );
+          });
+        }
+      },
+      listenWhen: (current) => current is LoginPageDisplayErrorMessage,
+    );
+
+    useBlocListener(
+      _cubit,
+      (bloc, current, context) {
+        if (current is LoginPagePushRouteReplacing) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            GoRouter.of(context).goNamed(current.route.name);
+          });
+        }
+      },
+      listenWhen: (current) => current is LoginPagePushRouteReplacing,
+    );
+
+    final state = useBlocBuilder(
+      _cubit,
+      buildWhen: (current) => [
+        LoginPageInitial,
+        LoginPageLoading,
+        LoginPageViewModelUpdated,
+      ].contains(current.runtimeType),
+    );
+
     return SafeArea(
       child: Scaffold(
         body: BetaBannerDisplay(
           child: Padding(
             padding: const EdgeInsets.all(15),
-            child: BlocListener<LoginPageCubit, LoginPageState>(
-              bloc: _cubit,
-              listenWhen: (_, s) {
-                return [
-                  LoginPagePushRouteReplacing,
-                  LoginPageDisplayErrorMessage,
-                  LoginPageDisplayNotYetImplementedMessage,
-                ].contains(s.runtimeType);
+            child: HookBuilder(
+              builder: (context) {
+                if (state is LoginPageInitial) {
+                  _cubit.hydrate();
+                }
+
+                if (state is LoginPageInitial || state is LoginPageLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (state is LoginPageViewModelUpdated) {
+                  return LayoutBuilder(
+                    builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      return ListView.separated(
+                        itemCount: 4,
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(
+                            height: constraints.maxHeight * 0.1,
+                          );
+                        },
+                        itemBuilder: (BuildContext context, int index) {
+                          return [
+                            SizedBox(
+                              height: Theme.of(context)
+                                  .textTheme
+                                  .displayLarge!
+                                  .fontSize,
+                              child: const QuizLabIcon(),
+                            ),
+                            const Center(
+                              child: _Title(),
+                            ),
+                            _LoginForm(
+                              key: const ValueKey<String>('loginForm'),
+                              emailViewModel: state.viewModel.email,
+                              passwordViewModel: state.viewModel.password,
+                              onLogin: _cubit.onLogin,
+                              onEmailChange: _cubit.onEmailChange,
+                              onPasswordChange: _cubit.onPasswordChange,
+                            ),
+                            _AlternativeOptions(
+                              onEnterAnonymously: _cubit.onEnterAnonymously,
+                              onSignUp: _cubit.onSignUp,
+                            )
+                          ][index];
+                        },
+                      );
+                    },
+                  );
+                }
+
+                return Container();
               },
-              listener: (context, state) {
-                if (state is LoginPagePushRouteReplacing) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    GoRouter.of(context).goNamed(state.route.name);
-                  });
-                }
-
-                if (state is LoginPageDisplayErrorMessage) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Theme.of(context).colorScheme.error,
-                        content: Text(S.of(context).genericErrorMessage),
-                      ),
-                    );
-                  });
-                }
-                if (state is LoginPageDisplayNotYetImplementedMessage) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(S.of(context).notYetImplemented),
-                      ),
-                    );
-                  });
-                }
-              },
-              child: BlocBuilder(
-                bloc: _cubit,
-                buildWhen: (_, s) => [
-                  LoginPageInitial,
-                  LoginPageLoading,
-                  LoginPageViewModelUpdated,
-                ].contains(s.runtimeType),
-                builder: (context, state) {
-                  if (state is LoginPageInitial || state is LoginPageLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  if (state is LoginPageViewModelUpdated) {
-                    return LayoutBuilder(
-                      builder:
-                          (BuildContext context, BoxConstraints constraints) {
-                        return ListView.separated(
-                          itemCount: 4,
-                          separatorBuilder: (BuildContext context, int index) {
-                            return SizedBox(
-                              height: constraints.maxHeight * 0.1,
-                            );
-                          },
-                          itemBuilder: (BuildContext context, int index) {
-                            return [
-                              SizedBox(
-                                height: Theme.of(context)
-                                    .textTheme
-                                    .displayLarge!
-                                    .fontSize,
-                                child: const QuizLabIcon(),
-                              ),
-                              const Center(
-                                child: _Title(),
-                              ),
-                              _LoginForm(
-                                key: const ValueKey<String>('loginForm'),
-                                emailViewModel: state.viewModel.email,
-                                passwordViewModel: state.viewModel.password,
-                                onLogin: _cubit.onLogin,
-                                onEmailChange: _cubit.onEmailChange,
-                                onPasswordChange: _cubit.onPasswordChange,
-                              ),
-                              _AlternativeOptions(
-                                onEnterAnonymously: _cubit.onEnterAnonymously,
-                                onSignUp: _cubit.onSignUp,
-                              )
-                            ][index];
-                          },
-                        );
-                      },
-                    );
-                  }
-
-                  return Container();
-                },
-              ),
             ),
           ),
         ),

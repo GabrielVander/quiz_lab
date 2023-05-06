@@ -15,7 +15,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     required PackageInfoWrapper packageInfoWrapper,
   })  : _loginWithCredentionsUseCase = loginWithCredentionsUseCase,
         _packageInfoWrapper = packageInfoWrapper,
-        super(LoginPageState.initial());
+        super(const LoginPageInitial());
 
   final _logger = QuizLabLoggerFactory.createLogger<LoginPageCubit>();
   final LoginWithCredentialsUseCase _loginWithCredentionsUseCase;
@@ -34,6 +34,8 @@ class LoginPageCubit extends Cubit<LoginPageState> {
   );
 
   void hydrate() {
+    _logger.debug('Hydrating...');
+
     final applicationVersion = _packageInfoWrapper.applicationVersion;
     final defaultViewModelUpdatedWithApplicationVersion =
         _defaultViewModel.copyWith(

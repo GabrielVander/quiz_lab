@@ -4,7 +4,7 @@ part of 'login_page_cubit.dart';
 abstract class LoginPageState extends Equatable {
   const LoginPageState._();
 
-  factory LoginPageState.initial() => const LoginPageInitial._();
+  factory LoginPageState.initial() => const LoginPageInitial();
 
   factory LoginPageState.viewModelUpdated(LoginPageViewModel viewModel) =>
       LoginPageViewModelUpdated(viewModel: viewModel);
@@ -27,7 +27,7 @@ abstract class LoginPageState extends Equatable {
 }
 
 class LoginPageInitial extends LoginPageState {
-  const LoginPageInitial._() : super._();
+  const LoginPageInitial() : super._();
 
   @override
   List<Object> get props => [];
