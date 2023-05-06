@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
+import 'package:quiz_lab/core/wrappers/package_info_wrapper.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 
@@ -11,27 +12,40 @@ part 'login_page_state.dart';
 class LoginPageCubit extends Cubit<LoginPageState> {
   LoginPageCubit({
     required LoginWithCredentialsUseCase loginWithCredentionsUseCase,
+    required PackageInfoWrapper packageInfoWrapper,
   })  : _loginWithCredentionsUseCase = loginWithCredentionsUseCase,
-        super(LoginPageState.initial()) {
-    _viewModel = _defaultViewModel;
-    emit(
-      LoginPageState.viewModelUpdated(_viewModel),
-    );
-  }
+        _packageInfoWrapper = packageInfoWrapper,
+        super(LoginPageState.initial());
 
   final _logger = QuizLabLoggerFactory.createLogger<LoginPageCubit>();
   final LoginWithCredentialsUseCase _loginWithCredentionsUseCase;
+  final PackageInfoWrapper _packageInfoWrapper;
 
-  final _defaultViewModel = const LoginPageViewModel(
+  late LoginPageViewModel _viewModel;
+
+  final LoginPageViewModel _defaultViewModel = const LoginPageViewModel(
     email: EmailViewModel(
       value: '',
     ),
     password: PasswordViewModel(
       value: '',
     ),
+    applicationVersion: '',
   );
 
-  late LoginPageViewModel _viewModel;
+  void hydrate() {
+    final applicationVersion = _packageInfoWrapper.applicationVersion;
+    final defaultViewModelUpdatedWithApplicationVersion =
+        _defaultViewModel.copyWith(
+      applicationVersion: applicationVersion,
+    );
+
+    _viewModel = defaultViewModelUpdatedWithApplicationVersion;
+
+    emit(
+      LoginPageState.viewModelUpdated(_viewModel),
+    );
+  }
 
   void onEmailChange(String email) {
     _logger.debug('Received email input');

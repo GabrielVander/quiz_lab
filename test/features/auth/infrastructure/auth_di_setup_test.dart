@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/wrappers/package_info_wrapper.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
@@ -67,6 +68,10 @@ void main() {
           .when(() => diMock.get<LoginWithCredentialsUseCase>())
           .thenReturn(_FakeLoginWithCredentialsUseCase());
 
+      mocktail
+          .when(() => diMock.get<PackageInfoWrapper>())
+          .thenReturn(_PackageInfoWrapperMock());
+
       authenticationDiSetup(diMock);
 
       final captured = mocktail
@@ -98,3 +103,6 @@ class _FakeAuthRepository extends mocktail.Fake implements AuthRepository {}
 
 class _FakeLoginWithCredentialsUseCase extends mocktail.Fake
     implements LoginWithCredentialsUseCase {}
+
+class _PackageInfoWrapperMock extends mocktail.Mock
+    implements PackageInfoWrapper {}
