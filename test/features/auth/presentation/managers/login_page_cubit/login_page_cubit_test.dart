@@ -28,10 +28,11 @@ void main() {
     () {
       expect(
         cubit.state,
-        isA<LoginPageViewModelUpdated>().having(
-          (state) => state.viewModel,
-          'viewModel',
-          _defaultViewModelMatcher(),
+        const LoginPageViewModelUpdated(
+          viewModel: LoginPageViewModel(
+            email: EmailViewModel(value: ''),
+            password: PasswordViewModel(value: ''),
+          ),
         ),
       );
     },
@@ -51,23 +52,15 @@ void main() {
 
             expect(
               cubit.state,
-              isA<LoginPageViewModelUpdated>().having(
-                (state) => state.viewModel,
-                'viewModel',
-                isA<LoginPageViewModel>().having(
-                  (viewModel) => viewModel.email,
-                  'email',
-                  isA<EmailViewModel>()
-                      .having(
-                        (vm) => vm.value,
-                        'value',
-                        email,
-                      )
-                      .having(
-                        (vm) => vm.showError,
-                        'showError',
-                        true,
-                      ),
+              LoginPageViewModelUpdated(
+                viewModel: LoginPageViewModel(
+                  email: EmailViewModel(
+                    value: email,
+                    showError: true,
+                  ),
+                  password: const PasswordViewModel(
+                    value: '',
+                  ),
                 ),
               ),
             );
@@ -91,23 +84,15 @@ void main() {
 
             expect(
               cubit.state,
-              isA<LoginPageViewModelUpdated>().having(
-                (state) => state.viewModel,
-                'viewModel',
-                isA<LoginPageViewModel>().having(
-                  (viewModel) => viewModel.password,
-                  'password',
-                  isA<PasswordViewModel>()
-                      .having(
-                        (vm) => vm.value,
-                        'value',
-                        password,
-                      )
-                      .having(
-                        (vm) => vm.showError,
-                        'showError',
-                        true,
-                      ),
+              LoginPageViewModelUpdated(
+                viewModel: LoginPageViewModel(
+                  email: const EmailViewModel(
+                    value: '',
+                  ),
+                  password: PasswordViewModel(
+                    value: password,
+                    showError: true,
+                  ),
                 ),
               ),
             );
@@ -135,40 +120,17 @@ void main() {
 
             expect(
               cubit.state,
-              isA<LoginPageViewModelUpdated>().having(
-                (state) => state.viewModel,
-                'viewModel',
-                isA<LoginPageViewModel>()
-                    .having(
-                      (viewModel) => viewModel.email,
-                      'email',
-                      isA<EmailViewModel>()
-                          .having(
-                            (vm) => vm.value,
-                            'value',
-                            email,
-                          )
-                          .having(
-                            (vm) => vm.showError,
-                            'showError',
-                            true,
-                          ),
-                    )
-                    .having(
-                      (viewModel) => viewModel.password,
-                      'password',
-                      isA<PasswordViewModel>()
-                          .having(
-                            (vm) => vm.value,
-                            'value',
-                            password,
-                          )
-                          .having(
-                            (vm) => vm.showError,
-                            'showError',
-                            true,
-                          ),
-                    ),
+              LoginPageViewModelUpdated(
+                viewModel: LoginPageViewModel(
+                  email: EmailViewModel(
+                    value: email,
+                    showError: true,
+                  ),
+                  password: PasswordViewModel(
+                    value: password,
+                    showError: true,
+                  ),
+                ),
               ),
             );
           });
@@ -204,9 +166,7 @@ void main() {
                 isA<LoginPageViewModelUpdated>(),
                 isA<LoginPageLoading>(),
                 isA<LoginPageViewModelUpdated>(),
-                isA<LoginPageDisplayErrorMessage>().having(
-                  (s) => s.type,
-                  'type',
+                const LoginPageDisplayErrorMessage(
                   LoginPageErrorTypeViewModel.unableToLogin,
                 ),
               ]),
@@ -253,10 +213,8 @@ void main() {
                     isA<LoginPageViewModelUpdated>(),
                     isA<LoginPageLoading>(),
                     isA<LoginPageDisplayLoggedInMessage>(),
-                    isA<LoginPagePushRouteReplacing>().having(
-                      (s) => s.route,
-                      'route',
-                      Routes.questionsOverview,
+                    const LoginPagePushRouteReplacing(
+                      route: Routes.questionsOverview,
                     ),
                   ],
                 ),
@@ -290,40 +248,6 @@ void main() {
       expect(() => cubit.onEnterAnonymously(), throwsUnimplementedError);
     });
   });
-}
-
-TypeMatcher<LoginPageViewModel> _defaultViewModelMatcher() {
-  return isA<LoginPageViewModel>()
-      .having(
-        (viewModel) => viewModel.email,
-        'email',
-        isA<EmailViewModel>()
-            .having(
-              (vm) => vm.value,
-              'value',
-              '',
-            )
-            .having(
-              (vm) => vm.showError,
-              'showError',
-              false,
-            ),
-      )
-      .having(
-        (viewModel) => viewModel.password,
-        'password',
-        isA<PasswordViewModel>()
-            .having(
-              (vm) => vm.value,
-              'value',
-              '',
-            )
-            .having(
-              (vm) => vm.showError,
-              'showError',
-              false,
-            ),
-      );
 }
 
 class _LoginWithCredentionsUseCaseMock extends mocktail.Mock

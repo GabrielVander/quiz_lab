@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
-class LoginPageViewModel {
+class LoginPageViewModel extends Equatable {
   const LoginPageViewModel({
     required this.email,
     required this.password,
@@ -20,6 +20,9 @@ class LoginPageViewModel {
       password: password ?? this.password,
     );
   }
+
+  @override
+  List<Object> get props => [email, password];
 }
 
 @immutable
