@@ -95,39 +95,47 @@ class LoginPage extends HookWidget {
                   return LayoutBuilder(
                     builder:
                         (BuildContext context, BoxConstraints constraints) {
-                      return ListView.separated(
-                        itemCount: 4,
-                        separatorBuilder: (BuildContext context, int index) {
-                          return SizedBox(
-                            height: constraints.maxHeight * 0.1,
-                          );
-                        },
-                        itemBuilder: (BuildContext context, int index) {
-                          return [
-                            SizedBox(
-                              height: Theme.of(context)
-                                  .textTheme
-                                  .displayLarge!
-                                  .fontSize,
-                              child: const QuizLabIcon(),
+                      final separator = SizedBox(
+                        height: constraints.maxHeight * 0.1,
+                      );
+
+                      return ListView(
+                        children: [
+                          SizedBox(
+                            height: Theme.of(context)
+                                .textTheme
+                                .displayLarge!
+                                .fontSize,
+                            child: const QuizLabIcon(),
+                          ),
+                          separator,
+                          const Center(
+                            child: _Title(),
+                          ),
+                          separator,
+                          _LoginForm(
+                            key: const ValueKey<String>('loginForm'),
+                            emailViewModel: state.viewModel.email,
+                            passwordViewModel: state.viewModel.password,
+                            onLogin: _cubit.onLogin,
+                            onEmailChange: _cubit.onEmailChange,
+                            onPasswordChange: _cubit.onPasswordChange,
+                          ),
+                          separator,
+                          _AlternativeOptions(
+                            onEnterAnonymously: _cubit.onEnterAnonymously,
+                            onSignUp: _cubit.onSignUp,
+                          ),
+                          const SizedBox(
+                            height: 25,
+                          ),
+                          Center(
+                            child: Text(
+                              key: const ValueKey('applicationVersion'),
+                              state.viewModel.applicationVersion,
                             ),
-                            const Center(
-                              child: _Title(),
-                            ),
-                            _LoginForm(
-                              key: const ValueKey<String>('loginForm'),
-                              emailViewModel: state.viewModel.email,
-                              passwordViewModel: state.viewModel.password,
-                              onLogin: _cubit.onLogin,
-                              onEmailChange: _cubit.onEmailChange,
-                              onPasswordChange: _cubit.onPasswordChange,
-                            ),
-                            _AlternativeOptions(
-                              onEnterAnonymously: _cubit.onEnterAnonymously,
-                              onSignUp: _cubit.onSignUp,
-                            )
-                          ][index];
-                        },
+                          )
+                        ],
                       );
                     },
                   );

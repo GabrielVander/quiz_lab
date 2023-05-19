@@ -46,7 +46,7 @@ void main() {
                 viewModel: LoginPageViewModel(
                   email: const EmailViewModel(value: ''),
                   password: const PasswordViewModel(value: ''),
-                  applicationVersion: applicationVersion,
+                  applicationVersion: 'v$applicationVersion',
                 ),
               ),
             );
@@ -87,7 +87,7 @@ void main() {
                   password: const PasswordViewModel(
                     value: '',
                   ),
-                  applicationVersion: dummyApplicationVersion,
+                  applicationVersion: 'v$dummyApplicationVersion',
                 ),
               ),
             );
@@ -128,7 +128,7 @@ void main() {
                     value: password,
                     showError: true,
                   ),
-                  applicationVersion: dummyApplicationVersion,
+                  applicationVersion: 'v$dummyApplicationVersion',
                 ),
               ),
             );
@@ -173,7 +173,7 @@ void main() {
                     value: password,
                     showError: true,
                   ),
-                  applicationVersion: dummyApplicationVersion,
+                  applicationVersion: 'v$dummyApplicationVersion',
                 ),
               ),
             );
