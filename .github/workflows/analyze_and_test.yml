@@ -1,4 +1,6 @@
 name: 'Analyze and test code'
+env:
+  FLUTTER_VERSION: "3.7.10"
 'on':
   pull_request:
     branches:
@@ -12,7 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup Flutter
-        run: sudo snap install flutter --classic
+        uses: britannio/action-install-flutter@v1
+        with:
+          version: $FLUTTER_VERSION
       - name: Get packages
         run: flutter pub get
       - name: Analyze code

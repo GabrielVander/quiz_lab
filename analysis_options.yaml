@@ -30,6 +30,7 @@ linter:
     public_member_api_docs: false
     sort_pub_dependencies: false
     no_adjacent_strings_in_list: false
+    lines_longer_than_80_chars: false
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

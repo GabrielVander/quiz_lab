@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.dart';
@@ -30,8 +31,7 @@ void main() {
           )
           .captured;
 
-      final factory =
-          captured.last as AuthRepository Function(DependencyInjection);
+      final factory = captured.last as AuthRepository Function(DependencyInjection);
 
       final authRepository = factory(diMock);
 
@@ -39,9 +39,7 @@ void main() {
     });
 
     test('login with credentials use case', () {
-      mocktail
-          .when(() => diMock.get<AuthRepository>())
-          .thenReturn(_FakeAuthRepository());
+      mocktail.when(() => diMock.get<AuthRepository>()).thenReturn(_FakeAuthRepository());
 
       authenticationDiSetup(diMock);
 
@@ -67,6 +65,10 @@ void main() {
           .when(() => diMock.get<LoginWithCredentialsUseCase>())
           .thenReturn(_FakeLoginWithCredentialsUseCase());
 
+      mocktail
+          .when(() => diMock.get<FetchApplicationVersionUseCase>())
+          .thenReturn(_FetchApplicationVersionUseCaseMock());
+
       authenticationDiSetup(diMock);
 
       final captured = mocktail
@@ -88,13 +90,14 @@ void main() {
   });
 }
 
-class _DependencyInjectionMock extends mocktail.Mock
-    implements DependencyInjection {}
+class _DependencyInjectionMock extends mocktail.Mock implements DependencyInjection {}
 
-class _AuthAppwriteDataSourceMock extends mocktail.Fake
-    implements AuthAppwriteDataSource {}
+class _AuthAppwriteDataSourceMock extends mocktail.Fake implements AuthAppwriteDataSource {}
 
 class _FakeAuthRepository extends mocktail.Fake implements AuthRepository {}
 
 class _FakeLoginWithCredentialsUseCase extends mocktail.Fake
     implements LoginWithCredentialsUseCase {}
+
+class _FetchApplicationVersionUseCaseMock extends mocktail.Fake
+    implements FetchApplicationVersionUseCase {}
