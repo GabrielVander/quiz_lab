@@ -83,11 +83,13 @@ void main() {
                 difficulty: 'easy',
                 options: [
                   QuestionDisplayOptionViewModel(
+                    id: '',
                     title: '',
                     isSelected: false,
                     isCorrect: false,
                   ),
                   QuestionDisplayOptionViewModel(
+                    id: '',
                     title: '',
                     isSelected: false,
                     isCorrect: true,
@@ -116,21 +118,25 @@ void main() {
                 difficulty: 'easy',
                 options: [
                   QuestionDisplayOptionViewModel(
+                    id: '',
                     title: '3',
                     isSelected: false,
                     isCorrect: false,
                   ),
                   QuestionDisplayOptionViewModel(
+                    id: '',
                     title: '9',
                     isSelected: false,
                     isCorrect: true,
                   ),
                   QuestionDisplayOptionViewModel(
+                    id: '',
                     title: '27',
                     isSelected: false,
                     isCorrect: false,
                   ),
                   QuestionDisplayOptionViewModel(
+                    id: '',
                     title: '81',
                     isSelected: false,
                     isCorrect: false,
