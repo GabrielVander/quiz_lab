@@ -19,11 +19,11 @@ class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
     return BetaBannerDisplay(
       child: Padding(
         padding: padding,
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Column(
-              children: const [
+              children: [
                 Expanded(
                   child: QuizLabIcon(
                     key: ValueKey('appBarIcon'),
@@ -31,10 +31,10 @@ class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ],
             ),
-            const Expanded(
+            Expanded(
               child: Title(),
             ),
-            const SettingsAction(),
+            SettingsAction(),
           ],
         ),
       ),

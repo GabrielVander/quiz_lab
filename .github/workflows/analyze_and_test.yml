@@ -1,6 +1,6 @@
 name: 'Analyze and test code'
 env:
-  FLUTTER_VERSION: "3.7.10"
+  FLUTTER_VERSION: "3.10.2"
 'on':
   pull_request:
     branches:
