@@ -14,29 +14,6 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 import '../../../../test_utils/helper_functions.dart' show safeTapByKey;
 
-void _ignoreOverflowErrors(
-  FlutterErrorDetails details, {
-  bool forceReport = false,
-}) {
-  var ifIsOverflowError = false;
-
-  // Detect overflow error.
-  final exception = details.exception;
-
-  if (exception is FlutterError) {
-    ifIsOverflowError = !exception.diagnostics.any(
-      (e) => e.value.toString().startsWith("A RenderFlex overflowed by"),
-    );
-  }
-
-  // Ignore if is overflow error.
-  if (ifIsOverflowError) {
-    debugPrint('Ignored Error');
-  } else {
-    FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
-  }
-}
-
 void main() {
   late S localizationsMock;
   late AppLocalizationDelegate localizationsDelegateMock;
@@ -57,8 +34,6 @@ void main() {
     'should display a circular progress indicator if cubit state is '
     '[LoginPageInitial] and call cubit.hydrate()',
     (widgetTester) async {
-      FlutterError.onError = _ignoreOverflowErrors;
-
       mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
             (_) => Stream.value(const LoginPageInitial()),
           );
