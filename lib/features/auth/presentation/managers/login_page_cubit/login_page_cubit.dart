@@ -37,7 +37,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     _logger.debug('Hydrating...');
 
     final rawVersion = _fetchApplicationVersionUseCase.execute();
-    final applicationVersion = 'v${rawVersion}';
+    final applicationVersion = 'v$rawVersion';
 
     _logger.debug('Fetched application version: $applicationVersion');
     final defaultViewModelUpdatedWithApplicationVersion = _defaultViewModel.copyWith(

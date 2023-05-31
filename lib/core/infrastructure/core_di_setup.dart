@@ -31,7 +31,8 @@ void coreDependencyInjectionSetup(
       ),
     )
     ..registerBuilder<FetchApplicationVersionUseCase>(
-        (i) => FetchApplicationVersionUseCaseImpl(packageInfoWrapper: i.get<PackageInfoWrapper>()))
+      (i) => FetchApplicationVersionUseCaseImpl(packageInfoWrapper: i.get<PackageInfoWrapper>()),
+    )
     ..registerFactory<NetworkCubit>((_) => NetworkCubit())
     ..registerFactory<BottomNavigationCubit>((_) => BottomNavigationCubit());
 }
