@@ -47,21 +47,25 @@ class QuestionDisplayViewModel extends Equatable {
 @immutable
 class QuestionDisplayOptionViewModel extends Equatable {
   const QuestionDisplayOptionViewModel({
+    required this.id,
     required this.title,
     required this.isSelected,
     required this.isCorrect,
   });
 
+  final String id;
   final String title;
   final bool isSelected;
   final bool isCorrect;
 
   QuestionDisplayOptionViewModel copyWith({
+    String? id,
     String? title,
     bool? isSelected,
     bool? isCorrect,
   }) {
     return QuestionDisplayOptionViewModel(
+      id: id ?? this.id,
       title: title ?? this.title,
       isSelected: isSelected ?? this.isSelected,
       isCorrect: isCorrect ?? this.isCorrect,
