@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/core/wrappers/package_info_wrapper.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 
@@ -12,14 +12,14 @@ part 'login_page_state.dart';
 class LoginPageCubit extends Cubit<LoginPageState> {
   LoginPageCubit({
     required LoginWithCredentialsUseCase loginWithCredentionsUseCase,
-    required PackageInfoWrapper packageInfoWrapper,
+    required FetchApplicationVersionUseCase fetchApplicationVersionUseCase,
   })  : _loginWithCredentionsUseCase = loginWithCredentionsUseCase,
-        _packageInfoWrapper = packageInfoWrapper,
+        _fetchApplicationVersionUseCase = fetchApplicationVersionUseCase,
         super(const LoginPageInitial());
 
   final _logger = QuizLabLoggerFactory.createLogger<LoginPageCubit>();
   final LoginWithCredentialsUseCase _loginWithCredentionsUseCase;
-  final PackageInfoWrapper _packageInfoWrapper;
+  final FetchApplicationVersionUseCase _fetchApplicationVersionUseCase;
 
   late LoginPageViewModel _viewModel;
 
@@ -36,11 +36,11 @@ class LoginPageCubit extends Cubit<LoginPageState> {
   void hydrate() {
     _logger.debug('Hydrating...');
 
-    final applicationVersion = 'v${_packageInfoWrapper.applicationVersion}';
+    final rawVersion = _fetchApplicationVersionUseCase.execute();
+    final applicationVersion = 'v${rawVersion}';
 
     _logger.debug('Fetched application version: $applicationVersion');
-    final defaultViewModelUpdatedWithApplicationVersion =
-        _defaultViewModel.copyWith(
+    final defaultViewModelUpdatedWithApplicationVersion = _defaultViewModel.copyWith(
       applicationVersion: applicationVersion,
     );
 

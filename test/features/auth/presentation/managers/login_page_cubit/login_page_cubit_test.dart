@@ -3,24 +3,24 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/core/wrappers/package_info_wrapper.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
 
 void main() {
-  late PackageInfoWrapper packageInfoWrapperMock;
+  late FetchApplicationVersionUseCase fetchApplicationVersionUseCaseMock;
   late LoginWithCredentialsUseCase loginWithCredentionsUseCaseMock;
   late LoginPageCubit cubit;
 
   setUp(() {
-    packageInfoWrapperMock = _PackageInfoWrapperMock();
+    fetchApplicationVersionUseCaseMock = _FetchApplicationVersionUseCaseMock();
     loginWithCredentionsUseCaseMock = _LoginWithCredentionsUseCaseMock();
     cubit = LoginPageCubit(
       loginWithCredentionsUseCase: loginWithCredentionsUseCaseMock,
-      packageInfoWrapper: packageInfoWrapperMock,
+      fetchApplicationVersionUseCase: fetchApplicationVersionUseCaseMock,
     );
   });
 
@@ -30,12 +30,10 @@ void main() {
     group(
       'should emit [LoginPageViewModelUpdated] with default view model',
       () {
-        for (final applicationVersion in [
-          '',
-        ]) {
+        for (final applicationVersion in ['', '%%@%Z@', 'S&b0^F']) {
           test(applicationVersion, () {
             mocktail
-                .when(() => packageInfoWrapperMock.applicationVersion)
+                .when(() => fetchApplicationVersionUseCaseMock.execute())
                 .thenReturn(applicationVersion);
 
             cubit.hydrate();
@@ -69,7 +67,7 @@ void main() {
             const dummyApplicationVersion = 'T4qkCa#n';
 
             mocktail
-                .when(() => packageInfoWrapperMock.applicationVersion)
+                .when(() => fetchApplicationVersionUseCaseMock.execute())
                 .thenReturn(dummyApplicationVersion);
 
             cubit
@@ -110,7 +108,7 @@ void main() {
             const dummyApplicationVersion = 'wQg01jsN';
 
             mocktail
-                .when(() => packageInfoWrapperMock.applicationVersion)
+                .when(() => fetchApplicationVersionUseCaseMock.execute())
                 .thenReturn(dummyApplicationVersion);
 
             cubit
@@ -149,7 +147,7 @@ void main() {
             const dummyApplicationVersion = 'jF%';
 
             mocktail
-                .when(() => packageInfoWrapperMock.applicationVersion)
+                .when(() => fetchApplicationVersionUseCaseMock.execute())
                 .thenReturn(dummyApplicationVersion);
 
             final email = values[0];
@@ -194,7 +192,7 @@ void main() {
             const dummyApplicationVersion = 'jF%';
 
             mocktail
-                .when(() => packageInfoWrapperMock.applicationVersion)
+                .when(() => fetchApplicationVersionUseCaseMock.execute())
                 .thenReturn(dummyApplicationVersion);
 
             mocktail
@@ -244,7 +242,7 @@ void main() {
             const dummyApplicationVersion = 'jF%';
 
             mocktail
-                .when(() => packageInfoWrapperMock.applicationVersion)
+                .when(() => fetchApplicationVersionUseCaseMock.execute())
                 .thenReturn(dummyApplicationVersion);
 
             mocktail
@@ -311,5 +309,5 @@ void main() {
 class _LoginWithCredentionsUseCaseMock extends mocktail.Mock
     implements LoginWithCredentialsUseCase {}
 
-class _PackageInfoWrapperMock extends mocktail.Mock
-    implements PackageInfoWrapper {}
+class _FetchApplicationVersionUseCaseMock extends mocktail.Mock
+    implements FetchApplicationVersionUseCase {}
