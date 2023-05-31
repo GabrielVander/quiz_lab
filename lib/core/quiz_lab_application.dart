@@ -95,7 +95,7 @@ class QuizLabApplication extends StatelessWidget {
           builder: (BuildContext context, GoRouterState state) {
             return QuestionDisplayPage(
               cubit: questionDisplayCubit,
-              questionId: state.params['id'],
+              questionId: state.pathParameters['id'],
             );
           },
         ),

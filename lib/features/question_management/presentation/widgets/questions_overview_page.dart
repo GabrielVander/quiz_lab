@@ -115,7 +115,7 @@ class QuestionsOverviewPage extends HookWidget {
 
     GoRouter.of(context).pushNamed(
       Routes.displayQuestion.name,
-      params: {'id': state.questionId},
+      pathParameters: {'id': state.questionId},
     );
   }
 }
