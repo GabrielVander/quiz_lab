@@ -1,12 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
+import 'package:uuid/uuid.dart';
 
 part 'question_display_state.dart';
 
@@ -45,10 +47,10 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
     _emitSubjectWithGivenQuestion(questionResult.ok!);
   }
 
-  void onOptionSelected(String option) {
+  void onOptionSelected(String optionId) {
     _currentViewModel = _currentViewModel.copyWith(
       options: _currentViewModel.options.map((e) {
-        if (e.title == option) {
+        if (e.id == optionId) {
           return e.copyWith(isSelected: true);
         }
 
@@ -131,6 +133,7 @@ class _QuestionDisplayViewModelMapper {
     return answers
         .map(
           (a) => QuestionDisplayOptionViewModel(
+            id: const ResourceUuidGenerator(uuid: Uuid()).generate(),
             title: a.description,
             isSelected: false,
             isCorrect: a.isCorrect,
