@@ -1,19 +1,20 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
-import 'package:quiz_lab/core/data/connectors/appwrite_connector.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 
 void main() {
   late Databases databasesMock;
 
-  late AppwriteConnector connector;
+  late AppwriteWrapper wrapper;
 
   setUp(() {
     databasesMock = _DatabasesMock();
 
-    connector = AppwriteConnector(
+    wrapper = AppwriteWrapper(
       databases: databasesMock,
     );
   });
@@ -21,13 +22,13 @@ void main() {
   group('createDocument', () {
     group('should call Appwrite databases services correctly', () {
       for (final creationRequest in [
-        const AppwriteDocumentCreationRequest(
+        const _AppwriteDocumentCreationRequest(
           databaseId: '',
           collectionId: '',
           documentId: '',
           data: {},
         ),
-        const AppwriteDocumentCreationRequest(
+        const _AppwriteDocumentCreationRequest(
           databaseId: '5Pko',
           collectionId: 'S^*s',
           documentId: 'ePU3b',
@@ -39,6 +40,25 @@ void main() {
               'e': 4,
             },
           },
+          permissions: [],
+        ),
+        const _AppwriteDocumentCreationRequest(
+          databaseId: '5Pko',
+          collectionId: 'S^*s',
+          documentId: 'ePU3b',
+          data: {
+            'a': 1,
+            'b': 2,
+            'c': {
+              'd': 3,
+              'e': 4,
+            },
+          },
+          permissions: [
+            'wHCt',
+            '8H%J',
+            'N56OR6',
+          ],
         ),
       ]) {
         test(creationRequest.toString(), () {
@@ -53,7 +73,13 @@ void main() {
               )
               .thenAnswer((_) async => _DocumentMock());
 
-          connector.createDocument(creationRequest);
+          wrapper.createDocument(
+            databaseId: creationRequest.databaseId,
+            collectionId: creationRequest.collectionId,
+            documentId: creationRequest.documentId,
+            data: creationRequest.data,
+            permissions: creationRequest.permissions,
+          );
 
           mocktail.verify(
             () => databasesMock.createDocument(
@@ -61,6 +87,7 @@ void main() {
               collectionId: creationRequest.collectionId,
               documentId: creationRequest.documentId,
               data: creationRequest.data,
+              permissions: creationRequest.permissions,
             ),
           );
         });
@@ -74,7 +101,7 @@ void main() {
         for (final values in [
           [
             AppwriteException('', 500, ''),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const UnknownAppwriteError(
                 message: '',
                 code: 500,
@@ -84,11 +111,11 @@ void main() {
           ],
           [
             _AppwriteExceptionMock(),
-            AppwriteConnectorAppwriteFailure(const UnknownAppwriteError())
+            AppwriteWrapperServiceFailure(const UnknownAppwriteError())
           ],
           [
             AppwriteException(r'Azz3$P', 32, 'tB*g#'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const UnknownAppwriteError(
                 message: r'Azz3$P',
                 code: 32,
@@ -98,56 +125,56 @@ void main() {
           ],
           [
             AppwriteException('', 400, 'general_argument_invalid'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const GeneralArgumentInvalidAppwriteError(message: ''),
             )
           ],
           [
             AppwriteException('#FsFcWB', 400, 'general_argument_invalid'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const GeneralArgumentInvalidAppwriteError(message: '#FsFcWB'),
             )
           ],
           [
             AppwriteException('', 404, 'database_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const DatabaseNotFoundAppwriteError(message: ''),
             )
           ],
           [
             AppwriteException('9aoF4', 404, 'database_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const DatabaseNotFoundAppwriteError(message: '9aoF4'),
             )
           ],
           [
             AppwriteException('', 404, 'collection_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const CollectionNotFoundAppwriteError(message: ''),
             )
           ],
           [
             AppwriteException('&!LBR', 404, 'collection_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const CollectionNotFoundAppwriteError(message: '&!LBR'),
             )
           ],
           [
             AppwriteException('', 404, 'document_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const DocumentNotFoundAppwriteError(message: ''),
             )
           ],
           [
             AppwriteException('XG##3R', 404, 'document_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const DocumentNotFoundAppwriteError(message: 'XG##3R'),
             )
           ],
         ]) {
           test(values.toString(), () async {
             final exception = values[0] as AppwriteException;
-            final expectedFailure = values[1] as AppwriteConnectorFailure;
+            final expectedFailure = values[1] as AppwriteWrapperFailure;
 
             mocktail
                 .when(
@@ -160,20 +187,18 @@ void main() {
                 )
                 .thenThrow(exception);
 
-            final result = await connector.createDocument(
-              const AppwriteDocumentCreationRequest(
-                databaseId: 'O68JS0u',
-                collectionId: 'zVIev',
-                documentId: '^Z9@Cm',
-                data: {
-                  '38W1t': 459,
-                  r'#o#N$Y*J': r'X$qh6xIT',
-                  'ETc!x#A': {
-                    'rkj&pTSv': 3,
-                    'BmW7r': 4,
-                  },
+            final result = await wrapper.createDocument(
+              databaseId: 'O68JS0u',
+              collectionId: 'zVIev',
+              documentId: '^Z9@Cm',
+              data: {
+                '38W1t': 459,
+                r'#o#N$Y*J': r'X$qh6xIT',
+                'ETc!x#A': {
+                  'rkj&pTSv': 3,
+                  'BmW7r': 4,
                 },
-              ),
+              },
             );
 
             expect(result.isErr, true);
@@ -197,26 +222,24 @@ void main() {
               )
               .thenThrow(_ExceptionMock());
 
-          final result = await connector.createDocument(
-            const AppwriteDocumentCreationRequest(
-              databaseId: 'O68JS0u',
-              collectionId: 'zVIev',
-              documentId: '^Z9@Cm',
-              data: {
-                '38W1t': 459,
-                r'#o#N$Y*J': r'X$qh6xIT',
-                'ETc!x#A': {
-                  'rkj&pTSv': 3,
-                  'BmW7r': 4,
-                },
+          final result = await wrapper.createDocument(
+            databaseId: 'O68JS0u',
+            collectionId: 'zVIev',
+            documentId: '^Z9@Cm',
+            data: {
+              '38W1t': 459,
+              r'#o#N$Y*J': r'X$qh6xIT',
+              'ETc!x#A': {
+                'rkj&pTSv': 3,
+                'BmW7r': 4,
               },
-            ),
+            },
           );
 
           expect(result.isErr, true);
           expect(
             result.err,
-            AppwriteConnectorUnexpectedFailure('_ExceptionMock'),
+            AppwriteWrapperUnexpectedFailure('_ExceptionMock'),
           );
         },
       );
@@ -239,20 +262,18 @@ void main() {
               )
               .thenAnswer((_) async => dummyDocument);
 
-          final result = await connector.createDocument(
-            const AppwriteDocumentCreationRequest(
-              databaseId: 'O68JS0u',
-              collectionId: 'zVIev',
-              documentId: '^Z9@Cm',
-              data: {
-                '38W1t': 459,
-                r'#o#N$Y*J': r'X$qh6xIT',
-                'ETc!x#A': {
-                  'rkj&pTSv': 3,
-                  'BmW7r': 4,
-                },
+          final result = await wrapper.createDocument(
+            databaseId: 'O68JS0u',
+            collectionId: 'zVIev',
+            documentId: '^Z9@Cm',
+            data: {
+              '38W1t': 459,
+              r'#o#N$Y*J': r'X$qh6xIT',
+              'ETc!x#A': {
+                'rkj&pTSv': 3,
+                'BmW7r': 4,
               },
-            ),
+            },
           );
 
           expect(result.isOk, true);
@@ -285,12 +306,10 @@ void main() {
                 )
                 .thenThrow(_AppwriteExceptionMock());
 
-            await connector.deleteDocument(
-              AppwriteDocumentReference(
-                databaseId: databaseId,
-                collectionId: collectionId,
-                documentId: documentId,
-              ),
+            await wrapper.deleteDocument(
+              databaseId: databaseId,
+              collectionId: collectionId,
+              documentId: documentId,
             );
 
             mocktail.verify(
@@ -312,7 +331,7 @@ void main() {
         for (final values in [
           [
             AppwriteException('', 500, ''),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const UnknownAppwriteError(
                 message: '',
                 code: 500,
@@ -322,11 +341,11 @@ void main() {
           ],
           [
             _AppwriteExceptionMock(),
-            AppwriteConnectorAppwriteFailure(const UnknownAppwriteError())
+            AppwriteWrapperServiceFailure(const UnknownAppwriteError())
           ],
           [
             AppwriteException('T0J!phB5', 22, 'y640p89'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const UnknownAppwriteError(
                 message: 'T0J!phB5',
                 code: 22,
@@ -336,56 +355,56 @@ void main() {
           ],
           [
             AppwriteException('', 400, 'general_argument_invalid'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const GeneralArgumentInvalidAppwriteError(message: ''),
             )
           ],
           [
             AppwriteException(r'Q$@!yG', 400, 'general_argument_invalid'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const GeneralArgumentInvalidAppwriteError(message: r'Q$@!yG'),
             )
           ],
           [
             AppwriteException('', 404, 'database_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const DatabaseNotFoundAppwriteError(message: ''),
             )
           ],
           [
             AppwriteException('45S6hm@', 404, 'database_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const DatabaseNotFoundAppwriteError(message: '45S6hm@'),
             )
           ],
           [
             AppwriteException('', 404, 'collection_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const CollectionNotFoundAppwriteError(message: ''),
             )
           ],
           [
             AppwriteException('7o2', 404, 'collection_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const CollectionNotFoundAppwriteError(message: '7o2'),
             )
           ],
           [
             AppwriteException('', 404, 'document_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const DocumentNotFoundAppwriteError(message: ''),
             )
           ],
           [
             AppwriteException('#G#5K@', 404, 'document_not_found'),
-            AppwriteConnectorAppwriteFailure(
+            AppwriteWrapperServiceFailure(
               const DocumentNotFoundAppwriteError(message: '#G#5K@'),
             )
           ],
         ]) {
           test(values.toString(), () async {
             final exception = values[0] as AppwriteException;
-            final expectedFailure = values[1] as AppwriteConnectorFailure;
+            final expectedFailure = values[1] as AppwriteWrapperFailure;
 
             const databaseId = '*49';
             const collectionId = 'wgujt0';
@@ -401,12 +420,10 @@ void main() {
                 )
                 .thenThrow(exception);
 
-            final result = await connector.deleteDocument(
-              const AppwriteDocumentReference(
-                databaseId: databaseId,
-                collectionId: collectionId,
-                documentId: documentId,
-              ),
+            final result = await wrapper.deleteDocument(
+              databaseId: databaseId,
+              collectionId: collectionId,
+              documentId: documentId,
             );
 
             expect(result.isErr, true);
@@ -434,18 +451,16 @@ void main() {
             )
             .thenThrow(_ExceptionMock());
 
-        final result = await connector.deleteDocument(
-          const AppwriteDocumentReference(
-            databaseId: databaseId,
-            collectionId: collectionId,
-            documentId: documentId,
-          ),
+        final result = await wrapper.deleteDocument(
+          databaseId: databaseId,
+          collectionId: collectionId,
+          documentId: documentId,
         );
 
         expect(result.isErr, true);
         expect(
           result.err,
-          AppwriteConnectorUnexpectedFailure('_ExceptionMock'),
+          AppwriteWrapperUnexpectedFailure('_ExceptionMock'),
         );
       },
     );
@@ -467,12 +482,10 @@ void main() {
             )
             .thenAnswer((_) async => null);
 
-        final result = await connector.deleteDocument(
-          const AppwriteDocumentReference(
-            databaseId: databaseId,
-            collectionId: collectionId,
-            documentId: documentId,
-          ),
+        final result = await wrapper.deleteDocument(
+          databaseId: databaseId,
+          collectionId: collectionId,
+          documentId: documentId,
         );
 
         expect(result.isOk, true);
@@ -486,12 +499,12 @@ void main() {
       'should call Appwrite databases services correctly',
       () {
         for (final docReference in [
-          const AppwriteDocumentReference(
+          const _AppwriteDocumentReference(
             databaseId: '',
             collectionId: '',
             documentId: '',
           ),
-          const AppwriteDocumentReference(
+          const _AppwriteDocumentReference(
             databaseId: '5Pko',
             collectionId: 'S^*s',
             documentId: 'ePU3b',
@@ -508,7 +521,11 @@ void main() {
                 )
                 .thenAnswer((_) async => _DocumentMock());
 
-            connector.getDocument(docReference);
+            wrapper.getDocument(
+              databaseId: docReference.databaseId,
+              collectionId: docReference.collectionId,
+              documentId: docReference.documentId,
+            );
 
             mocktail.verify(
               () => databasesMock.getDocument(
@@ -530,7 +547,7 @@ void main() {
           for (final values in [
             [
               AppwriteException('', 500, ''),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const UnknownAppwriteError(
                   message: '',
                   code: 500,
@@ -540,11 +557,11 @@ void main() {
             ],
             [
               _AppwriteExceptionMock(),
-              AppwriteConnectorAppwriteFailure(const UnknownAppwriteError())
+              AppwriteWrapperServiceFailure(const UnknownAppwriteError())
             ],
             [
               AppwriteException(r'Azz3$P', 32, 'tB*g#'),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const UnknownAppwriteError(
                   message: r'Azz3$P',
                   code: 32,
@@ -554,56 +571,56 @@ void main() {
             ],
             [
               AppwriteException('', 400, 'general_argument_invalid'),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const GeneralArgumentInvalidAppwriteError(message: ''),
               )
             ],
             [
               AppwriteException('#FsFcWB', 400, 'general_argument_invalid'),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const GeneralArgumentInvalidAppwriteError(message: '#FsFcWB'),
               )
             ],
             [
               AppwriteException('', 404, 'database_not_found'),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const DatabaseNotFoundAppwriteError(message: ''),
               )
             ],
             [
               AppwriteException('9aoF4', 404, 'database_not_found'),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const DatabaseNotFoundAppwriteError(message: '9aoF4'),
               )
             ],
             [
               AppwriteException('', 404, 'collection_not_found'),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const CollectionNotFoundAppwriteError(message: ''),
               )
             ],
             [
               AppwriteException('&!LBR', 404, 'collection_not_found'),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const CollectionNotFoundAppwriteError(message: '&!LBR'),
               )
             ],
             [
               AppwriteException('', 404, 'document_not_found'),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const DocumentNotFoundAppwriteError(message: ''),
               )
             ],
             [
               AppwriteException('XG##3R', 404, 'document_not_found'),
-              AppwriteConnectorAppwriteFailure(
+              AppwriteWrapperServiceFailure(
                 const DocumentNotFoundAppwriteError(message: 'XG##3R'),
               )
             ],
           ]) {
             test(values.toString(), () async {
               final exception = values[0] as AppwriteException;
-              final expectedFailure = values[1] as AppwriteConnectorFailure;
+              final expectedFailure = values[1] as AppwriteWrapperFailure;
 
               mocktail
                   .when(
@@ -615,12 +632,10 @@ void main() {
                   )
                   .thenThrow(exception);
 
-              final result = await connector.getDocument(
-                const AppwriteDocumentReference(
-                  databaseId: 'O68JS0u',
-                  collectionId: 'zVIev',
-                  documentId: '^Z9@Cm',
-                ),
+              final result = await wrapper.getDocument(
+                databaseId: 'O68JS0u',
+                collectionId: 'zVIev',
+                documentId: '^Z9@Cm',
               );
 
               expect(result.isErr, true);
@@ -644,18 +659,16 @@ void main() {
               )
               .thenThrow(_ExceptionMock());
 
-          final result = await connector.getDocument(
-            const AppwriteDocumentReference(
-              databaseId: 'm%oWh3&',
-              collectionId: 'Wpj0tk',
-              documentId: r'$j651f',
-            ),
+          final result = await wrapper.getDocument(
+            databaseId: 'm%oWh3&',
+            collectionId: 'Wpj0tk',
+            documentId: r'$j651f',
           );
 
           expect(result.isErr, true);
           expect(
             result.err,
-            AppwriteConnectorUnexpectedFailure('_ExceptionMock'),
+            AppwriteWrapperUnexpectedFailure('_ExceptionMock'),
           );
         },
       );
@@ -677,12 +690,10 @@ void main() {
               )
               .thenAnswer((_) async => dummyDocument);
 
-          final result = await connector.getDocument(
-            const AppwriteDocumentReference(
-              databaseId: 'FMGb&',
-              collectionId: '9NXDK',
-              documentId: '6ZCK',
-            ),
+          final result = await wrapper.getDocument(
+            databaseId: 'FMGb&',
+            collectionId: '9NXDK',
+            documentId: '6ZCK',
           );
 
           expect(result.isOk, true);
@@ -701,3 +712,47 @@ class _AppwriteExceptionMock extends mocktail.Mock
 class _ExceptionMock extends mocktail.Mock implements Exception {}
 
 class _DocumentMock extends mocktail.Mock implements Document {}
+
+class _AppwriteDocumentCreationRequest extends Equatable {
+  const _AppwriteDocumentCreationRequest({
+    required this.databaseId,
+    required this.collectionId,
+    required this.documentId,
+    required this.data,
+    this.permissions,
+  });
+
+  final String databaseId;
+  final String collectionId;
+  final String documentId;
+  final Map<String, dynamic> data;
+  final List<String>? permissions;
+
+  @override
+  List<Object?> get props => [
+        databaseId,
+        collectionId,
+        documentId,
+        data,
+        permissions,
+      ];
+}
+
+class _AppwriteDocumentReference extends Equatable {
+  const _AppwriteDocumentReference({
+    required this.databaseId,
+    required this.collectionId,
+    required this.documentId,
+  });
+
+  final String databaseId;
+  final String collectionId;
+  final String documentId;
+
+  @override
+  List<Object?> get props => [
+        databaseId,
+        collectionId,
+        documentId,
+      ];
+}

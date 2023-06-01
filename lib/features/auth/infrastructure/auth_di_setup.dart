@@ -1,3 +1,4 @@
+import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
@@ -18,6 +19,7 @@ void authenticationDiSetup(DependencyInjection di) {
     ..registerFactory<LoginPageCubit>(
       (di) => LoginPageCubit(
         loginWithCredentionsUseCase: di.get<LoginWithCredentialsUseCase>(),
+        fetchApplicationVersionUseCase: di.get<FetchApplicationVersionUseCase>(),
       ),
     );
 }

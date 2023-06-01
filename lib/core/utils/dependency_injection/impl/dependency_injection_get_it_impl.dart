@@ -12,6 +12,9 @@ class DependencyInjectionGetItImpl implements DependencyInjection {
       // ignore: avoid_catching_errors
     } on AssertionError {
       throw KeyNotRegisteredFailure(key: T);
+      // ignore: avoid_catching_errors
+    } on StateError {
+      throw KeyNotRegisteredFailure(key: T);
     }
   }
 

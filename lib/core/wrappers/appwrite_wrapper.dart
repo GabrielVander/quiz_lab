@@ -6,23 +6,43 @@ import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 
-class AppwriteConnector {
-  AppwriteConnector({
+class AppwriteWrapper {
+  AppwriteWrapper({
     required Databases databases,
   }) : _databases = databases;
 
   final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<AppwriteConnector>();
+      QuizLabLoggerFactory.createLogger<AppwriteWrapper>();
 
   final Databases _databases;
 
-  Future<Result<Document, AppwriteConnectorFailure>> createDocument(
-    AppwriteDocumentCreationRequest request,
-  ) async {
+  /// Appwrite Doc:
+  ///
+  /// Create a new Document. Before using this route, you should create a new
+  /// collection resource using either a server integration API or directly from
+  /// your database console.
+  ///
+  // Rate Limits
+  // This endpoint is limited to 120 requests in every 1 minutes per IP address,
+  // method and user account. We use rate limits to avoid service abuse by users
+  // and as a security practice. Learn more about rate limiting.
+  Future<Result<Document, AppwriteWrapperFailure>> createDocument({
+    required String databaseId,
+    required String collectionId,
+    required String documentId,
+    required Map<dynamic, dynamic> data,
+    List<String>? permissions,
+  }) async {
     _logger.debug('Creating Appwrite document...');
 
     try {
-      final createdDocument = await _performDocumentCreation(request);
+      final createdDocument = await _databases.createDocument(
+        databaseId: databaseId,
+        collectionId: collectionId,
+        documentId: documentId,
+        data: data,
+        permissions: permissions,
+      );
 
       _logger.debug('Appwrite document created successfully');
       return Result.ok(createdDocument);
@@ -33,13 +53,30 @@ class AppwriteConnector {
     }
   }
 
-  Future<Result<Unit, AppwriteConnectorFailure>> deleteDocument(
-    AppwriteDocumentReference reference,
-  ) async {
+  /// Appwrite Doc:
+  ///
+  /// Delete a document by its unique ID.
+  ///
+  // Rate Limits
+  // This endpoint is limited to 60 requests in every 1 minutes per IP address,
+  // method and user account. We use rate limits to avoid service abuse by users
+  // and as a security practice.
+  Future<Result<Unit, AppwriteWrapperFailure>> deleteDocument({
+    required String databaseId,
+    required String collectionId,
+    required String documentId,
+  }) async {
     _logger.debug('Deleting Appwrite document...');
 
     try {
-      return Result.ok(await _performDocumentDeletion(reference));
+      await _databases.deleteDocument(
+        databaseId: databaseId,
+        collectionId: collectionId,
+        documentId: documentId,
+      );
+
+      _logger.debug('Document deleted successfully');
+      return const Result.ok(unit);
     } on AppwriteException catch (e) {
       return Result.err(_handleAppwriteException(e));
     } catch (e) {
@@ -47,13 +84,25 @@ class AppwriteConnector {
     }
   }
 
-  Future<Result<Document, AppwriteConnectorFailure>> getDocument(
-    AppwriteDocumentReference reference,
-  ) async {
+  /// Appwrite Doc:
+  ///
+  /// Get a document by its unique ID. This endpoint response returns a JSON
+  /// object with the document data.
+  Future<Result<Document, AppwriteWrapperFailure>> getDocument({
+    required String databaseId,
+    required String collectionId,
+    required String documentId,
+  }) async {
     _logger.debug('Retrieving Appwrite document...');
 
     try {
-      return Result.ok(await _performDocumentRetrieval(reference));
+      return Result.ok(
+        await _databases.getDocument(
+          databaseId: databaseId,
+          collectionId: collectionId,
+          documentId: documentId,
+        ),
+      );
     } on AppwriteException catch (e) {
       return Result.err(_handleAppwriteException(e));
     } catch (e) {
@@ -61,51 +110,18 @@ class AppwriteConnector {
     }
   }
 
-  Future<Document> _performDocumentCreation(
-    AppwriteDocumentCreationRequest request,
-  ) async =>
-      _databases.createDocument(
-        databaseId: request.databaseId,
-        collectionId: request.collectionId,
-        documentId: request.documentId,
-        data: request.data,
-      );
-
-  Future<Unit> _performDocumentDeletion(
-    AppwriteDocumentReference reference,
-  ) async {
-    await _databases.deleteDocument(
-      databaseId: reference.databaseId,
-      collectionId: reference.collectionId,
-      documentId: reference.documentId,
-    );
-
-    _logger.debug('Document deleted successfully');
-
-    return unit;
-  }
-
-  Future<Document> _performDocumentRetrieval(
-    AppwriteDocumentReference reference,
-  ) async =>
-      _databases.getDocument(
-        databaseId: reference.databaseId,
-        collectionId: reference.collectionId,
-        documentId: reference.documentId,
-      );
-
-  AppwriteConnectorFailure _handleAppwriteException(AppwriteException e) {
+  AppwriteWrapperFailure _handleAppwriteException(AppwriteException e) {
     _logger.error(e.toString());
 
     final appwriteError = _mapAppwriteExceptionToAppwriteError(e);
 
-    return AppwriteConnectorAppwriteFailure(appwriteError);
+    return AppwriteWrapperServiceFailure(appwriteError);
   }
 
-  AppwriteConnectorUnexpectedFailure _handleUnexpectedException(Object e) {
+  AppwriteWrapperUnexpectedFailure _handleUnexpectedException(Object e) {
     _logger.error(e.toString());
 
-    return AppwriteConnectorUnexpectedFailure(e.toString());
+    return AppwriteWrapperUnexpectedFailure(e.toString());
   }
 
   AppwriteError _mapAppwriteExceptionToAppwriteError(AppwriteException e) {
@@ -135,51 +151,10 @@ class AppwriteConnector {
   }
 }
 
-class AppwriteDocumentReference extends Equatable {
-  const AppwriteDocumentReference({
-    required this.databaseId,
-    required this.collectionId,
-    required this.documentId,
-  });
+abstract class AppwriteWrapperFailure extends Equatable {}
 
-  final String databaseId;
-  final String collectionId;
-  final String documentId;
-
-  @override
-  List<Object?> get props => [
-        databaseId,
-        collectionId,
-        documentId,
-      ];
-}
-
-class AppwriteDocumentCreationRequest extends Equatable {
-  const AppwriteDocumentCreationRequest({
-    required this.databaseId,
-    required this.collectionId,
-    required this.documentId,
-    required this.data,
-  });
-
-  final String databaseId;
-  final String collectionId;
-  final String documentId;
-  final Map<String, dynamic> data;
-
-  @override
-  List<Object?> get props => [
-        databaseId,
-        collectionId,
-        documentId,
-        data,
-      ];
-}
-
-abstract class AppwriteConnectorFailure extends Equatable {}
-
-class AppwriteConnectorUnexpectedFailure extends AppwriteConnectorFailure {
-  AppwriteConnectorUnexpectedFailure(this.message);
+class AppwriteWrapperUnexpectedFailure extends AppwriteWrapperFailure {
+  AppwriteWrapperUnexpectedFailure(this.message);
 
   final String message;
 
@@ -187,8 +162,8 @@ class AppwriteConnectorUnexpectedFailure extends AppwriteConnectorFailure {
   List<Object?> get props => [message];
 }
 
-class AppwriteConnectorAppwriteFailure extends AppwriteConnectorFailure {
-  AppwriteConnectorAppwriteFailure(this.error);
+class AppwriteWrapperServiceFailure extends AppwriteWrapperFailure {
+  AppwriteWrapperServiceFailure(this.error);
 
   final AppwriteError error;
 

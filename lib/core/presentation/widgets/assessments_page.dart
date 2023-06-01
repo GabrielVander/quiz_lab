@@ -81,9 +81,9 @@ class Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (state is AssessmentsOverviewLoading) {
-      return Column(
+      return const Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
+        children: [
           CircularProgressIndicator(),
         ],
       );

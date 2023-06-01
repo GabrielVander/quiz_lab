@@ -1,9 +1,8 @@
-v0.3.2
+v0.3.3
 
 Ajustes
-* Dependências atualizadas
-* Melhoras na lógica de rotas
-* Adição de banner para versão em Beta
+* Adicionado display da versão atual do aplicativo
+* Versão Flutter atualizada
 
 Bugs Arrumados
-* Arrumado bug que deixava a tela em branco após "hot-reload"
+* Arrumado bug que fazia com que todas as opções de mesmo nome fossem selecionadas ao responder uma pergunta
