@@ -1,9 +1,8 @@
-v0.3.2
+v0.3.3
 
 Adjustments
-* Updated dependencies
-* Improved routing
-* Added Beta status display
+* Added application's current version display
+* Updated Flutter version
 
 Bug fixes
-* Fixed "blank screen on hot reload" issue
+* Fixed "All options with same text getting selected while answering question"
