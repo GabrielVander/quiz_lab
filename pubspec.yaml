@@ -51,7 +51,7 @@ dependencies:
   ansicolor: ^2.0.1
   appwrite: ^9.0.0
   super_banners: ^0.0.1
-  package_info_plus: ^3.1.2
+  package_info_plus: ^4.0.2
 
 dependency_overrides:
   intl: ^0.18.1
