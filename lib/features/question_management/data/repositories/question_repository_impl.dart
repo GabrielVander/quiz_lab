@@ -48,7 +48,7 @@ class QuestionRepositoryImpl extends QuestionRepository {
       ),
     );
 
-    return const Result.ok(unit);
+    return const Ok(unit);
   }
 
   @override
@@ -63,10 +63,9 @@ class QuestionRepositoryImpl extends QuestionRepository {
     return deletionResult.when(
       ok: (_) {
         _logger.debug('Question deleted successfully');
-        return const Result.ok(unit);
+        return const Ok(unit);
       },
-      err: (failure) =>
-          Result.err(_mapQuestionsAppwriteDataSourceFailure(failure)),
+      err: (failure) => Err(_mapQuestionsAppwriteDataSourceFailure(failure)),
     );
   }
 
@@ -82,10 +81,9 @@ class QuestionRepositoryImpl extends QuestionRepository {
     return fetchResult.when(
       ok: (model) {
         _logger.debug('Question fetched successfully');
-        return Result.ok(model.toQuestion());
+        return Ok(model.toQuestion());
       },
-      err: (failure) =>
-          Result.err(_mapQuestionsAppwriteDataSourceFailure(failure)),
+      err: (failure) => Err(_mapQuestionsAppwriteDataSourceFailure(failure)),
     );
   }
 
@@ -134,7 +132,7 @@ class QuestionRepositoryImpl extends QuestionRepository {
         .watchForQuestionCollectionUpdate()
         .listen(_onQuestionsUpdate);
 
-    return Result.ok(_questionsStreamController.stream);
+    return Ok(_questionsStreamController.stream);
   }
 
   Future<void> _onQuestionsUpdate(_) async {

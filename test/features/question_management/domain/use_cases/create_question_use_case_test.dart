@@ -64,7 +64,7 @@ void main() {
             final result = await useCase.execute(input);
 
             expect(result.isErr, isTrue);
-            expect(result.err, expectedFailure);
+            expect(result.unwrapErr(), expectedFailure);
           });
         }
       },
@@ -178,12 +178,12 @@ void main() {
             when(() => mockUuidGenerator.generate()).thenReturn(uuid);
 
             when(() => questionRepositoryMock.createSingle(any()))
-                .thenAnswer((_) async => Result.err(repositoryFailure));
+                .thenAnswer((_) async => Err(repositoryFailure));
 
             final result = await useCase.execute(input);
 
             expect(result.isErr, isTrue);
-            expect(result.err, expectedFailure);
+            expect(result.unwrapErr(), expectedFailure);
           });
         }
       },
@@ -255,12 +255,11 @@ void main() {
             when(() => mockUuidGenerator.generate()).thenReturn(uuid);
 
             when(() => questionRepositoryMock.createSingle(any()))
-                .thenAnswer((_) async => const Result.ok(unit));
+                .thenAnswer((_) async => const Ok(unit));
 
             await useCase.execute(input);
 
-            verify(() => questionRepositoryMock.createSingle(expected))
-                .called(1);
+            verify(() => questionRepositoryMock.createSingle(expected)).called(1);
           });
         }
       },

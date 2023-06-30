@@ -18,8 +18,7 @@ class HiveDataSource {
   final Box<String> _questionsBox;
   final JsonParser<Map<String, dynamic>> _jsonParser;
 
-  final _questionsStreamController =
-      StreamController<List<HiveQuestionModel>>();
+  final _questionsStreamController = StreamController<List<HiveQuestionModel>>();
 
   Future<Result<Unit, HiveDataSourceFailure>> saveQuestion(
     HiveQuestionModel question,
@@ -27,18 +26,18 @@ class HiveDataSource {
     final idValidationResult = _validateId(question);
 
     if (idValidationResult.isErr) {
-      return Result.err(idValidationResult.err!);
+      return Err(idValidationResult.unwrapErr());
     }
 
     try {
-      return Result.ok(await _putQuestionInBox(question));
+      return Ok(await _putQuestionInBox(question));
       // ignore: avoid_catching_errors
     } on HiveError catch (e) {
-      return Result.err(
+      return Err(
         HiveDataSourceFailure.hiveError(message: e.message),
       );
     } on _JsonEncodeException catch (e) {
-      return Result.err(
+      return Err(
         HiveDataSourceFailure.jsonEncoding(message: e.details),
       );
     }
@@ -50,30 +49,29 @@ class HiveDataSource {
     final idValidationResult = _validateId(question);
 
     if (idValidationResult.isErr) {
-      return Result.err(idValidationResult.err!);
+      return Err(idValidationResult.unwrapErr());
     }
 
     try {
-      return Result.ok(await _deleteQuestionFromBox(question));
+      return Ok(await _deleteQuestionFromBox(question));
       // ignore: avoid_catching_errors
     } on HiveError catch (e) {
-      return Result.err(
+      return Err(
         HiveDataSourceFailure.hiveError(message: e.message),
       );
     }
   }
 
-  Result<Stream<List<HiveQuestionModel>>, HiveDataSourceFailure>
-      watchAllQuestions() {
+  Result<Stream<List<HiveQuestionModel>>, HiveDataSourceFailure> watchAllQuestions() {
     try {
-      return Result.ok(_getAllQuestionsFromBox());
+      return Ok(_getAllQuestionsFromBox());
       // ignore: avoid_catching_errors
     } on HiveError catch (e) {
-      return Result.err(
+      return Err(
         HiveDataSourceFailure.hiveError(message: e.message),
       );
     } on _JsonDecodeException catch (e) {
-      return Result.err(
+      return Err(
         HiveDataSourceFailure.jsonDecoding(message: e.details),
       );
     }
@@ -83,12 +81,12 @@ class HiveDataSource {
     HiveQuestionModel question,
   ) {
     if (question.id == null || question.id == '') {
-      return Result.err(
+      return Err(
         HiveDataSourceFailure.emptyId(),
       );
     }
 
-    return const Result.ok(unit);
+    return const Ok(unit);
   }
 
   Future<Unit> _putQuestionInBox(

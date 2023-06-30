@@ -34,17 +34,15 @@ void main() {
                 .when(
                   () => authDataSourceMock.createEmailSession(mocktail.any()),
                 )
-                .thenAnswer((_) async => Result.err(errorMessage));
+                .thenAnswer((_) async => Err(errorMessage));
 
-            final result = await repository
-                .loginWithEmailCredentials(_FakeEmailCredentials());
+            final result = await repository.loginWithEmailCredentials(_FakeEmailCredentials());
 
             expect(result.isErr, true);
 
-            final expected =
-                AuthRepositoryError.unexpected(message: errorMessage);
-            expect(result.err, expected);
-            expect(result.err.hashCode, expected.hashCode);
+            final expected = AuthRepositoryError.unexpected(message: errorMessage);
+            expect(result.unwrapErr(), expected);
+            expect(result.unwrapErr().hashCode, expected.hashCode);
           });
         }
       },
@@ -71,14 +69,14 @@ void main() {
                     ),
                   ),
                 )
-                .thenAnswer((_) async => Result.ok(_FakeSessionModel()));
+                .thenAnswer((_) async => Ok(_FakeSessionModel()));
 
             final result = await repository.loginWithEmailCredentials(
               EmailCredentials(email: email, password: password),
             );
 
             expect(result.isOk, true);
-            expect(result.ok, unit);
+            expect(result.unwrap(), unit);
           });
         }
       },

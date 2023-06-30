@@ -40,7 +40,7 @@ void main() {
               final actual = parser.encode(input);
 
               expect(actual.isErr, isTrue);
-              expect(actual.err, expectedFailure);
+              expect(actual.unwrapErr(), expectedFailure);
             });
           }
         },
@@ -70,7 +70,7 @@ void main() {
               final actual = parser.encode(input);
 
               expect(actual.isOk, isTrue);
-              expect(actual.ok, expected);
+              expect(actual.unwrap(), expected);
             });
           }
         },
@@ -105,7 +105,7 @@ void main() {
               final actual = parser.decode(input);
 
               expect(actual.isErr, isTrue);
-              expect(actual.err, expectedFailure);
+              expect(actual.unwrapErr(), expectedFailure);
             });
           }
         },
@@ -135,7 +135,7 @@ void main() {
               final actual = parser.decode(input);
 
               expect(actual.isOk, isTrue);
-              expect(actual.ok, expected);
+              expect(actual.unwrap(), expected);
             });
           }
         },
