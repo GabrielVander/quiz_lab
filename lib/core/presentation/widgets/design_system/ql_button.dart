@@ -6,9 +6,11 @@ class _QLButton extends StatelessWidget {
     required this.overlayColor,
     required this.pressedColor,
     required this.textColor,
+    required this.loading,
     required QLButtonSpacing spacing,
     required this.child,
-  }) : _verticalPadding = spacing == QLButtonSpacing.defaultSpacing ? 6 : 2;
+  })  : _verticalPadding = spacing == QLButtonSpacing.defaultSpacing ? 6 : 2,
+        _loadingIconSize = spacing == QLButtonSpacing.defaultSpacing ? 20 : 16;
 
   static const double focusedPadding = 2;
   static const Color focusedBorderColor = Color(0xFF388BFF);
@@ -23,7 +25,9 @@ class _QLButton extends StatelessWidget {
   final Color pressedColor;
   final Color textColor;
   final Widget child;
+  final bool loading;
   final double _verticalPadding;
+  final double _loadingIconSize;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +82,13 @@ class _QLButton extends StatelessWidget {
           ),
         ),
       ),
-      child: child,
+      child: loading
+          ? SizedBox(
+              height: _loadingIconSize,
+              width: _loadingIconSize,
+              child: CircularProgressIndicator(color: textColor, strokeWidth: 2),
+            )
+          : child,
     );
   }
 }
@@ -102,15 +112,55 @@ class _QLButtonText extends StatelessWidget {
   }
 }
 
+class _QLIconButton extends StatelessWidget {
+  const _QLIconButton({required this.data, required this.color});
+
+  final IconData data;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+      data,
+      color: color,
+    );
+  }
+}
+
 class QLDefaultButton extends StatelessWidget {
   const QLDefaultButton._({
     required Widget child,
-    this.spacing = QLButtonSpacing.defaultSpacing,
+    required this.spacing,
+    required this.loading,
     super.key,
   }) : _child = child;
 
-  factory QLDefaultButton.text({required String text, QLButtonSpacing spacing, Key? key}) =
-      _QLDefaultButtonText;
+  factory QLDefaultButton.text({
+    required String text,
+    QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
+    bool loading = false,
+    Key? key,
+  }) =>
+      _QLDefaultButtonText(
+        text: text,
+        spacing: spacing,
+        loading: loading,
+        key: key,
+      );
+
+  factory QLDefaultButton.icon({
+    required IconData iconData,
+    QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
+    bool loading = false,
+    Key? key,
+  }) =>
+      _QLDefaultIconButton(
+        data: iconData,
+        color: _textColor,
+        spacing: spacing,
+        loading: loading,
+        key: key,
+      );
 
   static const Color _textColor = Color(0xFF172B4D);
   static const Color _buttonColor = Color(0xFF091E42);
@@ -119,6 +169,7 @@ class QLDefaultButton extends StatelessWidget {
   static const double _pressedColorOpacityPercentage = .31;
   final Widget _child;
   final QLButtonSpacing spacing;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -128,14 +179,34 @@ class QLDefaultButton extends StatelessWidget {
       overlayColor: _buttonColor.withOpacity(_hoverColorOpacityPercentage),
       pressedColor: _buttonColor.withOpacity(_pressedColorOpacityPercentage),
       textColor: _textColor,
+      loading: loading,
       child: _child,
     );
   }
 }
 
 class _QLDefaultButtonText extends QLDefaultButton {
-  _QLDefaultButtonText({required String text, super.spacing, super.key})
-      : super._(child: _QLButtonText(text: text));
+  _QLDefaultButtonText({
+    required String text,
+    required super.spacing,
+    required super.loading,
+    super.key,
+  }) : super._(child: _QLButtonText(text: text));
+}
+
+class _QLDefaultIconButton extends QLDefaultButton {
+  _QLDefaultIconButton({
+    required IconData data,
+    required Color color,
+    required super.spacing,
+    required super.loading,
+    super.key,
+  }) : super._(
+          child: _QLIconButton(
+            data: data,
+            color: color,
+          ),
+        );
 }
 
 enum QLButtonSpacing { defaultSpacing, compactSpacing }
