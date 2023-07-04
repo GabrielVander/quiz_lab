@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class _QLButton extends StatelessWidget {
   const _QLButton({
     required this.color,
-    required this.overlayColor,
+    required this.hoverColor,
     required this.pressedColor,
     required this.textColor,
     required this.loading,
@@ -21,7 +21,7 @@ class _QLButton extends StatelessWidget {
   static const double disabledBackgroundOpacity = 0.03;
   static const double disabledTextOpacity = 0.31;
   final Color color;
-  final Color overlayColor;
+  final Color hoverColor;
   final Color pressedColor;
   final Color textColor;
   final Widget child;
@@ -53,7 +53,7 @@ class _QLButton extends StatelessWidget {
         }),
         overlayColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.hovered)) {
-            return overlayColor;
+            return hoverColor;
           }
 
           if (states.contains(MaterialState.pressed)) {
@@ -176,8 +176,65 @@ class QLDefaultButton extends StatelessWidget {
     return _QLButton(
       color: _buttonColor.withOpacity(_defaultColorOpacityPercentage),
       spacing: spacing,
-      overlayColor: _buttonColor.withOpacity(_hoverColorOpacityPercentage),
+      hoverColor: _buttonColor.withOpacity(_hoverColorOpacityPercentage),
       pressedColor: _buttonColor.withOpacity(_pressedColorOpacityPercentage),
+      textColor: _textColor,
+      loading: loading,
+      child: _child,
+    );
+  }
+}
+
+class QLPrimaryButton extends StatelessWidget {
+  const QLPrimaryButton._({
+    required Widget child,
+    required this.spacing,
+    required this.loading,
+    super.key,
+  }) : _child = child;
+
+  factory QLPrimaryButton.text({
+    required String text,
+    QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
+    bool loading = false,
+    Key? key,
+  }) =>
+      _QLPrimaryButtonText(
+        text: text,
+        spacing: spacing,
+        loading: loading,
+        key: key,
+      );
+
+  factory QLPrimaryButton.icon({
+    required IconData iconData,
+    QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
+    bool loading = false,
+    Key? key,
+  }) =>
+      _QLPrimaryIconButton(
+        data: iconData,
+        color: _textColor,
+        spacing: spacing,
+        loading: loading,
+        key: key,
+      );
+
+  static const Color _textColor = Colors.white;
+  static const Color _defaultColor = Color(0xFF0C66E4);
+  static const Color _hoverColor = Color(0xFF0055CC);
+  static const Color _pressedColor = Color(0xFF09326C);
+  final Widget _child;
+  final QLButtonSpacing spacing;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    return _QLButton(
+      color: _defaultColor,
+      spacing: spacing,
+      hoverColor: _hoverColor,
+      pressedColor: _pressedColor,
       textColor: _textColor,
       loading: loading,
       child: _child,
@@ -196,6 +253,30 @@ class _QLDefaultButtonText extends QLDefaultButton {
 
 class _QLDefaultIconButton extends QLDefaultButton {
   _QLDefaultIconButton({
+    required IconData data,
+    required Color color,
+    required super.spacing,
+    required super.loading,
+    super.key,
+  }) : super._(
+          child: _QLIconButton(
+            data: data,
+            color: color,
+          ),
+        );
+}
+
+class _QLPrimaryButtonText extends QLPrimaryButton {
+  _QLPrimaryButtonText({
+    required String text,
+    required super.spacing,
+    required super.loading,
+    super.key,
+  }) : super._(child: _QLButtonText(text: text));
+}
+
+class _QLPrimaryIconButton extends QLPrimaryButton {
+  _QLPrimaryIconButton({
     required IconData data,
     required Color color,
     required super.spacing,
