@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/buttons/core.dart';
 
-class QLPrimaryButton extends StatelessWidget {
-  const QLPrimaryButton._({
+class QLSubtleButton extends StatelessWidget {
+  const QLSubtleButton._({
     required this.onPressed,
     required this.child,
     required this.spacing,
@@ -10,45 +10,46 @@ class QLPrimaryButton extends StatelessWidget {
     super.key,
   });
 
-  factory QLPrimaryButton.text({
+  factory QLSubtleButton.text({
     required String text,
-    QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
     void Function()? onPressed,
+    QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
     bool loading = false,
     Key? key,
   }) =>
-      _QLPrimaryButtonText(
-        onPressed: onPressed,
+      _QLSubtleButtonText(
         text: text,
+        onPressed: onPressed,
         spacing: spacing,
         loading: loading,
         key: key,
       );
 
-  factory QLPrimaryButton.icon({
+  factory QLSubtleButton.icon({
     required IconData iconData,
-    QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
     void Function()? onPressed,
+    QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
     bool loading = false,
     Key? key,
   }) =>
-      _QLPrimaryIconButton(
-        onPressed: onPressed,
+      _QLSubtleIconButton(
         data: iconData,
+        onPressed: onPressed,
         color: _textColor,
         spacing: spacing,
         loading: loading,
         key: key,
       );
 
-  static const Color _textColor = Colors.white;
-  static const Color _defaultColor = Color(0xFF0C66E4);
-  static const Color _hoverColor = Color(0xFF0055CC);
-  static const Color _pressedColor = Color(0xFF09326C);
-  final void Function()? onPressed;
+  static const Color _textColor = Color(0xFF172B4D);
+  static const Color _defaultColor = Colors.transparent;
+  static const Color _buttonColor = Color(0xFF091E42);
+  static const double _hoverColorOpacityPercentage = .06;
+  static const double _pressedColorOpacityPercentage = .14;
   final Widget child;
   final QLButtonSpacing spacing;
   final bool loading;
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +57,8 @@ class QLPrimaryButton extends StatelessWidget {
       onPressed: onPressed,
       color: _defaultColor,
       spacing: spacing,
-      hoverColor: _hoverColor,
-      pressedColor: _pressedColor,
+      hoverColor: _buttonColor.withOpacity(_hoverColorOpacityPercentage),
+      pressedColor: _buttonColor.withOpacity(_pressedColorOpacityPercentage),
       textColor: _textColor,
       loading: loading,
       child: child,
@@ -65,8 +66,8 @@ class QLPrimaryButton extends StatelessWidget {
   }
 }
 
-class _QLPrimaryButtonText extends QLPrimaryButton {
-  _QLPrimaryButtonText({
+class _QLSubtleButtonText extends QLSubtleButton {
+  _QLSubtleButtonText({
     required String text,
     required super.onPressed,
     required super.spacing,
@@ -75,8 +76,8 @@ class _QLPrimaryButtonText extends QLPrimaryButton {
   }) : super._(child: QLButtonText(text: text));
 }
 
-class _QLPrimaryIconButton extends QLPrimaryButton {
-  _QLPrimaryIconButton({
+class _QLSubtleIconButton extends QLSubtleButton {
+  _QLSubtleIconButton({
     required IconData data,
     required Color color,
     required super.onPressed,
