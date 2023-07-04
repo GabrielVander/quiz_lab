@@ -20,7 +20,7 @@ class GetSingleQuestionUseCase {
 
     if (id == null) {
       _logger.error('Question id is null');
-      return const Result.err(unit);
+      return const Err(unit);
     }
 
     final questionResult = await questionRepository.getSingle(QuestionId(id));
@@ -29,12 +29,12 @@ class GetSingleQuestionUseCase {
       ok: (question) {
         _logger.debug('Returning question...');
 
-        return Result.ok(question);
+        return Ok(question);
       },
       err: (failure) {
         _logger.error(failure.toString());
 
-        return const Result.err(unit);
+        return const Err(unit);
       },
     );
   }

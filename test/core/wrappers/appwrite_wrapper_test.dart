@@ -109,10 +109,7 @@ void main() {
               ),
             )
           ],
-          [
-            _AppwriteExceptionMock(),
-            AppwriteWrapperServiceFailure(const UnknownAppwriteError())
-          ],
+          [_AppwriteExceptionMock(), AppwriteWrapperServiceFailure(const UnknownAppwriteError())],
           [
             AppwriteException(r'Azz3$P', 32, 'tB*g#'),
             AppwriteWrapperServiceFailure(
@@ -202,7 +199,7 @@ void main() {
             );
 
             expect(result.isErr, true);
-            expect(result.err, expectedFailure);
+            expect(result.unwrapErr(), expectedFailure);
           });
         }
       });
@@ -238,7 +235,7 @@ void main() {
 
           expect(result.isErr, true);
           expect(
-            result.err,
+            result.unwrapErr(),
             AppwriteWrapperUnexpectedFailure('_ExceptionMock'),
           );
         },
@@ -277,7 +274,7 @@ void main() {
           );
 
           expect(result.isOk, true);
-          expect(result.ok, dummyDocument);
+          expect(result.unwrap(), dummyDocument);
         },
       );
     });
@@ -339,10 +336,7 @@ void main() {
               ),
             )
           ],
-          [
-            _AppwriteExceptionMock(),
-            AppwriteWrapperServiceFailure(const UnknownAppwriteError())
-          ],
+          [_AppwriteExceptionMock(), AppwriteWrapperServiceFailure(const UnknownAppwriteError())],
           [
             AppwriteException('T0J!phB5', 22, 'y640p89'),
             AppwriteWrapperServiceFailure(
@@ -427,7 +421,7 @@ void main() {
             );
 
             expect(result.isErr, true);
-            expect(result.err, expectedFailure);
+            expect(result.unwrapErr(), expectedFailure);
           });
         }
       },
@@ -459,7 +453,7 @@ void main() {
 
         expect(result.isErr, true);
         expect(
-          result.err,
+          result.unwrapErr(),
           AppwriteWrapperUnexpectedFailure('_ExceptionMock'),
         );
       },
@@ -489,7 +483,7 @@ void main() {
         );
 
         expect(result.isOk, true);
-        expect(result.ok, unit);
+        expect(result.unwrap(), unit);
       },
     );
   });
@@ -555,10 +549,7 @@ void main() {
                 ),
               )
             ],
-            [
-              _AppwriteExceptionMock(),
-              AppwriteWrapperServiceFailure(const UnknownAppwriteError())
-            ],
+            [_AppwriteExceptionMock(), AppwriteWrapperServiceFailure(const UnknownAppwriteError())],
             [
               AppwriteException(r'Azz3$P', 32, 'tB*g#'),
               AppwriteWrapperServiceFailure(
@@ -639,7 +630,7 @@ void main() {
               );
 
               expect(result.isErr, true);
-              expect(result.err, expectedFailure);
+              expect(result.unwrapErr(), expectedFailure);
             });
           }
         },
@@ -667,7 +658,7 @@ void main() {
 
           expect(result.isErr, true);
           expect(
-            result.err,
+            result.unwrapErr(),
             AppwriteWrapperUnexpectedFailure('_ExceptionMock'),
           );
         },
@@ -697,7 +688,7 @@ void main() {
           );
 
           expect(result.isOk, true);
-          expect(result.ok, dummyDocument);
+          expect(result.unwrap(), dummyDocument);
         },
       );
     });
@@ -706,8 +697,7 @@ void main() {
 
 class _DatabasesMock extends mocktail.Mock implements Databases {}
 
-class _AppwriteExceptionMock extends mocktail.Mock
-    implements AppwriteException {}
+class _AppwriteExceptionMock extends mocktail.Mock implements AppwriteException {}
 
 class _ExceptionMock extends mocktail.Mock implements Exception {}
 

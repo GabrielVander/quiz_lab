@@ -153,7 +153,7 @@ void main() {
                       .createSingle(mocktail.any()),
                 )
                 .thenAnswer(
-                  (_) async => Result.err(
+                  (_) async => Err(
                     QuestionsAppwriteDataSourceUnexpectedFailure(''),
                   ),
                 );
@@ -175,7 +175,7 @@ void main() {
           .when(
             () => questionsAppwriteDataSourceMock.createSingle(mocktail.any()),
           )
-          .thenAnswer((_) async => Result.ok(_AppwriteQuestionModelMock()));
+          .thenAnswer((_) async => Ok(_AppwriteQuestionModelMock()));
 
       final result = await repository.createSingle(
         const Question(
@@ -189,7 +189,7 @@ void main() {
       );
 
       expect(result.isOk, true);
-      expect(result.ok, unit);
+      expect(result.unwrap(), unit);
     });
   });
 
@@ -357,7 +357,7 @@ void main() {
             final result = await repository.watchAll();
 
             expect(result.isOk, true);
-            expect(result.ok, emits(expected));
+            expect(result.unwrap(), emits(expected));
           });
         }
       },
@@ -381,7 +381,7 @@ void main() {
                         .deleteSingle(mocktail.any()),
                   )
                   .thenAnswer(
-                    (_) async => Result.err(
+                    (_) async => Err(
                       QuestionsAppwriteDataSourceUnexpectedFailure(r'T8$W7'),
                     ),
                   );
@@ -404,18 +404,16 @@ void main() {
         () async {
           mocktail
               .when(
-                () => questionsAppwriteDataSourceMock
-                    .deleteSingle(mocktail.any()),
+                () => questionsAppwriteDataSourceMock.deleteSingle(mocktail.any()),
               )
               .thenAnswer(
-                (_) async => const Result.ok(unit),
+                (_) async => const Ok(unit),
               );
 
-          final result =
-              await repository.deleteSingle(const QuestionId('6xSamAUC'));
+          final result = await repository.deleteSingle(const QuestionId('6xSamAUC'));
 
           expect(result.isOk, true);
-          expect(result.ok, unit);
+          expect(result.unwrap(), unit);
         },
       );
 
@@ -444,22 +442,19 @@ void main() {
             ],
           ]) {
             test(values.toString(), () async {
-              final dataSourceFailure =
-                  values[0] as QuestionsAppwriteDataSourceFailure;
+              final dataSourceFailure = values[0] as QuestionsAppwriteDataSourceFailure;
               final expected = values[1] as QuestionRepositoryFailure;
 
               mocktail
                   .when(
-                    () => questionsAppwriteDataSourceMock
-                        .deleteSingle(mocktail.any()),
+                    () => questionsAppwriteDataSourceMock.deleteSingle(mocktail.any()),
                   )
-                  .thenAnswer((_) async => Result.err(dataSourceFailure));
+                  .thenAnswer((_) async => Err(dataSourceFailure));
 
-              final result =
-                  await repository.deleteSingle(const QuestionId('cNPJl@*x'));
+              final result = await repository.deleteSingle(const QuestionId('cNPJl@*x'));
 
               expect(result.isErr, true);
-              expect(result.err, expected);
+              expect(result.unwrapErr(), expected);
             });
           }
         },
@@ -482,7 +477,7 @@ void main() {
                       .fetchSingle(mocktail.any()),
                 )
                 .thenAnswer(
-                  (_) async => Result.err(
+                  (_) async => Err(
                     QuestionsAppwriteDataSourceUnexpectedFailure('X90^#SU'),
                   ),
                 );
@@ -503,20 +498,18 @@ void main() {
         final appwriteQuestionModelMock = _AppwriteQuestionModelMock();
         final questionMock = _QuestionMock();
 
-        mocktail
-            .when(appwriteQuestionModelMock.toQuestion)
-            .thenReturn(questionMock);
+        mocktail.when(appwriteQuestionModelMock.toQuestion).thenReturn(questionMock);
 
         mocktail
             .when(
               () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
             )
-            .thenAnswer((_) async => Result.ok(appwriteQuestionModelMock));
+            .thenAnswer((_) async => Ok(appwriteQuestionModelMock));
 
         final result = await repository.getSingle(const QuestionId('o^Y*lN'));
 
         expect(result.isOk, true);
-        expect(result.ok, questionMock);
+        expect(result.unwrap(), questionMock);
       },
     );
 
@@ -545,22 +538,19 @@ void main() {
           ],
         ]) {
           test(values.toString(), () async {
-            final dataSourceFailure =
-                values[0] as QuestionsAppwriteDataSourceFailure;
+            final dataSourceFailure = values[0] as QuestionsAppwriteDataSourceFailure;
             final expected = values[1] as QuestionRepositoryFailure;
 
             mocktail
                 .when(
-                  () => questionsAppwriteDataSourceMock
-                      .fetchSingle(mocktail.any()),
+                  () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
                 )
-                .thenAnswer((_) async => Result.err(dataSourceFailure));
+                .thenAnswer((_) async => Err(dataSourceFailure));
 
-            final result =
-                await repository.getSingle(const QuestionId('2%E5%'));
+            final result = await repository.getSingle(const QuestionId('2%E5%'));
 
             expect(result.isErr, true);
-            expect(result.err, expected);
+            expect(result.unwrapErr(), expected);
           });
         }
       },
