@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/buttons/link.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/buttons/primary.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
@@ -297,10 +298,10 @@ class _AlternativeOptions extends StatelessWidget {
             Text(
               S.of(context).dontHaveAnAccountPhrase,
             ),
-            TextButton(
+            QLLinkButton.text(
               key: const ValueKey('signUpButton'),
               onPressed: onSignUp,
-              child: Text(S.of(context).loginPageSignUpButtonLabel),
+              text: S.of(context).loginPageSignUpButtonLabel,
             )
           ],
         ),

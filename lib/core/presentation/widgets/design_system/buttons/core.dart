@@ -97,19 +97,21 @@ class QLButton extends StatelessWidget {
 }
 
 class QLButtonText extends StatelessWidget {
-  const QLButtonText({required this.text, super.key});
+  const QLButtonText({required this.text, this.underlineOnHover = false, super.key});
 
-  static const double fontSize = 20;
+  static const double fontSize = 14;
   static const FontWeight fontWeight = FontWeight.w500;
   final String text;
+  final bool underlineOnHover;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: fontSize,
         fontWeight: fontWeight,
+        decoration: underlineOnHover ? TextDecoration.underline : null,
       ),
     );
   }
