@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class QLButton extends StatelessWidget {
   const QLButton({
     required this.onPressed,
-    required this.color,
-    required this.hoverColor,
-    required this.pressedColor,
+    required this.backgroundColor,
+    required this.backgroundColorOnHover,
+    required this.backgroundColorOnPressed,
     required this.textColor,
+    required this.textColorOnPressed,
     required this.loading,
+    required this.showUnderlineOnInteraction,
     required QLButtonSpacing spacing,
     required this.child,
     super.key,
@@ -19,15 +21,17 @@ class QLButton extends StatelessWidget {
   static const double focusedBorderWidth = 2;
   static const double horizontalPadding = 12;
   static const double borderRadius = 3;
-  static const Color disabledColor = Color(0xFF091E42);
+  static const Color disabledBaseColor = Color(0xFF091E42);
   static const double disabledBackgroundOpacity = 0.03;
   static const double disabledTextOpacity = 0.31;
-  final Color color;
-  final Color hoverColor;
-  final Color pressedColor;
+  final Color backgroundColor;
+  final Color backgroundColorOnHover;
+  final Color backgroundColorOnPressed;
   final Color textColor;
+  final Color textColorOnPressed;
   final Widget child;
   final bool loading;
+  final bool showUnderlineOnInteraction;
   final void Function()? onPressed;
   final double _verticalPadding;
   final double _loadingIconSize;
@@ -56,25 +60,29 @@ class QLButton extends StatelessWidget {
         }),
         overlayColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.hovered)) {
-            return hoverColor;
+            return backgroundColorOnHover;
           }
 
           if (states.contains(MaterialState.pressed)) {
-            return pressedColor;
+            return backgroundColorOnPressed;
           }
 
           return null;
         }),
         backgroundColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.disabled)) {
-            return disabledColor.withOpacity(disabledBackgroundOpacity);
+            return disabledBaseColor.withOpacity(disabledBackgroundOpacity);
           }
 
-          return color;
+          return backgroundColor;
         }),
         foregroundColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.disabled)) {
-            return disabledColor.withOpacity(disabledTextOpacity);
+            return disabledBaseColor.withOpacity(disabledTextOpacity);
+          }
+
+          if (states.contains(MaterialState.pressed)) {
+            return textColorOnPressed;
           }
 
           return textColor;
@@ -83,6 +91,24 @@ class QLButton extends StatelessWidget {
           (states) => const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
           ),
+        ),
+        textStyle: MaterialStateProperty.resolveWith(
+          (states) {
+            const baseTextStyle = TextStyle(
+              fontSize: QLButtonText.fontSize,
+              fontWeight: QLButtonText.fontWeight,
+            );
+
+            if (states.contains(MaterialState.hovered) && showUnderlineOnInteraction) {
+              return baseTextStyle.copyWith(decoration: TextDecoration.underline);
+            }
+
+            if (states.contains(MaterialState.pressed) && showUnderlineOnInteraction) {
+              return baseTextStyle.copyWith(decoration: TextDecoration.underline);
+            }
+
+            return baseTextStyle;
+          },
         ),
       ),
       child: loading
@@ -97,23 +123,15 @@ class QLButton extends StatelessWidget {
 }
 
 class QLButtonText extends StatelessWidget {
-  const QLButtonText({required this.text, this.underlineOnHover = false, super.key});
+  const QLButtonText({required this.text, super.key});
 
   static const double fontSize = 14;
   static const FontWeight fontWeight = FontWeight.w500;
   final String text;
-  final bool underlineOnHover;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-        decoration: underlineOnHover ? TextDecoration.underline : null,
-      ),
-    );
+    return Text(text);
   }
 }
 
