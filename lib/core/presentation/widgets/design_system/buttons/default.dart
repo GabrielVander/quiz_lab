@@ -42,10 +42,10 @@ class QLDefaultButton extends StatelessWidget {
       );
 
   static const Color _textColor = Color(0xFF172B4D);
-  static const Color _buttonColor = Color(0xFF091E42);
-  static const double _defaultColorOpacityPercentage = .06;
-  static const double _hoverColorOpacityPercentage = .14;
-  static const double _pressedColorOpacityPercentage = .31;
+  static const Color _backgroundBaseColor = Color(0xFF091E42);
+  static const double _defaultBackgroundColorOpacityPercentage = .06;
+  static const double _backgroundColorOpacityPercentageOnHover = .14;
+  static const double _backgroundColorOpacityPercentageOnPressed = .31;
   final Widget child;
   final QLButtonSpacing spacing;
   final bool loading;
@@ -55,12 +55,16 @@ class QLDefaultButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return QLButton(
       onPressed: onPressed,
-      color: _buttonColor.withOpacity(_defaultColorOpacityPercentage),
+      backgroundColor: _backgroundBaseColor.withOpacity(_defaultBackgroundColorOpacityPercentage),
       spacing: spacing,
-      hoverColor: _buttonColor.withOpacity(_hoverColorOpacityPercentage),
-      pressedColor: _buttonColor.withOpacity(_pressedColorOpacityPercentage),
+      backgroundColorOnHover:
+          _backgroundBaseColor.withOpacity(_backgroundColorOpacityPercentageOnHover),
+      backgroundColorOnPressed:
+          _backgroundBaseColor.withOpacity(_backgroundColorOpacityPercentageOnPressed),
       textColor: _textColor,
+      textColorOnPressed: _textColor,
       loading: loading,
+      showUnderlineOnInteraction: false,
       child: child,
     );
   }
