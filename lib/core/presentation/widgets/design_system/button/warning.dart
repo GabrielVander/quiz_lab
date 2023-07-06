@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/widgets/design_system/buttons/core.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/button/core.dart';
 
-class QLSubtleButton extends StatelessWidget {
-  const QLSubtleButton._({
+class QLWarningButton extends StatelessWidget {
+  const QLWarningButton._({
     required this.onPressed,
     required this.child,
     required this.spacing,
@@ -10,55 +10,54 @@ class QLSubtleButton extends StatelessWidget {
     super.key,
   });
 
-  factory QLSubtleButton.text({
+  factory QLWarningButton.text({
     required String text,
-    void Function()? onPressed,
     QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
+    void Function()? onPressed,
     bool loading = false,
     Key? key,
   }) =>
-      _QLSubtleButtonText(
-        text: text,
+      _QLWarningButtonText(
         onPressed: onPressed,
+        text: text,
         spacing: spacing,
         loading: loading,
         key: key,
       );
 
-  factory QLSubtleButton.icon({
+  factory QLWarningButton.icon({
     required IconData iconData,
-    void Function()? onPressed,
     QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
+    void Function()? onPressed,
     bool loading = false,
     Key? key,
   }) =>
-      _QLSubtleIconButton(
-        data: iconData,
+      _QLWarningIconButton(
         onPressed: onPressed,
+        data: iconData,
         color: _textColor,
         spacing: spacing,
         loading: loading,
         key: key,
       );
 
-  static const Color _textColor = Color(0xFF172B4D);
-  static const Color _defaultColor = Colors.transparent;
-  static const Color _buttonColor = Color(0xFF091E42);
-  static const double _hoverColorOpacityPercentage = .06;
-  static const double _pressedColorOpacityPercentage = .14;
+  static const Color _textColor = Colors.white;
+  static const Color _defaultBackgroundColor = Color(0xFFE2B203);
+  static const Color _backgroundColorOnHover = Color(0xFFCF9F02);
+  static const Color _backgroundColorOnPressed = Color(0xFFB38600);
+  final void Function()? onPressed;
   final Widget child;
   final QLButtonSpacing spacing;
   final bool loading;
-  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return QLButton(
       onPressed: onPressed,
-      backgroundColor: _defaultColor,
+      backgroundColor: _defaultBackgroundColor,
       spacing: spacing,
-      backgroundColorOnHover: _buttonColor.withOpacity(_hoverColorOpacityPercentage),
-      backgroundColorOnPressed: _buttonColor.withOpacity(_pressedColorOpacityPercentage),
+      backgroundColorOnHover: _backgroundColorOnHover,
+      backgroundColorOnPressed: _backgroundColorOnPressed,
       textColor: _textColor,
       textColorOnPressed: _textColor,
       loading: loading,
@@ -68,8 +67,8 @@ class QLSubtleButton extends StatelessWidget {
   }
 }
 
-class _QLSubtleButtonText extends QLSubtleButton {
-  _QLSubtleButtonText({
+class _QLWarningButtonText extends QLWarningButton {
+  _QLWarningButtonText({
     required String text,
     required super.onPressed,
     required super.spacing,
@@ -78,8 +77,8 @@ class _QLSubtleButtonText extends QLSubtleButton {
   }) : super._(child: QLButtonText(text: text));
 }
 
-class _QLSubtleIconButton extends QLSubtleButton {
-  _QLSubtleIconButton({
+class _QLWarningIconButton extends QLWarningButton {
+  _QLWarningIconButton({
     required IconData data,
     required Color color,
     required super.onPressed,
