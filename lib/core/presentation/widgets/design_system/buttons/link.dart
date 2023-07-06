@@ -47,13 +47,14 @@ class QLLinkButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return QLButton(
       onPressed: onPressed,
-      color: _backgroundColor,
+      backgroundColor: _backgroundColor,
       spacing: QLButtonSpacing.defaultSpacing,
-      hoverColor: _backgroundColor,
-      pressedColor: _pressedTextColor,
+      backgroundColorOnHover: _backgroundColor,
+      backgroundColorOnPressed: _pressedTextColor,
       textColor: _textColor,
+      textColorOnPressed: _pressedTextColor,
       loading: loading,
-      underlineOnHover: true,
+      showUnderlineOnInteraction: true,
       child: child,
     );
   }

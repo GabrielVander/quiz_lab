@@ -55,13 +55,14 @@ class QLSubtleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return QLButton(
       onPressed: onPressed,
-      color: _defaultColor,
+      backgroundColor: _defaultColor,
       spacing: spacing,
-      hoverColor: _buttonColor.withOpacity(_hoverColorOpacityPercentage),
-      pressedColor: _buttonColor.withOpacity(_pressedColorOpacityPercentage),
+      backgroundColorOnHover: _buttonColor.withOpacity(_hoverColorOpacityPercentage),
+      backgroundColorOnPressed: _buttonColor.withOpacity(_pressedColorOpacityPercentage),
       textColor: _textColor,
+      textColorOnPressed: _textColor,
       loading: loading,
-      underlineOnHover: false,
+      showUnderlineOnInteraction: false,
       child: child,
     );
   }

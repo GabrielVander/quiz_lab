@@ -54,13 +54,14 @@ class QLPrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return QLButton(
       onPressed: onPressed,
-      color: _defaultColor,
+      backgroundColor: _defaultColor,
       spacing: spacing,
-      hoverColor: _hoverColor,
-      pressedColor: _pressedColor,
+      backgroundColorOnHover: _hoverColor,
+      backgroundColorOnPressed: _pressedColor,
       textColor: _textColor,
+      textColorOnPressed: _textColor,
       loading: loading,
-      underlineOnHover: false,
+      showUnderlineOnInteraction: false,
       child: child,
     );
   }
