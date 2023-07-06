@@ -41,12 +41,12 @@ void main() {
 
             mocktail
                 .when(questionRepositoryMock.watchAll)
-                .thenAnswer((_) async => Result.err(repositoryFailure));
+                .thenAnswer((_) async => Err(repositoryFailure));
 
             final result = await useCase.execute();
 
             expect(result.isErr, true);
-            expect(result.err, expectedFailure);
+            expect(result.unwrapErr(), expectedFailure);
           });
         }
       },
@@ -103,15 +103,13 @@ void main() {
           test(streamValues.toString(), () async {
             final stream = Stream.fromIterable(streamValues);
 
-            mocktail
-                .when(questionRepositoryMock.watchAll)
-                .thenAnswer((_) async => Result.ok(stream));
+            mocktail.when(questionRepositoryMock.watchAll).thenAnswer((_) async => Ok(stream));
 
             final result = await useCase.execute();
 
             expect(result.isOk, isTrue);
 
-            final actualStream = result.ok;
+            final actualStream = result.unwrap();
             unawaited(expectLater(actualStream, emitsInOrder(streamValues)));
           });
         }

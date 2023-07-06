@@ -25,10 +25,10 @@ class CreateQuestionUseCase {
     final inputParsingResult = _parseInputToEntity(input);
 
     if (inputParsingResult.isErr) {
-      return Result.err(inputParsingResult.err!);
+      return Err(inputParsingResult.unwrapErr());
     }
 
-    final question = _generateQuestionId(inputParsingResult.ok!);
+    final question = _generateQuestionId(inputParsingResult.unwrap());
     final creationResult = await _createQuestion(question);
 
     return creationResult.mapErr(
@@ -106,10 +106,10 @@ class _InputParser {
     final difficultyParseResult = _parseDifficulty(input);
 
     if (difficultyParseResult.isErr) {
-      return Result.err(difficultyParseResult.err!);
+      return Err(difficultyParseResult.unwrapErr());
     }
 
-    return Result.ok(
+    return Ok(
       Question(
         id: const QuestionId(''),
         shortDescription: input.shortDescription,
@@ -122,9 +122,8 @@ class _InputParser {
               ),
             )
             .toList(),
-        difficulty: difficultyParseResult.ok!,
-        categories:
-            input.categories.map((e) => QuestionCategory(value: e)).toList(),
+        difficulty: difficultyParseResult.unwrap(),
+        categories: input.categories.map((e) => QuestionCategory(value: e)).toList(),
       ),
     );
   }
@@ -139,9 +138,9 @@ class _InputParser {
     };
 
     if (mappings.containsKey(input.difficulty)) {
-      return Result.ok(mappings[input.difficulty]!);
+      return Ok(mappings[input.difficulty]!);
     } else {
-      return Result.err(
+      return Err(
         _InputParseFailure.difficulty(receivedValue: input.difficulty),
       );
     }
@@ -206,6 +205,5 @@ abstract class _InputParseFailure extends CreateQuestionUseCaseFailure {
 
 @immutable
 class DifficultyParseFailure extends _InputParseFailure {
-  const DifficultyParseFailure._({required super.receivedValue})
-      : super._(fieldName: 'difficulty');
+  const DifficultyParseFailure._({required super.receivedValue}) : super._(fieldName: 'difficulty');
 }

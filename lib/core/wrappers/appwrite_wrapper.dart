@@ -11,8 +11,7 @@ class AppwriteWrapper {
     required Databases databases,
   }) : _databases = databases;
 
-  final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<AppwriteWrapper>();
+  final QuizLabLogger _logger = QuizLabLoggerFactory.createLogger<AppwriteWrapper>();
 
   final Databases _databases;
 
@@ -45,11 +44,11 @@ class AppwriteWrapper {
       );
 
       _logger.debug('Appwrite document created successfully');
-      return Result.ok(createdDocument);
+      return Ok(createdDocument);
     } on AppwriteException catch (e) {
-      return Result.err(_handleAppwriteException(e));
+      return Err(_handleAppwriteException(e));
     } catch (e) {
-      return Result.err(_handleUnexpectedException(e));
+      return Err(_handleUnexpectedException(e));
     }
   }
 
@@ -76,11 +75,11 @@ class AppwriteWrapper {
       );
 
       _logger.debug('Document deleted successfully');
-      return const Result.ok(unit);
+      return const Ok(unit);
     } on AppwriteException catch (e) {
-      return Result.err(_handleAppwriteException(e));
+      return Err(_handleAppwriteException(e));
     } catch (e) {
-      return Result.err(_handleUnexpectedException(e));
+      return Err(_handleUnexpectedException(e));
     }
   }
 
@@ -96,7 +95,7 @@ class AppwriteWrapper {
     _logger.debug('Retrieving Appwrite document...');
 
     try {
-      return Result.ok(
+      return Ok(
         await _databases.getDocument(
           databaseId: databaseId,
           collectionId: collectionId,
@@ -104,9 +103,9 @@ class AppwriteWrapper {
         ),
       );
     } on AppwriteException catch (e) {
-      return Result.err(_handleAppwriteException(e));
+      return Err(_handleAppwriteException(e));
     } catch (e) {
-      return Result.err(_handleUnexpectedException(e));
+      return Err(_handleUnexpectedException(e));
     }
   }
 

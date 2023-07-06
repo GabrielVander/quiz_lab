@@ -237,8 +237,8 @@ void main() {
               );
 
               expect(result.isOk, true);
-              expect(result.ok, expectedSessionModel);
-              expect(result.ok!.hashCode, expectedSessionModel.hashCode);
+              expect(result.unwrap(), expectedSessionModel);
+              expect(result.unwrap().hashCode, expectedSessionModel.hashCode);
             });
           }
         },

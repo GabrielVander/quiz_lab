@@ -25,17 +25,17 @@ class WatchAllQuestionsUseCase {
 
     if (streamResult.isErr) {
       final failure = WatchAllQuestionsFailure.generic(
-        message: streamResult.err!.message,
+        message: streamResult.unwrapErr().message,
       );
 
       _logger.error(failure.message);
-      return Result.err(failure);
+      return Err(failure);
     }
 
-    return Result.ok(
-      streamResult.ok!.doOnData(
-        (questions) => _logger.info('Retrieved ${questions.length} questions'),
-      ),
+    return Ok(
+      streamResult.unwrap().doOnData(
+            (questions) => _logger.info('Retrieved ${questions.length} questions'),
+          ),
     );
   }
 }

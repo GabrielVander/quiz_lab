@@ -44,7 +44,7 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
       return;
     }
 
-    _emitSubjectWithGivenQuestion(questionResult.ok!);
+    _emitSubjectWithGivenQuestion(questionResult.unwrap());
   }
 
   void onOptionSelected(String optionId) {
