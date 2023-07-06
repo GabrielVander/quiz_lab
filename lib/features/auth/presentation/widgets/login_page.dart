@@ -156,7 +156,7 @@ class _Title extends StatelessWidget {
     return Text(
       S.of(context).loginPageDisplayTitle,
       style: Theme.of(context).textTheme.displayMedium!.copyWith(
-        color: Theme.of(context).extension<ThemeColors>()!.textColors.primary,
+            color: Theme.of(context).extension<ThemeColors>()!.textColors.primary,
           ),
     );
   }
