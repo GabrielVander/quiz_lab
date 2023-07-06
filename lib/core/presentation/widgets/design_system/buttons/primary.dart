@@ -60,6 +60,7 @@ class QLPrimaryButton extends StatelessWidget {
       pressedColor: _pressedColor,
       textColor: _textColor,
       loading: loading,
+      underlineOnHover: false,
       child: child,
     );
   }

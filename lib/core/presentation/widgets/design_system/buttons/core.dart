@@ -8,6 +8,7 @@ class QLButton extends StatelessWidget {
     required this.pressedColor,
     required this.textColor,
     required this.loading,
+    required this.underlineOnHover,
     required QLButtonSpacing spacing,
     required this.child,
     super.key,
@@ -28,6 +29,7 @@ class QLButton extends StatelessWidget {
   final Color textColor;
   final Widget child;
   final bool loading;
+  final bool underlineOnHover;
   final void Function()? onPressed;
   final double _verticalPadding;
   final double _loadingIconSize;
@@ -84,6 +86,20 @@ class QLButton extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
           ),
         ),
+        textStyle: MaterialStateProperty.resolveWith(
+          (states) {
+            const baseTextStyle = TextStyle(
+              fontSize: QLButtonText.fontSize,
+              fontWeight: QLButtonText.fontWeight,
+            );
+
+            if (states.contains(MaterialState.hovered) && underlineOnHover) {
+              return baseTextStyle.copyWith(decoration: TextDecoration.underline);
+            }
+
+            return baseTextStyle;
+          },
+        ),
       ),
       child: loading
           ? SizedBox(
@@ -97,23 +113,15 @@ class QLButton extends StatelessWidget {
 }
 
 class QLButtonText extends StatelessWidget {
-  const QLButtonText({required this.text, this.underlineOnHover = false, super.key});
+  const QLButtonText({required this.text, super.key});
 
   static const double fontSize = 14;
   static const FontWeight fontWeight = FontWeight.w500;
   final String text;
-  final bool underlineOnHover;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-        decoration: underlineOnHover ? TextDecoration.underline : null,
-      ),
-    );
+    return Text(text);
   }
 }
 

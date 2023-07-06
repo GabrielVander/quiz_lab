@@ -61,6 +61,7 @@ class QLSubtleButton extends StatelessWidget {
       pressedColor: _buttonColor.withOpacity(_pressedColorOpacityPercentage),
       textColor: _textColor,
       loading: loading,
+      underlineOnHover: false,
       child: child,
     );
   }

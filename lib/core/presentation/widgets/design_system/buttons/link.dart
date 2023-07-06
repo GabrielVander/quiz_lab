@@ -37,8 +37,8 @@ class QLLinkButton extends StatelessWidget {
       );
 
   static const Color _textColor = Color(0xFF0C66E4);
-  static const Color _defaultColor = Colors.transparent;
-  static const Color _pressedColor = Color(0xFF0055CC);
+  static const Color _pressedTextColor = Color(0xFF0055CC);
+  static const Color _backgroundColor = Colors.transparent;
   final Widget child;
   final bool loading;
   final void Function()? onPressed;
@@ -47,12 +47,13 @@ class QLLinkButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return QLButton(
       onPressed: onPressed,
-      color: _defaultColor,
+      color: _backgroundColor,
       spacing: QLButtonSpacing.defaultSpacing,
-      hoverColor: _defaultColor,
-      pressedColor: _pressedColor,
+      hoverColor: _backgroundColor,
+      pressedColor: _pressedTextColor,
       textColor: _textColor,
       loading: loading,
+      underlineOnHover: true,
       child: child,
     );
   }
@@ -64,12 +65,7 @@ class _QLLinkButtonText extends QLLinkButton {
     required super.onPressed,
     required super.loading,
     super.key,
-  }) : super._(
-          child: QLButtonText(
-            text: text,
-            underlineOnHover: true,
-          ),
-        );
+  }) : super._(child: QLButtonText(text: text));
 }
 
 class _QLLinkIconButton extends QLLinkButton {
