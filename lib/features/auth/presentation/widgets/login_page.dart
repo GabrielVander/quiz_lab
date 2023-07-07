@@ -6,6 +6,7 @@ import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/link.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/text_field/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
@@ -227,13 +228,13 @@ class _EmailInput extends StatelessWidget {
           errorMessage = S.of(context).mustBeSetMessage;
         }
 
-        return _FormInput(
+        return QLTextField.standard(
           key: const ValueKey('emailFormField'),
-          label: S.of(context).emailLabel,
-          icon: Icons.email,
+          onChanged: onChange,
+          initialValue: viewModel.value,
+          labelText: S.of(context).emailLabel,
+          prefixIcon: const Icon(Icons.email),
           errorMessage: errorMessage,
-          onChange: onChange,
-          value: viewModel.value,
         );
       },
     );
@@ -259,14 +260,14 @@ class _PasswordInput extends StatelessWidget {
           errorMessage = S.of(context).mustBeSetMessage;
         }
 
-        return _FormInput(
+        return QLTextField.standard(
           key: const ValueKey('passwordFormField'),
-          label: S.of(context).passwordLabel,
-          icon: Icons.lock,
+          placeholderText: S.of(context).passwordLabel,
+          prefixIcon: const Icon(Icons.lock),
           obscureText: true,
           errorMessage: errorMessage,
-          onChange: onChange,
-          value: viewModel.value,
+          onChanged: onChange,
+          initialValue: viewModel.value,
         );
       },
     );
@@ -306,80 +307,6 @@ class _AlternativeOptions extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-}
-
-class _FormInput extends StatefulWidget {
-  const _FormInput({
-    required this.label,
-    required this.icon,
-    required this.onChange,
-    required this.value,
-    super.key,
-    this.errorMessage,
-    this.obscureText = false,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool obscureText;
-  final String value;
-  final String? errorMessage;
-  final void Function(String newValue) onChange;
-
-  @override
-  State<_FormInput> createState() => _FormInputState();
-}
-
-class _FormInputState extends State<_FormInput> {
-  bool isEditing = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final activeColor = Theme.of(context).extension<ThemeColors>()!.mainColors.primary;
-    final inactiveColor = Theme.of(context).extension<ThemeColors>()!.backgroundColors.disabled;
-
-    final activeInactiveColor = isEditing ? activeColor : inactiveColor;
-
-    return Focus(
-      onFocusChange: (bool gainedFocus) {
-        setState(() {
-          isEditing = gainedFocus;
-        });
-      },
-      child: TextFormField(
-        initialValue: widget.value,
-        style: Theme.of(context).textTheme.titleMedium,
-        onChanged: widget.onChange,
-        obscureText: widget.obscureText,
-        decoration: InputDecoration(
-          errorText: widget.errorMessage,
-          prefixIcon: Icon(
-            widget.icon,
-            color: activeInactiveColor,
-          ),
-          filled: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: activeColor,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          fillColor: activeInactiveColor.withOpacity(0.075),
-          hintText: widget.label,
-          hintStyle: TextStyle(
-            color: inactiveColor,
-          ),
-          labelText: widget.label,
-          floatingLabelStyle: TextStyle(
-            color: activeInactiveColor,
-          ),
-        ),
-      ),
     );
   }
 }
