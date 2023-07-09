@@ -204,7 +204,7 @@ void main() {
                     ),
                   ),
                 )
-                .thenAnswer((_) async => const Result.err('plM430*8'));
+                .thenAnswer((_) async => const Err('plM430*8'));
 
             expectLater(
               cubit.stream,
@@ -255,7 +255,7 @@ void main() {
                   ),
                 )
                 .thenAnswer(
-                  (_) async => const Result.ok(unit),
+                  (_) async => const Ok(unit),
                 );
 
             unawaited(

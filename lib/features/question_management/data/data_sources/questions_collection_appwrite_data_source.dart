@@ -29,11 +29,11 @@ class QuestionCollectionAppwriteDataSource {
     return creationResult.when(
       ok: (doc) {
         _logger.debug('Question created successfully on Appwrite');
-        return Result.ok(AppwriteQuestionModel.fromDocument(doc));
+        return Ok(AppwriteQuestionModel.fromDocument(doc));
       },
       err: (failure) {
         _logger.error('Unable to create question on Appwrite');
-        return Result.err(_mapAppwriteWrapperFailure(failure));
+        return Err(_mapAppwriteWrapperFailure(failure));
       },
     );
   }
@@ -48,11 +48,11 @@ class QuestionCollectionAppwriteDataSource {
     return deletionResult.when(
       ok: (_) {
         _logger.debug('Question deleted successfully from Appwrite');
-        return const Result.ok(unit);
+        return const Ok(unit);
       },
       err: (failure) {
         _logger.error('Unable to delete question on Appwrite');
-        return Result.err(_mapAppwriteWrapperFailure(failure));
+        return Err(_mapAppwriteWrapperFailure(failure));
       },
     );
   }
@@ -71,11 +71,11 @@ class QuestionCollectionAppwriteDataSource {
       ok: (document) {
         _logger.debug('Question fetched from Appwrite successfully');
 
-        return Result.ok(AppwriteQuestionModel.fromDocument(document));
+        return Ok(AppwriteQuestionModel.fromDocument(document));
       },
       err: (failure) {
         _logger.error('Unable to fetch question from Appwrite');
-        return Result.err(_mapAppwriteWrapperFailure(failure));
+        return Err(_mapAppwriteWrapperFailure(failure));
       },
     );
   }

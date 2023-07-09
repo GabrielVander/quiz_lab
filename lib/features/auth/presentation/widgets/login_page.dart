@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/buttons/link.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/buttons/primary.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
@@ -32,8 +34,7 @@ class LoginPage extends HookWidget {
           });
         }
       },
-      listenWhen: (current) =>
-          current is LoginPageDisplayNotYetImplementedMessage,
+      listenWhen: (current) => current is LoginPageDisplayNotYetImplementedMessage,
     );
 
     useBlocListener(
@@ -93,8 +94,7 @@ class LoginPage extends HookWidget {
 
                 if (state is LoginPageViewModelUpdated) {
                   return LayoutBuilder(
-                    builder:
-                        (BuildContext context, BoxConstraints constraints) {
+                    builder: (BuildContext context, BoxConstraints constraints) {
                       final separator = SizedBox(
                         height: constraints.maxHeight * 0.1,
                       );
@@ -102,10 +102,7 @@ class LoginPage extends HookWidget {
                       return ListView(
                         children: [
                           SizedBox(
-                            height: Theme.of(context)
-                                .textTheme
-                                .displayLarge!
-                                .fontSize,
+                            height: Theme.of(context).textTheme.displayLarge!.fontSize,
                             child: const QuizLabIcon(),
                           ),
                           separator,
@@ -159,8 +156,7 @@ class _Title extends StatelessWidget {
     return Text(
       S.of(context).loginPageDisplayTitle,
       style: Theme.of(context).textTheme.displayMedium!.copyWith(
-            color:
-                Theme.of(context).extension<ThemeColors>()!.textColors.primary,
+            color: Theme.of(context).extension<ThemeColors>()!.textColors.primary,
           ),
     );
   }
@@ -201,15 +197,10 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(
             height: 15,
           ),
-          ElevatedButton(
+          QLPrimaryButton.text(
             key: const ValueKey('loginButton'),
+            text: S.of(context).logInButtonLabel,
             onPressed: onLogin,
-            style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-              ),
-            ),
-            child: Text(S.of(context).logInButtonLabel),
           ),
         ],
       ),
@@ -307,10 +298,10 @@ class _AlternativeOptions extends StatelessWidget {
             Text(
               S.of(context).dontHaveAnAccountPhrase,
             ),
-            TextButton(
+            QLLinkButton.text(
               key: const ValueKey('signUpButton'),
               onPressed: onSignUp,
-              child: Text(S.of(context).loginPageSignUpButtonLabel),
+              text: S.of(context).loginPageSignUpButtonLabel,
             )
           ],
         ),
@@ -346,10 +337,8 @@ class _FormInputState extends State<_FormInput> {
 
   @override
   Widget build(BuildContext context) {
-    final activeColor =
-        Theme.of(context).extension<ThemeColors>()!.mainColors.primary;
-    final inactiveColor =
-        Theme.of(context).extension<ThemeColors>()!.backgroundColors.disabled;
+    final activeColor = Theme.of(context).extension<ThemeColors>()!.mainColors.primary;
+    final inactiveColor = Theme.of(context).extension<ThemeColors>()!.backgroundColors.disabled;
 
     final activeInactiveColor = isEditing ? activeColor : inactiveColor;
 

@@ -41,7 +41,7 @@ void main() {
 
           mocktail
               .when(() => getSingleQuestionUseCaseMock.execute(questionId))
-              .thenAnswer((_) async => const Result.err(unit));
+              .thenAnswer((_) async => const Err(unit));
 
           unawaited(
             expectLater(
@@ -152,10 +152,9 @@ void main() {
 
               mocktail
                   .when(
-                    () =>
-                        getSingleQuestionUseCaseMock.execute(question.id.value),
+                    () => getSingleQuestionUseCaseMock.execute(question.id.value),
                   )
-                  .thenAnswer((_) async => Result.ok(question));
+                  .thenAnswer((_) async => Ok(question));
 
               unawaited(
                 expectLater(

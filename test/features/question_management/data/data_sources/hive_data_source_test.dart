@@ -48,14 +48,12 @@ void main() {
                 final parserFailure = values[0] as EncodeFailure;
                 final expectedFailure = values[1] as HiveDataSourceFailure;
 
-                when(() => mockJsonParser.encode(any()))
-                    .thenReturn(Result.err(parserFailure));
+                when(() => mockJsonParser.encode(any())).thenReturn(Err(parserFailure));
 
-                final result =
-                    await dataSource.saveQuestion(_FakeHiveQuestionModel());
+                final result = await dataSource.saveQuestion(_FakeHiveQuestionModel());
 
                 expect(result.isErr, isTrue);
-                expect(result.err, expectedFailure);
+                expect(result.unwrapErr(), expectedFailure);
               });
             }
           },
@@ -96,7 +94,7 @@ void main() {
 
                 expect(result.isErr, isTrue);
 
-                expect(result.err, expectedFailure);
+                expect(result.unwrapErr(), expectedFailure);
               });
             }
           },
@@ -123,7 +121,7 @@ void main() {
                 final fakeModel = _FakeHiveQuestionModel();
 
                 when(() => mockJsonParser.encode(any()))
-                    .thenReturn(const Result.ok(dummyEncodedJsonString));
+                    .thenReturn(const Ok(dummyEncodedJsonString));
 
                 when(
                   () => mockQuestionsBox.put(
@@ -135,7 +133,7 @@ void main() {
                 final result = await dataSource.saveQuestion(fakeModel);
 
                 expect(result.isErr, isTrue);
-                expect(result.err, expectedFailure);
+                expect(result.unwrapErr(), expectedFailure);
               });
             }
           },
@@ -177,7 +175,7 @@ void main() {
                 expect(model.id, isNotEmpty);
 
                 when(() => mockJsonParser.encode(model.toMap()))
-                    .thenReturn(const Result.ok(dummyJsonEncodedString));
+                    .thenReturn(const Ok(dummyJsonEncodedString));
 
                 when(
                   () => mockQuestionsBox.put(model.id, dummyJsonEncodedString),
@@ -221,13 +219,12 @@ void main() {
             ),
           ]) {
             test(model.toString(), () async {
-              when(() => mockQuestionsBox.delete(model.id))
-                  .thenAnswer((_) async {});
+              when(() => mockQuestionsBox.delete(model.id)).thenAnswer((_) async {});
 
               final result = await dataSource.deleteQuestion(model);
 
               expect(result.isErr, isTrue);
-              expect(result.err, HiveDataSourceFailure.emptyId());
+              expect(result.unwrapErr(), HiveDataSourceFailure.emptyId());
             });
           }
         },
@@ -252,13 +249,12 @@ void main() {
 
               final fakeModel = _FakeHiveQuestionModel();
 
-              when(() => mockQuestionsBox.delete(fakeModel.id))
-                  .thenThrow(hiveError);
+              when(() => mockQuestionsBox.delete(fakeModel.id)).thenThrow(hiveError);
 
               final result = await dataSource.deleteQuestion(fakeModel);
 
               expect(result.isErr, isTrue);
-              expect(result.err, expectedFailure);
+              expect(result.unwrapErr(), expectedFailure);
             });
           }
         },
@@ -326,7 +322,7 @@ void main() {
                   final result = dataSource.watchAllQuestions();
 
                   expect(result.isErr, isTrue);
-                  expect(result.err, expectedFailure);
+                  expect(result.unwrapErr(), expectedFailure);
                 });
               }
             },
@@ -352,15 +348,13 @@ void main() {
 
                   const dummySingleKey = 'mNzd5ew';
 
-                  when(() => mockQuestionsBox.keys)
-                      .thenReturn([dummySingleKey]);
-                  when(() => mockQuestionsBox.get(dummySingleKey))
-                      .thenThrow(hiveError);
+                  when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
+                  when(() => mockQuestionsBox.get(dummySingleKey)).thenThrow(hiveError);
 
                   final result = dataSource.watchAllQuestions();
 
                   expect(result.isErr, isTrue);
-                  expect(result.err, expectedFailure);
+                  expect(result.unwrapErr(), expectedFailure);
                 });
               }
             },
@@ -390,19 +384,18 @@ void main() {
                   const dummySingleKey = 'mNzd5ew';
                   const dummyJsonEncodedString = 'Aq1oZ';
 
-                  when(() => mockQuestionsBox.keys)
-                      .thenReturn([dummySingleKey]);
+                  when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
 
                   when(() => mockQuestionsBox.get(dummySingleKey))
                       .thenReturn(dummyJsonEncodedString);
 
                   when(() => mockJsonParser.decode(dummyJsonEncodedString))
-                      .thenReturn(Result.err(decodeFailure));
+                      .thenReturn(Err(decodeFailure));
 
                   final result = dataSource.watchAllQuestions();
 
                   expect(result.isErr, isTrue);
-                  expect(result.err, expectedFailure);
+                  expect(result.unwrapErr(), expectedFailure);
                 });
               }
             },
@@ -429,11 +422,10 @@ void main() {
                   const dummyJsonEncodedString = 'Aq1oZ';
                   const dummyJsonDecodedMap = <String, dynamic>{};
 
-                  when(() => mockQuestionsBox.keys)
-                      .thenReturn([dummySingleKey]);
+                  when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
 
                   when(() => mockJsonParser.decode(dummyJsonEncodedString))
-                      .thenReturn(const Result.ok(dummyJsonDecodedMap));
+                      .thenReturn(const Ok(dummyJsonDecodedMap));
 
                   when(() => mockQuestionsBox.get(dummySingleKey))
                       .thenReturn(dummyJsonEncodedString);
@@ -443,7 +435,7 @@ void main() {
                   final result = dataSource.watchAllQuestions();
 
                   expect(result.isErr, isTrue);
-                  expect(result.err, expectedFailure);
+                  expect(result.unwrapErr(), expectedFailure);
                 });
               }
             },
@@ -472,18 +464,17 @@ void main() {
                   const dummyJsonDecodedMap = <String, dynamic>{};
                   const dummySingleKey = '8TO#8C';
 
-                  when(() => mockQuestionsBox.keys)
-                      .thenReturn([dummySingleKey]);
+                  when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
                   when(() => mockQuestionsBox.get(dummySingleKey))
                       .thenReturn(dummyJsonEncodedString);
                   when(() => mockJsonParser.decode(dummyJsonEncodedString))
-                      .thenReturn(const Result.ok(dummyJsonDecodedMap));
+                      .thenReturn(const Ok(dummyJsonDecodedMap));
                   when(() => mockQuestionsBox.watch()).thenThrow(hiveError);
 
                   final result = dataSource.watchAllQuestions();
 
                   expect(result.isErr, isTrue);
-                  expect(result.err, expectedFailure);
+                  expect(result.unwrapErr(), expectedFailure);
                 });
               }
             },
@@ -664,11 +655,9 @@ void main() {
 
                     final jsonEncodedString = matchingBoxEvent.value;
 
-                    when(() => mockQuestionsBox.get(k))
-                        .thenReturn(jsonEncodedString as String);
+                    when(() => mockQuestionsBox.get(k)).thenReturn(jsonEncodedString as String);
 
-                    when(() => mockJsonParser.decode(jsonEncodedString))
-                        .thenReturn(const Result.ok({}));
+                    when(() => mockJsonParser.decode(jsonEncodedString)).thenReturn(const Ok({}));
                   }
 
                   return keys;
@@ -682,7 +671,7 @@ void main() {
                 expect(result.isOk, isTrue);
 
                 await expectLater(
-                  result.ok,
+                  result.unwrap(),
                   emitsInAnyOrder(expectedEmissions),
                 );
               });

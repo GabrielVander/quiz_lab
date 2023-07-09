@@ -3,6 +3,6 @@ import 'package:quiz_lab/features/question_management/domain/entities/question.d
 
 class GetRandomQuestionIdUseCase {
   Result<String, String> execute(Iterable<Question> questions) {
-    return const Result.err('Not implemented');
+    return const Err('Not implemented');
   }
 }

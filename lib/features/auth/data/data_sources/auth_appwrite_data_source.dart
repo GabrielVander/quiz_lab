@@ -10,8 +10,7 @@ class AuthAppwriteDataSource {
     required Account appwriteAccountService,
   }) : _appwriteAccountService = appwriteAccountService;
 
-  final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<AuthAppwriteDataSource>();
+  final QuizLabLogger _logger = QuizLabLoggerFactory.createLogger<AuthAppwriteDataSource>();
 
   final Account _appwriteAccountService;
 
@@ -28,7 +27,7 @@ class AuthAppwriteDataSource {
 
       _logger.debug('Email session created successfully');
 
-      return Result.ok(
+      return Ok(
         SessionModel(
           userId: session.userId,
           sessionId: session.$id,
@@ -68,7 +67,7 @@ class AuthAppwriteDataSource {
     } on AppwriteException catch (e) {
       _logger.error(e.toString());
 
-      return Result.err(e.toString());
+      return Err(e.toString());
     }
   }
 }

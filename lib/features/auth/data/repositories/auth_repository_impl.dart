@@ -28,12 +28,12 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     if (result.isErr) {
-      final e = AuthRepositoryError.unexpected(message: result.err!);
+      final e = AuthRepositoryError.unexpected(message: result.unwrapErr());
 
       _logger.error('Unable to login');
-      return Result.err(e);
+      return Err(e);
     }
 
-    return const Result.ok(unit);
+    return const Ok(unit);
   }
 }
