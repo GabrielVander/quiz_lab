@@ -3,6 +3,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/button/default.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/button/subtle.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/text_field/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
@@ -39,8 +43,7 @@ class QuestionCreationPage extends HookWidget {
                     if (GoRouter.of(context).canPop()) {
                       GoRouter.of(context).pop();
                     } else {
-                      GoRouter.of(context)
-                          .goNamed(Routes.questionsOverview.name);
+                      GoRouter.of(context).goNamed(Routes.questionsOverview.name);
                     }
                   });
                 }
@@ -88,13 +91,10 @@ class QuestionCreationPage extends HookWidget {
     switch (viewModel.type) {
       case QuestionCreationMessageType.questionSavedSuccessfully:
         message = S.of(context).questionSavedSuccessfully;
-        break;
       case QuestionCreationMessageType.unableToSaveQuestion:
         message = S.of(context).questionSavingFailure(viewModel.details ?? '');
-        break;
       case QuestionCreationMessageType.noCorrectOption:
         message = S.of(context).questionSavingFailureNoCorrectOption;
-        break;
     }
 
     final snackBar = SnackBar(
@@ -228,6 +228,7 @@ class _Form extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const SizedBox(height: 15),
           _FormSection(
             child: _TitleField(
               viewModel: viewModel.title,
@@ -251,24 +252,22 @@ class _Form extends StatelessWidget {
               viewModels: viewModel.options,
               onOptionChanged: onOptionChanged,
               onToggleOptionIsCorrect: onToggleOptionIsCorrect,
-              onAddOption:
-                  viewModel.addOptionButtonEnabled ? onAddOption : null,
+              onAddOption: viewModel.addOptionButtonEnabled ? onAddOption : null,
             ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              OutlinedButton(
-                onPressed: () =>
-                    GoRouter.of(context).goNamed(Routes.questionsOverview.name),
-                child: Text(S.of(context).goBackLabel),
+              QLDefaultButton.text(
+                onPressed: () => GoRouter.of(context).goNamed(Routes.questionsOverview.name),
+                text: S.of(context).goBackLabel,
               ),
               const SizedBox(
                 width: 15,
               ),
-              ElevatedButton(
+              QLPrimaryButton.text(
                 onPressed: onCreateQuestion,
-                child: Text(S.of(context).createLabel),
+                text: S.of(context).createLabel,
               ),
             ],
           )
@@ -304,21 +303,15 @@ class _TitleField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? errorMessage;
-    const enabled = true;
 
     if (viewModel.isEmpty && viewModel.showErrorMessage) {
       errorMessage = S.of(context).mustBeSetMessage;
     }
 
-    return TextField(
-      decoration: InputDecoration(
-        labelText: S.of(context).questionTitleLabel,
-        enabledBorder: const OutlineInputBorder(),
-        border: const OutlineInputBorder(),
-        errorText: errorMessage,
-      ),
+    return QLTextField.standard(
+      labelText: S.of(context).questionTitleLabel,
+      errorMessage: errorMessage,
       onChanged: onChanged,
-      enabled: enabled,
     );
   }
 }
@@ -460,7 +453,10 @@ class _Options extends StatelessWidget {
                 ),
               ),
             ),
-            _AddOptionButton(onPressed: onAddOption),
+            QLSubtleButton.text(
+              onPressed: onAddOption,
+              text: S.of(context).addOptionLabel,
+            ),
           ],
         ),
       ),
@@ -491,14 +487,10 @@ class _Option extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: TextField(
+          child: QLTextField.standard(
             onChanged: (v) => onChanged(viewModel.id, v),
-            decoration: InputDecoration(
-              labelText: S.of(context).optionInputLabel,
-              enabledBorder: const OutlineInputBorder(),
-              border: const OutlineInputBorder(),
-              errorText: errorMessage,
-            ),
+            labelText: S.of(context).optionInputLabel,
+            errorMessage: errorMessage,
           ),
         ),
         Row(
@@ -511,22 +503,6 @@ class _Option extends StatelessWidget {
           ],
         )
       ],
-    );
-  }
-}
-
-class _AddOptionButton extends StatelessWidget {
-  const _AddOptionButton({
-    required this.onPressed,
-  });
-
-  final void Function()? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      child: Text(S.of(context).addOptionLabel),
     );
   }
 }
