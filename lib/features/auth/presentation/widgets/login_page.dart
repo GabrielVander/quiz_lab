@@ -262,7 +262,7 @@ class _PasswordInput extends StatelessWidget {
 
         return QLTextField.standard(
           key: const ValueKey('passwordFormField'),
-          placeholderText: S.of(context).passwordLabel,
+          labelText: S.of(context).passwordLabel,
           prefixIcon: const Icon(Icons.lock),
           obscureText: true,
           errorMessage: errorMessage,

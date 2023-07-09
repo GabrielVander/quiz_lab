@@ -125,6 +125,7 @@ class QLTextField extends StatelessWidget {
         filled: true,
         fillColor: Colors.transparent,
         prefixIcon: prefixIcon,
+        labelStyle: const TextStyle(color: Color(0xFF626F86)),
         prefixIconColor: MaterialStateColor.resolveWith((states) {
           if (states.contains(MaterialState.focused)) {
             return focusedColor;
