@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class QLTextField extends StatelessWidget {
-  const QLTextField._({
+class QLTextArea extends StatelessWidget {
+  const QLTextArea._({
     required this.onChanged,
     required this.enabledDefaultBorder,
     required this.enabledFocusedBorder,
     required this.enabledErrorBorder,
-    required this.obscureText,
+    required this.maxLines,
     this.initialValue,
     this.labelText,
     this.placeholderText,
@@ -17,7 +17,7 @@ class QLTextField extends StatelessWidget {
     super.key,
   });
 
-  factory QLTextField.standard({
+  factory QLTextArea.standard({
     required void Function(String) onChanged,
     Key? key,
     String? initialValue,
@@ -27,9 +27,9 @@ class QLTextField extends StatelessWidget {
     String? errorMessage,
     Widget? prefixIcon,
     TextInputAction? textInputAction,
-    bool obscureText = false,
+    int maxLines = 8,
   }) =>
-      QLTextField._(
+      QLTextArea._(
         key: key,
         onChanged: onChanged,
         enabledDefaultBorder: true,
@@ -41,11 +41,11 @@ class QLTextField extends StatelessWidget {
         helperText: helperText,
         errorMessage: errorMessage,
         prefixIcon: prefixIcon,
-        obscureText: obscureText,
+        maxLines: maxLines,
         textInputAction: textInputAction,
       );
 
-  factory QLTextField.subtle({
+  factory QLTextArea.subtle({
     required void Function(String) onChanged,
     Key? key,
     String? initialValue,
@@ -54,9 +54,10 @@ class QLTextField extends StatelessWidget {
     String? helperText,
     String? errorMessage,
     Widget? prefixIcon,
-    bool obscureText = false,
+    TextInputAction? textInputAction,
+    int maxLines = 8,
   }) =>
-      QLTextField._(
+      QLTextArea._(
         key: key,
         onChanged: onChanged,
         enabledDefaultBorder: false,
@@ -68,10 +69,11 @@ class QLTextField extends StatelessWidget {
         helperText: helperText,
         errorMessage: errorMessage,
         prefixIcon: prefixIcon,
-        obscureText: obscureText,
+        maxLines: maxLines,
+        textInputAction: textInputAction,
       );
 
-  factory QLTextField.none({
+  factory QLTextArea.none({
     required void Function(String) onChanged,
     Key? key,
     String? initialValue,
@@ -80,10 +82,8 @@ class QLTextField extends StatelessWidget {
     String? helperText,
     String? errorMessage,
     Widget? prefixIcon,
-    TextInputAction? textInputAction,
-    bool obscureText = false,
   }) =>
-      QLTextField._(
+      QLTextArea._(
         key: key,
         onChanged: onChanged,
         enabledDefaultBorder: false,
@@ -95,8 +95,7 @@ class QLTextField extends StatelessWidget {
         helperText: helperText,
         errorMessage: errorMessage,
         prefixIcon: prefixIcon,
-        obscureText: obscureText,
-        textInputAction: textInputAction,
+        maxLines: 8,
       );
 
   final String? initialValue;
@@ -106,11 +105,11 @@ class QLTextField extends StatelessWidget {
   final String? errorMessage;
   final Widget? prefixIcon;
   final TextInputAction? textInputAction;
-  final bool obscureText;
   final void Function(String) onChanged;
   final bool enabledDefaultBorder;
   final bool enabledFocusedBorder;
   final bool enabledErrorBorder;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -121,8 +120,9 @@ class QLTextField extends StatelessWidget {
     return TextFormField(
       initialValue: initialValue,
       onChanged: onChanged,
-      obscureText: obscureText,
-      textInputAction: textInputAction,
+      minLines: 5,
+      maxLines: maxLines,
+      keyboardType: TextInputType.multiline,
       decoration: InputDecoration(
         hintText: placeholderText,
         helperText: helperText,

@@ -6,6 +6,7 @@ import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/default.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/subtle.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/text_area/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/text_field/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
@@ -225,53 +226,55 @@ class _Form extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 15),
-          _FormSection(
-            child: _TitleField(
-              viewModel: viewModel.title,
-              onChanged: onTitleChanged,
-            ),
-          ),
-          _FormSection(
-            child: _DescriptionField(
-              viewModel: viewModel.description,
-              onChanged: onDescriptionChanged,
-            ),
-          ),
-          _FormSection(
-            child: _DifficultySelector(
-              viewModel: viewModel.difficulty,
-              onChange: onDifficultyChanged,
-            ),
-          ),
-          _FormSection(
-            child: _Options(
-              viewModels: viewModel.options,
-              onOptionChanged: onOptionChanged,
-              onToggleOptionIsCorrect: onToggleOptionIsCorrect,
-              onAddOption: viewModel.addOptionButtonEnabled ? onAddOption : null,
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              QLDefaultButton.text(
-                onPressed: () => GoRouter.of(context).goNamed(Routes.questionsOverview.name),
-                text: S.of(context).goBackLabel,
+      child: Form(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 15),
+            _FormSection(
+              child: _TitleField(
+                viewModel: viewModel.title,
+                onChanged: onTitleChanged,
               ),
-              const SizedBox(
-                width: 15,
+            ),
+            _FormSection(
+              child: _DescriptionField(
+                viewModel: viewModel.description,
+                onChanged: onDescriptionChanged,
               ),
-              QLPrimaryButton.text(
-                onPressed: onCreateQuestion,
-                text: S.of(context).createLabel,
+            ),
+            _FormSection(
+              child: _DifficultySelector(
+                viewModel: viewModel.difficulty,
+                onChange: onDifficultyChanged,
               ),
-            ],
-          )
-        ],
+            ),
+            _FormSection(
+              child: _Options(
+                viewModels: viewModel.options,
+                onOptionChanged: onOptionChanged,
+                onToggleOptionIsCorrect: onToggleOptionIsCorrect,
+                onAddOption: viewModel.addOptionButtonEnabled ? onAddOption : null,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                QLDefaultButton.text(
+                  onPressed: () => GoRouter.of(context).goNamed(Routes.questionsOverview.name),
+                  text: S.of(context).goBackLabel,
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                QLPrimaryButton.text(
+                  onPressed: onCreateQuestion,
+                  text: S.of(context).createLabel,
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -312,6 +315,7 @@ class _TitleField extends StatelessWidget {
       labelText: S.of(context).questionTitleLabel,
       errorMessage: errorMessage,
       onChanged: onChanged,
+      textInputAction: TextInputAction.next,
     );
   }
 }
@@ -333,16 +337,12 @@ class _DescriptionField extends StatelessWidget {
       errorMessage = S.of(context).mustBeSetMessage;
     }
 
-    return TextField(
-      decoration: InputDecoration(
-        labelText: S.of(context).questionDescriptionLabel,
-        enabledBorder: const OutlineInputBorder(),
-        border: const OutlineInputBorder(),
-        errorText: errorMessage,
-      ),
+    return QLTextArea.standard(
+      labelText: S.of(context).questionDescriptionLabel,
+      errorMessage: errorMessage,
       onChanged: onChanged,
-      minLines: 5,
-      maxLines: 10,
+      maxLines: 20,
+      textInputAction: TextInputAction.next,
     );
   }
 }
@@ -491,6 +491,7 @@ class _Option extends StatelessWidget {
             onChanged: (v) => onChanged(viewModel.id, v),
             labelText: S.of(context).optionInputLabel,
             errorMessage: errorMessage,
+            textInputAction: TextInputAction.next,
           ),
         ),
         Row(
