@@ -11,20 +11,21 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionDisplayPage extends HookWidget {
   const QuestionDisplayPage({
-    required String? questionId,
-    required QuestionDisplayCubit cubit,
+    required this.questionId,
+    required this.dependencyInjection,
     super.key,
-  })  : _questionId = questionId,
-        _cubit = cubit;
+  });
 
-  final QuestionDisplayCubit _cubit;
-  final String? _questionId;
+  final DependencyInjection dependencyInjection;
+  final String? questionId;
 
   @override
   Widget build(BuildContext context) {
+    final cubit = dependencyInjection.get<QuestionDisplayCubit>();
+
     useEffect(
       () {
-        _cubit.loadQuestion(_questionId);
+        cubit.loadQuestion(questionId);
 
         return () {};
       },
@@ -32,7 +33,7 @@ class QuestionDisplayPage extends HookWidget {
     );
 
     useBlocListener(
-      _cubit,
+      cubit,
       (bloc, current, context) {
         if (current is QuestionDisplayGoHome) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -51,7 +52,7 @@ class QuestionDisplayPage extends HookWidget {
     ];
 
     final state = useBlocBuilder(
-      _cubit,
+      cubit,
       buildWhen: (current) => rebuildWhen.contains(current.runtimeType),
     );
 
@@ -71,15 +72,15 @@ class QuestionDisplayPage extends HookWidget {
                 padding: const EdgeInsets.all(10),
                 child: _QuestionDisplay(
                   viewModel: state.viewModel,
-                  onOptionSelected: (o) => _cubit.onOptionSelected(o.id),
-                  onAnswer: _cubit.onAnswer,
+                  onOptionSelected: (o) => cubit.onOptionSelected(o.id),
+                  onAnswer: cubit.onAnswer,
                 ),
               );
             }
 
             if (state is QuestionDisplayQuestionAnsweredCorrectly) {
               return _CorrectAnswer(
-                onGoHome: _cubit.onGoHome,
+                onGoHome: cubit.onGoHome,
               );
             }
 
@@ -87,7 +88,7 @@ class QuestionDisplayPage extends HookWidget {
               return _IncorrectAnswer(
                 correctAnswer: state.correctAnswer.title,
                 shouldDisplayCorrectAnswer: true,
-                onGoHome: _cubit.onGoHome,
+                onGoHome: cubit.onGoHome,
               );
             }
 

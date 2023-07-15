@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
+import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
@@ -13,7 +14,6 @@ import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/widgets/login_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_creation_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_display_page.dart';
@@ -26,7 +26,6 @@ class QuizLabApplication extends StatelessWidget {
     required this.bottomNavigationCubit,
     required this.questionCreationCubit,
     required this.questionsOverviewCubit,
-    required this.questionDisplayCubit,
     required this.loginPageCubit,
     super.key,
   }) {
@@ -49,8 +48,7 @@ class QuizLabApplication extends StatelessWidget {
             GoRoute(
               name: Routes.assessments.name,
               path: Routes.assessments.path,
-              pageBuilder: (BuildContext context, GoRouterState state) =>
-                  NoTransitionPage(
+              pageBuilder: (BuildContext context, GoRouterState state) => NoTransitionPage(
                 child: AssessmentsPage(
                   assessmentsOverviewCubit: AssessmentsOverviewCubit(),
                 ),
@@ -60,8 +58,7 @@ class QuizLabApplication extends StatelessWidget {
               parentNavigatorKey: _shellNavigatorKey,
               name: Routes.questionsOverview.name,
               path: Routes.questionsOverview.path,
-              pageBuilder: (BuildContext context, GoRouterState state) =>
-                  NoTransitionPage(
+              pageBuilder: (BuildContext context, GoRouterState state) => NoTransitionPage(
                 child: QuestionsOverviewPage(
                   questionsOverviewCubit: questionsOverviewCubit,
                 ),
@@ -71,8 +68,7 @@ class QuizLabApplication extends StatelessWidget {
               parentNavigatorKey: _shellNavigatorKey,
               name: Routes.resultsOverview.name,
               path: Routes.resultsOverview.path,
-              pageBuilder: (BuildContext context, GoRouterState state) =>
-                  const NoTransitionPage(
+              pageBuilder: (BuildContext context, GoRouterState state) => const NoTransitionPage(
                 child: ResultsPage(),
               ),
             )
@@ -94,7 +90,7 @@ class QuizLabApplication extends StatelessWidget {
           path: Routes.displayQuestion.path,
           builder: (BuildContext context, GoRouterState state) {
             return QuestionDisplayPage(
-              cubit: questionDisplayCubit,
+              dependencyInjection: dependencyInjection,
               questionId: state.pathParameters['id'],
             );
           },
@@ -117,13 +113,10 @@ class QuizLabApplication extends StatelessWidget {
   final BottomNavigationCubit bottomNavigationCubit;
   final QuestionCreationCubit questionCreationCubit;
   final QuestionsOverviewCubit questionsOverviewCubit;
-  final QuestionDisplayCubit questionDisplayCubit;
   final LoginPageCubit loginPageCubit;
 
-  static final _shellNavigatorKey =
-      GlobalKey<NavigatorState>(debugLabel: 'root');
-  static final _rootNavigatorKey =
-      GlobalKey<NavigatorState>(debugLabel: 'shell');
+  static final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+  static final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
   late final GoRouter router;
 
