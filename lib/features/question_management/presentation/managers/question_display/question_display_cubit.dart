@@ -56,10 +56,10 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
 
         return e.copyWith(isSelected: false);
       }).toList(),
-      answerButtonIsEnabled: true,
     );
 
     emit(QuestionDisplayViewModelUpdated(viewModel: _currentViewModel));
+    emit(QuestionDisplayAnswerButtonEnabled());
   }
 
   void onAnswer() {

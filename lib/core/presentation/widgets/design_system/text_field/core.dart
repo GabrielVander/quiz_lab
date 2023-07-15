@@ -13,6 +13,7 @@ class QLTextField extends StatelessWidget {
     this.helperText,
     this.errorMessage,
     this.prefixIcon,
+    this.textInputAction,
     super.key,
   });
 
@@ -25,6 +26,7 @@ class QLTextField extends StatelessWidget {
     String? helperText,
     String? errorMessage,
     Widget? prefixIcon,
+    TextInputAction? textInputAction,
     bool obscureText = false,
   }) =>
       QLTextField._(
@@ -40,6 +42,7 @@ class QLTextField extends StatelessWidget {
         errorMessage: errorMessage,
         prefixIcon: prefixIcon,
         obscureText: obscureText,
+        textInputAction: textInputAction,
       );
 
   factory QLTextField.subtle({
@@ -77,6 +80,7 @@ class QLTextField extends StatelessWidget {
     String? helperText,
     String? errorMessage,
     Widget? prefixIcon,
+    TextInputAction? textInputAction,
     bool obscureText = false,
   }) =>
       QLTextField._(
@@ -92,6 +96,7 @@ class QLTextField extends StatelessWidget {
         errorMessage: errorMessage,
         prefixIcon: prefixIcon,
         obscureText: obscureText,
+        textInputAction: textInputAction,
       );
 
   final String? initialValue;
@@ -100,6 +105,7 @@ class QLTextField extends StatelessWidget {
   final String? helperText;
   final String? errorMessage;
   final Widget? prefixIcon;
+  final TextInputAction? textInputAction;
   final bool obscureText;
   final void Function(String) onChanged;
   final bool enabledDefaultBorder;
@@ -116,6 +122,7 @@ class QLTextField extends StatelessWidget {
       initialValue: initialValue,
       onChanged: onChanged,
       obscureText: obscureText,
+      textInputAction: textInputAction,
       decoration: InputDecoration(
         hintText: placeholderText,
         helperText: helperText,
