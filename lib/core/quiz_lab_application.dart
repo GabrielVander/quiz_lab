@@ -58,6 +58,29 @@ class QuizLabApplication extends StatelessWidget {
               parentNavigatorKey: _shellNavigatorKey,
               name: Routes.questionsOverview.name,
               path: Routes.questionsOverview.path,
+              routes: [
+                GoRoute(
+                  parentNavigatorKey: _rootNavigatorKey,
+                  name: Routes.createQuestion.name,
+                  path: Routes.createQuestion.path,
+                  builder: (BuildContext context, GoRouterState state) {
+                    return QuestionCreationPage(
+                      cubit: questionCreationCubit,
+                    );
+                  },
+                ),
+                GoRoute(
+                  parentNavigatorKey: _rootNavigatorKey,
+                  name: Routes.displayQuestion.name,
+                  path: Routes.displayQuestion.path,
+                  builder: (BuildContext context, GoRouterState state) {
+                    return QuestionDisplayPage(
+                      dependencyInjection: dependencyInjection,
+                      questionId: state.pathParameters['id'],
+                    );
+                  },
+                )
+              ],
               pageBuilder: (BuildContext context, GoRouterState state) => NoTransitionPage(
                 child: QuestionsOverviewPage(
                   questionsOverviewCubit: questionsOverviewCubit,
@@ -73,27 +96,6 @@ class QuizLabApplication extends StatelessWidget {
               ),
             )
           ],
-        ),
-        GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
-          name: Routes.createQuestion.name,
-          path: Routes.createQuestion.path,
-          builder: (BuildContext context, GoRouterState state) {
-            return QuestionCreationPage(
-              cubit: questionCreationCubit,
-            );
-          },
-        ),
-        GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
-          name: Routes.displayQuestion.name,
-          path: Routes.displayQuestion.path,
-          builder: (BuildContext context, GoRouterState state) {
-            return QuestionDisplayPage(
-              dependencyInjection: dependencyInjection,
-              questionId: state.pathParameters['id'],
-            );
-          },
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
