@@ -23,24 +23,19 @@ class QuizLabLoggerImpl implements QuizLabLogger {
   void debug(String message) => _logger.fine(message);
 
   static void onListen(logging.LogRecord record) {
-    final message =
-        '${record.time} ${record.loggerName} ${record.level.name} - '
+    final message = '${record.time} ${record.loggerName} ${record.level.name} - '
         '${record.message}';
 
     switch (record.level.name) {
       case 'SHOUT':
       case 'SEVERE':
         _Printer.printRed(message);
-        break;
       case 'WARNING':
         _Printer.printYellow(message);
-        break;
       case 'INFO':
         _Printer.printBlue(message);
-        break;
       case 'CONFIG':
         _Printer.printGreen(message);
-        break;
       default:
         _Printer.printNoColor(message);
     }

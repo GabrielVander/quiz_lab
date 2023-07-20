@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/widgets/design_system/buttons/core.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/button/core.dart';
 
 class QLLinkButton extends StatelessWidget {
   const QLLinkButton._({

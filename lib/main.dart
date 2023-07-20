@@ -24,7 +24,6 @@ void main() async {
       bottomNavigationCubit: dependencyInjection.get(),
       questionCreationCubit: dependencyInjection.get(),
       questionsOverviewCubit: dependencyInjection.get(),
-      questionDisplayCubit: dependencyInjection.get(),
       loginPageCubit: dependencyInjection.get(),
     ),
   );

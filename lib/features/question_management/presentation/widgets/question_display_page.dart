@@ -3,7 +3,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/button/default.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
+import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
@@ -11,20 +14,21 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionDisplayPage extends HookWidget {
   const QuestionDisplayPage({
-    required String? questionId,
-    required QuestionDisplayCubit cubit,
+    required this.questionId,
+    required this.dependencyInjection,
     super.key,
-  })  : _questionId = questionId,
-        _cubit = cubit;
+  });
 
-  final QuestionDisplayCubit _cubit;
-  final String? _questionId;
+  final DependencyInjection dependencyInjection;
+  final String? questionId;
 
   @override
   Widget build(BuildContext context) {
+    final cubit = dependencyInjection.get<QuestionDisplayCubit>();
+
     useEffect(
       () {
-        _cubit.loadQuestion(_questionId);
+        cubit.loadQuestion(questionId);
 
         return () {};
       },
@@ -32,7 +36,7 @@ class QuestionDisplayPage extends HookWidget {
     );
 
     useBlocListener(
-      _cubit,
+      cubit,
       (bloc, current, context) {
         if (current is QuestionDisplayGoHome) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -51,13 +55,22 @@ class QuestionDisplayPage extends HookWidget {
     ];
 
     final state = useBlocBuilder(
-      _cubit,
+      cubit,
       buildWhen: (current) => rebuildWhen.contains(current.runtimeType),
     );
 
     return SafeArea(
       child: Scaffold(
         appBar: const _AppBar(),
+        bottomSheet: [
+          QuestionDisplayFailure,
+          QuestionDisplayQuestionAnsweredCorrectly,
+          QuestionDisplayQuestionAnsweredIncorrectly
+        ].contains(state.runtimeType)
+            ? null
+            : _AnswerButton(
+                cubit: cubit,
+              ),
         body: HookBuilder(
           builder: (context) {
             if (state is QuestionDisplayFailure) {
@@ -68,18 +81,18 @@ class QuestionDisplayPage extends HookWidget {
 
             if (state is QuestionDisplayViewModelUpdated) {
               return Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(15),
                 child: _QuestionDisplay(
                   viewModel: state.viewModel,
-                  onOptionSelected: (o) => _cubit.onOptionSelected(o.id),
-                  onAnswer: _cubit.onAnswer,
+                  onOptionSelected: (o) => cubit.onOptionSelected(o.id),
+                  onAnswer: cubit.onAnswer,
                 ),
               );
             }
 
             if (state is QuestionDisplayQuestionAnsweredCorrectly) {
               return _CorrectAnswer(
-                onGoHome: _cubit.onGoHome,
+                onGoHome: cubit.onGoHome,
               );
             }
 
@@ -87,7 +100,7 @@ class QuestionDisplayPage extends HookWidget {
               return _IncorrectAnswer(
                 correctAnswer: state.correctAnswer.title,
                 shouldDisplayCorrectAnswer: true,
-                onGoHome: _cubit.onGoHome,
+                onGoHome: cubit.onGoHome,
               );
             }
 
@@ -114,7 +127,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(75);
+  Size get preferredSize => const Size.fromHeight(60);
 }
 
 class _QuestionDisplay extends StatelessWidget {
@@ -131,26 +144,22 @@ class _QuestionDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _QuestionTitle(viewModel: viewModel),
-        const SizedBox(height: 10),
-        _QuestionDifficulty(viewModel: viewModel),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _QuestionDescription(viewModel: viewModel),
-              const SizedBox(height: 15),
-              _QuestionOptions(
-                options: viewModel.options,
-                onOptionSelected: onOptionSelected,
-              ),
-            ],
-          ),
+        Column(
+          children: [
+            _QuestionTitle(viewModel: viewModel),
+            const SizedBox(height: 10),
+            _QuestionDifficulty(viewModel: viewModel),
+          ],
         ),
-        _AnswerButton(
-          onPressed: onAnswer,
-          isEnabled: viewModel.answerButtonIsEnabled,
+        Expanded(child: _QuestionDescription(viewModel: viewModel)),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 60),
+          child: _QuestionOptions(
+            options: viewModel.options,
+            onOptionSelected: onOptionSelected,
+          ),
         ),
       ],
     );
@@ -168,7 +177,7 @@ class _QuestionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       viewModel.title,
-      style: Theme.of(context).textTheme.headlineMedium,
+      style: Theme.of(context).textTheme.headlineSmall,
       softWrap: true,
     );
   }
@@ -207,28 +216,22 @@ class _QuestionDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 200),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  width: 2,
-                ),
-              ),
-              padding: const EdgeInsets.all(10),
-              child: Text(
-                viewModel.description,
-                textScaleFactor: 1.5,
-              ),
-            ),
-          ),
+    return Container(
+      /*decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          width: 2,
         ),
-      ],
+      ),*/
+      padding: const EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        child: Text(
+          softWrap: true,
+          viewModel.description,
+          overflow: TextOverflow.fade,
+          // textScaleFactor: 1.5,
+        ),
+      ),
     );
   }
 }
@@ -244,12 +247,11 @@ class _QuestionOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(width: 2),
       ),
-      padding: const EdgeInsets.all(10),
       child: ListView.separated(
         shrinkWrap: true,
         itemCount: options.length,
@@ -269,20 +271,27 @@ class _QuestionOptions extends StatelessWidget {
 
 class _AnswerButton extends StatelessWidget {
   const _AnswerButton({
-    required this.isEnabled,
-    required this.onPressed,
+    required this.cubit,
   });
 
-  final bool isEnabled;
-  final void Function() onPressed;
+  final QuestionDisplayCubit cubit;
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: isEnabled ? onPressed : null,
-      child: Text(
-        S.of(context).answerQuestionButtonLabel,
-        textScaleFactor: 1.2,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: HookBuilder(
+        builder: (context) {
+          final state = useBlocBuilder(
+            cubit,
+            buildWhen: (current) => current is QuestionDisplayAnswerButtonEnabled,
+          );
+
+          return QLPrimaryButton.text(
+            onPressed: state is QuestionDisplayAnswerButtonEnabled ? cubit.onAnswer : null,
+            text: S.of(context).answerQuestionButtonLabel,
+          );
+        },
       ),
     );
   }
@@ -403,11 +412,9 @@ class _ResultDisplay extends StatelessWidget {
                 ],
               ),
             ),
-            ElevatedButton(
+            QLDefaultButton.text(
               onPressed: onGoHome,
-              child: Text(
-                S.of(context).goHomeLabel,
-              ),
+              text: S.of(context).goHomeLabel,
             )
           ],
         ),

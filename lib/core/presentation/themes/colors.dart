@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-abstract class BackgroundColors {
+class BackgroundColors {
   const BackgroundColors({
     required this.primary,
     required this.secondary,
@@ -14,7 +14,7 @@ abstract class BackgroundColors {
   final Color disabled;
 }
 
-abstract class MainColors {
+class MainColors {
   const MainColors({
     required this.primary,
     required this.secondary,
@@ -26,7 +26,7 @@ abstract class MainColors {
   final Color accent;
 }
 
-abstract class TextColors {
+class TextColors {
   const TextColors({
     required this.primary,
     required this.secondary,
@@ -36,7 +36,7 @@ abstract class TextColors {
   final Color secondary;
 }
 
-abstract class DifficultyColors {
+class DifficultyColors {
   const DifficultyColors({
     required this.easy,
     required this.medium,
