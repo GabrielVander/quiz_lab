@@ -36,4 +36,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
     return const Ok(unit);
   }
+
+  @override
+  Future<Result<Unit, String>> loginAnonymously() {
+    // TODO: implement loginAnonymously
+    throw UnimplementedError();
+  }
 }
