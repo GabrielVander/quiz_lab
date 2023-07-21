@@ -6,6 +6,7 @@ import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/default.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/subtle.dart';
+import 'package:quiz_lab/core/presentation/widgets/design_system/checkbox/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/select/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/text_area/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/text_field/core.dart';
@@ -478,7 +479,8 @@ class _Option extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
+        Flexible(
+          flex: 2,
           child: QLTextField.standard(
             onChanged: (v) => onChanged(viewModel.id, v),
             labelText: S.of(context).optionInputLabel,
@@ -486,15 +488,25 @@ class _Option extends StatelessWidget {
             textInputAction: TextInputAction.next,
           ),
         ),
-        Row(
-          children: [
-            Checkbox(
-              value: viewModel.isCorrect,
-              onChanged: (_) => onToggleIsCorrect(viewModel.id),
-            ),
-            Text(S.of(context).isOptionCorrectLabel),
-          ],
-        )
+        const SizedBox(
+          width: 10,
+        ),
+        Flexible(
+          child: QLCheckbox.standard(
+            onChanged: (_) => onToggleIsCorrect(viewModel.id),
+            state: QLCheckboxState.fromValue(value: viewModel.isCorrect),
+            labelText: S.of(context).isOptionCorrectLabel,
+          ),
+        ),
+        // Row(
+        //   children: [
+        //     Checkbox(
+        //       value: viewModel.isCorrect,
+        //       onChanged: (_) => onToggleIsCorrect(viewModel.id),
+        //     ),
+        //     Text(S.of(context).isOptionCorrectLabel),
+        //   ],
+        // )
       ],
     );
   }

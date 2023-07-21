@@ -86,7 +86,7 @@ class Title extends StatelessWidget {
 
   Color? _getTextColor(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors?.textColors.secondary;
+    final textColor = themeColors?.textColors.contrast;
     return textColor;
   }
 
@@ -155,7 +155,7 @@ class Questions extends StatelessWidget {
 
   Color? _getTextColor(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors?.textColors.secondary;
+    final textColor = themeColors?.textColors.contrast;
     return textColor;
   }
 }
@@ -212,7 +212,7 @@ class Answers extends StatelessWidget {
 
   Color? _getTextColor(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors?.textColors.secondary;
+    final textColor = themeColors?.textColors.contrast;
     return textColor;
   }
 }
@@ -312,7 +312,7 @@ class DueDate extends StatelessWidget {
 
   Color? _getTextColor(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors?.textColors.secondary;
+    final textColor = themeColors?.textColors.contrast;
     return textColor;
   }
 }
