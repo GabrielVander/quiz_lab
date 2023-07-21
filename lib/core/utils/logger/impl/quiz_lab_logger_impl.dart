@@ -3,10 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart' as logging;
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 
-class QuizLabLoggerImpl implements QuizLabLogger {
+class QuizLabLoggerImpl<T> implements QuizLabLogger {
   QuizLabLoggerImpl({
-    required logging.Logger logger,
-  }) : _logger = logger;
+    logging.Logger? logger,
+  }) : _logger = logger ?? logging.Logger(T.toString());
 
   final logging.Logger _logger;
 
@@ -79,7 +79,3 @@ class _Printer {
     }
   }
 }
-
-QuizLabLogger loggerImplFactory(String loggerName) => QuizLabLoggerImpl(
-      logger: logging.Logger(loggerName),
-    );
