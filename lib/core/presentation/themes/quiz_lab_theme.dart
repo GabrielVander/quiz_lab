@@ -19,11 +19,17 @@ class QuizLabTheme extends _QuizLabTheme {
   QuizLabTheme.light()
       : super(
           mainColors: const MainColors(
-            primary: Color(0xFF00C3FE),
+            primary: Color(0xFF0C66E4),
             secondary: Color(0xFF6791EC),
             accent: Color(0xFF837AD9),
+            subtle: Color(0xFFCFCFCF),
+            error: Colors.red,
           ),
-          textColors: const TextColors(primary: Color(0xFF172B4D), secondary: Colors.white),
+          textColors: const TextColors(
+            primary: Color(0xFF172B4D),
+            contrast: Colors.white,
+            secondary: Color(0xFF626F86),
+          ),
           backgroundColors: const BackgroundColors(
             primary: Color(0xFFFFFFFF),
             secondary: Color(0xFF48A7F8),
