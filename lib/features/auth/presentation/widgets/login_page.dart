@@ -16,64 +16,50 @@ class LoginPage extends HookWidget {
   const LoginPage({
     required LoginPageCubit loginPageCubit,
     super.key,
-  }) : _cubit = loginPageCubit;
+  }) : cubit = loginPageCubit;
 
-  final LoginPageCubit _cubit;
+  final LoginPageCubit cubit;
 
   @override
   Widget build(BuildContext context) {
-    useBlocListener(
-      _cubit,
-      (bloc, current, context) {
-        if (current is LoginPageDisplayNotYetImplementedMessage) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(S.of(context).notYetImplemented),
-              ),
-            );
-          });
-        }
+    useEffect(
+      () {
+        cubit.hydrate();
+        return null;
       },
-      listenWhen: (current) => current is LoginPageDisplayNotYetImplementedMessage,
+      [],
     );
 
-    useBlocListener(
-      _cubit,
-      (bloc, current, context) {
-        if (current is LoginPageDisplayErrorMessage) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Theme.of(context).colorScheme.error,
-                content: Text(S.of(context).genericErrorMessage),
-              ),
-            );
-          });
-        }
+    useBlocListener<LoginPageCubit, LoginPageState>(
+      cubit,
+      (_, value, context) {
+        final snackbar = switch (value) {
+          LoginPageNotYetImplemented() => SnackBar(content: Text(S.of(context).notYetImplemented)),
+          LoginPageError() => SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: Text(S.of(context).genericErrorMessage),
+            ),
+          _ => SnackBar(content: Text(S.of(context).genericErrorMessage)),
+        };
+
+        showSnackBar(context, snackbar);
       },
-      listenWhen: (current) => current is LoginPageDisplayErrorMessage,
+      listenWhen: (state) => state is LoginPageNotYetImplemented || state is LoginPageError,
     );
 
-    useBlocListener(
-      _cubit,
-      (bloc, current, context) {
-        if (current is LoginPagePushRouteReplacing) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            GoRouter.of(context).goNamed(current.route.name);
-          });
+    useBlocListener<LoginPageCubit, LoginPageState>(
+      cubit,
+      (_, value, context) {
+        switch (value) {
+          case LoginPagePushRouteReplacing():
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              GoRouter.of(context).goNamed(value.route.name);
+            });
+          default:
+            break;
         }
       },
-      listenWhen: (current) => current is LoginPagePushRouteReplacing,
-    );
-
-    final state = useBlocBuilder(
-      _cubit,
-      buildWhen: (current) => [
-        LoginPageInitial,
-        LoginPageLoading,
-        LoginPageViewModelUpdated,
-      ].contains(current.runtimeType),
+      listenWhen: (state) => state is LoginPagePushRouteReplacing,
     );
 
     return SafeArea(
@@ -81,70 +67,99 @@ class LoginPage extends HookWidget {
         body: BetaBannerDisplay(
           child: Padding(
             padding: const EdgeInsets.all(15),
-            child: HookBuilder(
-              builder: (context) {
-                if (state is LoginPageInitial) {
-                  _cubit.hydrate();
-                }
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                final separator = SizedBox(
+                  height: constraints.maxHeight * 0.1,
+                );
 
-                if (state is LoginPageInitial || state is LoginPageLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+                return ListView(
+                  children: [
+                    SizedBox(
+                      height: Theme.of(context).textTheme.displayLarge!.fontSize,
+                      child: const QuizLabIcon(),
+                    ),
+                    separator,
+                    const Center(
+                      child: _Title(),
+                    ),
+                    separator,
+                    HookBuilder(
+                      builder: (context) {
+                        final state = useBlocBuilder(
+                          cubit,
+                          buildWhen: (current) => [LoginPageLoading, LoginPageViewModelUpdated]
+                              .contains(current.runtimeType),
+                        );
 
-                if (state is LoginPageViewModelUpdated) {
-                  return LayoutBuilder(
-                    builder: (BuildContext context, BoxConstraints constraints) {
-                      final separator = SizedBox(
-                        height: constraints.maxHeight * 0.1,
-                      );
-
-                      return ListView(
-                        children: [
-                          SizedBox(
-                            height: Theme.of(context).textTheme.displayLarge!.fontSize,
-                            child: const QuizLabIcon(),
-                          ),
-                          separator,
-                          const Center(
-                            child: _Title(),
-                          ),
-                          separator,
-                          _LoginForm(
-                            key: const ValueKey<String>('loginForm'),
-                            emailViewModel: state.viewModel.email,
-                            passwordViewModel: state.viewModel.password,
-                            onLogin: _cubit.onLogin,
-                            onEmailChange: _cubit.onEmailChange,
-                            onPasswordChange: _cubit.onPasswordChange,
-                          ),
-                          separator,
-                          _AlternativeOptions(
-                            onEnterAnonymously: _cubit.onEnterAnonymously,
-                            onSignUp: _cubit.onSignUp,
-                          ),
-                          const SizedBox(
-                            height: 25,
-                          ),
-                          Center(
-                            child: Text(
-                              key: const ValueKey('applicationVersion'),
-                              state.viewModel.applicationVersion,
+                        return switch (state) {
+                          LoginPageViewModelUpdated(viewModel: final viewModel) => _LoginForm(
+                              key: const ValueKey<String>('loginForm'),
+                              emailViewModel: viewModel.email,
+                              passwordViewModel: viewModel.password,
+                              onLogin: cubit.login,
+                              onEmailChange: cubit.updateEmail,
+                              onPasswordChange: cubit.updatePassword,
                             ),
-                          )
-                        ],
-                      );
-                    },
-                  );
-                }
+                          _ => const _Loading(),
+                        };
+                      },
+                    ),
+                    separator,
+                    _AlternativeOptions(
+                      onEnterAnonymously: cubit.loginAnonymously,
+                      onSignUp: cubit.signUp,
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    HookBuilder(
+                      builder: (context) {
+                        final state = useBlocComparativeBuilder(
+                          cubit,
+                          buildWhen: (previous, current) =>
+                              current is LoginPageLoading ||
+                              previous is! LoginPageViewModelUpdated ||
+                              (current is LoginPageViewModelUpdated &&
+                                  previous.viewModel.applicationVersion !=
+                                      current.viewModel.applicationVersion),
+                        );
 
-                return Container();
+                        return switch (state) {
+                          LoginPageViewModelUpdated(viewModel: final viewModel) => Center(
+                              child: Text(
+                                key: const ValueKey('applicationVersion'),
+                                viewModel.applicationVersion,
+                              ),
+                            ),
+                          _ => const _Loading(),
+                        };
+                      },
+                    )
+                  ],
+                );
               },
             ),
           ),
         ),
       ),
+    );
+  }
+
+  void showSnackBar(BuildContext context, SnackBar snackBar) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+  }
+}
+
+class _Loading extends StatelessWidget {
+  const _Loading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 }
@@ -288,11 +303,11 @@ class _AlternativeOptions extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // GhostPillTextButton(
-        //   key: const ValueKey('enterAnonymouslyButton'),
-        //   onPressed: onEnterAnonymously,
-        //   child: Text(S.of(context).enterAnonymouslyButtonLabel),
-        // ),
+        QLLinkButton.text(
+          key: const ValueKey('enterAnonymouslyButton'),
+          onPressed: onEnterAnonymously,
+          text: S.of(context).enterAnonymouslyButtonLabel,
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

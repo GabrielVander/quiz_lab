@@ -1,7 +1,7 @@
 part of 'login_page_cubit.dart';
 
 @immutable
-abstract class LoginPageState extends Equatable {
+sealed class LoginPageState extends Equatable {
   const LoginPageState._();
 
   factory LoginPageState.initial() => const LoginPageInitial();
@@ -15,13 +15,11 @@ abstract class LoginPageState extends Equatable {
   factory LoginPageState.displayErrorMessage(
     LoginPageErrorTypeViewModel type,
   ) =>
-      LoginPageDisplayErrorMessage(type);
+      LoginPageError(type);
 
-  factory LoginPageState.displayLoggedInMessage() =>
-      const LoginPageDisplayLoggedInMessage._();
+  factory LoginPageState.displayLoggedInMessage() => const LoginPageDisplayLoggedInMessage._();
 
-  factory LoginPageState.displayNotYetImplementedMessage() =>
-      const LoginPageDisplayNotYetImplementedMessage._();
+  factory LoginPageState.displayNotYetImplementedMessage() => const LoginPageNotYetImplemented._();
 
   factory LoginPageState.loading() => const LoginPageLoading._();
 }
@@ -51,8 +49,8 @@ class LoginPagePushRouteReplacing extends LoginPageState {
   List<Object> get props => [route];
 }
 
-class LoginPageDisplayErrorMessage extends LoginPageState {
-  const LoginPageDisplayErrorMessage(this.type) : super._();
+class LoginPageError extends LoginPageState {
+  const LoginPageError(this.type) : super._();
 
   final LoginPageErrorTypeViewModel type;
 
@@ -67,8 +65,8 @@ class LoginPageDisplayLoggedInMessage extends LoginPageState {
   List<Object> get props => [];
 }
 
-class LoginPageDisplayNotYetImplementedMessage extends LoginPageState {
-  const LoginPageDisplayNotYetImplementedMessage._() : super._();
+class LoginPageNotYetImplemented extends LoginPageState {
+  const LoginPageNotYetImplemented._() : super._();
 
   @override
   List<Object> get props => [];

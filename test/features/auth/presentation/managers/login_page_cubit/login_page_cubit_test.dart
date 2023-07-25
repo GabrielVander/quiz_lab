@@ -72,7 +72,7 @@ void main() {
 
             cubit
               ..hydrate()
-              ..onEmailChange(email);
+              ..updateEmail(email);
 
             expect(
               cubit.state,
@@ -113,7 +113,7 @@ void main() {
 
             cubit
               ..hydrate()
-              ..onPasswordChange(password);
+              ..updatePassword(password);
 
             expect(
               cubit.state,
@@ -139,7 +139,7 @@ void main() {
   group('onLogin', () {
     group(
       'should emit [LoginPageViewModelUpdated] showing errors if email/password have issues',
-          () {
+      () {
         for (final values in [
           ['', ''],
         ]) {
@@ -155,9 +155,9 @@ void main() {
 
             cubit
               ..hydrate()
-              ..onEmailChange(email)
-              ..onPasswordChange(password)
-              ..onLogin();
+              ..updateEmail(email)
+              ..updatePassword(password)
+              ..login();
 
             expect(
               cubit.state,
@@ -182,7 +182,7 @@ void main() {
 
     group(
       'err flow',
-          () {
+      () {
         test(
           'should emit [LoginPageDisplayErrorMessage] with unable to login '
           'type',
@@ -214,7 +214,7 @@ void main() {
                 isA<LoginPageViewModelUpdated>(),
                 isA<LoginPageLoading>(),
                 isA<LoginPageViewModelUpdated>(),
-                const LoginPageDisplayErrorMessage(
+                const LoginPageError(
                   LoginPageErrorTypeViewModel.unableToLogin,
                 ),
               ]),
@@ -222,9 +222,9 @@ void main() {
 
             cubit
               ..hydrate()
-              ..onEmailChange(email)
-              ..onPasswordChange(password)
-              ..onLogin();
+              ..updateEmail(email)
+              ..updatePassword(password)
+              ..login();
           },
         );
       },
@@ -232,7 +232,7 @@ void main() {
 
     group(
       'ok flow',
-          () {
+      () {
         test(
           'should emit '
           '[LoginPageDisplayLoggedInMessage, LoginPagePushRouteReplacing]',
@@ -278,10 +278,10 @@ void main() {
 
             cubit
               ..hydrate()
-              ..onEmailChange(dummyEmail)
-              ..onPasswordChange(dummyPassword);
+              ..updateEmail(dummyEmail)
+              ..updatePassword(dummyPassword);
 
-            await cubit.onLogin();
+            await cubit.login();
           },
         );
       },
@@ -292,16 +292,16 @@ void main() {
     expectLater(
       cubit.stream,
       emitsInOrder([
-        isA<LoginPageDisplayNotYetImplementedMessage>(),
+        isA<LoginPageNotYetImplemented>(),
       ]),
     );
 
-    cubit.onSignUp();
+    cubit.signUp();
   });
 
   group('onEnterAnonymously', () {
     test('not implemented', () {
-      expect(() => cubit.onEnterAnonymously(), throwsUnimplementedError);
+      expect(() => cubit.loginAnonymously(), throwsUnimplementedError);
     });
   });
 }

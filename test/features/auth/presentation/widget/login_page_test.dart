@@ -29,8 +29,23 @@ void main() {
 
   tearDown(mocktail.resetMocktailState);
 
-  testWidgets(
-      'should display a circular progress indicator if cubit state is [LoginPageInitial] and call cubit.hydrate()',
+  testWidgets('should always call hydrate()', (widgetTester) async {
+    mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
+          (_) => const Stream.empty(),
+        );
+    mocktail.when(() => loginPageCubitMock.state).thenReturn(const LoginPageInitial());
+
+    await _pumpTarget(
+      widgetTester,
+      localizationsDelegateMock,
+      loginPageCubitMock,
+      goRouterMock,
+    );
+
+    mocktail.verify(() => loginPageCubitMock.hydrate()).called(1);
+  });
+
+  testWidgets('should display a circular progress indicator if cubit state is [LoginPageInitial]',
       (widgetTester) async {
     mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
           (_) => Stream.value(const LoginPageInitial()),
@@ -48,8 +63,6 @@ void main() {
       find.byType(CircularProgressIndicator),
       findsAtLeastNWidgets(1),
     );
-
-    mocktail.verify(() => loginPageCubitMock.hydrate()).called(1);
   });
 
   testWidgets('should display a circular progress indicator if cubit state is [LoginPageLoading]',
@@ -358,7 +371,7 @@ void main() {
 
         await widgetTester.enterText(find.byKey(const ValueKey('emailFormField')), email);
 
-        mocktail.verify(() => loginPageCubitMock.onEmailChange(email)).called(1);
+        mocktail.verify(() => loginPageCubitMock.updateEmail(email)).called(1);
       });
     }
   });
@@ -388,7 +401,7 @@ void main() {
 
         await widgetTester.enterText(find.byKey(const ValueKey('passwordFormField')), password);
 
-        mocktail.verify(() => loginPageCubitMock.onPasswordChange(password)).called(1);
+        mocktail.verify(() => loginPageCubitMock.updatePassword(password)).called(1);
       });
     }
   });
@@ -443,7 +456,7 @@ void main() {
           ),
         );
 
-    mocktail.when(() => loginPageCubitMock.onLogin()).thenAnswer((_) async {});
+    mocktail.when(() => loginPageCubitMock.login()).thenAnswer((_) async {});
 
     await _pumpTarget(
       widgetTester,
@@ -456,7 +469,7 @@ void main() {
 
     await widgetTester.pump();
 
-    mocktail.verify(() => loginPageCubitMock.onLogin()).called(1);
+    mocktail.verify(() => loginPageCubitMock.login()).called(1);
   });
 
   testWidgets('should call cubit when sign up button is pressed',
@@ -483,7 +496,7 @@ void main() {
 
     await safeTapByKey(widgetTester, const ValueKey('signUpButton'));
 
-    mocktail.verify(() => loginPageCubitMock.onSignUp()).called(1);
+    mocktail.verify(() => loginPageCubitMock.signUp()).called(1);
   });
 
   group(
@@ -522,6 +535,33 @@ void main() {
         },
       );
     }
+  });
+
+  group('anonymous login', () {
+    testWidgets('should call cubit when enter anonymously section is pressed',
+        (WidgetTester widgetTester) async {
+      mocktail.when(() => loginPageCubitMock.stream).thenAnswer((_) => const Stream.empty());
+      mocktail.when(() => loginPageCubitMock.state).thenReturn(
+            LoginPageState.viewModelUpdated(
+              const LoginPageViewModel(
+                email: EmailViewModel(value: ''),
+                password: PasswordViewModel(value: ''),
+                applicationVersion: '',
+              ),
+            ),
+          );
+
+      await _pumpTarget(
+        widgetTester,
+        localizationsDelegateMock,
+        loginPageCubitMock,
+        goRouterMock,
+      );
+
+      await safeTapByKey(widgetTester, const ValueKey('enterAnonymouslyButton'));
+
+      mocktail.verify(() => loginPageCubitMock.loginAnonymously()).called(1);
+    });
   });
 }
 

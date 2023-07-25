@@ -27,7 +27,7 @@ void main() {
 
     useCase();
 
-    verify(() => loggerMock.debug('Executing...'));
+    verify(() => loggerMock.debug('Executing...')).called(1);
   });
 
   group('should use auth repository', () {
@@ -37,7 +37,7 @@ void main() {
 
       await useCase();
 
-      verify(() => authRepositoryMock.loginAnonymously());
+      verify(() => authRepositoryMock.loginAnonymously()).called(1);
     });
 
     group('should handle error response', () {
@@ -47,7 +47,7 @@ void main() {
 
           final result = await useCase();
 
-          verify(() => loggerMock.error(error));
+          verify(() => loggerMock.error(error)).called(1);
           expect(result.containsErr('Unable to login anonymously'), true);
         });
       }

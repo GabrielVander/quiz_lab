@@ -51,7 +51,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     );
   }
 
-  void onEmailChange(String email) {
+  void updateEmail(String email) {
     _logger.debug('Received email input');
 
     _viewModel = _viewModel.copyWith(
@@ -66,7 +66,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     );
   }
 
-  void onPasswordChange(String password) {
+  void updatePassword(String password) {
     _logger.debug('Received password input');
 
     _viewModel = _viewModel.copyWith(
@@ -81,7 +81,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     );
   }
 
-  Future<void> onLogin() async {
+  Future<void> login() async {
     _logger.debug('Received login request');
     emit(LoginPageState.loading());
 
@@ -135,9 +135,9 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     emit(LoginPageState.pushRouteReplacing(Routes.questionsOverview));
   }
 
-  void onEnterAnonymously() => throw UnimplementedError();
+  void loginAnonymously() => throw UnimplementedError();
 
-  void onSignUp() {
+  void signUp() {
     emit(LoginPageState.displayNotYetImplementedMessage());
   }
 }
