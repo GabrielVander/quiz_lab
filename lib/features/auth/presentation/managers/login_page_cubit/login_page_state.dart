@@ -2,37 +2,18 @@ part of 'login_page_cubit.dart';
 
 @immutable
 sealed class LoginPageState extends Equatable {
-  const LoginPageState._();
-
-  factory LoginPageState.initial() => const LoginPageInitial();
-
-  factory LoginPageState.viewModelUpdated(LoginPageViewModel viewModel) =>
-      LoginPageViewModelUpdated(viewModel: viewModel);
-
-  factory LoginPageState.pushRouteReplacing(Routes route) =>
-      LoginPagePushRouteReplacing(route: route);
-
-  factory LoginPageState.displayErrorMessage(
-    LoginPageErrorTypeViewModel type,
-  ) =>
-      LoginPageError(type);
-
-  factory LoginPageState.displayLoggedInMessage() => const LoginPageDisplayLoggedInMessage._();
-
-  factory LoginPageState.displayNotYetImplementedMessage() => const LoginPageNotYetImplemented._();
-
-  factory LoginPageState.loading() => const LoginPageLoading._();
+  const LoginPageState();
 }
 
 class LoginPageInitial extends LoginPageState {
-  const LoginPageInitial() : super._();
+  const LoginPageInitial();
 
   @override
   List<Object> get props => [];
 }
 
 class LoginPageViewModelUpdated extends LoginPageState {
-  const LoginPageViewModelUpdated({required this.viewModel}) : super._();
+  const LoginPageViewModelUpdated({required this.viewModel});
 
   final LoginPageViewModel viewModel;
 
@@ -41,7 +22,7 @@ class LoginPageViewModelUpdated extends LoginPageState {
 }
 
 class LoginPagePushRouteReplacing extends LoginPageState {
-  const LoginPagePushRouteReplacing({required this.route}) : super._();
+  const LoginPagePushRouteReplacing({required this.route});
 
   final Routes route;
 
@@ -50,7 +31,7 @@ class LoginPagePushRouteReplacing extends LoginPageState {
 }
 
 class LoginPageError extends LoginPageState {
-  const LoginPageError(this.type) : super._();
+  const LoginPageError(this.type);
 
   final LoginPageErrorTypeViewModel type;
 
@@ -58,22 +39,22 @@ class LoginPageError extends LoginPageState {
   List<Object> get props => [type];
 }
 
-class LoginPageDisplayLoggedInMessage extends LoginPageState {
-  const LoginPageDisplayLoggedInMessage._() : super._();
+class LoginPageLoggedInSuccessfully extends LoginPageState {
+  const LoginPageLoggedInSuccessfully();
 
   @override
   List<Object> get props => [];
 }
 
 class LoginPageNotYetImplemented extends LoginPageState {
-  const LoginPageNotYetImplemented._() : super._();
+  const LoginPageNotYetImplemented();
 
   @override
   List<Object> get props => [];
 }
 
 class LoginPageLoading extends LoginPageState {
-  const LoginPageLoading._() : super._();
+  const LoginPageLoading();
 
   @override
   List<Object> get props => [];

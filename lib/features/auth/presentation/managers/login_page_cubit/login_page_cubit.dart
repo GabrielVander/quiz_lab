@@ -40,14 +40,15 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     final applicationVersion = 'v$rawVersion';
 
     _logger.debug('Fetched application version: $applicationVersion');
-    final defaultViewModelUpdatedWithApplicationVersion = _defaultViewModel.copyWith(
+    final defaultViewModelUpdatedWithApplicationVersion =
+        _defaultViewModel.copyWith(
       applicationVersion: applicationVersion,
     );
 
     _viewModel = defaultViewModelUpdatedWithApplicationVersion;
 
     emit(
-      LoginPageState.viewModelUpdated(_viewModel),
+      LoginPageViewModelUpdated(viewModel: _viewModel),
     );
   }
 
@@ -62,7 +63,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     );
 
     emit(
-      LoginPageState.viewModelUpdated(_viewModel),
+      LoginPageViewModelUpdated(viewModel: _viewModel),
     );
   }
 
@@ -77,13 +78,13 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     );
 
     emit(
-      LoginPageState.viewModelUpdated(_viewModel),
+      LoginPageViewModelUpdated(viewModel: _viewModel),
     );
   }
 
   Future<void> login() async {
     _logger.debug('Received login request');
-    emit(LoginPageState.loading());
+    emit(const LoginPageLoading());
 
     final isEmailEmpty = _viewModel.email.value.isEmpty;
     final isPasswordEmpty = _viewModel.password.value.isEmpty;
@@ -106,7 +107,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
 
     if (isEmailEmpty || isPasswordEmpty) {
       emit(
-        LoginPageState.viewModelUpdated(_viewModel),
+        LoginPageViewModelUpdated(viewModel: _viewModel),
       );
       return;
     }
@@ -119,25 +120,17 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     );
 
     if (logInResult.isErr) {
-      emit(LoginPageState.viewModelUpdated(_defaultViewModel));
-
-      emit(
-        LoginPageState.displayErrorMessage(
-          LoginPageErrorTypeViewModel.unableToLogin,
-        ),
-      );
+      emit(LoginPageViewModelUpdated(viewModel: _defaultViewModel));
+      emit(const LoginPageError(LoginPageErrorTypeViewModel.unableToLogin));
 
       return;
     }
 
-    emit(LoginPageState.displayLoggedInMessage());
-
-    emit(LoginPageState.pushRouteReplacing(Routes.questionsOverview));
+    emit(const LoginPageLoggedInSuccessfully());
+    emit(const LoginPagePushRouteReplacing(route: Routes.questionsOverview));
   }
 
   void loginAnonymously() => throw UnimplementedError();
 
-  void signUp() {
-    emit(LoginPageState.displayNotYetImplementedMessage());
-  }
+  void signUp() => emit(const LoginPageNotYetImplemented());
 }

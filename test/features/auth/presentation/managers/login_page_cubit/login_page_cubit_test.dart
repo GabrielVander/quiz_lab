@@ -267,7 +267,7 @@ void main() {
                     isA<LoginPageViewModelUpdated>(),
                     isA<LoginPageViewModelUpdated>(),
                     isA<LoginPageLoading>(),
-                    isA<LoginPageDisplayLoggedInMessage>(),
+                    isA<LoginPageLoggedInSuccessfully>(),
                     const LoginPagePushRouteReplacing(
                       route: Routes.questionsOverview,
                     ),
