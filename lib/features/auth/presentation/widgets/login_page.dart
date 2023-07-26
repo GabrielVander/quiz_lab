@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
+import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
 import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/link.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
@@ -34,19 +35,36 @@ class LoginPage extends HookWidget {
       cubit,
       (_, value, context) {
         final snackbar = switch (value) {
-          LoginPageNotYetImplemented() =>
-            SnackBar(content: Text(S.of(context).notYetImplemented)),
-          LoginPageError() => SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text(S.of(context).genericErrorMessage),
+          LoginPageNotYetImplemented() => SnackBar(
+              content: Text(
+                S.of(context).notYetImplemented,
+              ),
             ),
-          _ => SnackBar(content: Text(S.of(context).genericErrorMessage)),
+          LoginPageError() => SnackBar(
+              backgroundColor: Theme.of(context).themeColors.mainColors.error,
+              content: Text(
+                S.of(context).genericErrorMessage,
+              ),
+            ),
+          LoginPageUnableToLogin() => SnackBar(
+              backgroundColor: Theme.of(context).themeColors.mainColors.error,
+              content: Text(
+                S.of(context).unableToLogin,
+              ),
+            ),
+          _ => SnackBar(
+              content: Text(
+                S.of(context).genericErrorMessage,
+              ),
+            ),
         };
 
         showSnackBar(context, snackbar);
       },
       listenWhen: (state) =>
-          state is LoginPageNotYetImplemented || state is LoginPageError,
+          state is LoginPageNotYetImplemented ||
+          state is LoginPageError ||
+          state is LoginPageUnableToLogin,
     );
 
     useBlocListener<LoginPageCubit, LoginPageState>(
@@ -71,83 +89,92 @@ class LoginPage extends HookWidget {
             padding: const EdgeInsets.all(15),
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
-                final separator = SizedBox(
-                  height: constraints.maxHeight * 0.1,
-                );
+                final separator = SizedBox(height: constraints.maxHeight * 0.1);
 
-                return ListView(
-                  children: [
-                    SizedBox(
-                      height:
-                          Theme.of(context).textTheme.displayLarge!.fontSize,
-                      child: const QuizLabIcon(),
-                    ),
-                    separator,
-                    const Center(
-                      child: _Title(),
-                    ),
-                    separator,
-                    HookBuilder(
-                      builder: (context) {
-                        final state = useBlocBuilder(
-                          cubit,
-                          buildWhen: (current) => [
-                            LoginPageLoading,
-                            LoginPageViewModelUpdated
-                          ].contains(current.runtimeType),
-                        );
+                return HookBuilder(
+                  builder: (context) {
+                    final loadingState = useBlocBuilder(cubit);
 
-                        return switch (state) {
-                          LoginPageViewModelUpdated(
-                            viewModel: final viewModel
-                          ) =>
-                            _LoginForm(
-                              key: const ValueKey<String>('loginForm'),
-                              emailViewModel: viewModel.email,
-                              passwordViewModel: viewModel.password,
-                              onLogin: cubit.login,
-                              onEmailChange: cubit.updateEmail,
-                              onPasswordChange: cubit.updatePassword,
-                            ),
-                          _ => const _Loading(),
-                        };
-                      },
-                    ),
-                    separator,
-                    _AlternativeOptions(
-                      onEnterAnonymously: cubit.loginAnonymously,
-                      onSignUp: cubit.signUp,
-                    ),
-                    const SizedBox(
-                      height: 25,
-                    ),
-                    HookBuilder(
-                      builder: (context) {
-                        final state = useBlocComparativeBuilder(
-                          cubit,
-                          buildWhen: (previous, current) =>
-                              current is LoginPageLoading ||
-                              previous is! LoginPageViewModelUpdated ||
-                              (current is LoginPageViewModelUpdated &&
-                                  previous.viewModel.applicationVersion !=
-                                      current.viewModel.applicationVersion),
-                        );
+                    if (loadingState is LoginPageLoading ||
+                        loadingState is LoginPageInitial) {
+                      return const _Loading();
+                    }
 
-                        return switch (state) {
-                          LoginPageViewModelUpdated(
-                            viewModel: final viewModel
-                          ) =>
-                            Center(
-                              child: Text(
-                                key: const ValueKey('applicationVersion'),
-                                viewModel.applicationVersion,
-                              ),
-                            ),
-                          _ => const _Loading(),
-                        };
-                      },
-                    )
-                  ],
+                    return ListView(
+                      children: [
+                        SizedBox(
+                          height: Theme.of(context)
+                              .textTheme
+                              .displayLarge!
+                              .fontSize,
+                          child: const QuizLabIcon(),
+                        ),
+                        separator,
+                        const Center(
+                          child: _Title(),
+                        ),
+                        separator,
+                        HookBuilder(
+                          builder: (context) {
+                            final state = useBlocBuilder(
+                              cubit,
+                              buildWhen: (current) =>
+                                  current is LoginPageViewModelUpdated,
+                            );
+
+                            if (state is LoginPageViewModelUpdated) {
+                              return _LoginForm(
+                                key: const ValueKey<String>('loginForm'),
+                                emailViewModel: state.viewModel.email,
+                                passwordViewModel: state.viewModel.password,
+                                onLogin: cubit.login,
+                                onEmailChange: cubit.updateEmail,
+                                onPasswordChange: cubit.updatePassword,
+                              );
+                            }
+
+                            return Container();
+                          },
+                        ),
+                        separator,
+                        _AlternativeOptions(
+                          onEnterAnonymously: cubit.enterAnonymously,
+                          onSignUp: cubit.signUp,
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        HookBuilder(
+                          builder: (context) {
+                            final state = useBlocComparativeBuilder(
+                              cubit,
+                              buildWhen: (previous, current) =>
+                                  current is LoginPageLoading ||
+                                  previous is! LoginPageViewModelUpdated ||
+                                  (current is LoginPageViewModelUpdated &&
+                                      previous.viewModel.applicationVersion !=
+                                          current.viewModel.applicationVersion),
+                            );
+
+                            return switch (state) {
+                              LoginPageViewModelUpdated(
+                                viewModel: final viewModel
+                              ) =>
+                                Center(
+                                  child: Text(
+                                    key: const ValueKey(
+                                      'applicationVersion',
+                                    ),
+                                    viewModel.applicationVersion,
+                                  ),
+                                ),
+                              _ => const _Loading(),
+                            };
+                          },
+                        )
+                      ],
+                    );
+                  },
                 );
               },
             ),

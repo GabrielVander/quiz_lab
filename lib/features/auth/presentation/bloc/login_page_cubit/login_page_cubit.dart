@@ -2,8 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
-import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
+import 'package:quiz_lab/features/auth/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
 
@@ -11,15 +12,16 @@ part 'login_page_state.dart';
 
 class LoginPageCubit extends Cubit<LoginPageState> {
   LoginPageCubit({
-    required LoginWithCredentialsUseCase loginWithCredentionsUseCase,
-    required FetchApplicationVersionUseCase fetchApplicationVersionUseCase,
-  })  : _loginWithCredentionsUseCase = loginWithCredentionsUseCase,
-        _fetchApplicationVersionUseCase = fetchApplicationVersionUseCase,
-        super(const LoginPageInitial());
+    required this.logger,
+    required this.loginWithCredentionsUseCase,
+    required this.fetchApplicationVersionUseCase,
+    required this.loginAnonymouslyUseCase,
+  }) : super(const LoginPageInitial());
 
-  final _logger = QuizLabLoggerFactory.createLogger<LoginPageCubit>();
-  final LoginWithCredentialsUseCase _loginWithCredentionsUseCase;
-  final FetchApplicationVersionUseCase _fetchApplicationVersionUseCase;
+  final QuizLabLogger logger;
+  final LoginWithCredentialsUseCase loginWithCredentionsUseCase;
+  final FetchApplicationVersionUseCase fetchApplicationVersionUseCase;
+  final LoginAnonymouslyUseCase loginAnonymouslyUseCase;
 
   late LoginPageViewModel _viewModel;
 
@@ -34,12 +36,12 @@ class LoginPageCubit extends Cubit<LoginPageState> {
   );
 
   void hydrate() {
-    _logger.debug('Hydrating...');
+    logger.debug('Hydrating...');
 
-    final rawVersion = _fetchApplicationVersionUseCase.execute();
+    final rawVersion = fetchApplicationVersionUseCase.execute();
     final applicationVersion = 'v$rawVersion';
 
-    _logger.debug('Fetched application version: $applicationVersion');
+    logger.debug('Fetched application version: $applicationVersion');
     final defaultViewModelUpdatedWithApplicationVersion =
         _defaultViewModel.copyWith(
       applicationVersion: applicationVersion,
@@ -53,7 +55,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
   }
 
   void updateEmail(String email) {
-    _logger.debug('Received email input');
+    logger.debug('Received email input');
 
     _viewModel = _viewModel.copyWith(
       email: _viewModel.email.copyWith(
@@ -68,7 +70,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
   }
 
   void updatePassword(String password) {
-    _logger.debug('Received password input');
+    logger.debug('Received password input');
 
     _viewModel = _viewModel.copyWith(
       password: _viewModel.password.copyWith(
@@ -83,7 +85,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
   }
 
   Future<void> login() async {
-    _logger.debug('Received login request');
+    logger.debug('Received login request');
     emit(const LoginPageLoading());
 
     final isEmailEmpty = _viewModel.email.value.isEmpty;
@@ -106,13 +108,11 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     }
 
     if (isEmailEmpty || isPasswordEmpty) {
-      emit(
-        LoginPageViewModelUpdated(viewModel: _viewModel),
-      );
+      emit(LoginPageViewModelUpdated(viewModel: _viewModel));
       return;
     }
 
-    final logInResult = await _loginWithCredentionsUseCase(
+    final logInResult = await loginWithCredentionsUseCase(
       LoginWithCredentialsUseCaseInput(
         email: _viewModel.email.value,
         password: _viewModel.password.value,
@@ -120,8 +120,8 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     );
 
     if (logInResult.isErr) {
+      emit(const LoginPageUnableToLogin());
       emit(LoginPageViewModelUpdated(viewModel: _defaultViewModel));
-      emit(const LoginPageError(LoginPageErrorTypeViewModel.unableToLogin));
 
       return;
     }
@@ -130,7 +130,16 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     emit(const LoginPagePushRouteReplacing(route: Routes.questionsOverview));
   }
 
-  void loginAnonymously() => throw UnimplementedError();
+  Future<void> enterAnonymously() async {
+    emit(const LoginPageLoading());
+
+    final result = await loginAnonymouslyUseCase();
+
+    result.inspectErr((error) {
+      logger.error(error);
+      emit(const LoginPageUnableToLogin());
+    });
+  }
 
   void signUp() => emit(const LoginPageNotYetImplemented());
 }

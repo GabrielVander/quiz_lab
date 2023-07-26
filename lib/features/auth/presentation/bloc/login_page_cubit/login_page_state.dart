@@ -31,12 +31,17 @@ class LoginPagePushRouteReplacing extends LoginPageState {
 }
 
 class LoginPageError extends LoginPageState {
-  const LoginPageError(this.type);
-
-  final LoginPageErrorTypeViewModel type;
+  const LoginPageError();
 
   @override
-  List<Object> get props => [type];
+  List<Object> get props => [];
+}
+
+class LoginPageUnableToLogin extends LoginPageState {
+  const LoginPageUnableToLogin();
+
+  @override
+  List<Object> get props => [];
 }
 
 class LoginPageLoggedInSuccessfully extends LoginPageState {

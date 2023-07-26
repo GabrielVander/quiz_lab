@@ -26,7 +26,9 @@ void authenticationDiSetup(DependencyInjection di) {
     )
     ..registerBuilder<LoginPageCubit>(
       (di) => LoginPageCubit(
+        logger: QuizLabLoggerImpl<LoginPageCubit>(),
         loginWithCredentionsUseCase: di.get<LoginWithCredentialsUseCase>(),
+        loginAnonymouslyUseCase: di.get<LoginAnonymouslyUseCase>(),
         fetchApplicationVersionUseCase:
             di.get<FetchApplicationVersionUseCase>(),
       ),

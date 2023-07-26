@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
@@ -28,15 +28,12 @@ void main() {
     loginPageCubitMock = _LoginPageCubitMock();
   });
 
-  tearDown(mocktail.resetMocktailState);
+  tearDown(resetMocktailState);
 
   testWidgets('should always call hydrate()', (widgetTester) async {
-    mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-          (_) => const Stream.empty(),
-        );
-    mocktail
-        .when(() => loginPageCubitMock.state)
-        .thenReturn(const LoginPageInitial());
+    when(() => loginPageCubitMock.stream)
+        .thenAnswer((_) => const Stream.empty());
+    when(() => loginPageCubitMock.state).thenReturn(const LoginPageInitial());
 
     await _pumpTarget(
       widgetTester,
@@ -45,18 +42,15 @@ void main() {
       goRouterMock,
     );
 
-    mocktail.verify(() => loginPageCubitMock.hydrate()).called(1);
+    verify(() => loginPageCubitMock.hydrate()).called(1);
   });
 
   testWidgets(
       'should display a circular progress indicator if cubit state is [LoginPageInitial]',
       (widgetTester) async {
-    mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-          (_) => Stream.value(const LoginPageInitial()),
-        );
-    mocktail
-        .when(() => loginPageCubitMock.state)
-        .thenReturn(const LoginPageInitial());
+    when(() => loginPageCubitMock.stream)
+        .thenAnswer((_) => Stream.value(const LoginPageInitial()));
+    when(() => loginPageCubitMock.state).thenReturn(const LoginPageInitial());
 
     await _pumpTarget(
       widgetTester,
@@ -74,12 +68,9 @@ void main() {
   testWidgets(
       'should display a circular progress indicator if cubit state is [LoginPageLoading]',
       (widgetTester) async {
-    mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-          (_) => const Stream.empty(),
-        );
-    mocktail
-        .when(() => loginPageCubitMock.state)
-        .thenReturn(const LoginPageLoading());
+    when(() => loginPageCubitMock.stream)
+        .thenAnswer((_) => const Stream.empty());
+    when(() => loginPageCubitMock.state).thenReturn(const LoginPageLoading());
 
     await _pumpTarget(
       widgetTester,
@@ -98,15 +89,14 @@ void main() {
     testWidgets(
         'should redirect to ${route.name} if cubit state is [LoginPagePushRouteReplacing]',
         (widgetTester) async {
-      mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-            (_) => Stream<LoginPageState>.value(
-              LoginPagePushRouteReplacing(route: route),
-            ),
-          );
+      when(() => loginPageCubitMock.stream).thenAnswer(
+        (_) => Stream<LoginPageState>.value(
+          LoginPagePushRouteReplacing(route: route),
+        ),
+      );
 
-      mocktail.when(() => loginPageCubitMock.state).thenReturn(
-            LoginPagePushRouteReplacing(route: route),
-          );
+      when(() => loginPageCubitMock.state)
+          .thenReturn(LoginPagePushRouteReplacing(route: route));
 
       await _pumpTarget(
         widgetTester,
@@ -117,24 +107,23 @@ void main() {
 
       widgetTester.binding.scheduleWarmUpFrame();
 
-      mocktail.verify(() => goRouterMock.goNamed(route.name)).called(1);
+      verify(() => goRouterMock.goNamed(route.name)).called(1);
     });
   }
 
   testWidgets('should have expected structure',
       (WidgetTester widgetTester) async {
-    mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-          (_) => const Stream.empty(),
-        );
-    mocktail.when(() => loginPageCubitMock.state).thenReturn(
-          const LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
-              email: EmailViewModel(value: ''),
-              password: PasswordViewModel(value: ''),
-              applicationVersion: '',
-            ),
-          ),
-        );
+    when(() => loginPageCubitMock.stream)
+        .thenAnswer((_) => const Stream.empty());
+    when(() => loginPageCubitMock.state).thenReturn(
+      const LoginPageViewModelUpdated(
+        viewModel: LoginPageViewModel(
+          email: EmailViewModel(value: ''),
+          password: PasswordViewModel(value: ''),
+          applicationVersion: '',
+        ),
+      ),
+    );
 
     await _pumpTarget(
       widgetTester,
@@ -199,10 +188,9 @@ void main() {
           ),
         );
 
-        mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-              (_) => Stream.value(state),
-            );
-        mocktail.when(() => loginPageCubitMock.state).thenReturn(state);
+        when(() => loginPageCubitMock.stream)
+            .thenAnswer((_) => Stream.value(state));
+        when(() => loginPageCubitMock.state).thenReturn(state);
 
         await _pumpTarget(
           widgetTester,
@@ -223,12 +211,10 @@ void main() {
       testWidgets(
         route.toString(),
         (widgetTester) async {
-          mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-                (_) => Stream.value(LoginPagePushRouteReplacing(route: route)),
-              );
-          mocktail.when(() => loginPageCubitMock.state).thenReturn(
-                LoginPagePushRouteReplacing(route: route),
-              );
+          when(() => loginPageCubitMock.stream).thenAnswer(
+              (_) => Stream.value(LoginPagePushRouteReplacing(route: route)));
+          when(() => loginPageCubitMock.state)
+              .thenReturn(LoginPagePushRouteReplacing(route: route));
 
           await _pumpTarget(
             widgetTester,
@@ -239,7 +225,7 @@ void main() {
 
           widgetTester.binding.scheduleWarmUpFrame();
 
-          mocktail.verify(() => goRouterMock.goNamed(route.name)).called(1);
+          verify(() => goRouterMock.goNamed(route.name)).called(1);
         },
       );
     }
@@ -250,24 +236,24 @@ void main() {
     testWidgets(
       'empty password error',
       (WidgetTester widgetTester) async {
-        mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-              (_) => const Stream.empty(),
-            );
+        when(() => loginPageCubitMock.stream).thenAnswer(
+          (_) => const Stream.empty(),
+        );
 
-        mocktail.when(() => loginPageCubitMock.state).thenReturn(
-              const LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
-                  email: EmailViewModel(
-                    value: '',
-                    showError: true,
-                  ),
-                  password: PasswordViewModel(
-                    value: '',
-                  ),
-                  applicationVersion: '',
-                ),
+        when(() => loginPageCubitMock.state).thenReturn(
+          const LoginPageViewModelUpdated(
+            viewModel: LoginPageViewModel(
+              email: EmailViewModel(
+                value: '',
+                showError: true,
               ),
-            );
+              password: PasswordViewModel(
+                value: '',
+              ),
+              applicationVersion: '',
+            ),
+          ),
+        );
 
         await _pumpTarget(
           widgetTester,
@@ -283,23 +269,23 @@ void main() {
     testWidgets(
       'empty password error',
       (WidgetTester widgetTester) async {
-        mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-              (_) => const Stream.empty(),
-            );
-        mocktail.when(() => loginPageCubitMock.state).thenReturn(
-              const LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
-                  email: EmailViewModel(
-                    value: '',
-                  ),
-                  password: PasswordViewModel(
-                    value: '',
-                    showError: true,
-                  ),
-                  applicationVersion: '',
-                ),
+        when(() => loginPageCubitMock.stream).thenAnswer(
+          (_) => const Stream.empty(),
+        );
+        when(() => loginPageCubitMock.state).thenReturn(
+          const LoginPageViewModelUpdated(
+            viewModel: LoginPageViewModel(
+              email: EmailViewModel(
+                value: '',
               ),
-            );
+              password: PasswordViewModel(
+                value: '',
+                showError: true,
+              ),
+              applicationVersion: '',
+            ),
+          ),
+        );
 
         await _pumpTarget(
           widgetTester,
@@ -316,18 +302,18 @@ void main() {
   group('should display email from view model', () {
     for (final email in ['#LU7@', 'Aqhv&Wf']) {
       testWidgets(email, (WidgetTester widgetTester) async {
-        mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-              (_) => const Stream.empty(),
-            );
-        mocktail.when(() => loginPageCubitMock.state).thenReturn(
-              LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
-                  email: EmailViewModel(value: email),
-                  password: const PasswordViewModel(value: ''),
-                  applicationVersion: '',
-                ),
-              ),
-            );
+        when(() => loginPageCubitMock.stream).thenAnswer(
+          (_) => const Stream.empty(),
+        );
+        when(() => loginPageCubitMock.state).thenReturn(
+          LoginPageViewModelUpdated(
+            viewModel: LoginPageViewModel(
+              email: EmailViewModel(value: email),
+              password: const PasswordViewModel(value: ''),
+              applicationVersion: '',
+            ),
+          ),
+        );
 
         await _pumpTarget(
           widgetTester,
@@ -347,18 +333,18 @@ void main() {
       '^P22!t',
     ]) {
       testWidgets(password, (WidgetTester widgetTester) async {
-        mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-              (_) => const Stream.empty(),
-            );
-        mocktail.when(() => loginPageCubitMock.state).thenReturn(
-              LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
-                  email: const EmailViewModel(value: ''),
-                  password: PasswordViewModel(value: password),
-                  applicationVersion: '',
-                ),
-              ),
-            );
+        when(() => loginPageCubitMock.stream).thenAnswer(
+          (_) => const Stream.empty(),
+        );
+        when(() => loginPageCubitMock.state).thenReturn(
+          LoginPageViewModelUpdated(
+            viewModel: LoginPageViewModel(
+              email: const EmailViewModel(value: ''),
+              password: PasswordViewModel(value: password),
+              applicationVersion: '',
+            ),
+          ),
+        );
 
         await _pumpTarget(
           widgetTester,
@@ -375,18 +361,18 @@ void main() {
   group('should call cubit with given email on email input', () {
     for (final email in ['a', 'aB', 'aBwNUcz']) {
       testWidgets(email, (WidgetTester widgetTester) async {
-        mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-              (_) => const Stream.empty(),
-            );
-        mocktail.when(() => loginPageCubitMock.state).thenReturn(
-              const LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
-                  email: EmailViewModel(value: ''),
-                  password: PasswordViewModel(value: ''),
-                  applicationVersion: '',
-                ),
-              ),
-            );
+        when(() => loginPageCubitMock.stream).thenAnswer(
+          (_) => const Stream.empty(),
+        );
+        when(() => loginPageCubitMock.state).thenReturn(
+          const LoginPageViewModelUpdated(
+            viewModel: LoginPageViewModel(
+              email: EmailViewModel(value: ''),
+              password: PasswordViewModel(value: ''),
+              applicationVersion: '',
+            ),
+          ),
+        );
 
         await _pumpTarget(
           widgetTester,
@@ -400,7 +386,7 @@ void main() {
           email,
         );
 
-        mocktail.verify(() => loginPageCubitMock.updateEmail(email)).called(1);
+        verify(() => loginPageCubitMock.updateEmail(email)).called(1);
       });
     }
   });
@@ -408,18 +394,18 @@ void main() {
   group('should call cubit with given password on password input', () {
     for (final password in ['W', r'4bv1Bn$&']) {
       testWidgets(password, (WidgetTester widgetTester) async {
-        mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-              (_) => const Stream.empty(),
-            );
-        mocktail.when(() => loginPageCubitMock.state).thenReturn(
-              const LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
-                  email: EmailViewModel(value: ''),
-                  password: PasswordViewModel(value: ''),
-                  applicationVersion: '',
-                ),
-              ),
-            );
+        when(() => loginPageCubitMock.stream).thenAnswer(
+          (_) => const Stream.empty(),
+        );
+        when(() => loginPageCubitMock.state).thenReturn(
+          const LoginPageViewModelUpdated(
+            viewModel: LoginPageViewModel(
+              email: EmailViewModel(value: ''),
+              password: PasswordViewModel(value: ''),
+              applicationVersion: '',
+            ),
+          ),
+        );
 
         await _pumpTarget(
           widgetTester,
@@ -433,36 +419,50 @@ void main() {
           password,
         );
 
-        mocktail
-            .verify(() => loginPageCubitMock.updatePassword(password))
-            .called(1);
+        verify(() => loginPageCubitMock.updatePassword(password)).called(1);
       });
     }
   });
 
-  group(
-      'should display correct message when cubit emits [LoginPageDisplayErrorMessage]',
-      () {
-    for (final string in ['', '2*2l9vT']) {
+  group('should display correct message when cubit emits [LoginPageError]', () {
+    for (final string in ['53Av8', '2*2l9vT']) {
       testWidgets(
-        '${LoginPageErrorTypeViewModel.generic} -> $string',
+        string,
         (WidgetTester widgetTester) async {
-          mocktail
-              .when(() => localizationsMock.genericErrorMessage)
-              .thenReturn(string);
+          when(() => localizationsMock.genericErrorMessage).thenReturn(string);
+          when(() => loginPageCubitMock.stream)
+              .thenAnswer((_) => Stream.value(const LoginPageError()));
+          when(() => loginPageCubitMock.state)
+              .thenReturn(const LoginPageError());
 
-          mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-                (_) => Stream.value(
-                  const LoginPageError(
-                    LoginPageErrorTypeViewModel.generic,
-                  ),
-                ),
-              );
-          mocktail.when(() => loginPageCubitMock.state).thenReturn(
-                const LoginPageError(
-                  LoginPageErrorTypeViewModel.generic,
-                ),
-              );
+          await _pumpTarget(
+            widgetTester,
+            localizationsDelegateMock,
+            loginPageCubitMock,
+            goRouterMock,
+          );
+
+          widgetTester.binding.scheduleWarmUpFrame();
+          await widgetTester.pump();
+
+          expect(find.widgetWithText(SnackBar, string), findsOneWidget);
+        },
+      );
+    }
+  });
+
+  group(
+      'should display correct message when cubit emits [LoginPageUnableToLogin]',
+      () {
+    for (final string in ['8Xwng', '2g0jg1th']) {
+      testWidgets(
+        string,
+        (WidgetTester widgetTester) async {
+          when(() => localizationsMock.unableToLogin).thenReturn(string);
+          when(() => loginPageCubitMock.stream)
+              .thenAnswer((_) => Stream.value(const LoginPageUnableToLogin()));
+          when(() => loginPageCubitMock.state)
+              .thenReturn(const LoginPageUnableToLogin());
 
           await _pumpTarget(
             widgetTester,
@@ -482,20 +482,20 @@ void main() {
 
   testWidgets('should call cubit when login button is pressed',
       (WidgetTester widgetTester) async {
-    mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-          (_) => const Stream.empty(),
-        );
-    mocktail.when(() => loginPageCubitMock.state).thenReturn(
-          const LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
-              email: EmailViewModel(value: ''),
-              password: PasswordViewModel(value: ''),
-              applicationVersion: '',
-            ),
-          ),
-        );
+    when(() => loginPageCubitMock.stream).thenAnswer(
+      (_) => const Stream.empty(),
+    );
+    when(() => loginPageCubitMock.state).thenReturn(
+      const LoginPageViewModelUpdated(
+        viewModel: LoginPageViewModel(
+          email: EmailViewModel(value: ''),
+          password: PasswordViewModel(value: ''),
+          applicationVersion: '',
+        ),
+      ),
+    );
 
-    mocktail.when(() => loginPageCubitMock.login()).thenAnswer((_) async {});
+    when(() => loginPageCubitMock.login()).thenAnswer((_) async {});
 
     await _pumpTarget(
       widgetTester,
@@ -508,23 +508,23 @@ void main() {
 
     await widgetTester.pump();
 
-    mocktail.verify(() => loginPageCubitMock.login()).called(1);
+    verify(() => loginPageCubitMock.login()).called(1);
   });
 
   testWidgets('should call cubit when sign up button is pressed',
       (WidgetTester widgetTester) async {
-    mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-          (_) => const Stream.empty(),
-        );
-    mocktail.when(() => loginPageCubitMock.state).thenReturn(
-          const LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
-              email: EmailViewModel(value: ''),
-              password: PasswordViewModel(value: ''),
-              applicationVersion: '',
-            ),
-          ),
-        );
+    when(() => loginPageCubitMock.stream).thenAnswer(
+      (_) => const Stream.empty(),
+    );
+    when(() => loginPageCubitMock.state).thenReturn(
+      const LoginPageViewModelUpdated(
+        viewModel: LoginPageViewModel(
+          email: EmailViewModel(value: ''),
+          password: PasswordViewModel(value: ''),
+          applicationVersion: '',
+        ),
+      ),
+    );
 
     await _pumpTarget(
       widgetTester,
@@ -535,7 +535,7 @@ void main() {
 
     await safeTapByKey(widgetTester, const ValueKey('signUpButton'));
 
-    mocktail.verify(() => loginPageCubitMock.signUp()).called(1);
+    verify(() => loginPageCubitMock.signUp()).called(1);
   });
 
   group(
@@ -545,17 +545,14 @@ void main() {
       testWidgets(
         text,
         (widgetTester) async {
-          mocktail
-              .when(() => localizationsMock.notYetImplemented)
-              .thenReturn(text);
+          when(() => localizationsMock.notYetImplemented).thenReturn(text);
 
-          mocktail
-              .when(() => loginPageCubitMock.state)
+          when(() => loginPageCubitMock.state)
               .thenReturn(const LoginPageNotYetImplemented());
 
-          mocktail.when(() => loginPageCubitMock.stream).thenAnswer(
-                (_) => Stream.value(const LoginPageNotYetImplemented()),
-              );
+          when(() => loginPageCubitMock.stream).thenAnswer(
+            (_) => Stream.value(const LoginPageNotYetImplemented()),
+          );
 
           await _pumpTarget(
             widgetTester,
@@ -577,18 +574,18 @@ void main() {
   group('anonymous login', () {
     testWidgets('should call cubit when enter anonymously section is pressed',
         (WidgetTester widgetTester) async {
-      mocktail
-          .when(() => loginPageCubitMock.stream)
+      when(() => loginPageCubitMock.stream)
           .thenAnswer((_) => const Stream.empty());
-      mocktail.when(() => loginPageCubitMock.state).thenReturn(
-            const LoginPageViewModelUpdated(
-              viewModel: LoginPageViewModel(
-                email: EmailViewModel(value: ''),
-                password: PasswordViewModel(value: ''),
-                applicationVersion: '',
-              ),
-            ),
-          );
+      when(() => loginPageCubitMock.state).thenReturn(
+        const LoginPageViewModelUpdated(
+          viewModel: LoginPageViewModel(
+            email: EmailViewModel(value: ''),
+            password: PasswordViewModel(value: ''),
+            applicationVersion: '',
+          ),
+        ),
+      );
+      when(loginPageCubitMock.enterAnonymously).thenAnswer((_) async {});
 
       await _pumpTarget(
         widgetTester,
@@ -602,7 +599,7 @@ void main() {
         const ValueKey('enterAnonymouslyButton'),
       );
 
-      mocktail.verify(() => loginPageCubitMock.loginAnonymously()).called(1);
+      verify(loginPageCubitMock.enterAnonymously).called(1);
     });
   });
 }
@@ -645,7 +642,7 @@ Future<void> _pumpTarget(
   );
 }
 
-class _LocalizationsDelegateMock extends mocktail.Mock
+class _LocalizationsDelegateMock extends Mock
     implements AppLocalizationDelegate {
   _LocalizationsDelegateMock({required S localizations}) : s = localizations;
 
@@ -661,7 +658,7 @@ class _LocalizationsDelegateMock extends mocktail.Mock
   Type get type => S;
 }
 
-class _SMock extends mocktail.Mock implements S {
+class _SMock extends Mock implements S {
   @override
   String get emailLabel => 'lFR';
 
@@ -687,9 +684,9 @@ class _SMock extends mocktail.Mock implements S {
   String get mustBeSetMessage => 'x^WO2S&';
 }
 
-class _LoginPageCubitMock extends mocktail.Mock implements LoginPageCubit {}
+class _LoginPageCubitMock extends Mock implements LoginPageCubit {}
 
-class _GoRouterMock extends mocktail.Mock implements GoRouter {}
+class _GoRouterMock extends Mock implements GoRouter {}
 
 class LoginPageCubitMock extends MockCubit<LoginPageState>
     implements LoginPageCubit {}
