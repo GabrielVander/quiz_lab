@@ -11,7 +11,7 @@ import 'package:quiz_lab/core/presentation/widgets/assessments_page.dart';
 import 'package:quiz_lab/core/presentation/widgets/home_page.dart';
 import 'package:quiz_lab/core/presentation/widgets/results_page.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/widgets/login_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
@@ -48,7 +48,8 @@ class QuizLabApplication extends StatelessWidget {
             GoRoute(
               name: Routes.assessments.name,
               path: Routes.assessments.path,
-              pageBuilder: (BuildContext context, GoRouterState state) => NoTransitionPage(
+              pageBuilder: (BuildContext context, GoRouterState state) =>
+                  NoTransitionPage(
                 child: AssessmentsPage(
                   assessmentsOverviewCubit: AssessmentsOverviewCubit(),
                 ),
@@ -81,7 +82,8 @@ class QuizLabApplication extends StatelessWidget {
                   },
                 )
               ],
-              pageBuilder: (BuildContext context, GoRouterState state) => NoTransitionPage(
+              pageBuilder: (BuildContext context, GoRouterState state) =>
+                  NoTransitionPage(
                 child: QuestionsOverviewPage(
                   questionsOverviewCubit: questionsOverviewCubit,
                 ),
@@ -91,7 +93,8 @@ class QuizLabApplication extends StatelessWidget {
               parentNavigatorKey: _shellNavigatorKey,
               name: Routes.resultsOverview.name,
               path: Routes.resultsOverview.path,
-              pageBuilder: (BuildContext context, GoRouterState state) => const NoTransitionPage(
+              pageBuilder: (BuildContext context, GoRouterState state) =>
+                  const NoTransitionPage(
                 child: ResultsPage(),
               ),
             )
@@ -117,8 +120,10 @@ class QuizLabApplication extends StatelessWidget {
   final QuestionsOverviewCubit questionsOverviewCubit;
   final LoginPageCubit loginPageCubit;
 
-  static final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
-  static final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
+  static final _shellNavigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'root');
+  static final _rootNavigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'shell');
 
   late final GoRouter router;
 

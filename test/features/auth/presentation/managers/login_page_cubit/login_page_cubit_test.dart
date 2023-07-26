@@ -7,8 +7,8 @@ import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_cas
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
-import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
-import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
+import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
 
 void main() {
   late FetchApplicationVersionUseCase fetchApplicationVersionUseCaseMock;

@@ -6,7 +6,7 @@ import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/impl/login_with_credentials_use_case_impl.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
-import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
 
 void authenticationDiSetup(DependencyInjection di) {
   di
@@ -27,7 +27,8 @@ void authenticationDiSetup(DependencyInjection di) {
     ..registerBuilder<LoginPageCubit>(
       (di) => LoginPageCubit(
         loginWithCredentionsUseCase: di.get<LoginWithCredentialsUseCase>(),
-        fetchApplicationVersionUseCase: di.get<FetchApplicationVersionUseCase>(),
+        fetchApplicationVersionUseCase:
+            di.get<FetchApplicationVersionUseCase>(),
       ),
     );
 }

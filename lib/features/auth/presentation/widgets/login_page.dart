@@ -8,8 +8,8 @@ import 'package:quiz_lab/core/presentation/widgets/design_system/button/link.dar
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/text_field/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
-import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
-import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/view_models/login_page_view_model.dart';
+import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class LoginPage extends HookWidget {
@@ -34,7 +34,8 @@ class LoginPage extends HookWidget {
       cubit,
       (_, value, context) {
         final snackbar = switch (value) {
-          LoginPageNotYetImplemented() => SnackBar(content: Text(S.of(context).notYetImplemented)),
+          LoginPageNotYetImplemented() =>
+            SnackBar(content: Text(S.of(context).notYetImplemented)),
           LoginPageError() => SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text(S.of(context).genericErrorMessage),
@@ -44,7 +45,8 @@ class LoginPage extends HookWidget {
 
         showSnackBar(context, snackbar);
       },
-      listenWhen: (state) => state is LoginPageNotYetImplemented || state is LoginPageError,
+      listenWhen: (state) =>
+          state is LoginPageNotYetImplemented || state is LoginPageError,
     );
 
     useBlocListener<LoginPageCubit, LoginPageState>(
@@ -76,7 +78,8 @@ class LoginPage extends HookWidget {
                 return ListView(
                   children: [
                     SizedBox(
-                      height: Theme.of(context).textTheme.displayLarge!.fontSize,
+                      height:
+                          Theme.of(context).textTheme.displayLarge!.fontSize,
                       child: const QuizLabIcon(),
                     ),
                     separator,
@@ -88,12 +91,17 @@ class LoginPage extends HookWidget {
                       builder: (context) {
                         final state = useBlocBuilder(
                           cubit,
-                          buildWhen: (current) => [LoginPageLoading, LoginPageViewModelUpdated]
-                              .contains(current.runtimeType),
+                          buildWhen: (current) => [
+                            LoginPageLoading,
+                            LoginPageViewModelUpdated
+                          ].contains(current.runtimeType),
                         );
 
                         return switch (state) {
-                          LoginPageViewModelUpdated(viewModel: final viewModel) => _LoginForm(
+                          LoginPageViewModelUpdated(
+                            viewModel: final viewModel
+                          ) =>
+                            _LoginForm(
                               key: const ValueKey<String>('loginForm'),
                               emailViewModel: viewModel.email,
                               passwordViewModel: viewModel.password,
@@ -126,7 +134,10 @@ class LoginPage extends HookWidget {
                         );
 
                         return switch (state) {
-                          LoginPageViewModelUpdated(viewModel: final viewModel) => Center(
+                          LoginPageViewModelUpdated(
+                            viewModel: final viewModel
+                          ) =>
+                            Center(
                               child: Text(
                                 key: const ValueKey('applicationVersion'),
                                 viewModel.applicationVersion,
@@ -172,7 +183,8 @@ class _Title extends StatelessWidget {
     return Text(
       S.of(context).loginPageDisplayTitle,
       style: Theme.of(context).textTheme.displayMedium!.copyWith(
-            color: Theme.of(context).extension<ThemeColors>()!.textColors.primary,
+            color:
+                Theme.of(context).extension<ThemeColors>()!.textColors.primary,
           ),
     );
   }
