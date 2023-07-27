@@ -2,7 +2,7 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/features/auth/data/data_sources/models/email_session_credentials_model.dart';
+import 'package:quiz_lab/features/auth/data/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
