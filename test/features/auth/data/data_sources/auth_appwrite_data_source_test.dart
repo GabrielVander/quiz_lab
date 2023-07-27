@@ -1,23 +1,31 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as appwrite_models;
+import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
+import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/models/session_model.dart';
 
 void main() {
+  late QuizLabLogger logger;
   late Account appwriteAccountServiceMock;
+
   late AuthAppwriteDataSource dataSource;
 
   setUp(() {
-    appwriteAccountServiceMock = _AccountMock();
-    dataSource = AuthAppwriteDataSource(
+    logger = _MockQuizLabLogger();
+    appwriteAccountServiceMock = _MockAccount();
+    dataSource = AuthAppwriteDataSourceImpl(
+      logger: logger,
       appwriteAccountService: appwriteAccountServiceMock,
     );
   });
 
-  tearDown(mocktail.resetMocktailState);
+  tearDown(resetMocktailState);
 
   group(
     'createEmailSession()',
@@ -34,27 +42,23 @@ void main() {
               final email = values[0];
               final password = values[1];
 
-              mocktail
-                  .when(
-                    () => appwriteAccountServiceMock.createEmailSession(
-                      email: mocktail.any(named: 'email'),
-                      password: mocktail.any(named: 'password'),
-                    ),
-                  )
-                  .thenThrow(AppwriteException('Er2oG'));
+              when(
+                () => appwriteAccountServiceMock.createEmailSession(
+                  email: any(named: 'email'),
+                  password: any(named: 'password'),
+                ),
+              ).thenThrow(AppwriteException('Er2oG'));
 
               await dataSource.createEmailSession(
                 EmailSessionCredentialsModel(email: email, password: password),
               );
 
-              mocktail
-                  .verify(
-                    () => appwriteAccountServiceMock.createEmailSession(
-                      email: email,
-                      password: password,
-                    ),
-                  )
-                  .called(1);
+              verify(
+                () => appwriteAccountServiceMock.createEmailSession(
+                  email: email,
+                  password: password,
+                ),
+              ).called(1);
             });
           }
         },
@@ -63,14 +67,12 @@ void main() {
       test(
         'should fail with exception message if unexpected exception is thrown',
         () async {
-          mocktail
-              .when(
-                () => appwriteAccountServiceMock.createEmailSession(
-                  email: mocktail.any(named: 'email'),
-                  password: mocktail.any(named: 'password'),
-                ),
-              )
-              .thenThrow(AppwriteException('IR4N'));
+          when(
+            () => appwriteAccountServiceMock.createEmailSession(
+              email: any(named: 'email'),
+              password: any(named: 'password'),
+            ),
+          ).thenThrow(AppwriteException('IR4N'));
 
           final result = await dataSource.createEmailSession(
             const EmailSessionCredentialsModel(
@@ -220,14 +222,12 @@ void main() {
               final appwriteSession = values[0] as appwrite_models.Session;
               final expectedSessionModel = values[1] as SessionModel;
 
-              mocktail
-                  .when(
-                    () => appwriteAccountServiceMock.createEmailSession(
-                      email: mocktail.any(named: 'email'),
-                      password: mocktail.any(named: 'password'),
-                    ),
-                  )
-                  .thenAnswer((_) async => appwriteSession);
+              when(
+                () => appwriteAccountServiceMock.createEmailSession(
+                  email: any(named: 'email'),
+                  password: any(named: 'password'),
+                ),
+              ).thenAnswer((_) async => appwriteSession);
 
               final result = await dataSource.createEmailSession(
                 const EmailSessionCredentialsModel(
@@ -245,6 +245,51 @@ void main() {
       );
     },
   );
+
+  group('createAnonymousSession', () {
+    test('should log initial message', () {
+      when(() => appwriteAccountServiceMock.createAnonymousSession())
+          .thenThrow(AppwriteException('rPXyEK6n'));
+
+      dataSource.createAnonymousSession();
+
+      verify(() => logger.debug('Creating anonymous session...')).called(1);
+    });
+
+    group('should fail if appwrite account service throws', () {
+      for (final errorMessage in ['L8l6', 'ZrBcC0']) {
+        test(errorMessage, () async {
+          final exception = AppwriteException(errorMessage);
+
+          when(() => appwriteAccountServiceMock.createAnonymousSession())
+              .thenThrow(exception);
+
+          final result = await dataSource.createAnonymousSession();
+
+          verify(() => logger.error(exception.toString())).called(1);
+          expect(
+            result,
+            const Err<Unit, String>('Unable to create anonymous session'),
+          );
+        });
+      }
+    });
+
+    test('should succeed if appwrite account service succeeds', () async {
+      when(() => appwriteAccountServiceMock.createAnonymousSession())
+          .thenAnswer((_) async => _MockSession());
+
+      final result = await dataSource.createAnonymousSession();
+
+      verify(() => logger.debug('Anonymous session created successfully'))
+          .called(1);
+      expect(result, const Ok<Unit, String>(unit));
+    });
+  });
 }
 
-class _AccountMock extends mocktail.Mock implements Account {}
+class _MockAccount extends Mock implements Account {}
+
+class _MockSession extends Mock implements Session {}
+
+class _MockQuizLabLogger extends Mock implements QuizLabLogger {}

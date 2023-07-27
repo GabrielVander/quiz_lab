@@ -1,3 +1,4 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
@@ -20,6 +21,35 @@ void main() {
   });
 
   group('should register correctly', () {
+    test('AuthAppwriteDataSource', () {
+      final mockAppwriteAccountService = _MockAccount();
+
+      when(() => diMock.get<Account>()).thenReturn(mockAppwriteAccountService);
+
+      authenticationDiSetup(diMock);
+
+      final captured = verify(
+        () => diMock.registerBuilder<AuthAppwriteDataSource>(captureAny()),
+      ).captured;
+
+      final builder = captured.single as AuthAppwriteDataSource Function(
+        DependencyInjection,
+      );
+      final dataSource = builder(diMock);
+
+      expect(dataSource, isA<AuthAppwriteDataSourceImpl>());
+      final dataSourceImpl = dataSource as AuthAppwriteDataSourceImpl;
+
+      expect(
+        dataSourceImpl.logger,
+        isA<QuizLabLoggerImpl<AuthAppwriteDataSourceImpl>>(),
+      );
+      expect(
+        dataSourceImpl.appwriteAccountService,
+        same(mockAppwriteAccountService),
+      );
+    });
+
     test('AuthRepository', () {
       final mockAuthAppwriteDataSource = _MockAuthAppwriteDataSource();
 
@@ -43,7 +73,7 @@ void main() {
         repositoryImpl.logger,
         isA<QuizLabLoggerImpl<AuthRepositoryImpl>>(),
       );
-      expect(repositoryImpl.authDataSource, mockAuthAppwriteDataSource);
+      expect(repositoryImpl.authDataSource, same(mockAuthAppwriteDataSource));
     });
 
     test('LoginWithCredentialsUseCase', () {
@@ -149,3 +179,5 @@ class _MockFetchApplicationVersionUseCase extends Mock
 
 class _MockLoginAnonymouslyUseCase extends Mock
     implements LoginAnonymouslyUseCase {}
+
+class _MockAccount extends Mock implements Account {}

@@ -1,3 +1,4 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
@@ -11,6 +12,12 @@ import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_
 
 void authenticationDiSetup(DependencyInjection di) {
   di
+    ..registerBuilder<AuthAppwriteDataSource>(
+      (DependencyInjection di) => AuthAppwriteDataSourceImpl(
+        logger: QuizLabLoggerImpl<AuthAppwriteDataSourceImpl>(),
+        appwriteAccountService: di.get<Account>(),
+      ),
+    )
     ..registerBuilder<AuthRepository>(
       (DependencyInjection di) => AuthRepositoryImpl(
         logger: QuizLabLoggerImpl<AuthRepositoryImpl>(),

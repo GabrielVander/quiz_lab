@@ -212,7 +212,8 @@ void main() {
         route.toString(),
         (widgetTester) async {
           when(() => loginPageCubitMock.stream).thenAnswer(
-              (_) => Stream.value(LoginPagePushRouteReplacing(route: route)));
+            (_) => Stream.value(LoginPagePushRouteReplacing(route: route)),
+          );
           when(() => loginPageCubitMock.state)
               .thenReturn(LoginPagePushRouteReplacing(route: route));
 
