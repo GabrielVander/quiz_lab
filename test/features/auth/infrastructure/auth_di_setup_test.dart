@@ -19,10 +19,12 @@ void main() {
     diMock = _DependencyInjectionMock();
   });
 
-  group('should register', () {
+  group('should register correctly', () {
     test('AuthRepository', () {
+      final mockAuthAppwriteDataSource = _MockAuthAppwriteDataSource();
+
       when(() => diMock.get<AuthAppwriteDataSource>())
-          .thenReturn(_MockAuthAppwriteDataSource());
+          .thenReturn(mockAuthAppwriteDataSource);
 
       authenticationDiSetup(diMock);
 
@@ -32,9 +34,16 @@ void main() {
 
       final builder =
           captured.single as AuthRepository Function(DependencyInjection);
-      final authRepository = builder(diMock);
+      final repository = builder(diMock);
 
-      expect(authRepository, isA<AuthRepositoryImpl>());
+      expect(repository, isA<AuthRepositoryImpl>());
+      final repositoryImpl = repository as AuthRepositoryImpl;
+
+      expect(
+        repositoryImpl.logger,
+        isA<QuizLabLoggerImpl<AuthRepositoryImpl>>(),
+      );
+      expect(repositoryImpl.authDataSource, mockAuthAppwriteDataSource);
     });
 
     test('LoginWithCredentialsUseCase', () {

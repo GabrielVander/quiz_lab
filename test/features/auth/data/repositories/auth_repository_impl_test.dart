@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/models/email_session_credentials_model.dart';
@@ -10,37 +11,38 @@ import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 
 void main() {
   late AuthAppwriteDataSource authDataSourceMock;
+  late QuizLabLogger logger;
+
   late AuthRepositoryImpl repository;
 
   setUp(() {
+    logger = _MockQuizLabLogger();
     authDataSourceMock = _AuthAppwriteDataSourceMock();
+
     repository = AuthRepositoryImpl(
+      logger: logger,
       authDataSource: authDataSourceMock,
     );
 
-    mocktail.registerFallbackValue(_FakeEmailSessionCredentialsModel());
+    registerFallbackValue(_MockEmailSessionCredentialsModel());
   });
 
   group('loginWithEmailCredentials', () {
     group(
       'should return unexpected error',
       () {
-        for (final errorMessage in [
-          '',
-          'R02!OA',
-        ]) {
+        for (final errorMessage in ['', 'R02!OA']) {
           test(errorMessage, () async {
-            mocktail
-                .when(
-                  () => authDataSourceMock.createEmailSession(mocktail.any()),
-                )
+            when(() => authDataSourceMock.createEmailSession(any()))
                 .thenAnswer((_) async => Err(errorMessage));
 
-            final result = await repository.loginWithEmailCredentials(_FakeEmailCredentials());
+            final result = await repository
+                .loginWithEmailCredentials(_MockEmailCredentials());
 
             expect(result.isErr, true);
 
-            final expected = AuthRepositoryError.unexpected(message: errorMessage);
+            final expected =
+                AuthRepositoryError.unexpected(message: errorMessage);
             expect(result.unwrapErr(), expected);
             expect(result.unwrapErr().hashCode, expected.hashCode);
           });
@@ -60,16 +62,14 @@ void main() {
             final email = values[0];
             final password = values[1];
 
-            mocktail
-                .when(
-                  () => authDataSourceMock.createEmailSession(
-                    EmailSessionCredentialsModel(
-                      email: email,
-                      password: password,
-                    ),
-                  ),
-                )
-                .thenAnswer((_) async => Ok(_FakeSessionModel()));
+            when(
+              () => authDataSourceMock.createEmailSession(
+                EmailSessionCredentialsModel(
+                  email: email,
+                  password: password,
+                ),
+              ),
+            ).thenAnswer((_) async => Ok(_MockSessionModel()));
 
             final result = await repository.loginWithEmailCredentials(
               EmailCredentials(email: email, password: password),
@@ -82,20 +82,59 @@ void main() {
       },
     );
   });
+
+  group('loginAnonymously()', () {
+    test('should log initial message', () async {
+      when(() => authDataSourceMock.createAnonymousSession())
+          .thenAnswer((_) async => const Err('UPjDe'));
+
+      await repository.loginAnonymously();
+
+      verify(() => logger.debug('Logging in anonymously...')).called(1);
+    });
+
+    group('should fail if auth data source fails', () {
+      for (final errorMessage in ['73sOg87', '3Eq7Yt']) {
+        test(errorMessage, () async {
+          when(() => authDataSourceMock.createAnonymousSession())
+              .thenAnswer((_) async => Err(errorMessage));
+
+          final result = await repository.loginAnonymously();
+
+          verify(() => logger.error(errorMessage)).called(1);
+          expect(
+            result,
+            const Err<Unit, String>('Unable to login anonymously'),
+          );
+        });
+      }
+    });
+
+    test('should return ok if auth data source returns ok', () async {
+      when(() => authDataSourceMock.createAnonymousSession())
+          .thenAnswer((_) async => const Ok(unit));
+
+      final result = await repository.loginAnonymously();
+
+      expect(result, const Ok<Unit, String>(unit));
+    });
+  });
 }
 
-class _AuthAppwriteDataSourceMock extends mocktail.Mock
+class _AuthAppwriteDataSourceMock extends Mock
     implements AuthAppwriteDataSource {}
 
-class _FakeEmailSessionCredentialsModel extends mocktail.Fake
+class _MockEmailSessionCredentialsModel extends Mock
     implements EmailSessionCredentialsModel {}
 
-class _FakeSessionModel extends mocktail.Fake implements SessionModel {}
+class _MockSessionModel extends Mock implements SessionModel {}
 
-class _FakeEmailCredentials extends mocktail.Fake implements EmailCredentials {
+class _MockEmailCredentials extends Mock implements EmailCredentials {
   @override
   final String email = 'ekmjw6';
 
   @override
   final String password = '^so';
 }
+
+class _MockQuizLabLogger extends Mock implements QuizLabLogger {}

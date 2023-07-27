@@ -2,6 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/models/session_model.dart';
 
@@ -10,7 +11,8 @@ class AuthAppwriteDataSource {
     required Account appwriteAccountService,
   }) : _appwriteAccountService = appwriteAccountService;
 
-  final QuizLabLogger _logger = QuizLabLoggerFactory.createLogger<AuthAppwriteDataSource>();
+  final QuizLabLogger _logger =
+      QuizLabLoggerFactory.createLogger<AuthAppwriteDataSource>();
 
   final Account _appwriteAccountService;
 
@@ -69,5 +71,9 @@ class AuthAppwriteDataSource {
 
       return Err(e.toString());
     }
+  }
+
+  Future<Result<Unit, String>> createAnonymousSession() async {
+    throw UnimplementedError();
   }
 }
