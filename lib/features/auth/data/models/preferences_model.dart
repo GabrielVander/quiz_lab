@@ -16,4 +16,10 @@ class PreferencesModel extends Equatable {
 
   @override
   List<Object> get props => [data];
+
+  @override
+  bool get stringify => false;
+
+  @override
+  String toString() => 'PreferencesModel{data: $data}';
 }
