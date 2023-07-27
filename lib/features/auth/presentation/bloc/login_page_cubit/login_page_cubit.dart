@@ -135,11 +135,22 @@ class LoginPageCubit extends Cubit<LoginPageState> {
 
     final result = await loginAnonymouslyUseCase();
 
-    result.inspectErr((error) {
-      logger.error(error);
-      emit(const LoginPageUnableToLogin());
-    });
+    result.inspectErr(_onLoginFailed).inspect(_onLoginSucceeded);
   }
 
   void signUp() => emit(const LoginPageNotYetImplemented());
+
+  void _onLoginFailed(String error) {
+    logger.error(error);
+
+    emit(const LoginPageUnableToLogin());
+    emit(const LoginPageInitial());
+  }
+
+  void _onLoginSucceeded(_) {
+    logger.info('Logged in successfully. Redirecting...');
+
+    emit(const LoginPageLoggedInSuccessfully());
+    emit(const LoginPagePushRouteReplacing(route: Routes.questionsOverview));
+  }
 }

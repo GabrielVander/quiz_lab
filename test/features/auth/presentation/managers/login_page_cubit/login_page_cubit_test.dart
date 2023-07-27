@@ -265,6 +265,7 @@ void main() {
                     const LoginPagePushRouteReplacing(
                       route: Routes.questionsOverview,
                     ),
+                    emitsDone,
                   ],
                 ),
               ),
@@ -276,6 +277,7 @@ void main() {
               ..updatePassword(dummyPassword);
 
             await cubit.login();
+            await cubit.close();
           },
         );
       },
@@ -298,26 +300,63 @@ void main() {
       when(() => loginAnonymouslyUseCaseMock.call())
           .thenAnswer((_) async => const Err('DGI'));
 
-      expectLater(cubit.stream, emits(isA<LoginPageLoading>()));
+      expectLater(cubit.stream, emits(const LoginPageLoading()));
 
       cubit.enterAnonymously();
     });
 
-    group('should emit [LoginError] if login anonymously use case fails', () {
-      for (final error in ['8dNTWA', '1FAaAW2']) {
-        test(error, () async {
-          when(loginAnonymouslyUseCaseMock.call)
-              .thenAnswer((_) async => Err(error));
+    group(
+      'should emit [LoginPageUnableToLogin, LoginPageInitial] if login anonymously use case fails',
+      () {
+        for (final error in ['8dNTWA', '1FAaAW2']) {
+          test(error, () async {
+            when(loginAnonymouslyUseCaseMock.call)
+                .thenAnswer((_) async => Err(error));
 
-          // unawaited(
-          //   expectLater(cubit.stream, emits(isA<LoginPageUnableToLogin>())),
-          // );
+            unawaited(
+              expectLater(
+                cubit.stream,
+                emitsInOrder([
+                  const LoginPageLoading(),
+                  const LoginPageUnableToLogin(),
+                  const LoginPageInitial(),
+                  emitsDone
+                ]),
+              ),
+            );
 
-          await cubit.enterAnonymously();
+            await cubit.enterAnonymously();
+            await cubit.close();
 
-          verify(() => logger.error(error)).called(1);
-        });
-      }
+            verify(() => logger.error(error)).called(1);
+          });
+        }
+      },
+    );
+
+    test(
+        'should emit [LoginPageLoggedInSuccessfully, LoginPagePushRouteReplacing]',
+        () async {
+      when(loginAnonymouslyUseCaseMock.call)
+          .thenAnswer((_) async => const Ok(unit));
+
+      unawaited(
+        expectLater(
+          cubit.stream,
+          emitsInOrder([
+            const LoginPageLoading(),
+            const LoginPageLoggedInSuccessfully(),
+            const LoginPagePushRouteReplacing(route: Routes.questionsOverview),
+            emitsDone,
+          ]),
+        ),
+      );
+
+      await cubit.enterAnonymously();
+      await cubit.close();
+
+      verify(() => logger.info('Logged in successfully. Redirecting...'))
+          .called(1);
     });
   });
 }
