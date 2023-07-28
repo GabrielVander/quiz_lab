@@ -7,6 +7,7 @@ import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
+import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/infrastructure/auth_di_setup.dart';
@@ -18,6 +19,8 @@ void main() {
   setUp(() {
     diMock = _DependencyInjectionMock();
   });
+
+  tearDown(resetMocktailState);
 
   group('should register correctly', () {
     test('AuthAppwriteDataSource', () {
@@ -119,6 +122,35 @@ void main() {
       expect(
         useCaseImpl.logger,
         isA<QuizLabLoggerImpl<LoginAnonymouslyUseCaseImpl>>(),
+      );
+    });
+
+    test('CheckIfUserIsLoggedInUseCase', () {
+      final mockAuthRepository = _MockAuthRepository();
+
+      when(() => diMock.get<AuthRepository>()).thenReturn(mockAuthRepository);
+
+      authenticationDiSetup(diMock);
+
+      final builderCaptor = verify(
+        () =>
+            diMock.registerBuilder<CheckIfUserIsLoggedInUseCase>(captureAny()),
+      ).captured;
+
+      final builder =
+          builderCaptor.single as CheckIfUserIsLoggedInUseCase Function(
+        DependencyInjection,
+      );
+      final useCase = builder(diMock);
+
+      expect(useCase, isA<CheckIfUserIsLoggedInUseCaseImpl>());
+
+      final useCaseImpl = useCase as CheckIfUserIsLoggedInUseCaseImpl;
+
+      expect(useCaseImpl.authRepository, same(mockAuthRepository));
+      expect(
+        useCaseImpl.logger,
+        isA<QuizLabLoggerImpl<CheckIfUserIsLoggedInUseCaseImpl>>(),
       );
     });
 

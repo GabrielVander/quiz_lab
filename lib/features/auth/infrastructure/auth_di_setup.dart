@@ -5,6 +5,7 @@ import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
+import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
@@ -31,6 +32,12 @@ void authenticationDiSetup(DependencyInjection di) {
     ..registerBuilder<LoginAnonymouslyUseCase>(
       (di) => LoginAnonymouslyUseCaseImpl(
         logger: QuizLabLoggerImpl<LoginAnonymouslyUseCaseImpl>(),
+        authRepository: di.get<AuthRepository>(),
+      ),
+    )
+    ..registerBuilder<CheckIfUserIsLoggedInUseCase>(
+      (di) => CheckIfUserIsLoggedInUseCaseImpl(
+        logger: QuizLabLoggerImpl<CheckIfUserIsLoggedInUseCaseImpl>(),
         authRepository: di.get<AuthRepository>(),
       ),
     )
