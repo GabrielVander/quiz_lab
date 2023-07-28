@@ -1,88 +1,101 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
-import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
+import 'package:quiz_lab/core/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/core/presentation/bloc/network/network_cubit.dart';
+import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/core/wrappers/package_info_wrapper.dart';
+import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 
 void main() {
-  late _DependencyInjectionMock diMock;
+  late DependencyInjection depedencyInjection;
 
   setUp(() {
-    diMock = _DependencyInjectionMock();
+    depedencyInjection = _DependencyInjectionMock();
   });
 
   group(
     'should register all dependencies',
     () {
+      // TODO(gabriel): This is a nightmare. In an attempt of generalization these tests became almost unreadable and unnassertive
       for (final values in [
         [
           Account,
           () {
-            mocktail.when(() => diMock.get<Client>()).thenReturn(_FakeClient());
+            when(() => depedencyInjection.get<Client>())
+                .thenReturn(_FakeClient());
 
-            _checkFactory<Account>(diMock);
+            _checkFactory<Account>(depedencyInjection);
           }
         ],
         [
           Databases,
           () {
-            mocktail.when(() => diMock.get<Client>()).thenReturn(_FakeClient());
+            when(() => depedencyInjection.get<Client>())
+                .thenReturn(_FakeClient());
 
-            _checkFactory<Databases>(diMock);
+            _checkFactory<Databases>(depedencyInjection);
           }
         ],
         [
           Realtime,
           () {
-            mocktail.when(() => diMock.get<Client>()).thenReturn(_FakeClient());
+            when(() => depedencyInjection.get<Client>())
+                .thenReturn(_FakeClient());
 
-            _checkFactory<Realtime>(diMock);
+            _checkFactory<Realtime>(depedencyInjection);
           }
         ],
         [
           AppwriteWrapper,
           () {
-            mocktail.when(() => diMock.get<Databases>()).thenReturn(_DatabasesMock());
+            when(() => depedencyInjection.get<Databases>())
+                .thenReturn(_DatabasesMock());
 
-            _checkFactory<AppwriteWrapper>(diMock);
+            _checkFactory<AppwriteWrapper>(depedencyInjection);
           }
         ],
         [
           AppwriteDataSource,
           () {
-            mocktail.when(() => diMock.get<Databases>()).thenReturn(_DatabasesMock());
-            mocktail.when(() => diMock.get<Realtime>()).thenReturn(_RealtimeMock());
-            mocktail
-                .when(() => diMock.get<AppwriteReferencesConfig>())
+            when(() => depedencyInjection.get<Databases>())
+                .thenReturn(_DatabasesMock());
+            when(() => depedencyInjection.get<Realtime>())
+                .thenReturn(_RealtimeMock());
+            when(() => depedencyInjection.get<AppwriteReferencesConfig>())
                 .thenReturn(_AppwriteDataSourceConfigurationMock());
 
-            _checkFactory<AppwriteDataSource>(diMock);
+            _checkFactory<AppwriteDataSource>(depedencyInjection);
           }
         ],
-        [NetworkCubit, () => _checkFactory<NetworkCubit>(diMock)],
-        [BottomNavigationCubit, () => _checkFactory<BottomNavigationCubit>(diMock)],
+        [NetworkCubit, () => _checkFactory<NetworkCubit>(depedencyInjection)],
+        [
+          BottomNavigationCubit,
+          () => _checkFactory<BottomNavigationCubit>(depedencyInjection)
+        ],
         [
           PackageInfoWrapper,
           () {
-            mocktail.when(() => diMock.get<PackageInfo>()).thenReturn(_PackageInfoMock());
+            when(() => depedencyInjection.get<PackageInfo>())
+                .thenReturn(_PackageInfoMock());
 
-            _checkFactory<PackageInfoWrapper>(diMock);
+            _checkFactory<PackageInfoWrapper>(depedencyInjection);
           }
         ],
         [
           FetchApplicationVersionUseCase,
           () {
-            mocktail
-                .when(() => diMock.get<PackageInfoWrapper>())
+            when(() => depedencyInjection.get<PackageInfoWrapper>())
                 .thenReturn(_PackageInfoWrapperMock());
-            _checkBuilder<FetchApplicationVersionUseCase>(diMock);
+            _checkBuilder<FetchApplicationVersionUseCase>(depedencyInjection);
           }
         ],
       ]) {
@@ -92,57 +105,101 @@ void main() {
           check();
         });
       }
+
+      test('QuizLabRouter', () {
+        final networkCubit = _MockNetworkCubit();
+        final bottomNavigationCubit = _MockBottomNavigationCubit();
+        final questionCreationCubit = _MockQuestionCreationCubit();
+        final questionsOverviewCubit = _MockQuestionsOverviewCubit();
+        final loginPageCubit = _MockLoginPageCubit();
+
+        when(() => depedencyInjection.get<NetworkCubit>())
+            .thenReturn(networkCubit);
+        when(() => depedencyInjection.get<BottomNavigationCubit>())
+            .thenReturn(bottomNavigationCubit);
+        when(() => depedencyInjection.get<QuestionCreationCubit>())
+            .thenReturn(questionCreationCubit);
+        when(() => depedencyInjection.get<QuestionsOverviewCubit>())
+            .thenReturn(questionsOverviewCubit);
+        when(() => depedencyInjection.get<LoginPageCubit>())
+            .thenReturn(loginPageCubit);
+
+        coreDependencyInjectionSetup(depedencyInjection);
+
+        final captured = verify(
+          () => depedencyInjection.registerBuilder<QuizLabRouter>(captureAny()),
+        ).captured;
+
+        final builder =
+            captured.single as QuizLabRouter Function(DependencyInjection);
+
+        final instance = builder(depedencyInjection);
+
+        expect(
+          instance,
+          QuizLabRouterImpl(
+            networkCubit: networkCubit,
+            bottomNavigationCubit: bottomNavigationCubit,
+            questionCreationCubit: questionCreationCubit,
+            questionsOverviewCubit: questionsOverviewCubit,
+            loginPageCubit: loginPageCubit,
+          ),
+        );
+      });
     },
   );
 }
 
-void _checkFactory<T extends Object>(
-  _DependencyInjectionMock diMock,
-) {
+void _checkFactory<T extends Object>(DependencyInjection diMock) {
   coreDependencyInjectionSetup(diMock);
 
-  final captured = mocktail
-      .verify(
-        () => diMock.registerFactory<T>(mocktail.captureAny()),
-      )
-      .captured;
+  final captured =
+      verify(() => diMock.registerFactory<T>(captureAny())).captured;
 
-  final getter = captured.last as T Function(_DependencyInjectionMock);
+  final getter = captured.last as T Function(DependencyInjection);
 
   final instance = getter(diMock);
 
   expect(instance, isA<T>());
 }
 
-void _checkBuilder<T extends Object>(
-  _DependencyInjectionMock diMock,
-) {
+void _checkBuilder<T extends Object>(DependencyInjection diMock) {
   coreDependencyInjectionSetup(diMock);
 
-  final captured = mocktail
-      .verify(
-        () => diMock.registerBuilder<T>(mocktail.captureAny()),
-      )
-      .captured;
+  final captured =
+      verify(() => diMock.registerBuilder<T>(captureAny())).captured;
 
-  final getter = captured.last as T Function(_DependencyInjectionMock);
+  final getter = captured.last as T Function(DependencyInjection);
 
   final instance = getter(diMock);
 
   expect(instance, isA<T>());
 }
 
-class _DependencyInjectionMock extends mocktail.Mock implements DependencyInjection {}
+class _DependencyInjectionMock extends Mock implements DependencyInjection {}
 
-class _FakeClient extends mocktail.Fake implements Client {}
+class _FakeClient extends Fake implements Client {}
 
-class _DatabasesMock extends mocktail.Mock implements Databases {}
+class _DatabasesMock extends Mock implements Databases {}
 
-class _AppwriteDataSourceConfigurationMock extends mocktail.Mock
+class _AppwriteDataSourceConfigurationMock extends Mock
     implements AppwriteReferencesConfig {}
 
-class _RealtimeMock extends mocktail.Mock implements Realtime {}
+class _RealtimeMock extends Mock implements Realtime {}
 
-class _PackageInfoMock extends mocktail.Mock implements PackageInfo {}
+class _PackageInfoMock extends Mock implements PackageInfo {}
 
-class _PackageInfoWrapperMock extends mocktail.Mock implements PackageInfoWrapper {}
+class _PackageInfoWrapperMock extends Mock implements PackageInfoWrapper {}
+
+class _MockNetworkCubit extends Mock implements NetworkCubit {}
+
+class _MockBottomNavigationCubit extends Mock
+    implements BottomNavigationCubit {}
+
+class _MockQuestionCreationCubit extends Mock
+    implements QuestionCreationCubit {}
+
+class _MockQuestionsOverviewCubit extends Mock
+    implements QuestionsOverviewCubit {}
+
+class _MockLoginPageCubit extends Mock implements LoginPageCubit {}

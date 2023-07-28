@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
-import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/core/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/presentation/widgets/main_bottom_nav_bar.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/generated/l10n.dart';

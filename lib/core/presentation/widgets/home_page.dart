@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/manager/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/core/presentation/manager/network/network_cubit.dart';
+import 'package:quiz_lab/core/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/core/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/core/presentation/widgets/main_bottom_nav_bar.dart';
 import 'package:quiz_lab/core/presentation/widgets/network_checker.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_app_bar.dart';

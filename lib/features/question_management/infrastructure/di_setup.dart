@@ -1,5 +1,5 @@
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
-import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
+import 'package:quiz_lab/core/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
