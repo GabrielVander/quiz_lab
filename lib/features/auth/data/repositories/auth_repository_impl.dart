@@ -46,4 +46,15 @@ class AuthRepositoryImpl implements AuthRepository {
         .inspectErr(logger.error)
         .mapErr((_) => 'Unable to login anonymously');
   }
+
+  @override
+  Future<Result<bool, String>> isLoggedIn() async {
+    logger.debug('Checking if user is logged in...');
+
+    return (await authDataSource.getCurrentUser())
+        .inspectErr(logger.error)
+        .map((_) => true)
+        .inspect((_) => logger.debug('User is logged in'))
+        .or(const Ok<bool, String>(false));
+  }
 }

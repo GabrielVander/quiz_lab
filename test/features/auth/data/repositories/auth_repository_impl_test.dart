@@ -6,6 +6,7 @@ import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/features/auth/data/models/session_model.dart';
+import 'package:quiz_lab/features/auth/data/models/user_model.dart';
 import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 
@@ -119,6 +120,42 @@ void main() {
       expect(result, const Ok<Unit, String>(unit));
     });
   });
+
+  group('isLoggedIn', () {
+    test('should log initial message', () async {
+      when(() => authDataSourceMock.getCurrentUser())
+          .thenAnswer((_) async => const Err('35W5a41'));
+
+      await repository.isLoggedIn();
+
+      verify(() => logger.debug('Checking if user is logged in...')).called(1);
+    });
+
+    group('should return false if auth data source fails', () {
+      for (final errorMessage in ['I3vI1Q5s', 'EtiUuAzt']) {
+        test(errorMessage, () async {
+          when(() => authDataSourceMock.getCurrentUser())
+              .thenAnswer((_) async => Err(errorMessage));
+
+          final result = await repository.isLoggedIn();
+
+          verify(() => logger.error(errorMessage)).called(1);
+          expect(result, const Ok<bool, String>(false));
+        });
+      }
+    });
+
+    test('should return true if auth data source returns ok', () async {
+      when(() => authDataSourceMock.getCurrentUser())
+          .thenAnswer((_) async => Ok(_MockUserModel()));
+
+      final result = await repository.isLoggedIn();
+
+      verifyNever(() => logger.error(any()));
+      verify(() => logger.debug('User is logged in')).called(1);
+      expect(result, const Ok<bool, String>(true));
+    });
+  });
 }
 
 class _AuthAppwriteDataSourceMock extends Mock
@@ -138,3 +175,5 @@ class _MockEmailCredentials extends Mock implements EmailCredentials {
 }
 
 class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
+
+class _MockUserModel extends Mock implements UserModel {}
