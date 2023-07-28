@@ -1,9 +1,11 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/data/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/features/auth/data/models/session_model.dart';
+import 'package:quiz_lab/features/auth/data/models/user_model.dart';
 
 abstract interface class AuthAppwriteDataSource {
   Future<Result<SessionModel, String>> createEmailSession(
@@ -11,6 +13,8 @@ abstract interface class AuthAppwriteDataSource {
   );
 
   Future<Result<Unit, String>> createAnonymousSession();
+
+  Future<Result<UserModel, String>> getCurrentUser();
 }
 
 class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
@@ -95,6 +99,37 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
     try {
       await appwriteAccountService.createAnonymousSession();
       return const Ok(unit);
+    } on AppwriteException catch (e) {
+      return Err(e);
+    }
+  }
+
+  @override
+  Future<Result<UserModel, String>> getCurrentUser() async {
+    logger.debug('Fetching user information...');
+
+    return (await _getCurrentlyLoggedInUser())
+        .inspectErr((e) => logger.error(e.toString()))
+        .mapErr((_) => 'Unable to fetch user information')
+        .andThen(
+          (appwriteModel) => _appwriteUserToUserModel(appwriteModel).inspect(
+            (_) => logger.debug('User information fetched successfully'),
+          ),
+        );
+  }
+
+  Result<UserModel, String> _appwriteUserToUserModel(User user) {
+    try {
+      return Ok(UserModel.fromAppwriteModel(user));
+    } catch (e) {
+      logger.error(e.toString());
+      return const Err('Unable to map user information');
+    }
+  }
+
+  Future<Result<User, AppwriteException>> _getCurrentlyLoggedInUser() async {
+    try {
+      return Ok(await appwriteAccountService.get());
     } on AppwriteException catch (e) {
       return Err(e);
     }

@@ -8,7 +8,9 @@ import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/models/email_session_credentials_model.dart';
+import 'package:quiz_lab/features/auth/data/models/preferences_model.dart';
 import 'package:quiz_lab/features/auth/data/models/session_model.dart';
+import 'package:quiz_lab/features/auth/data/models/user_model.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -286,6 +288,98 @@ void main() {
       expect(result, const Ok<Unit, String>(unit));
     });
   });
+
+  group('getCurrentUser', () {
+    test('should log initial message', () async {
+      when(() => appwriteAccountServiceMock.get())
+          .thenThrow(AppwriteException('4rvOY'));
+
+      await dataSource.getCurrentUser();
+
+      verify(() => logger.debug('Fetching user information...')).called(1);
+    });
+
+    group('should fail if appwrite account service throws', () {
+      for (final errorMessage in ['EPV5xh', 'qHGM3da2']) {
+        test(errorMessage, () async {
+          final exception = AppwriteException(errorMessage);
+
+          when(() => appwriteAccountServiceMock.get()).thenThrow(exception);
+
+          final result = await dataSource.getCurrentUser();
+
+          verify(() => logger.error(exception.toString())).called(1);
+          expect(
+            result,
+            const Err<UserModel, String>('Unable to fetch user information'),
+          );
+        });
+      }
+    });
+
+    test('should fail if user mapping fails', () async {
+      when(() => appwriteAccountServiceMock.get())
+          .thenAnswer((_) async => _MockUser());
+
+      final result = await dataSource.getCurrentUser();
+
+      verify(() => logger.error(any())).called(1);
+      expect(
+        result,
+        const Err<UserModel, String>('Unable to map user information'),
+      );
+    });
+
+    test('should succeed', () async {
+      final user = _MockUser();
+      final preferences = _MockPreferences();
+      final preferencesData = <String, dynamic>{
+        'qo1b9': 'U11u0MaW',
+        'oRQ': 783
+      };
+
+      when(() => user.$id).thenReturn(r'$id');
+      when(() => user.$createdAt).thenReturn(r'$createdAt');
+      when(() => user.$updatedAt).thenReturn(r'$updatedAt');
+      when(() => user.name).thenReturn('name');
+      when(() => user.email).thenReturn('email');
+      when(() => user.phone).thenReturn('phone');
+      when(() => user.prefs).thenReturn(preferences);
+      when(() => user.registration).thenReturn('registration');
+      when(() => user.status).thenReturn(false);
+      when(() => user.phoneVerification).thenReturn(false);
+      when(() => user.passwordUpdate).thenReturn('passwordUpdate');
+      when(() => user.emailVerification).thenReturn(true);
+      when(() => preferences.data).thenReturn(preferencesData);
+      when(() => appwriteAccountServiceMock.get())
+          .thenAnswer((_) async => user);
+
+      final result = await dataSource.getCurrentUser();
+
+      verifyNever(() => logger.error(any()));
+      verify(() => logger.debug('User information fetched successfully'))
+          .called(1);
+      expect(
+        result,
+        Ok<UserModel, String>(
+          UserModel(
+            $id: r'$id',
+            $createdAt: r'$createdAt',
+            $updatedAt: r'$updatedAt',
+            name: 'name',
+            registration: 'registration',
+            status: false,
+            passwordUpdate: 'passwordUpdate',
+            email: 'email',
+            phone: 'phone',
+            emailVerification: true,
+            phoneVerification: false,
+            prefs: PreferencesModel(data: preferencesData),
+          ),
+        ),
+      );
+    });
+  });
 }
 
 class _MockAccount extends Mock implements Account {}
@@ -293,3 +387,7 @@ class _MockAccount extends Mock implements Account {}
 class _MockSession extends Mock implements Session {}
 
 class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
+
+class _MockUser extends Mock implements User {}
+
+class _MockPreferences extends Mock implements Preferences {}
