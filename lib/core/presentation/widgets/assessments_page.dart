@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/presentation/manager/assessments_overview/assessments_overview_cubit.dart';
+import 'package:quiz_lab/core/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/presentation/widgets/assessment_overview.dart';
 import 'package:quiz_lab/core/presentation/widgets/fork_lift_message.dart';
 import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';

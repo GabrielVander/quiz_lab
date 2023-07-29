@@ -79,8 +79,3 @@ class PasswordViewModel extends Equatable {
   @override
   List<Object> get props => [value, showError];
 }
-
-enum LoginPageErrorTypeViewModel {
-  unableToLogin,
-  generic,
-}

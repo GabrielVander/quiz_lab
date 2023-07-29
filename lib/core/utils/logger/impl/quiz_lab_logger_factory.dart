@@ -4,5 +4,5 @@ import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 
 class QuizLabLoggerFactory {
   static QuizLabLogger createLogger<T>() =>
-      QuizLabLoggerImpl(logger: logging.Logger(T.toString()));
+      QuizLabLoggerImpl<T>(logger: logging.Logger(T.toString()));
 }
