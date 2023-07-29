@@ -14,6 +14,10 @@ class QLTextField extends StatelessWidget {
     this.errorMessage,
     this.prefixIcon,
     this.textInputAction,
+    this.keyboardType,
+    this.onSaved,
+    this.onFieldSubmitted,
+    this.onEditingComplete,
     super.key,
   });
 
@@ -27,7 +31,11 @@ class QLTextField extends StatelessWidget {
     String? errorMessage,
     Widget? prefixIcon,
     TextInputAction? textInputAction,
+    TextInputType? keyboardType,
     bool obscureText = false,
+    void Function(String?)? onSaved,
+    void Function(String)? onFieldSubmitted,
+    void Function()? onEditingComplete,
   }) =>
       QLTextField._(
         key: key,
@@ -43,6 +51,10 @@ class QLTextField extends StatelessWidget {
         prefixIcon: prefixIcon,
         obscureText: obscureText,
         textInputAction: textInputAction,
+        keyboardType: keyboardType,
+        onSaved: onSaved,
+        onFieldSubmitted: onFieldSubmitted,
+        onEditingComplete: onEditingComplete,
       );
 
   factory QLTextField.subtle({
@@ -54,7 +66,12 @@ class QLTextField extends StatelessWidget {
     String? helperText,
     String? errorMessage,
     Widget? prefixIcon,
+    TextInputAction? textInputAction,
+    TextInputType? keyboardType,
     bool obscureText = false,
+    void Function(String?)? onSaved,
+    void Function(String)? onFieldSubmitted,
+    void Function()? onEditingComplete,
   }) =>
       QLTextField._(
         key: key,
@@ -69,6 +86,11 @@ class QLTextField extends StatelessWidget {
         errorMessage: errorMessage,
         prefixIcon: prefixIcon,
         obscureText: obscureText,
+        textInputAction: textInputAction,
+        keyboardType: keyboardType,
+        onSaved: onSaved,
+        onFieldSubmitted: onFieldSubmitted,
+        onEditingComplete: onEditingComplete,
       );
 
   factory QLTextField.none({
@@ -78,9 +100,13 @@ class QLTextField extends StatelessWidget {
     String? labelText,
     String? placeholderText,
     String? helperText,
+    TextInputType? keyboardType,
     String? errorMessage,
     Widget? prefixIcon,
     TextInputAction? textInputAction,
+    void Function(String?)? onSaved,
+    void Function(String)? onFieldSubmitted,
+    void Function()? onEditingComplete,
     bool obscureText = false,
   }) =>
       QLTextField._(
@@ -97,6 +123,10 @@ class QLTextField extends StatelessWidget {
         prefixIcon: prefixIcon,
         obscureText: obscureText,
         textInputAction: textInputAction,
+        keyboardType: keyboardType,
+        onSaved: onSaved,
+        onFieldSubmitted: onFieldSubmitted,
+        onEditingComplete: onEditingComplete,
       );
 
   final String? initialValue;
@@ -105,6 +135,10 @@ class QLTextField extends StatelessWidget {
   final String? helperText;
   final String? errorMessage;
   final Widget? prefixIcon;
+  final TextInputType? keyboardType;
+  final void Function(String?)? onSaved;
+  final void Function(String)? onFieldSubmitted;
+  final void Function()? onEditingComplete;
   final TextInputAction? textInputAction;
   final bool obscureText;
   final void Function(String) onChanged;
@@ -121,8 +155,12 @@ class QLTextField extends StatelessWidget {
     return TextFormField(
       initialValue: initialValue,
       onChanged: onChanged,
+      onSaved: onSaved,
+      onFieldSubmitted: onFieldSubmitted,
+      onEditingComplete: onEditingComplete,
       obscureText: obscureText,
       textInputAction: textInputAction,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: placeholderText,
         helperText: helperText,

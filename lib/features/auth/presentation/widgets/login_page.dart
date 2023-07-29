@@ -248,6 +248,7 @@ class _LoginForm extends StatelessWidget {
           _PasswordInput(
             viewModel: passwordViewModel,
             onChange: onPasswordChange,
+            onSubmited: (_) => onLogin(),
           ),
           const SizedBox(
             height: 15,
@@ -289,6 +290,8 @@ class _EmailInput extends StatelessWidget {
           labelText: S.of(context).emailLabel,
           prefixIcon: const Icon(Icons.email),
           errorMessage: errorMessage,
+          textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.emailAddress,
         );
       },
     );
@@ -299,10 +302,12 @@ class _PasswordInput extends StatelessWidget {
   const _PasswordInput({
     required this.viewModel,
     required this.onChange,
+    required this.onSubmited,
   });
 
   final PasswordViewModel viewModel;
   final void Function(String) onChange;
+  final void Function(String?)? onSubmited;
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +326,9 @@ class _PasswordInput extends StatelessWidget {
           obscureText: true,
           errorMessage: errorMessage,
           onChanged: onChange,
+          onFieldSubmitted: onSubmited,
           initialValue: viewModel.value,
+          textInputAction: TextInputAction.done,
         );
       },
     );
