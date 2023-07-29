@@ -513,6 +513,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Unable to login`
+  String get unableToLogin {
+    return Intl.message(
+      'Unable to login',
+      name: 'unableToLogin',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
