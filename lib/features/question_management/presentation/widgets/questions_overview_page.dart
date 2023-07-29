@@ -60,8 +60,7 @@ class QuestionsOverviewPage extends HookWidget {
           Container(
             margin: const EdgeInsets.only(bottom: 15),
             child: _Header(
-              onAddQuestion: () =>
-                  GoRouter.of(context).pushNamed(Routes.createQuestion.name),
+              onAddQuestion: () => GoRouter.of(context).pushNamed(Routes.createQuestion.name),
             ),
           ),
           Expanded(
@@ -197,7 +196,7 @@ class _QuestionAddButton extends StatelessWidget {
   Color _getIconColor(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>();
 
-    return themeColors!.textColors.secondary;
+    return themeColors!.textColors.contrast;
   }
 }
 
@@ -235,10 +234,8 @@ class _QuestionList extends StatelessWidget {
   });
 
   final List<QuestionsOverviewItemViewModel> questions;
-  final void Function(QuestionsOverviewItemViewModel viewModel)
-      onDeleteQuestion;
-  final void Function(QuestionsOverviewItemViewModel viewModel)
-      onSaveUpdatedQuestion;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onDeleteQuestion;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onSaveUpdatedQuestion;
   final void Function(QuestionsOverviewItemViewModel viewModel) onQuestionClick;
 
   @override
@@ -349,7 +346,7 @@ class _QuestionItemTitle extends StatelessWidget {
 
   Color? _getTextColor(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors?.textColors.secondary;
+    final textColor = themeColors?.textColors.contrast;
     return textColor;
   }
 
@@ -426,7 +423,7 @@ class _QuestionItemDifficulty extends StatelessWidget {
 
   Color? _getTextColor(BuildContext context) {
     final themeColors = Theme.of(context).extension<ThemeColors>();
-    final textColor = themeColors?.textColors.secondary;
+    final textColor = themeColors?.textColors.contrast;
     return textColor;
   }
 }

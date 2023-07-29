@@ -110,6 +110,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "saveLabel": MessageLookupByLibrary.simpleMessage("Save"),
         "unableToDisplayQuestion":
             MessageLookupByLibrary.simpleMessage("Unable to display question"),
+        "unableToLogin":
+            MessageLookupByLibrary.simpleMessage("Unable to login"),
         "workInProgressMessage": MessageLookupByLibrary.simpleMessage(
             "We\'re still working on that!")
       };
