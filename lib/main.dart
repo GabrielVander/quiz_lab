@@ -7,6 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
+import 'package:quiz_lab/core/infrastructure/router_di_setup.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_application.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
@@ -51,6 +52,7 @@ Future<void> _setUpInjections() async {
     ..addSetup(coreDependencyInjectionSetup)
     ..addSetup(questionManagementDiSetup)
     ..addSetup(authenticationDiSetup)
+    ..addSetup(routerDiSetup)
     ..setUp();
 }
 

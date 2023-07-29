@@ -7,13 +7,9 @@ import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_cas
 import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
 import 'package:quiz_lab/core/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/presentation/bloc/network/network_cubit.dart';
-import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/core/wrappers/package_info_wrapper.dart';
-import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
 
 void main() {
   late DependencyInjection depedencyInjection;
@@ -105,47 +101,6 @@ void main() {
           check();
         });
       }
-
-      test('QuizLabRouter', () {
-        final networkCubit = _MockNetworkCubit();
-        final bottomNavigationCubit = _MockBottomNavigationCubit();
-        final questionCreationCubit = _MockQuestionCreationCubit();
-        final questionsOverviewCubit = _MockQuestionsOverviewCubit();
-        final loginPageCubit = _MockLoginPageCubit();
-
-        when(() => depedencyInjection.get<NetworkCubit>())
-            .thenReturn(networkCubit);
-        when(() => depedencyInjection.get<BottomNavigationCubit>())
-            .thenReturn(bottomNavigationCubit);
-        when(() => depedencyInjection.get<QuestionCreationCubit>())
-            .thenReturn(questionCreationCubit);
-        when(() => depedencyInjection.get<QuestionsOverviewCubit>())
-            .thenReturn(questionsOverviewCubit);
-        when(() => depedencyInjection.get<LoginPageCubit>())
-            .thenReturn(loginPageCubit);
-
-        coreDependencyInjectionSetup(depedencyInjection);
-
-        final captured = verify(
-          () => depedencyInjection.registerBuilder<QuizLabRouter>(captureAny()),
-        ).captured;
-
-        final builder =
-            captured.single as QuizLabRouter Function(DependencyInjection);
-
-        final instance = builder(depedencyInjection);
-
-        expect(
-          instance,
-          QuizLabRouterImpl(
-            networkCubit: networkCubit,
-            bottomNavigationCubit: bottomNavigationCubit,
-            questionCreationCubit: questionCreationCubit,
-            questionsOverviewCubit: questionsOverviewCubit,
-            loginPageCubit: loginPageCubit,
-          ),
-        );
-      });
     },
   );
 }
@@ -190,16 +145,3 @@ class _RealtimeMock extends Mock implements Realtime {}
 class _PackageInfoMock extends Mock implements PackageInfo {}
 
 class _PackageInfoWrapperMock extends Mock implements PackageInfoWrapper {}
-
-class _MockNetworkCubit extends Mock implements NetworkCubit {}
-
-class _MockBottomNavigationCubit extends Mock
-    implements BottomNavigationCubit {}
-
-class _MockQuestionCreationCubit extends Mock
-    implements QuestionCreationCubit {}
-
-class _MockQuestionsOverviewCubit extends Mock
-    implements QuestionsOverviewCubit {}
-
-class _MockLoginPageCubit extends Mock implements LoginPageCubit {}
