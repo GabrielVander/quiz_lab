@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/core/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
+import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
@@ -14,6 +15,7 @@ void main() {
   late QuestionCreationCubit questionCreationCubit;
   late QuestionsOverviewCubit questionsOverviewCubit;
   late LoginPageCubit loginPageCubit;
+  late CheckIfUserIsLoggedInUseCase checkIfUserIsLoggedInUseCase;
 
   late QuizLabRouter router;
 
@@ -23,6 +25,7 @@ void main() {
     questionCreationCubit = _MockQuestionCreationCubit();
     questionsOverviewCubit = _MockQuestionsOverviewCubit();
     loginPageCubit = _MockLoginPageCubit();
+    checkIfUserIsLoggedInUseCase = _MockCheckIfUserIsLoggedInUseCase();
 
     router = QuizLabRouterImpl(
       networkCubit: networkCubit,
@@ -30,6 +33,7 @@ void main() {
       questionCreationCubit: questionCreationCubit,
       questionsOverviewCubit: questionsOverviewCubit,
       loginPageCubit: loginPageCubit,
+      checkIfUserIsLoggedInUseCase: checkIfUserIsLoggedInUseCase,
     );
   });
 
@@ -65,3 +69,6 @@ class _MockQuestionsOverviewCubit extends Mock
     implements QuestionsOverviewCubit {}
 
 class _MockLoginPageCubit extends Mock implements LoginPageCubit {}
+
+class _MockCheckIfUserIsLoggedInUseCase extends Mock
+    implements CheckIfUserIsLoggedInUseCase {}

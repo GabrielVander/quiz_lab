@@ -9,6 +9,7 @@ import 'package:quiz_lab/core/presentation/widgets/assessments_page.dart';
 import 'package:quiz_lab/core/presentation/widgets/home_page.dart';
 import 'package:quiz_lab/core/presentation/widgets/results_page.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
+import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/auth/presentation/widgets/login_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
@@ -32,6 +33,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
     required this.questionCreationCubit,
     required this.questionsOverviewCubit,
     required this.loginPageCubit,
+    required this.checkIfUserIsLoggedInUseCase,
   });
 
   final NetworkCubit networkCubit;
@@ -39,6 +41,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
   final QuestionCreationCubit questionCreationCubit;
   final QuestionsOverviewCubit questionsOverviewCubit;
   final LoginPageCubit loginPageCubit;
+  final CheckIfUserIsLoggedInUseCase checkIfUserIsLoggedInUseCase;
 
   static final _shellNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -46,7 +49,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
       GlobalKey<NavigatorState>(debugLabel: 'shell');
 
   late final GoRouter _goRouter = GoRouter(
-    initialLocation: Routes.login.path,
+    initialLocation: Routes.questionsOverview.path,
     navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: true,
     routes: [
@@ -75,7 +78,11 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
             parentNavigatorKey: _shellNavigatorKey,
             name: Routes.questionsOverview.name,
             path: Routes.questionsOverview.path,
-            // redirect: ,
+            redirect: (buildContext, routerState) async =>
+                (await checkIfUserIsLoggedInUseCase()).mapOrElse(
+              errMap: (_) => null,
+              okMap: (isLoggedIn) => isLoggedIn ? null : Routes.login.path,
+            ),
             pageBuilder: (BuildContext context, GoRouterState state) =>
                 NoTransitionPage(
               child: QuestionsOverviewPage(
