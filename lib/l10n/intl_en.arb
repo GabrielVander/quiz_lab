@@ -178,5 +178,6 @@
   "dontHaveAnAccountPhrase": "Don't have an account?",
   "loginPageSignUpButtonLabel": "Sign Up",
   "genericErrorMessage": "Something went wrong",
-  "notYetImplemented": "Not yet implemented"
+  "notYetImplemented": "Not yet implemented",
+  "unableToLogin": "Unable to login"
 }

@@ -1,8 +1,10 @@
-v0.3.3
+v0.4.0
 
 Adjustments
-* Added application's current version display
+* Visual improvements
 * Updated Flutter version
+* Added ability to login anonymously
+* Improved login form handling
 
-Bug fixes
-* Fixed "All options with same text getting selected while answering question"
+Bug Fixes
+* A previously logged in user will no longer be logged out when the app is closed

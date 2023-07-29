@@ -19,20 +19,26 @@ class MainColors {
     required this.primary,
     required this.secondary,
     required this.accent,
+    required this.subtle,
+    required this.error,
   });
 
   final Color primary;
   final Color secondary;
   final Color accent;
+  final Color subtle;
+  final Color error;
 }
 
 class TextColors {
   const TextColors({
     required this.primary,
+    required this.contrast,
     required this.secondary,
   });
 
   final Color primary;
+  final Color contrast;
   final Color secondary;
 }
 
