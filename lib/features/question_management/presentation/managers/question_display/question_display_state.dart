@@ -15,6 +15,8 @@ class QuestionDisplayViewModelUpdated extends QuestionDisplayState {
   final QuestionDisplayViewModel viewModel;
 }
 
+class QuestionDisplayAnswerButtonEnabled extends QuestionDisplayState {}
+
 class QuestionDisplayQuestionAnsweredCorrectly extends QuestionDisplayState {
   const QuestionDisplayQuestionAnsweredCorrectly() : super();
 }

@@ -3,7 +3,6 @@ import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/impl/login_with_credentials_use_case_impl.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 
 void main() {
@@ -44,7 +43,7 @@ void main() {
                   ),
                 )
                 .thenAnswer(
-                  (_) async => Result.err(authError),
+                  (_) async => Err(authError),
                 );
 
             final result = await useCase(
@@ -55,7 +54,7 @@ void main() {
             );
 
             expect(result.isErr, true);
-            expect(result.err, 'Login failed');
+            expect(result.unwrapErr(), 'Login failed');
           });
         }
       },
@@ -78,7 +77,7 @@ void main() {
                 ),
               ),
             )
-            .thenAnswer((_) async => const Result.ok(unit));
+            .thenAnswer((_) async => const Ok(unit));
 
         final result = await useCase(
           const LoginWithCredentialsUseCaseInput(
@@ -88,7 +87,7 @@ void main() {
         );
 
         expect(result.isOk, true);
-        expect(result.ok, unit);
+        expect(result.unwrap(), unit);
       },
     );
   });

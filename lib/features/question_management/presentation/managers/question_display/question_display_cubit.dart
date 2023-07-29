@@ -44,7 +44,7 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
       return;
     }
 
-    _emitSubjectWithGivenQuestion(questionResult.ok!);
+    _emitSubjectWithGivenQuestion(questionResult.unwrap());
   }
 
   void onOptionSelected(String optionId) {
@@ -56,10 +56,10 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
 
         return e.copyWith(isSelected: false);
       }).toList(),
-      answerButtonIsEnabled: true,
     );
 
     emit(QuestionDisplayViewModelUpdated(viewModel: _currentViewModel));
+    emit(QuestionDisplayAnswerButtonEnabled());
   }
 
   void onAnswer() {

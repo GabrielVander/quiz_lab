@@ -48,7 +48,7 @@ class QuestionRepositoryImpl extends QuestionRepository {
       ),
     );
 
-    return const Result.ok(unit);
+    return const Ok(unit);
   }
 
   @override
@@ -57,16 +57,14 @@ class QuestionRepositoryImpl extends QuestionRepository {
   ) async {
     _logger.debug('Deleting question...');
 
-    final deletionResult =
-        await _questionsAppwriteDataSource.deleteSingle(id.value);
+    final deletionResult = await _questionsAppwriteDataSource.deleteSingle(id.value);
 
     return deletionResult.when(
       ok: (_) {
         _logger.debug('Question deleted successfully');
-        return const Result.ok(unit);
+        return const Ok(unit);
       },
-      err: (failure) =>
-          Result.err(_mapQuestionsAppwriteDataSourceFailure(failure)),
+      err: (failure) => Err(_mapQuestionsAppwriteDataSourceFailure(failure)),
     );
   }
 
@@ -76,16 +74,14 @@ class QuestionRepositoryImpl extends QuestionRepository {
   ) async {
     _logger.debug('Getting question...');
 
-    final fetchResult =
-        await _questionsAppwriteDataSource.fetchSingle(id.value);
+    final fetchResult = await _questionsAppwriteDataSource.fetchSingle(id.value);
 
     return fetchResult.when(
       ok: (model) {
         _logger.debug('Question fetched successfully');
-        return Result.ok(model.toQuestion());
+        return Ok(model.toQuestion());
       },
-      err: (failure) =>
-          Result.err(_mapQuestionsAppwriteDataSourceFailure(failure)),
+      err: (failure) => Err(_mapQuestionsAppwriteDataSourceFailure(failure)),
     );
   }
 
@@ -99,18 +95,12 @@ class QuestionRepositoryImpl extends QuestionRepository {
     switch (dataSourceFailure.runtimeType) {
       case QuestionsAppwriteDataSourceUnexpectedFailure:
         repoFailure = QuestionRepositoryUnexpectedFailure(
-          message: (dataSourceFailure
-                  as QuestionsAppwriteDataSourceUnexpectedFailure)
-              .message,
+          message: (dataSourceFailure as QuestionsAppwriteDataSourceUnexpectedFailure).message,
         );
-        break;
       case QuestionsAppwriteDataSourceAppwriteFailure:
         repoFailure = QuestionRepositoryExternalServiceErrorFailure(
-          message:
-              (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure)
-                  .message,
+          message: (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure).message,
         );
-        break;
     }
 
     _logger.error(repoFailure.toString());
@@ -124,17 +114,14 @@ class QuestionRepositoryImpl extends QuestionRepository {
       throw UnimplementedError();
 
   @override
-  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>>
-      watchAll() async {
+  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll() async {
     _logger.debug('Watching questions...');
 
     await _emitQuestions();
 
-    _appwriteDataSource
-        .watchForQuestionCollectionUpdate()
-        .listen(_onQuestionsUpdate);
+    _appwriteDataSource.watchForQuestionCollectionUpdate().listen(_onQuestionsUpdate);
 
-    return Result.ok(_questionsStreamController.stream);
+    return Ok(_questionsStreamController.stream);
   }
 
   Future<void> _onQuestionsUpdate(_) async {
@@ -150,8 +137,7 @@ class QuestionRepositoryImpl extends QuestionRepository {
 
     _logger.debug('Fetched ${questionsListModel.total} questions');
 
-    final questions =
-        questionsListModel.questions.map((e) => e.toQuestion()).toList();
+    final questions = questionsListModel.questions.map((e) => e.toQuestion()).toList();
 
     _questionsStreamController.add(questions);
   }

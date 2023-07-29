@@ -9,19 +9,19 @@ class JsonParser<T extends Object> {
 
   Result<String, EncodeFailure> encode(T input) {
     try {
-      return Result.ok(encoder(input));
+      return Ok(encoder(input));
       // ignore: avoid_catching_errors
     } on Exception catch (e) {
-      return Result.err(EncodeFailure.exception(message: e.toString()));
+      return Err(EncodeFailure.exception(message: e.toString()));
     }
   }
 
   Result<T, DecodeFailure> decode(String input) {
     try {
-      return Result.ok(decoder(input) as T);
+      return Ok(decoder(input) as T);
       // ignore: avoid_catching_errors
     } on Exception catch (e) {
-      return Result.err(DecodeFailure.exception(message: e.toString()));
+      return Err(DecodeFailure.exception(message: e.toString()));
     }
   }
 }

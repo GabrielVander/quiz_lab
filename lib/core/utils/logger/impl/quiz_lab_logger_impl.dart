@@ -3,10 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart' as logging;
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 
-class QuizLabLoggerImpl implements QuizLabLogger {
+class QuizLabLoggerImpl<T> implements QuizLabLogger {
   QuizLabLoggerImpl({
-    required logging.Logger logger,
-  }) : _logger = logger;
+    logging.Logger? logger,
+  }) : _logger = logger ?? logging.Logger(T.toString());
 
   final logging.Logger _logger;
 
@@ -23,24 +23,19 @@ class QuizLabLoggerImpl implements QuizLabLogger {
   void debug(String message) => _logger.fine(message);
 
   static void onListen(logging.LogRecord record) {
-    final message =
-        '${record.time} ${record.loggerName} ${record.level.name} - '
+    final message = '${record.time} ${record.loggerName} ${record.level.name} - '
         '${record.message}';
 
     switch (record.level.name) {
       case 'SHOUT':
       case 'SEVERE':
         _Printer.printRed(message);
-        break;
       case 'WARNING':
         _Printer.printYellow(message);
-        break;
       case 'INFO':
         _Printer.printBlue(message);
-        break;
       case 'CONFIG':
         _Printer.printGreen(message);
-        break;
       default:
         _Printer.printNoColor(message);
     }
@@ -84,7 +79,3 @@ class _Printer {
     }
   }
 }
-
-QuizLabLogger loggerImplFactory(String loggerName) => QuizLabLoggerImpl(
-      logger: logging.Logger(loggerName),
-    );

@@ -590,8 +590,7 @@ void main() {
                   ),
                 )
                 .thenAnswer(
-                  (_) async =>
-                      Result.err(AppwriteWrapperUnexpectedFailure('7S8W')),
+                  (_) async => Err(AppwriteWrapperUnexpectedFailure('7S8W')),
                 );
 
             dataSource.createSingle(creationModel);
@@ -641,13 +640,12 @@ void main() {
                     data: mocktail.any(named: 'data'),
                   ),
                 )
-                .thenAnswer((_) async => Result.err(wrapperFailure));
+                .thenAnswer((_) async => Err(wrapperFailure));
 
-            final result = await dataSource
-                .createSingle(appwriteQuestionCreationModelMock);
+            final result = await dataSource.createSingle(appwriteQuestionCreationModelMock);
 
             expect(result.isErr, true);
-            expect(result.err, expectedFailure);
+            expect(result.unwrapErr(), expectedFailure);
           });
         }
       },
@@ -754,12 +752,12 @@ void main() {
                     data: mocktail.any(named: 'data'),
                   ),
                 )
-                .thenAnswer((_) async => Result.ok(appwriteDocument));
+                .thenAnswer((_) async => Ok(appwriteDocument));
 
             final result = await dataSource.createSingle(creationModelMock);
 
             expect(result.isOk, true);
-            expect(result.ok, expectedModel);
+            expect(result.unwrap(), expectedModel);
           });
         }
       },
@@ -801,8 +799,7 @@ void main() {
                   ),
                 )
                 .thenAnswer(
-                  (_) async =>
-                      Result.err(AppwriteWrapperUnexpectedFailure('k7^&M')),
+                  (_) async => Err(AppwriteWrapperUnexpectedFailure('k7^&M')),
                 );
 
             dataSource.deleteSingle(id);
@@ -825,8 +822,7 @@ void main() {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
             final wrapperFailure = values[0] as AppwriteWrapperFailure;
-            final expectedFailure =
-                values[1] as QuestionsAppwriteDataSourceFailure;
+            final expectedFailure = values[1] as QuestionsAppwriteDataSourceFailure;
 
             mocktail
                 .when(
@@ -836,12 +832,12 @@ void main() {
                     documentId: mocktail.any(named: 'documentId'),
                   ),
                 )
-                .thenAnswer((_) async => Result.err(wrapperFailure));
+                .thenAnswer((_) async => Err(wrapperFailure));
 
             final result = await dataSource.deleteSingle('*1Kl!M2q');
 
             expect(result.isErr, true);
-            expect(result.err, expectedFailure);
+            expect(result.unwrapErr(), expectedFailure);
           });
         }
       },
@@ -858,12 +854,12 @@ void main() {
                 documentId: mocktail.any(named: 'documentId'),
               ),
             )
-            .thenAnswer((_) async => const Result.ok(unit));
+            .thenAnswer((_) async => const Ok(unit));
 
         final result = await dataSource.deleteSingle('vJk60VoW');
 
         expect(result.isOk, true);
-        expect(result.ok, unit);
+        expect(result.unwrap(), unit);
       },
     );
   });
@@ -903,8 +899,7 @@ void main() {
                   ),
                 )
                 .thenAnswer(
-                  (_) async =>
-                      Result.err(AppwriteWrapperUnexpectedFailure('k7^&M')),
+                  (_) async => Err(AppwriteWrapperUnexpectedFailure('k7^&M')),
                 );
 
             dataSource.fetchSingle(id);
@@ -927,8 +922,7 @@ void main() {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
             final wrapperFailure = values[0] as AppwriteWrapperFailure;
-            final expectedFailure =
-                values[1] as QuestionsAppwriteDataSourceFailure;
+            final expectedFailure = values[1] as QuestionsAppwriteDataSourceFailure;
 
             mocktail
                 .when(
@@ -938,12 +932,12 @@ void main() {
                     documentId: mocktail.any(named: 'documentId'),
                   ),
                 )
-                .thenAnswer((_) async => Result.err(wrapperFailure));
+                .thenAnswer((_) async => Err(wrapperFailure));
 
             final result = await dataSource.fetchSingle('9m8v3W');
 
             expect(result.isErr, true);
-            expect(result.err, expectedFailure);
+            expect(result.unwrapErr(), expectedFailure);
           });
         }
       },
@@ -1043,12 +1037,12 @@ void main() {
                     documentId: mocktail.any(named: 'documentId'),
                   ),
                 )
-                .thenAnswer((_) async => Result.ok(appwriteDocument));
+                .thenAnswer((_) async => Ok(appwriteDocument));
 
             final result = await dataSource.fetchSingle('!K8@');
 
             expect(result.isOk, true);
-            expect(result.ok, expectedModel);
+            expect(result.unwrap(), expectedModel);
           });
         }
       },

@@ -121,7 +121,7 @@ void main() {
 
       test('should emit expected states: $expectedStates', () {
         mocktail.when(watchAllQuestionsUseCaseMock.execute).thenAnswer(
-              (_) async => Result.ok(Stream.fromIterable(questions)),
+              (_) async => Ok(Stream.fromIterable(questions)),
             );
 
         expectLater(cubit.stream, emitsInOrder(expectedStates));
@@ -162,7 +162,7 @@ void main() {
             final expectedStates = values[1] as List<Matcher>;
 
             mocktail.when(watchAllQuestionsUseCaseMock.execute).thenAnswer(
-                  (_) async => Result.err(
+                  (_) async => Err(
                     WatchAllQuestionsFailure.generic(message: message),
                   ),
                 );
@@ -198,12 +198,9 @@ void main() {
             final questionId = values[0] as String;
             final expectedStates = values[1] as List<Matcher>;
 
-            final questionOverviewItemViewModelMock =
-                _QuestionOverviewItemViewModelMock();
+            final questionOverviewItemViewModelMock = _QuestionOverviewItemViewModelMock();
 
-            mocktail
-                .when(() => questionOverviewItemViewModelMock.id)
-                .thenReturn(questionId);
+            mocktail.when(() => questionOverviewItemViewModelMock.id).thenReturn(questionId);
 
             mocktail
                 .when(() => deleteQuestionUseCaseMock.execute(questionId))
@@ -239,7 +236,7 @@ void main() {
       () {
         for (final values in [
           [
-            Result<Unit, UpdateQuestionUseCaseFailure>.err(
+            Err<Unit, UpdateQuestionUseCaseFailure>(
               UpdateQuestionUseCaseFailure.repositoryFailure(''),
             ),
             [
@@ -247,7 +244,7 @@ void main() {
             ]
           ],
           [
-            Result<Unit, UpdateQuestionUseCaseFailure>.err(
+            Err<Unit, UpdateQuestionUseCaseFailure>(
               UpdateQuestionUseCaseFailure.repositoryFailure(''),
             ),
             [
@@ -255,7 +252,7 @@ void main() {
             ]
           ],
           [
-            Result<Unit, UpdateQuestionUseCaseFailure>.err(
+            Err<Unit, UpdateQuestionUseCaseFailure>(
               UpdateQuestionUseCaseFailure.repositoryFailure(''),
             ),
             [
@@ -268,7 +265,7 @@ void main() {
             ]
           ],
           [
-            Result<Unit, UpdateQuestionUseCaseFailure>.err(
+            Err<Unit, UpdateQuestionUseCaseFailure>(
               UpdateQuestionUseCaseFailure.repositoryFailure('#1q'),
             ),
             [
@@ -289,9 +286,7 @@ void main() {
             final viewModelMock = _QuestionOverviewItemViewModelMock();
             final questionMock = _QuestionMock();
 
-            mocktail
-                .when(() => viewModelMock.shortDescription)
-                .thenReturn('gImVFe1#');
+            mocktail.when(() => viewModelMock.shortDescription).thenReturn('gImVFe1#');
 
             mocktail.when(viewModelMock.toQuestion).thenReturn(questionMock);
 
@@ -314,14 +309,11 @@ class _QuestionMock extends mocktail.Mock implements Question {}
 class _QuestionOverviewItemViewModelMock extends mocktail.Mock
     implements QuestionsOverviewItemViewModel {}
 
-class _UpdateQuestionUseCaseMock extends mocktail.Mock
-    implements UpdateQuestionUseCase {}
+class _UpdateQuestionUseCaseMock extends mocktail.Mock implements UpdateQuestionUseCase {}
 
-class _DeleteQuestionUseCaseMock extends mocktail.Mock
-    implements DeleteQuestionUseCase {}
+class _DeleteQuestionUseCaseMock extends mocktail.Mock implements DeleteQuestionUseCase {}
 
-class _WatchAllQuestionsUseCaseMock extends mocktail.Mock
-    implements WatchAllQuestionsUseCase {}
+class _WatchAllQuestionsUseCaseMock extends mocktail.Mock implements WatchAllQuestionsUseCase {}
 
 class _DummyQuestion extends Question {
   _DummyQuestion()

@@ -5,7 +5,7 @@ import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 
 void main() {
   late Logger loggerMock;
-  late QuizLabLoggerImpl loggerImpl;
+  late QuizLabLoggerImpl<dynamic> loggerImpl;
 
   setUp(() {
     loggerMock = _LoggerMock();

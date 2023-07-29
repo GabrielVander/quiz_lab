@@ -44,5 +44,6 @@
   "dontHaveAnAccountPhrase": "Ainda não tem uma conta?",
   "loginPageSignUpButtonLabel": "Cadastre-se",
   "genericErrorMessage": "Something went wrong",
-  "notYetImplemented": "Ainda não implementado"
+  "notYetImplemented": "Ainda não implementado",
+  "unableToLogin": "Não foi possível entrar"
 }

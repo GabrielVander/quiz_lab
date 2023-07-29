@@ -1,14 +1,17 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/impl/login_with_credentials_use_case_impl.dart';
+import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
+import 'package:quiz_lab/features/auth/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/infrastructure/auth_di_setup.dart';
-import 'package:quiz_lab/features/auth/presentation/managers/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
 
 void main() {
   late DependencyInjection diMock;
@@ -17,87 +20,195 @@ void main() {
     diMock = _DependencyInjectionMock();
   });
 
-  group('should register all dependencies', () {
-    test('auth repository', () {
-      mocktail
-          .when(() => diMock.get<AuthAppwriteDataSource>())
-          .thenReturn(_AuthAppwriteDataSourceMock());
+  tearDown(resetMocktailState);
+
+  group('should register correctly', () {
+    test('AuthAppwriteDataSource', () {
+      final mockAppwriteAccountService = _MockAccount();
+
+      when(() => diMock.get<Account>()).thenReturn(mockAppwriteAccountService);
 
       authenticationDiSetup(diMock);
 
-      final captured = mocktail
-          .verify(
-            () => diMock.registerFactory<AuthRepository>(mocktail.captureAny()),
-          )
-          .captured;
+      final captured = verify(
+        () => diMock.registerBuilder<AuthAppwriteDataSource>(captureAny()),
+      ).captured;
 
-      final factory = captured.last as AuthRepository Function(DependencyInjection);
-
-      final authRepository = factory(diMock);
-
-      expect(authRepository, isA<AuthRepositoryImpl>());
-    });
-
-    test('login with credentials use case', () {
-      mocktail.when(() => diMock.get<AuthRepository>()).thenReturn(_FakeAuthRepository());
-
-      authenticationDiSetup(diMock);
-
-      final captured = mocktail
-          .verify(
-            () => diMock.registerFactory<LoginWithCredentialsUseCase>(
-              mocktail.captureAny(),
-            ),
-          )
-          .captured;
-
-      final factory = captured.last as LoginWithCredentialsUseCase Function(
+      final builder = captured.single as AuthAppwriteDataSource Function(
         DependencyInjection,
       );
+      final dataSource = builder(diMock);
 
-      final useCase = factory(diMock);
+      expect(dataSource, isA<AuthAppwriteDataSourceImpl>());
+      final dataSourceImpl = dataSource as AuthAppwriteDataSourceImpl;
+
+      expect(
+        dataSourceImpl.logger,
+        isA<QuizLabLoggerImpl<AuthAppwriteDataSourceImpl>>(),
+      );
+      expect(
+        dataSourceImpl.appwriteAccountService,
+        same(mockAppwriteAccountService),
+      );
+    });
+
+    test('AuthRepository', () {
+      final mockAuthAppwriteDataSource = _MockAuthAppwriteDataSource();
+
+      when(() => diMock.get<AuthAppwriteDataSource>())
+          .thenReturn(mockAuthAppwriteDataSource);
+
+      authenticationDiSetup(diMock);
+
+      final captured =
+          verify(() => diMock.registerBuilder<AuthRepository>(captureAny()))
+              .captured;
+
+      final builder =
+          captured.single as AuthRepository Function(DependencyInjection);
+      final repository = builder(diMock);
+
+      expect(repository, isA<AuthRepositoryImpl>());
+      final repositoryImpl = repository as AuthRepositoryImpl;
+
+      expect(
+        repositoryImpl.logger,
+        isA<QuizLabLoggerImpl<AuthRepositoryImpl>>(),
+      );
+      expect(repositoryImpl.authDataSource, same(mockAuthAppwriteDataSource));
+    });
+
+    test('LoginWithCredentialsUseCase', () {
+      when(() => diMock.get<AuthRepository>())
+          .thenReturn(_MockAuthRepository());
+
+      authenticationDiSetup(diMock);
+
+      final captured = verify(
+        () => diMock.registerBuilder<LoginWithCredentialsUseCase>(
+          captureAny(),
+        ),
+      ).captured;
+
+      final builder = captured.single as LoginWithCredentialsUseCase Function(
+        DependencyInjection,
+      );
+      final useCase = builder(diMock);
 
       expect(useCase, isA<LoginWithCredentialsUseCaseImpl>());
     });
 
-    test('login page cubit', () {
-      mocktail
-          .when(() => diMock.get<LoginWithCredentialsUseCase>())
-          .thenReturn(_FakeLoginWithCredentialsUseCase());
+    test('LoginAnonymouslyUseCase', () {
+      final mockAuthRepository = _MockAuthRepository();
 
-      mocktail
-          .when(() => diMock.get<FetchApplicationVersionUseCase>())
-          .thenReturn(_FetchApplicationVersionUseCaseMock());
+      when(() => diMock.get<AuthRepository>()).thenReturn(mockAuthRepository);
 
       authenticationDiSetup(diMock);
 
-      final captured = mocktail
-          .verify(
-            () => diMock.registerFactory<LoginPageCubit>(
-              mocktail.captureAny(),
-            ),
-          )
-          .captured;
+      final builderCaptor = verify(
+        () => diMock.registerBuilder<LoginAnonymouslyUseCase>(captureAny()),
+      ).captured;
 
-      final factory = captured.last as LoginPageCubit Function(
+      final builder = builderCaptor.single as LoginAnonymouslyUseCase Function(
         DependencyInjection,
       );
+      final useCase = builder(diMock);
 
-      final cubit = factory(diMock);
+      expect(useCase, isA<LoginAnonymouslyUseCaseImpl>());
 
-      expect(cubit, isA<LoginPageCubit>());
+      final useCaseImpl = useCase as LoginAnonymouslyUseCaseImpl;
+
+      expect(useCaseImpl.authRepository, same(mockAuthRepository));
+      expect(
+        useCaseImpl.logger,
+        isA<QuizLabLoggerImpl<LoginAnonymouslyUseCaseImpl>>(),
+      );
+    });
+
+    test('CheckIfUserIsLoggedInUseCase', () {
+      final mockAuthRepository = _MockAuthRepository();
+
+      when(() => diMock.get<AuthRepository>()).thenReturn(mockAuthRepository);
+
+      authenticationDiSetup(diMock);
+
+      final builderCaptor = verify(
+        () =>
+            diMock.registerBuilder<CheckIfUserIsLoggedInUseCase>(captureAny()),
+      ).captured;
+
+      final builder =
+          builderCaptor.single as CheckIfUserIsLoggedInUseCase Function(
+        DependencyInjection,
+      );
+      final useCase = builder(diMock);
+
+      expect(useCase, isA<CheckIfUserIsLoggedInUseCaseImpl>());
+
+      final useCaseImpl = useCase as CheckIfUserIsLoggedInUseCaseImpl;
+
+      expect(useCaseImpl.authRepository, same(mockAuthRepository));
+      expect(
+        useCaseImpl.logger,
+        isA<QuizLabLoggerImpl<CheckIfUserIsLoggedInUseCaseImpl>>(),
+      );
+    });
+
+    test('LoginPageCubit', () {
+      final mockLoginWithCredentialsUseCase =
+          _MockLoginWithCredentialsUseCase();
+      final mockFetchApplicationVersionUseCase =
+          _MockFetchApplicationVersionUseCase();
+      final mockLoginAnonymouslyUseCase = _MockLoginAnonymouslyUseCase();
+
+      when(() => diMock.get<LoginWithCredentialsUseCase>())
+          .thenReturn(mockLoginWithCredentialsUseCase);
+      when(() => diMock.get<FetchApplicationVersionUseCase>())
+          .thenReturn(mockFetchApplicationVersionUseCase);
+      when(() => diMock.get<LoginAnonymouslyUseCase>())
+          .thenReturn(mockLoginAnonymouslyUseCase);
+
+      authenticationDiSetup(diMock);
+
+      final captured =
+          verify(() => diMock.registerBuilder<LoginPageCubit>(captureAny()))
+              .captured;
+
+      final builder =
+          captured.single as LoginPageCubit Function(DependencyInjection);
+      final cubit = builder(diMock);
+
+      expect(cubit.logger, isA<QuizLabLoggerImpl<LoginPageCubit>>());
+      expect(
+        cubit.fetchApplicationVersionUseCase,
+        mockFetchApplicationVersionUseCase,
+      );
+      expect(
+        cubit.loginWithCredentionsUseCase,
+        mockLoginWithCredentialsUseCase,
+      );
+      expect(
+        cubit.loginAnonymouslyUseCase,
+        mockLoginAnonymouslyUseCase,
+      );
     });
   });
 }
 
-class _DependencyInjectionMock extends mocktail.Mock implements DependencyInjection {}
+class _DependencyInjectionMock extends Mock implements DependencyInjection {}
 
-class _AuthAppwriteDataSourceMock extends mocktail.Fake implements AuthAppwriteDataSource {}
+class _MockAuthAppwriteDataSource extends Mock
+    implements AuthAppwriteDataSource {}
 
-class _FakeAuthRepository extends mocktail.Fake implements AuthRepository {}
+class _MockAuthRepository extends Mock implements AuthRepository {}
 
-class _FakeLoginWithCredentialsUseCase extends mocktail.Fake
+class _MockLoginWithCredentialsUseCase extends Mock
     implements LoginWithCredentialsUseCase {}
 
-class _FetchApplicationVersionUseCaseMock extends mocktail.Fake
+class _MockFetchApplicationVersionUseCase extends Mock
     implements FetchApplicationVersionUseCase {}
+
+class _MockLoginAnonymouslyUseCase extends Mock
+    implements LoginAnonymouslyUseCase {}
+
+class _MockAccount extends Mock implements Account {}

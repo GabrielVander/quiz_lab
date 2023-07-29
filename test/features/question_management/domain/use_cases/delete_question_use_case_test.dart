@@ -31,7 +31,7 @@ void main() {
       ]) {
         test(questionId, () async {
           when(() => questionRepositoryMock.deleteSingle(any()))
-              .thenAnswer((_) async => const Result.ok(unit));
+              .thenAnswer((_) async => const Ok(unit));
 
           await useCase.execute(questionId);
 

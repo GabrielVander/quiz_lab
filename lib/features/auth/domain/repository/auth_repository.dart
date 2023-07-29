@@ -3,11 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 
-// ignore: one_member_abstracts
-abstract class AuthRepository {
+abstract interface class AuthRepository {
   Future<Result<Unit, AuthRepositoryError>> loginWithEmailCredentials(
     EmailCredentials credentials,
   );
+
+  Future<Result<Unit, String>> loginAnonymously();
+
+  Future<Result<bool, String>> isLoggedIn();
 }
 
 abstract class AuthRepositoryError {

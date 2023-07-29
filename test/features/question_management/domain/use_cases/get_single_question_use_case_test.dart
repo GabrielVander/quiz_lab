@@ -24,10 +24,8 @@ void main() {
     test(
       'should return nothing if question repository fails',
       () async {
-        mocktail
-            .when(() => questionRepositoryMock.getSingle(mocktail.any()))
-            .thenAnswer(
-              (_) async => const Result.err(
+        mocktail.when(() => questionRepositoryMock.getSingle(mocktail.any())).thenAnswer(
+              (_) async => const Err(
                 QuestionRepositoryUnexpectedFailure(message: 'B19^Qwu4'),
               ),
             );
@@ -35,7 +33,7 @@ void main() {
         final result = await useCase.execute('5iPj@0V');
 
         expect(result.isErr, true);
-        expect(result.err, unit);
+        expect(result.unwrapErr(), unit);
       },
     );
 
@@ -43,7 +41,7 @@ void main() {
       final result = await useCase.execute(null);
 
       expect(result.isErr, true);
-      expect(result.err, unit);
+      expect(result.unwrapErr(), unit);
     });
   });
 
@@ -60,15 +58,14 @@ void main() {
 
             mocktail
                 .when(
-                  () => questionRepositoryMock
-                      .getSingle(QuestionId(targetQuestionId)),
+                  () => questionRepositoryMock.getSingle(QuestionId(targetQuestionId)),
                 )
-                .thenAnswer((_) async => Result.ok(questionMock));
+                .thenAnswer((_) async => Ok(questionMock));
 
             final result = await useCase.execute(targetQuestionId);
 
             expect(result.isOk, true);
-            expect(result.ok, questionMock);
+            expect(result.unwrap(), questionMock);
           });
         }
       },

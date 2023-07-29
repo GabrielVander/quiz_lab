@@ -55,12 +55,12 @@ void main() {
             final expectedFailure = values[2] as UpdateQuestionUseCaseFailure;
 
             when(() => questionRepositoryMock.updateSingle(question))
-                .thenAnswer((_) async => Result.err(repoFailure));
+                .thenAnswer((_) async => Err(repoFailure));
 
             final result = await useCase.execute(question);
 
             expect(result.isErr, isTrue);
-            expect(result.err, expectedFailure);
+            expect(result.unwrapErr(), expectedFailure);
           });
         }
       },
@@ -99,12 +99,12 @@ void main() {
         ]) {
           test(input.toString(), () async {
             when(() => questionRepositoryMock.updateSingle(input))
-                .thenAnswer((_) async => const Result.ok(unit));
+                .thenAnswer((_) async => const Ok(unit));
 
             final result = await useCase.execute(input);
 
             expect(result.isOk, isTrue);
-            expect(result.ok, unit);
+            expect(result.unwrap(), unit);
           });
         }
       },

@@ -1,23 +1,33 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as appwrite_models;
+import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
+import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/features/auth/data/data_sources/models/email_session_credentials_model.dart';
-import 'package:quiz_lab/features/auth/data/data_sources/models/session_model.dart';
+import 'package:quiz_lab/features/auth/data/models/email_session_credentials_model.dart';
+import 'package:quiz_lab/features/auth/data/models/preferences_model.dart';
+import 'package:quiz_lab/features/auth/data/models/session_model.dart';
+import 'package:quiz_lab/features/auth/data/models/user_model.dart';
 
 void main() {
+  late QuizLabLogger logger;
   late Account appwriteAccountServiceMock;
+
   late AuthAppwriteDataSource dataSource;
 
   setUp(() {
-    appwriteAccountServiceMock = _AccountMock();
-    dataSource = AuthAppwriteDataSource(
+    logger = _MockQuizLabLogger();
+    appwriteAccountServiceMock = _MockAccount();
+    dataSource = AuthAppwriteDataSourceImpl(
+      logger: logger,
       appwriteAccountService: appwriteAccountServiceMock,
     );
   });
 
-  tearDown(mocktail.resetMocktailState);
+  tearDown(resetMocktailState);
 
   group(
     'createEmailSession()',
@@ -34,27 +44,23 @@ void main() {
               final email = values[0];
               final password = values[1];
 
-              mocktail
-                  .when(
-                    () => appwriteAccountServiceMock.createEmailSession(
-                      email: mocktail.any(named: 'email'),
-                      password: mocktail.any(named: 'password'),
-                    ),
-                  )
-                  .thenThrow(AppwriteException('Er2oG'));
+              when(
+                () => appwriteAccountServiceMock.createEmailSession(
+                  email: any(named: 'email'),
+                  password: any(named: 'password'),
+                ),
+              ).thenThrow(AppwriteException('Er2oG'));
 
               await dataSource.createEmailSession(
                 EmailSessionCredentialsModel(email: email, password: password),
               );
 
-              mocktail
-                  .verify(
-                    () => appwriteAccountServiceMock.createEmailSession(
-                      email: email,
-                      password: password,
-                    ),
-                  )
-                  .called(1);
+              verify(
+                () => appwriteAccountServiceMock.createEmailSession(
+                  email: email,
+                  password: password,
+                ),
+              ).called(1);
             });
           }
         },
@@ -63,14 +69,12 @@ void main() {
       test(
         'should fail with exception message if unexpected exception is thrown',
         () async {
-          mocktail
-              .when(
-                () => appwriteAccountServiceMock.createEmailSession(
-                  email: mocktail.any(named: 'email'),
-                  password: mocktail.any(named: 'password'),
-                ),
-              )
-              .thenThrow(AppwriteException('IR4N'));
+          when(
+            () => appwriteAccountServiceMock.createEmailSession(
+              email: any(named: 'email'),
+              password: any(named: 'password'),
+            ),
+          ).thenThrow(AppwriteException('IR4N'));
 
           final result = await dataSource.createEmailSession(
             const EmailSessionCredentialsModel(
@@ -220,14 +224,12 @@ void main() {
               final appwriteSession = values[0] as appwrite_models.Session;
               final expectedSessionModel = values[1] as SessionModel;
 
-              mocktail
-                  .when(
-                    () => appwriteAccountServiceMock.createEmailSession(
-                      email: mocktail.any(named: 'email'),
-                      password: mocktail.any(named: 'password'),
-                    ),
-                  )
-                  .thenAnswer((_) async => appwriteSession);
+              when(
+                () => appwriteAccountServiceMock.createEmailSession(
+                  email: any(named: 'email'),
+                  password: any(named: 'password'),
+                ),
+              ).thenAnswer((_) async => appwriteSession);
 
               final result = await dataSource.createEmailSession(
                 const EmailSessionCredentialsModel(
@@ -237,14 +239,155 @@ void main() {
               );
 
               expect(result.isOk, true);
-              expect(result.ok, expectedSessionModel);
-              expect(result.ok!.hashCode, expectedSessionModel.hashCode);
+              expect(result.unwrap(), expectedSessionModel);
+              expect(result.unwrap().hashCode, expectedSessionModel.hashCode);
             });
           }
         },
       );
     },
   );
+
+  group('createAnonymousSession', () {
+    test('should log initial message', () {
+      when(() => appwriteAccountServiceMock.createAnonymousSession())
+          .thenThrow(AppwriteException('rPXyEK6n'));
+
+      dataSource.createAnonymousSession();
+
+      verify(() => logger.debug('Creating anonymous session...')).called(1);
+    });
+
+    group('should fail if appwrite account service throws', () {
+      for (final errorMessage in ['L8l6', 'ZrBcC0']) {
+        test(errorMessage, () async {
+          final exception = AppwriteException(errorMessage);
+
+          when(() => appwriteAccountServiceMock.createAnonymousSession())
+              .thenThrow(exception);
+
+          final result = await dataSource.createAnonymousSession();
+
+          verify(() => logger.error(exception.toString())).called(1);
+          expect(
+            result,
+            const Err<Unit, String>('Unable to create anonymous session'),
+          );
+        });
+      }
+    });
+
+    test('should succeed if appwrite account service succeeds', () async {
+      when(() => appwriteAccountServiceMock.createAnonymousSession())
+          .thenAnswer((_) async => _MockSession());
+
+      final result = await dataSource.createAnonymousSession();
+
+      verify(() => logger.debug('Anonymous session created successfully'))
+          .called(1);
+      expect(result, const Ok<Unit, String>(unit));
+    });
+  });
+
+  group('getCurrentUser', () {
+    test('should log initial message', () async {
+      when(() => appwriteAccountServiceMock.get())
+          .thenThrow(AppwriteException('4rvOY'));
+
+      await dataSource.getCurrentUser();
+
+      verify(() => logger.debug('Fetching user information...')).called(1);
+    });
+
+    group('should fail if appwrite account service throws', () {
+      for (final errorMessage in ['EPV5xh', 'qHGM3da2']) {
+        test(errorMessage, () async {
+          final exception = AppwriteException(errorMessage);
+
+          when(() => appwriteAccountServiceMock.get()).thenThrow(exception);
+
+          final result = await dataSource.getCurrentUser();
+
+          verify(() => logger.error(exception.toString())).called(1);
+          expect(
+            result,
+            const Err<UserModel, String>('Unable to fetch user information'),
+          );
+        });
+      }
+    });
+
+    test('should fail if user mapping fails', () async {
+      when(() => appwriteAccountServiceMock.get())
+          .thenAnswer((_) async => _MockUser());
+
+      final result = await dataSource.getCurrentUser();
+
+      verify(() => logger.error(any())).called(1);
+      expect(
+        result,
+        const Err<UserModel, String>('Unable to map user information'),
+      );
+    });
+
+    test('should succeed', () async {
+      final user = _MockUser();
+      final preferences = _MockPreferences();
+      final preferencesData = <String, dynamic>{
+        'qo1b9': 'U11u0MaW',
+        'oRQ': 783
+      };
+
+      when(() => user.$id).thenReturn(r'$id');
+      when(() => user.$createdAt).thenReturn(r'$createdAt');
+      when(() => user.$updatedAt).thenReturn(r'$updatedAt');
+      when(() => user.name).thenReturn('name');
+      when(() => user.email).thenReturn('email');
+      when(() => user.phone).thenReturn('phone');
+      when(() => user.prefs).thenReturn(preferences);
+      when(() => user.registration).thenReturn('registration');
+      when(() => user.status).thenReturn(false);
+      when(() => user.phoneVerification).thenReturn(false);
+      when(() => user.passwordUpdate).thenReturn('passwordUpdate');
+      when(() => user.emailVerification).thenReturn(true);
+      when(() => preferences.data).thenReturn(preferencesData);
+      when(() => appwriteAccountServiceMock.get())
+          .thenAnswer((_) async => user);
+
+      final result = await dataSource.getCurrentUser();
+
+      verifyNever(() => logger.error(any()));
+      verify(() => logger.debug('User information fetched successfully'))
+          .called(1);
+      expect(
+        result,
+        Ok<UserModel, String>(
+          UserModel(
+            $id: r'$id',
+            $createdAt: r'$createdAt',
+            $updatedAt: r'$updatedAt',
+            name: 'name',
+            registration: 'registration',
+            status: false,
+            passwordUpdate: 'passwordUpdate',
+            email: 'email',
+            phone: 'phone',
+            emailVerification: true,
+            phoneVerification: false,
+            prefs: PreferencesModel(data: preferencesData),
+          ),
+        ),
+      );
+    });
+  });
 }
 
-class _AccountMock extends mocktail.Mock implements Account {}
+class _MockAccount extends Mock implements Account {}
+
+class _MockSession extends Mock implements Session {}
+
+class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
+
+class _MockUser extends Mock implements User {}
+
+class _MockPreferences extends Mock implements Preferences {}
