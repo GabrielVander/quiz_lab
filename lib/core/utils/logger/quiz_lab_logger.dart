@@ -1,4 +1,4 @@
-abstract class QuizLabLogger {
+abstract interface class QuizLabLogger {
   void info(String message);
 
   void warn(String message);

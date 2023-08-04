@@ -7,7 +7,11 @@ import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 class QuizLabLoggerImpl<T> extends Equatable implements QuizLabLogger {
   QuizLabLoggerImpl({
     logging.Logger? logger,
-  }) : _logger = logger ?? logging.Logger(T.toString());
+  }) : _logger = logger ?? logging.Logger(T.toString()) {
+    logging.hierarchicalLoggingEnabled = true;
+    _logger.level = logging.Level.ALL;
+    _logger.onRecord.listen(onListen);
+  }
 
   final logging.Logger _logger;
 
@@ -25,60 +29,54 @@ class QuizLabLoggerImpl<T> extends Equatable implements QuizLabLogger {
 
   static void onListen(logging.LogRecord record) {
     final message =
-        '${record.time} ${record.loggerName} ${record.level.name} - '
+        '${record.time} ${record.level.name} ${record.loggerName} - '
         '${record.message}';
 
-    switch (record.level.name) {
-      case 'SHOUT':
-      case 'SEVERE':
-        _Printer.printRed(message);
-      case 'WARNING':
-        _Printer.printYellow(message);
-      case 'INFO':
-        _Printer.printBlue(message);
-      case 'CONFIG':
-        _Printer.printGreen(message);
-      default:
-        _Printer.printNoColor(message);
-    }
+    _Printer.fromLevel(record.level).printColorizedMessage(message);
   }
 
   @override
   List<Object> get props => [T];
 }
 
-class _Printer {
-  static void printNoColor(String message) {
-    final pen = AnsiPen();
+final class _Printer {
+  const _Printer._({
+    required this.pen,
+  });
 
-    _print(pen, message);
+  factory _Printer.fromLevel(logging.Level level) {
+    switch (level) {
+      case logging.Level.SHOUT:
+      case logging.Level.SEVERE:
+        return _Printer.red();
+      case logging.Level.WARNING:
+        return _Printer.yellow();
+      case logging.Level.INFO:
+        return _Printer.blue();
+      case logging.Level.CONFIG:
+        return _Printer.green();
+      case logging.Level.FINE:
+        return _Printer.cyan();
+      default:
+        return _Printer.white();
+    }
   }
 
-  static void printRed(String message) {
-    final pen = AnsiPen()..red();
+  factory _Printer.white() => _Printer._(pen: AnsiPen()..white());
 
-    _print(pen, message);
-  }
+  factory _Printer.cyan() => _Printer._(pen: AnsiPen()..cyan());
 
-  static void printYellow(String message) {
-    final pen = AnsiPen()..yellow();
+  factory _Printer.red() => _Printer._(pen: AnsiPen()..red());
 
-    _print(pen, message);
-  }
+  factory _Printer.yellow() => _Printer._(pen: AnsiPen()..yellow());
 
-  static void printGreen(String message) {
-    final pen = AnsiPen()..green();
+  factory _Printer.green() => _Printer._(pen: AnsiPen()..green());
 
-    _print(pen, message);
-  }
+  factory _Printer.blue() => _Printer._(pen: AnsiPen()..blue());
 
-  static void printBlue(String message) {
-    final pen = AnsiPen()..blue();
+  final AnsiPen pen;
 
-    _print(pen, message);
-  }
-
-  static void _print(AnsiPen pen, String message) {
+  void printColorizedMessage(String message) {
     if (kDebugMode) {
       print(pen(message));
     }

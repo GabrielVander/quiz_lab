@@ -1,74 +1,57 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logging/logging.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 
 void main() {
   late Logger loggerMock;
-  late QuizLabLoggerImpl<dynamic> loggerImpl;
 
   setUp(() {
     loggerMock = _LoggerMock();
-    loggerImpl = QuizLabLoggerImpl(
-      logger: loggerMock,
-    );
   });
 
-  tearDown(mocktail.resetMocktailState);
+  tearDown(resetMocktailState);
 
-  group(
-    'error',
-    () {
-      for (final message in [
-        '',
-        'NQJ9LFrX',
-      ]) {
-        test(message, () {
-          mocktail.when(() => loggerMock.severe(message)).thenReturn(null);
+  for (final message in [
+    'n74',
+    'NQJ9LFrX',
+  ]) {
+    test('error -> $message', () {
+      when(() => loggerMock.onRecord)
+          .thenAnswer((_) => const Stream<LogRecord>.empty());
 
-          loggerImpl.error(message);
+      QuizLabLoggerImpl<dynamic>(logger: loggerMock).error(message);
 
-          mocktail.verify(() => loggerMock.severe(message)).called(1);
-        });
-      }
-    },
-  );
+      verify(() => loggerMock.severe(message)).called(1);
+    });
 
-  group(
-    'info',
-    () {
-      for (final message in [
-        '',
-        '0R#',
-      ]) {
-        test(message, () {
-          mocktail.when(() => loggerMock.info(message)).thenReturn(null);
+    test('info -> $message', () {
+      when(() => loggerMock.onRecord)
+          .thenAnswer((_) => const Stream<LogRecord>.empty());
 
-          loggerImpl.info(message);
+      QuizLabLoggerImpl<dynamic>(logger: loggerMock).info(message);
 
-          mocktail.verify(() => loggerMock.info(message)).called(1);
-        });
-      }
-    },
-  );
+      verify(() => loggerMock.info(message)).called(1);
+    });
 
-  group(
-    'warn',
-    () {
-      for (final message in [
-        '',
-        '@%y^^',
-      ]) {
-        test(message, () {
-          mocktail.when(() => loggerMock.warning(message)).thenReturn(null);
+    test('warn -> $message', () {
+      when(() => loggerMock.onRecord)
+          .thenAnswer((_) => const Stream<LogRecord>.empty());
 
-          loggerImpl.warn(message);
+      QuizLabLoggerImpl<dynamic>(logger: loggerMock).warn(message);
 
-          mocktail.verify(() => loggerMock.warning(message)).called(1);
-        });
-      }
-    },
-  );
+      verify(() => loggerMock.warning(message)).called(1);
+    });
+
+    test('debug -> $message', () {
+      when(() => loggerMock.onRecord)
+          .thenAnswer((_) => const Stream<LogRecord>.empty());
+
+      QuizLabLoggerImpl<dynamic>(logger: loggerMock).debug(message);
+
+      verify(() => loggerMock.fine(message)).called(1);
+    });
+  }
 }
 
-class _LoggerMock extends mocktail.Mock implements Logger {}
+class _LoggerMock extends Mock implements Logger {}
