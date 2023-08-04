@@ -1,35 +1,41 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_permission_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 
 void main() {
+  late QuizLabLogger logger;
+  late Databases databases;
   late AppwriteWrapper appwriteWrapperMock;
-  late QuestionCollectionAppwriteDataSource dataSource;
+
+  late QuestionCollectionAppwriteDataSourceImpl dataSource;
 
   final expectedAppwriteErrorMappings = [
-    [
+    (
       AppwriteWrapperUnexpectedFailure(''),
       QuestionsAppwriteDataSourceUnexpectedFailure(''),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperUnexpectedFailure(r'$4*'),
       QuestionsAppwriteDataSourceUnexpectedFailure(r'$4*'),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(const UnknownAppwriteError()),
       QuestionsAppwriteDataSourceAppwriteFailure(
         const UnknownAppwriteError().toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const UnknownAppwriteError(
           type: '',
@@ -44,8 +50,8 @@ void main() {
           code: 0,
         ).toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const UnknownAppwriteError(
           type: 'FOq',
@@ -60,8 +66,8 @@ void main() {
           code: 372,
         ).toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const GeneralArgumentInvalidAppwriteError(
           message: '',
@@ -72,8 +78,8 @@ void main() {
           message: '',
         ).toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const GeneralArgumentInvalidAppwriteError(
           message: 'L7B%927',
@@ -84,8 +90,8 @@ void main() {
           message: 'L7B%927',
         ).toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const DatabaseNotFoundAppwriteError(
           message: '',
@@ -96,8 +102,8 @@ void main() {
           message: '',
         ).toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const DatabaseNotFoundAppwriteError(
           message: 'm#6',
@@ -108,8 +114,8 @@ void main() {
           message: 'm#6',
         ).toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const CollectionNotFoundAppwriteError(
           message: '',
@@ -120,8 +126,8 @@ void main() {
           message: '',
         ).toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const CollectionNotFoundAppwriteError(
           message: r'$A77j0*',
@@ -132,8 +138,8 @@ void main() {
           message: r'$A77j0*',
         ).toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const DocumentNotFoundAppwriteError(
           message: '',
@@ -144,8 +150,8 @@ void main() {
           message: '',
         ).toString(),
       ),
-    ],
-    [
+    ),
+    (
       AppwriteWrapperServiceFailure(
         const DocumentNotFoundAppwriteError(
           message: 'mMke',
@@ -156,17 +162,20 @@ void main() {
           message: 'mMke',
         ).toString(),
       ),
-    ],
+    ),
   ];
 
   setUp(() {
+    logger = _MockQuizLabLogger();
+    databases = _MockDatabases();
     appwriteWrapperMock = _AppwriteWrapperMock();
-    dataSource = QuestionCollectionAppwriteDataSource(
-      config: QuestionsAppwriteDataSourceConfig(
-        databaseId: 'G3Q',
-        collectionId: 'A9MnFkz',
-      ),
+
+    dataSource = QuestionCollectionAppwriteDataSourceImpl(
+      logger: logger,
+      appwriteDatabaseId: 'G3Q',
+      appwriteQuestionCollectionId: 'A9MnFkz',
       appwriteWrapper: appwriteWrapperMock,
+      databases: databases,
     );
   });
 
@@ -174,11 +183,12 @@ void main() {
 
   group('createSingle', () {
     group(
-      'should call Appwrite wrapper correctly',
+      'should fail if database throws',
       () {
         for (final values in [
-          [
-            QuestionsAppwriteDataSourceConfig(databaseId: '', collectionId: ''),
+          (
+            '',
+            '',
             const AppwriteQuestionCreationModel(
               id: '',
               title: '',
@@ -186,13 +196,12 @@ void main() {
               difficulty: '',
               options: [],
               categories: [],
-            )
-          ],
-          [
-            QuestionsAppwriteDataSourceConfig(
-              databaseId: 'Q!3CTr',
-              collectionId: r'^NW8$',
             ),
+            'Noui0k'
+          ),
+          (
+            'Q!3CTr',
+            r'^NW8$',
             const AppwriteQuestionCreationModel(
               id: 'HH%',
               title: '#7d76V',
@@ -213,13 +222,12 @@ void main() {
                 'kzBmu',
                 'GRNY3!J9',
               ],
-            )
-          ],
-          [
-            QuestionsAppwriteDataSourceConfig(
-              databaseId: 'jbM3Wi',
-              collectionId: 'Fuh#',
             ),
+            '41U6UHPC'
+          ),
+          (
+            'jbM3Wi',
+            'Fuh#',
             const AppwriteQuestionCreationModel(
               id: 'v5ZD#0s@',
               title: 'P7R9',
@@ -241,13 +249,12 @@ void main() {
                 'dRTs',
               ],
               permissions: [],
-            )
-          ],
-          [
-            QuestionsAppwriteDataSourceConfig(
-              databaseId: 'jbM3Wi',
-              collectionId: 'Fuh#',
             ),
+            'UPcKSQJF'
+          ),
+          (
+            'jbM3Wi',
+            'Fuh#',
             AppwriteQuestionCreationModel(
               id: 'v5ZD#0s@',
               title: 'P7R9',
@@ -570,82 +577,42 @@ void main() {
                   AppwritePermissionRoleModel.member(membershipId: '#&*5'),
                 ),
               ],
-            )
-          ],
+            ),
+            'EeC'
+          ),
         ]) {
-          test(values.toString(), () {
-            final config = values[0] as QuestionsAppwriteDataSourceConfig;
-            final creationModel = values[1] as AppwriteQuestionCreationModel;
+          test(values.toString(), () async {
+            final databaseId = values.$1;
+            final collectionId = values.$2;
+            final creationModel = values.$3;
+            final message = values.$4;
+            final exception = Exception(message);
 
-            dataSource.config = config;
+            dataSource
+              ..appwriteDatabaseId = databaseId
+              ..appwriteQuestionCollectionId = collectionId;
 
-            mocktail
-                .when(
-                  () => appwriteWrapperMock.createDocument(
-                    collectionId: mocktail.any(named: 'collectionId'),
-                    databaseId: mocktail.any(named: 'databaseId'),
-                    documentId: mocktail.any(named: 'documentId'),
-                    data: mocktail.any(named: 'data'),
-                    permissions: mocktail.any(named: 'permissions'),
-                  ),
-                )
-                .thenAnswer(
-                  (_) async => Err(AppwriteWrapperUnexpectedFailure('7S8W')),
-                );
-
-            dataSource.createSingle(creationModel);
-
-            mocktail.verify(
-              () => appwriteWrapperMock.createDocument(
-                databaseId: config.databaseId,
-                collectionId: config.collectionId,
+            when(
+              () => databases.createDocument(
+                collectionId: collectionId,
+                databaseId: databaseId,
                 documentId: creationModel.id,
                 data: creationModel.toMap(),
                 permissions: creationModel.permissions
                     ?.map((p) => p.toString())
                     .toList(),
               ),
+            ).thenThrow(exception);
+
+            final result = await dataSource.createSingle(creationModel);
+
+            verify(() => logger.error(exception.toString())).called(1);
+            expect(
+              result,
+              const Err<AppwriteQuestionModel, String>(
+                'Unable to create question on Appwrite',
+              ),
             );
-          });
-        }
-      },
-    );
-
-    group(
-      'should return expected failure if Appwrite wrapper fails',
-      () {
-        for (final values in expectedAppwriteErrorMappings) {
-          test(values.toString(), () async {
-            final wrapperFailure = values[0] as AppwriteWrapperFailure;
-            final expectedFailure =
-                values[1] as QuestionsAppwriteDataSourceFailure;
-
-            final appwriteQuestionCreationModelMock =
-                _AppwriteQuestionCreationModelMock();
-
-            mocktail
-                .when(appwriteQuestionCreationModelMock.toMap)
-                .thenReturn({});
-
-            mocktail
-                .when(() => appwriteQuestionCreationModelMock.id)
-                .thenReturn('yNg#');
-
-            mocktail
-                .when(
-                  () => appwriteWrapperMock.createDocument(
-                    collectionId: mocktail.any(named: 'collectionId'),
-                    databaseId: mocktail.any(named: 'databaseId'),
-                    documentId: mocktail.any(named: 'documentId'),
-                    data: mocktail.any(named: 'data'),
-                  ),
-                )
-                .thenAnswer((_) async => Err(wrapperFailure));
-
-            final result = await dataSource.createSingle(appwriteQuestionCreationModelMock);
-
-            expect(result.isErr, true);
-            expect(result.unwrapErr(), expectedFailure);
           });
         }
       },
@@ -655,7 +622,7 @@ void main() {
       'should return expected',
       () {
         for (final values in [
-          [
+          (
             Document(
               $id: '',
               $collectionId: '',
@@ -684,8 +651,8 @@ void main() {
               createdAt: '',
               updatedAt: '',
             )
-          ],
-          [
+          ),
+          (
             Document(
               $id: 'k2Kao43',
               $collectionId: 'h^NjK84I',
@@ -731,11 +698,11 @@ void main() {
               createdAt: '516',
               updatedAt: 'D3y^k#Hw',
             )
-          ],
+          ),
         ]) {
           test(values.toString(), () async {
-            final appwriteDocument = values[0] as Document;
-            final expectedModel = values[1] as AppwriteQuestionModel;
+            final appwriteDocument = values.$1;
+            final expectedModel = values.$2;
 
             final creationModelMock = _AppwriteQuestionCreationModelMock();
 
@@ -745,14 +712,14 @@ void main() {
 
             mocktail
                 .when(
-                  () => appwriteWrapperMock.createDocument(
+                  () => databases.createDocument(
                     collectionId: mocktail.any(named: 'collectionId'),
                     databaseId: mocktail.any(named: 'databaseId'),
                     documentId: mocktail.any(named: 'documentId'),
                     data: mocktail.any(named: 'data'),
                   ),
                 )
-                .thenAnswer((_) async => Ok(appwriteDocument));
+                .thenAnswer((_) async => appwriteDocument);
 
             final result = await dataSource.createSingle(creationModelMock);
 
@@ -769,26 +736,17 @@ void main() {
       'should call Appwrite wrapper correctly',
       () {
         for (final values in [
-          [
-            QuestionsAppwriteDataSourceConfig(databaseId: '', collectionId: ''),
-            ''
-          ],
-          [
-            QuestionsAppwriteDataSourceConfig(
-              databaseId: 'G3Q',
-              collectionId: 'A9MnFkz',
-            ),
-            'dN*p'
-          ],
+          ('', '', ''),
+          ('G3Q', 'A9MnFkz', 'dN*p'),
         ]) {
           test(values.toString(), () {
-            final config = values[0] as QuestionsAppwriteDataSourceConfig;
-            final id = values[1] as String;
+            final databaseId = values.$1;
+            final collectionId = values.$2;
+            final id = values.$3;
 
-            final dataSource = QuestionCollectionAppwriteDataSource(
-              config: config,
-              appwriteWrapper: appwriteWrapperMock,
-            );
+            dataSource
+              ..appwriteDatabaseId = databaseId
+              ..appwriteQuestionCollectionId = collectionId;
 
             mocktail
                 .when(
@@ -806,8 +764,8 @@ void main() {
 
             mocktail.verify(
               () => appwriteWrapperMock.deleteDocument(
-                databaseId: config.databaseId,
-                collectionId: config.collectionId,
+                databaseId: databaseId,
+                collectionId: collectionId,
                 documentId: id,
               ),
             );
@@ -821,8 +779,8 @@ void main() {
       () {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
-            final wrapperFailure = values[0] as AppwriteWrapperFailure;
-            final expectedFailure = values[1] as QuestionsAppwriteDataSourceFailure;
+            final wrapperFailure = values.$1;
+            final expectedFailure = values.$2;
 
             mocktail
                 .when(
@@ -868,27 +826,15 @@ void main() {
     group(
       'should call Appwrite wrapper correctly',
       () {
-        for (final values in [
-          [
-            QuestionsAppwriteDataSourceConfig(databaseId: '', collectionId: ''),
-            ''
-          ],
-          [
-            QuestionsAppwriteDataSourceConfig(
-              databaseId: r'35&Y3$8',
-              collectionId: '4F28AYf#',
-            ),
-            'vX19'
-          ],
-        ]) {
+        for (final values in [('', '', ''), (r'35&Y3$8', '4F28AYf#', 'vX19')]) {
           test(values.toString(), () {
-            final config = values[0] as QuestionsAppwriteDataSourceConfig;
-            final id = values[1] as String;
+            final databaseId = values.$1;
+            final collectionId = values.$2;
+            final id = values.$3;
 
-            final dataSource = QuestionCollectionAppwriteDataSource(
-              config: config,
-              appwriteWrapper: appwriteWrapperMock,
-            );
+            dataSource
+              ..appwriteDatabaseId = databaseId
+              ..appwriteQuestionCollectionId = collectionId;
 
             mocktail
                 .when(
@@ -906,8 +852,8 @@ void main() {
 
             mocktail.verify(
               () => appwriteWrapperMock.getDocument(
-                databaseId: config.databaseId,
-                collectionId: config.collectionId,
+                databaseId: databaseId,
+                collectionId: collectionId,
                 documentId: id,
               ),
             );
@@ -921,8 +867,8 @@ void main() {
       () {
         for (final values in expectedAppwriteErrorMappings) {
           test(values.toString(), () async {
-            final wrapperFailure = values[0] as AppwriteWrapperFailure;
-            final expectedFailure = values[1] as QuestionsAppwriteDataSourceFailure;
+            final wrapperFailure = values.$1;
+            final expectedFailure = values.$2;
 
             mocktail
                 .when(
@@ -947,7 +893,7 @@ void main() {
       'should return expected',
       () {
         for (final values in [
-          [
+          (
             Document(
               $id: '',
               $collectionId: '',
@@ -976,8 +922,8 @@ void main() {
               createdAt: '',
               updatedAt: '',
             )
-          ],
-          [
+          ),
+          (
             Document(
               $id: 'k2Kao43',
               $collectionId: 'h^NjK84I',
@@ -1023,11 +969,11 @@ void main() {
               createdAt: '516',
               updatedAt: 'D3y^k#Hw',
             )
-          ],
+          ),
         ]) {
           test(values.toString(), () async {
-            final appwriteDocument = values[0] as Document;
-            final expectedModel = values[1] as AppwriteQuestionModel;
+            final appwriteDocument = values.$1;
+            final expectedModel = values.$2;
 
             mocktail
                 .when(
@@ -1054,3 +1000,7 @@ class _AppwriteWrapperMock extends mocktail.Mock implements AppwriteWrapper {}
 
 class _AppwriteQuestionCreationModelMock extends mocktail.Mock
     implements AppwriteQuestionCreationModel {}
+
+class _MockDatabases extends Mock implements Databases {}
+
+class _MockQuizLabLogger extends Mock implements QuizLabLogger {}

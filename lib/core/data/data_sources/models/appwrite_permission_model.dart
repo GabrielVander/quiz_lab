@@ -1,9 +1,11 @@
+import 'package:equatable/equatable.dart';
+
 /// Appwrite Doc:
 ///
 /// In Client and Server SDKs, you will find a Permission class with helper
 /// methods for each role described below.
-abstract class AppwritePermissionTypeModel {
-  AppwritePermissionTypeModel._({required this.role});
+sealed class AppwritePermissionTypeModel extends Equatable {
+  const AppwritePermissionTypeModel._({required this.role});
 
   /// Appwrite Doc:
   ///
@@ -48,58 +50,74 @@ abstract class AppwritePermissionTypeModel {
 }
 
 class AppwritePermissionReadTypeModel extends AppwritePermissionTypeModel {
-  AppwritePermissionReadTypeModel._({required super.role}) : super._();
+  const AppwritePermissionReadTypeModel._({required super.role}) : super._();
 
   @override
   String toString() => 'read("$role")';
+
+  @override
+  List<Object> get props => [role];
 }
 
 class AppwritePermissionCreateTypeModel extends AppwritePermissionTypeModel {
-  AppwritePermissionCreateTypeModel._({required super.role}) : super._();
+  const AppwritePermissionCreateTypeModel._({required super.role}) : super._();
 
   @override
   String toString() => 'create("$role")';
+
+  @override
+  List<Object> get props => [role];
 }
 
 class AppwritePermissionUpdateTypeModel extends AppwritePermissionTypeModel {
-  AppwritePermissionUpdateTypeModel._({required super.role}) : super._();
+  const AppwritePermissionUpdateTypeModel._({required super.role}) : super._();
 
   @override
   String toString() => 'update("$role")';
+
+  @override
+  List<Object> get props => [role];
 }
 
 class AppwritePermissionDeleteTypeModel extends AppwritePermissionTypeModel {
-  AppwritePermissionDeleteTypeModel._({required super.role}) : super._();
+  const AppwritePermissionDeleteTypeModel._({required super.role}) : super._();
 
   @override
   String toString() => 'delete("$role")';
+
+  @override
+  List<Object> get props => [role];
 }
 
 class AppwritePermissionWriteTypeModel extends AppwritePermissionTypeModel {
-  AppwritePermissionWriteTypeModel._({required super.role}) : super._();
+  const AppwritePermissionWriteTypeModel._({required super.role}) : super._();
 
   @override
   String toString() => 'write("$role")';
+
+  @override
+  List<Object> get props => [role];
 }
 
 /// Appwrite Docs:
 ///
 /// In Client and Server SDKs, you will find a Role class with helper methods
 /// for each role described below.
-abstract class AppwritePermissionRoleModel {
-  AppwritePermissionRoleModel._();
+sealed class AppwritePermissionRoleModel extends Equatable {
+  const AppwritePermissionRoleModel._();
 
   /// Appwrite Docs:
   ///
   /// Grants access to anyone
-  factory AppwritePermissionRoleModel.any() => AppwriteAnyPermissionModel._();
+  factory AppwritePermissionRoleModel.any() =>
+      const AppwriteAnyPermissionModel._();
 
   /// Appwrite Docs:
   ///
   /// Grants access to any guest user without a session. Authenticated users
   /// don't have access to this role
   factory AppwritePermissionRoleModel.guests() =>
-      AppwriteGuestsPermissionModel._();
+      const AppwriteGuestsPermissionModel._();
 
   /// Appwrite Docs:
   ///
@@ -157,21 +175,27 @@ abstract class AppwritePermissionRoleModel {
 }
 
 class AppwriteAnyPermissionModel extends AppwritePermissionRoleModel {
-  AppwriteAnyPermissionModel._() : super._();
+  const AppwriteAnyPermissionModel._() : super._();
 
   @override
   String toString() => 'any';
+
+  @override
+  List<Object> get props => [];
 }
 
 class AppwriteGuestsPermissionModel extends AppwritePermissionRoleModel {
-  AppwriteGuestsPermissionModel._() : super._();
+  const AppwriteGuestsPermissionModel._() : super._();
 
   @override
   String toString() => 'guests';
+
+  @override
+  List<Object> get props => [];
 }
 
 class AppwriteUsersPermissionModel extends AppwritePermissionRoleModel {
-  AppwriteUsersPermissionModel._({required this.verified}) : super._();
+  const AppwriteUsersPermissionModel._({required this.verified}) : super._();
 
   final bool verified;
 
@@ -181,11 +205,16 @@ class AppwriteUsersPermissionModel extends AppwritePermissionRoleModel {
 
     return 'users/$status';
   }
+
+  @override
+  List<Object> get props => [verified];
 }
 
 class AppwriteUserPermissionModel extends AppwritePermissionRoleModel {
-  AppwriteUserPermissionModel._({required this.userId, required this.verified})
-      : super._();
+  const AppwriteUserPermissionModel._({
+    required this.userId,
+    required this.verified,
+  }) : super._();
 
   final String userId;
   final bool verified;
@@ -196,33 +225,48 @@ class AppwriteUserPermissionModel extends AppwritePermissionRoleModel {
 
     return 'user:$userId/$status';
   }
+
+  @override
+  List<Object> get props => [userId, verified];
 }
 
 class AppwriteTeamPermissionModel extends AppwritePermissionRoleModel {
-  AppwriteTeamPermissionModel._({required this.teamId}) : super._();
+  const AppwriteTeamPermissionModel._({required this.teamId}) : super._();
 
   final String teamId;
 
   @override
   String toString() => 'team:$teamId';
+
+  @override
+  List<Object> get props => [teamId];
 }
 
 class AppwriteTeamRolePermissionMoedl extends AppwritePermissionRoleModel {
-  AppwriteTeamRolePermissionMoedl._({required this.teamId, required this.role})
-      : super._();
+  const AppwriteTeamRolePermissionMoedl._({
+    required this.teamId,
+    required this.role,
+  }) : super._();
 
   final String teamId;
   final String role;
 
   @override
   String toString() => 'team:$teamId/$role';
+
+  @override
+  List<Object> get props => [teamId, role];
 }
 
 class AppwriteMemberPermissionModel extends AppwritePermissionRoleModel {
-  AppwriteMemberPermissionModel._({required this.membershipId}) : super._();
+  const AppwriteMemberPermissionModel._({required this.membershipId})
+      : super._();
 
   final String membershipId;
 
   @override
   String toString() => 'member:$membershipId';
+
+  @override
+  List<Object> get props => [membershipId];
 }

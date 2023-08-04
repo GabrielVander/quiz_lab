@@ -11,6 +11,7 @@ class Question extends Equatable {
     required this.answerOptions,
     required this.difficulty,
     required this.categories,
+    this.isPublic = false,
   });
 
   final QuestionId id;
@@ -19,6 +20,7 @@ class Question extends Equatable {
   final List<AnswerOption> answerOptions;
   final QuestionDifficulty difficulty;
   final List<QuestionCategory> categories;
+  final bool isPublic;
 
   Question copyWith({
     QuestionId? id,
@@ -27,6 +29,7 @@ class Question extends Equatable {
     List<AnswerOption>? answerOptions,
     QuestionDifficulty? difficulty,
     List<QuestionCategory>? categories,
+    bool? isPublic,
   }) {
     return Question(
       id: id ?? this.id,
@@ -35,6 +38,7 @@ class Question extends Equatable {
       answerOptions: answerOptions ?? this.answerOptions,
       difficulty: difficulty ?? this.difficulty,
       categories: categories ?? this.categories,
+      isPublic: isPublic ?? this.isPublic,
     );
   }
 
@@ -46,7 +50,8 @@ class Question extends Equatable {
         'description: $description, '
         'answerOptions: $answerOptions, '
         'difficulty: $difficulty, '
-        'categories: $categories'
+        'categories: $categories, '
+        'isPublic: $isPublic'
         '}';
   }
 
@@ -58,6 +63,7 @@ class Question extends Equatable {
         answerOptions,
         difficulty,
         categories,
+        isPublic,
       ];
 }
 

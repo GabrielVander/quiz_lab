@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_permission_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
@@ -45,6 +46,13 @@ class QuestionRepositoryImpl extends QuestionRepository {
             .toList(),
         difficulty: question.difficulty.name,
         categories: question.categories.map((e) => e.value).toList(),
+        permissions: question.isPublic
+            ? [
+                AppwritePermissionTypeModel.read(
+                  AppwritePermissionRoleModel.any(),
+                )
+              ]
+            : null,
       ),
     );
 
@@ -57,7 +65,8 @@ class QuestionRepositoryImpl extends QuestionRepository {
   ) async {
     _logger.debug('Deleting question...');
 
-    final deletionResult = await _questionsAppwriteDataSource.deleteSingle(id.value);
+    final deletionResult =
+        await _questionsAppwriteDataSource.deleteSingle(id.value);
 
     return deletionResult.when(
       ok: (_) {
@@ -74,7 +83,8 @@ class QuestionRepositoryImpl extends QuestionRepository {
   ) async {
     _logger.debug('Getting question...');
 
-    final fetchResult = await _questionsAppwriteDataSource.fetchSingle(id.value);
+    final fetchResult =
+        await _questionsAppwriteDataSource.fetchSingle(id.value);
 
     return fetchResult.when(
       ok: (model) {
@@ -95,11 +105,15 @@ class QuestionRepositoryImpl extends QuestionRepository {
     switch (dataSourceFailure.runtimeType) {
       case QuestionsAppwriteDataSourceUnexpectedFailure:
         repoFailure = QuestionRepositoryUnexpectedFailure(
-          message: (dataSourceFailure as QuestionsAppwriteDataSourceUnexpectedFailure).message,
+          message: (dataSourceFailure
+                  as QuestionsAppwriteDataSourceUnexpectedFailure)
+              .message,
         );
       case QuestionsAppwriteDataSourceAppwriteFailure:
         repoFailure = QuestionRepositoryExternalServiceErrorFailure(
-          message: (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure).message,
+          message:
+              (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure)
+                  .message,
         );
     }
 
@@ -114,12 +128,15 @@ class QuestionRepositoryImpl extends QuestionRepository {
       throw UnimplementedError();
 
   @override
-  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll() async {
+  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>>
+      watchAll() async {
     _logger.debug('Watching questions...');
 
     await _emitQuestions();
 
-    _appwriteDataSource.watchForQuestionCollectionUpdate().listen(_onQuestionsUpdate);
+    _appwriteDataSource
+        .watchForQuestionCollectionUpdate()
+        .listen(_onQuestionsUpdate);
 
     return Ok(_questionsStreamController.stream);
   }
@@ -137,7 +154,8 @@ class QuestionRepositoryImpl extends QuestionRepository {
 
     _logger.debug('Fetched ${questionsListModel.total} questions');
 
-    final questions = questionsListModel.questions.map((e) => e.toQuestion()).toList();
+    final questions =
+        questionsListModel.questions.map((e) => e.toQuestion()).toList();
 
     _questionsStreamController.add(questions);
   }

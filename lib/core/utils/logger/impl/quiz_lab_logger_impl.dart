@@ -1,9 +1,10 @@
 import 'package:ansicolor/ansicolor.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart' as logging;
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 
-class QuizLabLoggerImpl<T> implements QuizLabLogger {
+class QuizLabLoggerImpl<T> extends Equatable implements QuizLabLogger {
   QuizLabLoggerImpl({
     logging.Logger? logger,
   }) : _logger = logger ?? logging.Logger(T.toString());
@@ -23,7 +24,8 @@ class QuizLabLoggerImpl<T> implements QuizLabLogger {
   void debug(String message) => _logger.fine(message);
 
   static void onListen(logging.LogRecord record) {
-    final message = '${record.time} ${record.loggerName} ${record.level.name} - '
+    final message =
+        '${record.time} ${record.loggerName} ${record.level.name} - '
         '${record.message}';
 
     switch (record.level.name) {
@@ -40,6 +42,9 @@ class QuizLabLoggerImpl<T> implements QuizLabLogger {
         _Printer.printNoColor(message);
     }
   }
+
+  @override
+  List<Object> get props => [T];
 }
 
 class _Printer {

@@ -1,6 +1,10 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
+import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
 import 'package:quiz_lab/core/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
+import 'package:quiz_lab/core/utils/environment.dart';
+import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
@@ -18,13 +22,20 @@ import 'package:uuid/uuid.dart';
 
 void questionManagementDiSetup(DependencyInjection di) {
   di
+    ..registerInstance<AppwriteQuestionCollectionId>(
+      (_) => AppwriteQuestionCollectionId(
+        value:
+            EnvironmentVariable.appwriteQuestionCollectionId.getRequiredValue,
+      ),
+    )
     ..registerBuilder<QuestionCollectionAppwriteDataSource>(
-      (DependencyInjection i) => QuestionCollectionAppwriteDataSource(
-        config: QuestionsAppwriteDataSourceConfig(
-          databaseId: i.get<AppwriteReferencesConfig>().databaseId,
-          collectionId: i.get<AppwriteReferencesConfig>().questionsCollectionId,
-        ),
+      (DependencyInjection i) => QuestionCollectionAppwriteDataSourceImpl(
+        logger: QuizLabLoggerImpl<QuestionCollectionAppwriteDataSourceImpl>(),
+        appwriteDatabaseId: i.get<AppwriteDatabaseId>().value,
+        appwriteQuestionCollectionId:
+            i.get<AppwriteQuestionCollectionId>().value,
         appwriteWrapper: i.get<AppwriteWrapper>(),
+        databases: i.get<Databases>(),
       ),
     )
     ..registerBuilder<QuestionRepository>(
@@ -80,4 +91,12 @@ void questionManagementDiSetup(DependencyInjection di) {
         getSingleQuestionUseCase: i.get<GetSingleQuestionUseCase>(),
       ),
     );
+}
+
+class AppwriteQuestionCollectionId {
+  const AppwriteQuestionCollectionId({
+    required this.value,
+  });
+
+  final String value;
 }
