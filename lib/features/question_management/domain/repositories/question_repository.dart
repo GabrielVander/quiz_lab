@@ -4,10 +4,8 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 
-abstract class QuestionRepository {
-  Future<Result<Unit, QuestionRepositoryFailure>> createSingle(
-    Question question,
-  );
+abstract interface class QuestionRepository {
+  Future<Result<Unit, String>> createSingle(Question question);
 
   Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll();
 
@@ -21,7 +19,7 @@ abstract class QuestionRepository {
 }
 
 @immutable
-abstract class QuestionRepositoryFailure extends Equatable {
+sealed class QuestionRepositoryFailure extends Equatable {
   const QuestionRepositoryFailure._({required this.message});
 
   factory QuestionRepositoryFailure.unableToParseEntity({

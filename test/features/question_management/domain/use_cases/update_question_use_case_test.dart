@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
@@ -29,7 +28,14 @@ void main() {
       () {
         for (final values in [
           [
-            _FakeQuestion.id(''),
+            const Question(
+              id: QuestionId(''),
+              shortDescription: 'T1YJ',
+              description: 'q7Tz',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.easy,
+              categories: [],
+            ),
             QuestionRepositoryFailure.unableToUpdate(
               id: '',
               details: '',
@@ -39,7 +45,14 @@ void main() {
             ),
           ],
           [
-            _FakeQuestion.id('&RV'),
+            const Question(
+              id: QuestionId('&RV'),
+              shortDescription: 'R04C',
+              description: 'Aa6l41',
+              answerOptions: [],
+              difficulty: QuestionDifficulty.hard,
+              categories: [],
+            ),
             QuestionRepositoryFailure.unableToUpdate(
               id: '&RV',
               details: 'eg3381',
@@ -113,15 +126,3 @@ void main() {
 }
 
 class _QuestionRepositoryMock extends Mock implements QuestionRepository {}
-
-class _FakeQuestion extends Fake with EquatableMixin implements Question {
-  factory _FakeQuestion.id(String id) => _FakeQuestion._(id: QuestionId(id));
-
-  _FakeQuestion._({required this.id});
-
-  @override
-  final QuestionId id;
-
-  @override
-  List<Object> get props => [id];
-}

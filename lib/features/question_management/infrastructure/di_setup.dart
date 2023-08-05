@@ -40,6 +40,7 @@ void questionManagementDiSetup(DependencyInjection di) {
     )
     ..registerBuilder<QuestionRepository>(
       (DependencyInjection i) => QuestionRepositoryImpl(
+        logger: QuizLabLoggerImpl<QuestionRepositoryImpl>(),
         appwriteDataSource: i.get<AppwriteDataSource>(),
         questionsAppwriteDataSource:
             i.get<QuestionCollectionAppwriteDataSource>(),
@@ -51,7 +52,8 @@ void questionManagementDiSetup(DependencyInjection di) {
       ),
     )
     ..registerBuilder<CreateQuestionUseCase>(
-      (DependencyInjection i) => CreateQuestionUseCase(
+      (DependencyInjection i) => CreateQuestionUseCaseImpl(
+        logger: QuizLabLoggerImpl<CreateQuestionUseCaseImpl>(),
         uuidGenerator: const ResourceUuidGenerator(uuid: Uuid()),
         questionRepository: i.get<QuestionRepository>(),
       ),

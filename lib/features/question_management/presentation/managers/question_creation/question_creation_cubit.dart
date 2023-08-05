@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
 import 'package:uuid/uuid.dart';
@@ -204,57 +206,46 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   Future<void> _createQuestion() async {
-    final creationResult = await _createQuestionUseCase.execute(
-      QuestionCreationInput(
-        shortDescription: _viewModel.title.value,
-        description: _viewModel.description.value,
-        difficulty: _viewModel.difficulty.formField.value,
-        options: _viewModel.options
-            .map(
-              (e) => QuestionCreationOptionInput(
-                description: e.formField.value,
-                isCorrect: e.isCorrect,
-              ),
-            )
-            .toList(),
-        categories: const [],
-      ),
+    final draftQuestion = DraftQuestion(
+      title: _viewModel.title.value,
+      description: _viewModel.description.value,
+      difficulty: _viewModel.difficulty.formField.value,
+      options: _viewModel.options
+          .map(
+            (e) => AnswerOption(
+              description: e.formField.value,
+              isCorrect: e.isCorrect,
+            ),
+          )
+          .toList(),
+      categories: const [],
     );
 
-    creationResult.when(
-      ok: (_) {
-        final newViewModel = _viewModel.copyWith(
-          message: const QuestionCreationMessageViewModel(
-            type: QuestionCreationMessageType.questionSavedSuccessfully,
-            isFailure: false,
-            details: null,
+    (await _createQuestionUseCase(draftQuestion))
+        .inspectErr(_logger.error)
+        .map(
+          (_) => _viewModel.copyWith(
+            message: const QuestionCreationMessageViewModel(
+              type: QuestionCreationMessageType.questionSavedSuccessfully,
+              isFailure: false,
+              details: null,
+            ),
+            showMessage: true,
           ),
-          showMessage: true,
-        );
-
-        _updateViewModel(newViewModel);
-
-        emit(QuestionCreationState.goBack());
-      },
-      err: (failure) {
-        final errMessage = failure.message;
-
-        _logger.error(errMessage);
-
-        final newViewModel = _viewModel.copyWith(
-          message: QuestionCreationMessageViewModel(
-            type: QuestionCreationMessageType.unableToSaveQuestion,
-            isFailure: true,
-            details: errMessage,
+        )
+        .mapErr(
+          (error) => _viewModel.copyWith(
+            message: QuestionCreationMessageViewModel(
+              type: QuestionCreationMessageType.unableToSaveQuestion,
+              isFailure: true,
+              details: error,
+            ),
+            showMessage: true,
           ),
-          showMessage: true,
-        );
-
-        _updateViewModel(newViewModel);
-
-        return;
-      },
-    );
+        )
+        .inspect(_updateViewModel)
+        .inspectErr(_updateViewModel)
+        .inspect((_) => emit(QuestionCreationState.goBack()));
   }
 
   bool _validateFields() {

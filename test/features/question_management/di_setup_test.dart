@@ -1,11 +1,14 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
 
 void main() {
@@ -70,6 +73,42 @@ void main() {
       });
     }
   });
+
+  test('QuestionRepository', () {
+    final appwriteDataSource = _MockAppwriteDataSource();
+    final questionCollectionAppwriteDataSource =
+        _MockQuestionCollectionAppwriteDataSource();
+
+    when(() => dependencyInjection.get<AppwriteDataSource>())
+        .thenReturn(appwriteDataSource);
+    when(() => dependencyInjection.get<QuestionCollectionAppwriteDataSource>())
+        .thenReturn(questionCollectionAppwriteDataSource);
+
+    questionManagementDiSetup(dependencyInjection);
+
+    final captor = verify(
+      () => dependencyInjection.registerBuilder<QuestionRepository>(
+        captureAny(
+          that: isA<QuestionRepository Function(DependencyInjection)>(),
+        ),
+      ),
+    ).captured;
+    final builder = captor.single;
+
+    final repositoryBuilder =
+        builder as QuestionRepository Function(DependencyInjection);
+
+    final repository = repositoryBuilder(dependencyInjection);
+    expect(repository, isA<QuestionRepositoryImpl>());
+    final repositoryImpl = repository as QuestionRepositoryImpl;
+
+    expect(repositoryImpl.logger, QuizLabLoggerImpl<QuestionRepositoryImpl>());
+    expect(
+      repositoryImpl.questionsAppwriteDataSource,
+      questionCollectionAppwriteDataSource,
+    );
+    expect(repositoryImpl.appwriteDataSource, appwriteDataSource);
+  });
 }
 
 class _MockDependencyInjection extends Mock implements DependencyInjection {}
@@ -77,3 +116,8 @@ class _MockDependencyInjection extends Mock implements DependencyInjection {}
 class _MockAppwriteWrapper extends Mock implements AppwriteWrapper {}
 
 class _MockDatabases extends Mock implements Databases {}
+
+class _MockAppwriteDataSource extends Mock implements AppwriteDataSource {}
+
+class _MockQuestionCollectionAppwriteDataSource extends Mock
+    implements QuestionCollectionAppwriteDataSource {}

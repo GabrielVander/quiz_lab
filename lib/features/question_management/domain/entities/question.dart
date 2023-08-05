@@ -22,26 +22,6 @@ class Question extends Equatable {
   final List<QuestionCategory> categories;
   final bool isPublic;
 
-  Question copyWith({
-    QuestionId? id,
-    String? shortDescription,
-    String? description,
-    List<AnswerOption>? answerOptions,
-    QuestionDifficulty? difficulty,
-    List<QuestionCategory>? categories,
-    bool? isPublic,
-  }) {
-    return Question(
-      id: id ?? this.id,
-      shortDescription: shortDescription ?? this.shortDescription,
-      description: description ?? this.description,
-      answerOptions: answerOptions ?? this.answerOptions,
-      difficulty: difficulty ?? this.difficulty,
-      categories: categories ?? this.categories,
-      isPublic: isPublic ?? this.isPublic,
-    );
-  }
-
   @override
   String toString() {
     return 'Question{'
@@ -65,6 +45,9 @@ class Question extends Equatable {
         categories,
         isPublic,
       ];
+
+  @override
+  bool get stringify => false;
 }
 
 class QuestionId extends Equatable {
@@ -74,4 +57,9 @@ class QuestionId extends Equatable {
 
   @override
   List<Object> get props => [value];
+
+  @override
+  String toString() {
+    return 'QuestionId{value: $value}';
+  }
 }
