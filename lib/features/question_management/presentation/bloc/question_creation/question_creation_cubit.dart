@@ -18,7 +18,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   final QuizLabLogger logger;
   final CreateQuestionUseCase createQuestionUseCase;
 
-  final QuestionCreationViewModel _defaultViewModel = QuestionCreationViewModel(
+  final QuestionCreationViewModel defaultViewModel = QuestionCreationViewModel(
     title: const QuestionCreationTitleViewModel(
       value: '',
       showErrorMessage: false,
@@ -60,10 +60,10 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     message: null,
     showMessage: false,
   );
-  late QuestionCreationViewModel _viewModel = _defaultViewModel;
-  _QuestionFormState _state = const _QuestionFormState();
+  late QuestionCreationViewModel _viewModel = defaultViewModel;
+  _QuestionFormState _questionFormState = const _QuestionFormState();
 
-  void load() => _updateViewModel(_defaultViewModel);
+  void load() => _updateViewModel(defaultViewModel);
 
   void onTitleChanged(String newValue) {
     logger.debug('Title changed');
@@ -184,7 +184,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   Future<void> onCreateQuestion() async {
-    logger.debug('Creating question...');
+    logger.info('Creating question...');
 
     final isValid = _validateFields();
 
@@ -193,17 +193,23 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
       return;
     }
 
+    emit(const QuestionCreationLoading());
     await _createQuestion();
   }
 
   void toggleIsQuestionPublic() {
     logger.debug('Toggling public status...');
 
-    _state = _state.copyWith(
-      isPublic: _state.isPublic == null || !_state.isPublic!,
+    _questionFormState = _questionFormState.copyWith(
+      isPublic:
+          _questionFormState.isPublic == null || !_questionFormState.isPublic!,
     );
 
-    emit(QuestionCreationPublicStatusUpdated(isPublic: _state.isPublic!));
+    emit(
+      QuestionCreationPublicStatusUpdated(
+        isPublic: _questionFormState.isPublic!,
+      ),
+    );
   }
 
   void _updateViewModel(QuestionCreationViewModel newViewModel) {
@@ -226,6 +232,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
             ),
           )
           .toList(),
+      isPublic: _questionFormState.isPublic ?? false,
       categories: const [],
     );
 
