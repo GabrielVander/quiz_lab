@@ -523,6 +523,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Is Public`
+  String get isQuestionPublicLabel {
+    return Intl.message(
+      'Is Public',
+      name: 'isQuestionPublicLabel',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

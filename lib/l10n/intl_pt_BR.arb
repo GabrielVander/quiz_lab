@@ -45,5 +45,6 @@
   "loginPageSignUpButtonLabel": "Cadastre-se",
   "genericErrorMessage": "Something went wrong",
   "notYetImplemented": "Ainda não implementado",
-  "unableToLogin": "Não foi possível entrar"
+  "unableToLogin": "Não foi possível entrar",
+  "isQuestionPublicLabel": "Pública"
 }

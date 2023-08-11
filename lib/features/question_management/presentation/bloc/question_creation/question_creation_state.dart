@@ -28,6 +28,7 @@ class QuestionCreationGoBack extends QuestionCreationState {
   List<Object> get props => [];
 }
 
+// TODO(GabrielVander): This is bloated, each update should emit its own state
 class QuestionCreationViewModelUpdated extends QuestionCreationState {
   const QuestionCreationViewModelUpdated({
     required this.viewModel,

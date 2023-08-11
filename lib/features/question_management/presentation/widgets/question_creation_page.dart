@@ -20,15 +20,15 @@ import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionCreationPage extends HookWidget {
   const QuestionCreationPage({
-    required QuestionCreationCubit cubit,
+    required this.cubit,
     super.key,
-  }) : _cubit = cubit;
+  });
 
-  final QuestionCreationCubit _cubit;
+  final QuestionCreationCubit cubit;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(_cubit);
+    final state = useBlocBuilder(cubit);
 
     return SafeArea(
       child: Scaffold(
@@ -38,7 +38,7 @@ class QuestionCreationPage extends HookWidget {
             child: Builder(
               builder: (context) {
                 if (state is QuestionCreationInitial) {
-                  _cubit.load();
+                  cubit.load();
                 }
 
                 if (state is QuestionCreationGoBack) {
@@ -61,21 +61,17 @@ class QuestionCreationPage extends HookWidget {
                       _showSnackBarMessage(context, viewModel.message!);
                     });
                   }
-
-                  return _Body(
-                    viewModel: viewModel,
-                    onTitleChanged: _cubit.onTitleChanged,
-                    onDescriptionChanged: _cubit.onDescriptionChanged,
-                    onDifficultyChanged: _cubit.onDifficultyChanged,
-                    onOptionChanged: _cubit.onOptionChanged,
-                    onToggleOptionIsCorrect: _cubit.toggleOptionIsCorrect,
-                    onAddOption: _cubit.onAddOption,
-                    onCreateQuestion: _cubit.onCreateQuestion,
-                  );
                 }
 
-                return const Center(
-                  child: CircularProgressIndicator(),
+                return _Body(
+                  cubit: cubit,
+                  onTitleChanged: cubit.onTitleChanged,
+                  onDescriptionChanged: cubit.onDescriptionChanged,
+                  onDifficultyChanged: cubit.onDifficultyChanged,
+                  onOptionChanged: cubit.onOptionChanged,
+                  onToggleOptionIsCorrect: cubit.toggleOptionIsCorrect,
+                  onAddOption: cubit.onAddOption,
+                  onCreateQuestion: cubit.onCreateQuestion,
                 );
               },
             ),
@@ -116,7 +112,7 @@ class QuestionCreationPage extends HookWidget {
 
 class _Body extends StatelessWidget {
   const _Body({
-    required this.viewModel,
+    required this.cubit,
     required this.onTitleChanged,
     required this.onDescriptionChanged,
     required this.onDifficultyChanged,
@@ -126,7 +122,7 @@ class _Body extends StatelessWidget {
     required this.onCreateQuestion,
   });
 
-  final QuestionCreationViewModel viewModel;
+  final QuestionCreationCubit cubit;
   final void Function(String newValue) onTitleChanged;
   final void Function(String newValue) onDescriptionChanged;
   final void Function(String? newValue) onDifficultyChanged;
@@ -152,7 +148,7 @@ class _Body extends StatelessWidget {
           child: Builder(
             builder: (context) {
               return _Form(
-                viewModel: viewModel,
+                cubit: cubit,
                 onTitleChanged: onTitleChanged,
                 onDescriptionChanged: onDescriptionChanged,
                 onDifficultyChanged: onDifficultyChanged,
@@ -207,7 +203,7 @@ class _PageTitle extends StatelessWidget {
 
 class _Form extends StatelessWidget {
   const _Form({
-    required this.viewModel,
+    required this.cubit,
     required this.onTitleChanged,
     required this.onDescriptionChanged,
     required this.onDifficultyChanged,
@@ -217,7 +213,7 @@ class _Form extends StatelessWidget {
     required this.onCreateQuestion,
   });
 
-  final QuestionCreationViewModel viewModel;
+  final QuestionCreationCubit cubit;
   final void Function(String newValue) onTitleChanged;
   final void Function(String newValue) onDescriptionChanged;
   final void Function(String? newValue) onDifficultyChanged;
@@ -235,30 +231,117 @@ class _Form extends StatelessWidget {
           children: [
             const SizedBox(height: 15),
             _FormSection(
-              child: _TitleField(
-                viewModel: viewModel.title,
-                onChanged: onTitleChanged,
+              child: HookBuilder(
+                builder: (context) {
+                  final state = useBlocBuilder(
+                    cubit,
+                    buildWhen: (current) =>
+                        current is QuestionCreationViewModelUpdated,
+                  );
+
+                  if (state is QuestionCreationViewModelUpdated) {
+                    return _TitleField(
+                      viewModel: state.viewModel.title,
+                      onChanged: onTitleChanged,
+                    );
+                  }
+
+                  return const CircularProgressIndicator();
+                },
               ),
             ),
             _FormSection(
-              child: _DescriptionField(
-                viewModel: viewModel.description,
-                onChanged: onDescriptionChanged,
+              child: HookBuilder(
+                builder: (context) {
+                  final state = useBlocBuilder(
+                    cubit,
+                    buildWhen: (current) =>
+                        current is QuestionCreationViewModelUpdated,
+                  );
+
+                  if (state is QuestionCreationViewModelUpdated) {
+                    return _DescriptionField(
+                      viewModel: state.viewModel.description,
+                      onChanged: onDescriptionChanged,
+                    );
+                  }
+
+                  return const CircularProgressIndicator();
+                },
               ),
             ),
             _FormSection(
-              child: _DifficultySelector(
-                viewModel: viewModel.difficulty,
-                onChange: onDifficultyChanged,
+              child: Row(
+                children: [
+                  Flexible(
+                    flex: 3,
+                    child: HookBuilder(
+                      builder: (context) {
+                        final state = useBlocBuilder(
+                          cubit,
+                          buildWhen: (current) =>
+                              current is QuestionCreationViewModelUpdated,
+                        );
+
+                        if (state is QuestionCreationViewModelUpdated) {
+                          return _DifficultySelector(
+                            viewModel: state.viewModel.difficulty,
+                            onChange: onDifficultyChanged,
+                          );
+                        }
+
+                        return const CircularProgressIndicator();
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  Flexible(
+                    child: HookBuilder(
+                      builder: (context) {
+                        final state = useBlocBuilder(
+                          cubit,
+                          buildWhen: (current) =>
+                              current is QuestionCreationPublicStatusUpdated,
+                        );
+
+                        return QLCheckbox.standard(
+                          state: state is QuestionCreationPublicStatusUpdated &&
+                                  state.isPublic
+                              ? QLCheckboxState.checked
+                              : QLCheckboxState.unchecked,
+                          onChanged: (_) => cubit.toggleIsQuestionPublic(),
+                          labelText: S.of(context).isQuestionPublicLabel,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
             _FormSection(
-              child: _Options(
-                viewModels: viewModel.options,
-                onOptionChanged: onOptionChanged,
-                onToggleOptionIsCorrect: onToggleOptionIsCorrect,
-                onAddOption:
-                    viewModel.addOptionButtonEnabled ? onAddOption : null,
+              child: HookBuilder(
+                builder: (context) {
+                  final state = useBlocBuilder(
+                    cubit,
+                    buildWhen: (current) =>
+                        current is QuestionCreationViewModelUpdated,
+                  );
+
+                  if (state is QuestionCreationViewModelUpdated) {
+                    return _Options(
+                      viewModels: state.viewModel.options,
+                      onOptionChanged: onOptionChanged,
+                      onToggleOptionIsCorrect: onToggleOptionIsCorrect,
+                      onAddOption: state.viewModel.addOptionButtonEnabled
+                          ? onAddOption
+                          : null,
+                    );
+                  }
+
+                  return const CircularProgressIndicator();
+                },
               ),
             ),
             Row(
