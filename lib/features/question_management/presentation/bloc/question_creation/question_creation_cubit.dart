@@ -1,26 +1,22 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/foundation.dart';
-import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
+import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/view_models/question_creation_view_model.dart';
 import 'package:uuid/uuid.dart';
 
 part 'question_creation_state.dart';
 
 class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationCubit({
-    required CreateQuestionUseCase createQuestionUseCase,
-  })  : _createQuestionUseCase = createQuestionUseCase,
-        super(QuestionCreationState.initial());
+    required this.logger,
+    required this.createQuestionUseCase,
+  }) : super(const QuestionCreationInitial());
 
-  final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<QuestionCreationCubit>();
-
-  final CreateQuestionUseCase _createQuestionUseCase;
-  late QuestionCreationViewModel _viewModel = _defaultViewModel;
+  final QuizLabLogger logger;
+  final CreateQuestionUseCase createQuestionUseCase;
 
   final QuestionCreationViewModel _defaultViewModel = QuestionCreationViewModel(
     title: const QuestionCreationTitleViewModel(
@@ -64,11 +60,13 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     message: null,
     showMessage: false,
   );
+  late QuestionCreationViewModel _viewModel = _defaultViewModel;
+  _QuestionFormState _state = const _QuestionFormState();
 
   void load() => _updateViewModel(_defaultViewModel);
 
   void onTitleChanged(String newValue) {
-    _logger.info('Title changed');
+    logger.debug('Title changed');
 
     final newViewModel = _viewModel.copyWith(
       title: _viewModel.title.copyWith(
@@ -82,7 +80,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onDescriptionChanged(String newValue) {
-    _logger.info('Description changed');
+    logger.debug('Description changed');
 
     final newViewModel = _viewModel.copyWith(
       description: _viewModel.description.copyWith(
@@ -96,7 +94,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onDifficultyChanged(String? value) {
-    _logger.info('Difficulty changed: $value');
+    logger.debug('Difficulty changed: $value');
 
     final newViewModel = _viewModel.copyWith(
       difficulty: _viewModel.difficulty.copyWith(
@@ -112,7 +110,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onOptionChanged(String id, String value) {
-    _logger.info('Option changed');
+    logger.debug('Option changed');
 
     final newViewModel = _viewModel.copyWith(
       options: _viewModel.options.map(
@@ -136,7 +134,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void toggleOptionIsCorrect(String id) {
-    _logger.info('Option toggled');
+    logger.debug('Option toggled');
 
     final newViewModel = _viewModel.copyWith(
       options: _viewModel.options.map(
@@ -157,12 +155,12 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   void onAddOption() {
-    _logger.info('Adding option...');
+    logger.debug('Adding option...');
 
     const optionsLimit = 5;
 
     if (_viewModel.options.length >= optionsLimit) {
-      _logger.info('Options limit reached');
+      logger.debug('Options limit reached');
       return;
     }
 
@@ -186,23 +184,33 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   }
 
   Future<void> onCreateQuestion() async {
-    _logger.info('Creating question...');
+    logger.debug('Creating question...');
 
     final isValid = _validateFields();
 
     if (!isValid) {
-      _logger.warn('Invalid fields');
+      logger.warn('Invalid fields');
       return;
     }
 
     await _createQuestion();
   }
 
+  void toggleIsQuestionPublic() {
+    logger.debug('Toggling public status...');
+
+    _state = _state.copyWith(
+      isPublic: _state.isPublic == null || !_state.isPublic!,
+    );
+
+    emit(QuestionCreationPublicStatusUpdated(isPublic: _state.isPublic!));
+  }
+
   void _updateViewModel(QuestionCreationViewModel newViewModel) {
-    _logger.info('Updating view model...');
+    logger.debug('Updating view model...');
 
     _viewModel = newViewModel;
-    emit(QuestionCreationState.viewModelUpdated(_viewModel));
+    emit(QuestionCreationViewModelUpdated(viewModel: _viewModel));
   }
 
   Future<void> _createQuestion() async {
@@ -221,8 +229,8 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
       categories: const [],
     );
 
-    (await _createQuestionUseCase(draftQuestion))
-        .inspectErr(_logger.error)
+    (await createQuestionUseCase(draftQuestion))
+        .inspectErr(logger.error)
         .map(
           (_) => _viewModel.copyWith(
             message: const QuestionCreationMessageViewModel(
@@ -245,7 +253,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
         )
         .inspect(_updateViewModel)
         .inspectErr(_updateViewModel)
-        .inspect((_) => emit(QuestionCreationState.goBack()));
+        .inspect((_) => emit(const QuestionCreationGoBack()));
   }
 
   bool _validateFields() {
@@ -299,4 +307,24 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
 
     return true;
   }
+}
+
+final class _QuestionFormState extends Equatable {
+  const _QuestionFormState({
+    this.isPublic,
+  });
+
+  final bool? isPublic;
+
+  _QuestionFormState copyWith({
+    bool? isPublic,
+  }) =>
+      _QuestionFormState(
+        isPublic: isPublic ?? this.isPublic,
+      );
+
+  @override
+  List<Object> get props => [
+        isPublic ?? 'isPublic -> null',
+      ];
 }

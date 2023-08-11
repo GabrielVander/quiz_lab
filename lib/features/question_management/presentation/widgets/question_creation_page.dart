@@ -14,8 +14,8 @@ import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/view_models/question_creation_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionCreationPage extends HookWidget {
@@ -46,7 +46,8 @@ class QuestionCreationPage extends HookWidget {
                     if (GoRouter.of(context).canPop()) {
                       GoRouter.of(context).pop();
                     } else {
-                      GoRouter.of(context).goNamed(Routes.questionsOverview.name);
+                      GoRouter.of(context)
+                          .goNamed(Routes.questionsOverview.name);
                     }
                   });
                 }
@@ -256,14 +257,16 @@ class _Form extends StatelessWidget {
                 viewModels: viewModel.options,
                 onOptionChanged: onOptionChanged,
                 onToggleOptionIsCorrect: onToggleOptionIsCorrect,
-                onAddOption: viewModel.addOptionButtonEnabled ? onAddOption : null,
+                onAddOption:
+                    viewModel.addOptionButtonEnabled ? onAddOption : null,
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 QLDefaultButton.text(
-                  onPressed: () => GoRouter.of(context).goNamed(Routes.questionsOverview.name),
+                  onPressed: () => GoRouter.of(context)
+                      .goNamed(Routes.questionsOverview.name),
                   text: S.of(context).goBackLabel,
                 ),
                 const SizedBox(

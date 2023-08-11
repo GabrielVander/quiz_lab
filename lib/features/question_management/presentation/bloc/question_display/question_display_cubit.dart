@@ -7,7 +7,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/answer_opt
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/view_models/question_display_view_model.dart';
 import 'package:uuid/uuid.dart';
 
 part 'question_display_state.dart';

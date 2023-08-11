@@ -11,8 +11,8 @@ import 'package:quiz_lab/features/question_management/domain/entities/question_d
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/view_models/questions_overview_view_model.dart';
 
 void main() {
   late UpdateQuestionUseCase updateQuestionUseCaseMock;
@@ -198,9 +198,12 @@ void main() {
             final questionId = values[0] as String;
             final expectedStates = values[1] as List<Matcher>;
 
-            final questionOverviewItemViewModelMock = _QuestionOverviewItemViewModelMock();
+            final questionOverviewItemViewModelMock =
+                _QuestionOverviewItemViewModelMock();
 
-            mocktail.when(() => questionOverviewItemViewModelMock.id).thenReturn(questionId);
+            mocktail
+                .when(() => questionOverviewItemViewModelMock.id)
+                .thenReturn(questionId);
 
             mocktail
                 .when(() => deleteQuestionUseCaseMock.execute(questionId))
@@ -286,7 +289,9 @@ void main() {
             final viewModelMock = _QuestionOverviewItemViewModelMock();
             final questionMock = _QuestionMock();
 
-            mocktail.when(() => viewModelMock.shortDescription).thenReturn('gImVFe1#');
+            mocktail
+                .when(() => viewModelMock.shortDescription)
+                .thenReturn('gImVFe1#');
 
             mocktail.when(viewModelMock.toQuestion).thenReturn(questionMock);
 
@@ -309,11 +314,14 @@ class _QuestionMock extends mocktail.Mock implements Question {}
 class _QuestionOverviewItemViewModelMock extends mocktail.Mock
     implements QuestionsOverviewItemViewModel {}
 
-class _UpdateQuestionUseCaseMock extends mocktail.Mock implements UpdateQuestionUseCase {}
+class _UpdateQuestionUseCaseMock extends mocktail.Mock
+    implements UpdateQuestionUseCase {}
 
-class _DeleteQuestionUseCaseMock extends mocktail.Mock implements DeleteQuestionUseCase {}
+class _DeleteQuestionUseCaseMock extends mocktail.Mock
+    implements DeleteQuestionUseCase {}
 
-class _WatchAllQuestionsUseCaseMock extends mocktail.Mock implements WatchAllQuestionsUseCase {}
+class _WatchAllQuestionsUseCaseMock extends mocktail.Mock
+    implements WatchAllQuestionsUseCase {}
 
 class _DummyQuestion extends Question {
   _DummyQuestion()

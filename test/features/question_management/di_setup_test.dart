@@ -9,7 +9,9 @@ import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 
 void main() {
   late DependencyInjection dependencyInjection;
@@ -109,6 +111,29 @@ void main() {
     );
     expect(repositoryImpl.appwriteDataSource, appwriteDataSource);
   });
+
+  test('QuestionCreationCubit', () {
+    final createQuestionUseCase = _MockCreateQuestionUseCase();
+
+    when(() => dependencyInjection.get<CreateQuestionUseCase>())
+        .thenReturn(createQuestionUseCase);
+
+    questionManagementDiSetup(dependencyInjection);
+
+    final builder = verify(
+      () => dependencyInjection.registerBuilder<QuestionCreationCubit>(
+        captureAny(
+          that: isA<QuestionCreationCubit Function(DependencyInjection)>(),
+        ),
+      ),
+    ).captured.single;
+    final cubitBuilder =
+        builder as QuestionCreationCubit Function(DependencyInjection);
+
+    final cubit = cubitBuilder(dependencyInjection);
+    expect(cubit.logger, isA<QuizLabLoggerImpl<QuestionCreationCubit>>());
+    expect(cubit.createQuestionUseCase, createQuestionUseCase);
+  });
 }
 
 class _MockDependencyInjection extends Mock implements DependencyInjection {}
@@ -121,3 +146,6 @@ class _MockAppwriteDataSource extends Mock implements AppwriteDataSource {}
 
 class _MockQuestionCollectionAppwriteDataSource extends Mock
     implements QuestionCollectionAppwriteDataSource {}
+
+class _MockCreateQuestionUseCase extends Mock
+    implements CreateQuestionUseCase {}

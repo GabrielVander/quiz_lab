@@ -118,6 +118,7 @@ void main() {
           )
         ],
         categories: [QuestionCategory(value: 'category')],
+        isPublic: true,
       ),
       'uuid',
       'zVW7N',
@@ -133,6 +134,7 @@ void main() {
         ],
         difficulty: QuestionDifficulty.easy,
         categories: [QuestionCategory(value: 'category')],
+        isPublic: true,
       )
     ),
     (

@@ -47,6 +47,7 @@ class CreateQuestionUseCaseImpl implements CreateQuestionUseCase {
           difficulty: difficulty,
           categories: draft.categories,
           answerOptions: draft.options,
+          isPublic: draft.isPublic,
         ),
       );
 

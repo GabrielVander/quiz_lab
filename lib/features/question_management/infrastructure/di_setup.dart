@@ -15,9 +15,9 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/delete_qu
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/question_display_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
 import 'package:uuid/uuid.dart';
 
 void questionManagementDiSetup(DependencyInjection di) {
@@ -78,6 +78,7 @@ void questionManagementDiSetup(DependencyInjection di) {
     )
     ..registerBuilder<QuestionCreationCubit>(
       (DependencyInjection i) => QuestionCreationCubit(
+        logger: QuizLabLoggerImpl<QuestionCreationCubit>(),
         createQuestionUseCase: i.get<CreateQuestionUseCase>(),
       ),
     )

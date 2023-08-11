@@ -9,6 +9,7 @@ class DraftQuestion extends Equatable {
     required this.difficulty,
     required this.options,
     required this.categories,
+    this.isPublic = false,
   });
 
   final String title;
@@ -16,6 +17,7 @@ class DraftQuestion extends Equatable {
   final String difficulty;
   final List<AnswerOption> options;
   final List<QuestionCategory> categories;
+  final bool isPublic;
 
   @override
   List<Object> get props => [

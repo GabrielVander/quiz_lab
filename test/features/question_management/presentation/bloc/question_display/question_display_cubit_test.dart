@@ -8,8 +8,8 @@ import 'package:quiz_lab/features/question_management/domain/entities/answer_opt
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/question_display_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/view_models/question_display_view_model.dart';
 
 void main() {
   late GetSingleQuestionUseCase getSingleQuestionUseCaseMock;
@@ -152,7 +152,8 @@ void main() {
 
               mocktail
                   .when(
-                    () => getSingleQuestionUseCaseMock.execute(question.id.value),
+                    () =>
+                        getSingleQuestionUseCaseMock.execute(question.id.value),
                   )
                   .thenAnswer((_) async => Ok(question));
 
