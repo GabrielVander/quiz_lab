@@ -1,9 +1,10 @@
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/data/data_sources/auth_appwrite_data_source.dart';
+import 'package:quiz_lab/core/data/models/email_session_credentials_model.dart';
+import 'package:quiz_lab/core/domain/entities/current_user_session.dart';
+import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/features/auth/data/models/email_session_credentials_model.dart';
-import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({
@@ -56,5 +57,11 @@ class AuthRepositoryImpl implements AuthRepository {
         .map((_) => true)
         .inspect((_) => logger.debug('User is logged in'))
         .or(const Ok<bool, String>(false));
+  }
+
+  @override
+  Future<Result<CurrentUserSession?, String>> getCurrentSession() {
+    // TODO: implement getCurrentSession
+    throw UnimplementedError();
   }
 }

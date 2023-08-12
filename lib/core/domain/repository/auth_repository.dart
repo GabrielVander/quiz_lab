@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/domain/entities/current_user_session.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 
 abstract interface class AuthRepository {
@@ -11,6 +12,8 @@ abstract interface class AuthRepository {
   Future<Result<Unit, String>> loginAnonymously();
 
   Future<Result<bool, String>> isLoggedIn();
+
+  Future<Result<CurrentUserSession?, String>> getCurrentSession();
 }
 
 abstract class AuthRepositoryError {

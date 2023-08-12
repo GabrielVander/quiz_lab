@@ -4,13 +4,13 @@ import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/data/data_sources/auth_appwrite_data_source.dart';
+import 'package:quiz_lab/core/data/models/email_session_credentials_model.dart';
+import 'package:quiz_lab/core/data/models/preferences_model.dart';
+import 'package:quiz_lab/core/data/models/session_model.dart';
+import 'package:quiz_lab/core/data/models/user_model.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/auth/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/features/auth/data/models/email_session_credentials_model.dart';
-import 'package:quiz_lab/features/auth/data/models/preferences_model.dart';
-import 'package:quiz_lab/features/auth/data/models/session_model.dart';
-import 'package:quiz_lab/features/auth/data/models/user_model.dart';
 
 void main() {
   late QuizLabLogger logger;

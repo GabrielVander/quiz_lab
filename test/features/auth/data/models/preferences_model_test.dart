@@ -1,6 +1,6 @@
 import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_lab/features/auth/data/models/preferences_model.dart';
+import 'package:quiz_lab/core/data/models/preferences_model.dart';
 
 void main() {
   group('fromAppwriteModel', () {

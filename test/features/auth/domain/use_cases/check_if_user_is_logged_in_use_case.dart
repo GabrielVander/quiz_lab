@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/features/auth/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 
 void main() {
