@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
 
-@immutable
-class SessionModel {
+class SessionModel extends Equatable {
   const SessionModel({
     required this.userId,
     required this.sessionId,
@@ -21,52 +20,50 @@ class SessionModel {
   final String sessionId;
   final String sessionCreationDate;
   final String sessionExpirationDate;
-  final ProviderInfo sessionProviderInfo;
+  final ProviderInfoModel sessionProviderInfo;
   final String ipUsedInSession;
-  final OperatingSystemInfo operatingSystemInfo;
-  final ClientInfo clientInfo;
-  final DeviceInfo deviceInfo;
+  final OperatingSystemInfoModel operatingSystemInfo;
+  final ClientInfoModel clientInfo;
+  final DeviceInfoModel deviceInfo;
   final String countryCode;
   final String countryName;
   final bool isCurrentSession;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is SessionModel &&
-          runtimeType == other.runtimeType &&
-          userId == other.userId &&
-          sessionId == other.sessionId &&
-          sessionCreationDate == other.sessionCreationDate &&
-          sessionExpirationDate == other.sessionExpirationDate &&
-          sessionProviderInfo == other.sessionProviderInfo &&
-          ipUsedInSession == other.ipUsedInSession &&
-          operatingSystemInfo == other.operatingSystemInfo &&
-          clientInfo == other.clientInfo &&
-          deviceInfo == other.deviceInfo &&
-          countryCode == other.countryCode &&
-          countryName == other.countryName &&
-          isCurrentSession == other.isCurrentSession;
+  List<Object> get props => [
+        userId,
+        sessionId,
+        sessionCreationDate,
+        sessionExpirationDate,
+        sessionProviderInfo,
+        ipUsedInSession,
+        operatingSystemInfo,
+        clientInfo,
+        deviceInfo,
+        countryCode,
+        countryName,
+        isCurrentSession,
+      ];
 
   @override
-  int get hashCode =>
-      userId.hashCode ^
-      sessionId.hashCode ^
-      sessionCreationDate.hashCode ^
-      sessionExpirationDate.hashCode ^
-      sessionProviderInfo.hashCode ^
-      ipUsedInSession.hashCode ^
-      operatingSystemInfo.hashCode ^
-      clientInfo.hashCode ^
-      deviceInfo.hashCode ^
-      countryCode.hashCode ^
-      countryName.hashCode ^
-      isCurrentSession.hashCode;
+  String toString() => 'SessionModel{'
+      'userId: $userId, '
+      'sessionId: $sessionId, '
+      'sessionCreationDate: $sessionCreationDate, '
+      'sessionExpirationDate: $sessionExpirationDate, '
+      'sessionProviderInfo: $sessionProviderInfo, '
+      'ipUsedInSession: $ipUsedInSession, '
+      'operatingSystemInfo: $operatingSystemInfo, '
+      'clientInfo: $clientInfo, '
+      'deviceInfo: $deviceInfo, '
+      'countryCode: $countryCode, '
+      'countryName: $countryName, '
+      'isCurrentSession: $isCurrentSession'
+      '}';
 }
 
-@immutable
-class ProviderInfo {
-  const ProviderInfo({
+class ProviderInfoModel extends Equatable {
+  const ProviderInfoModel({
     required this.name,
     required this.uid,
     required this.accessToken,
@@ -81,28 +78,26 @@ class ProviderInfo {
   final String refreshToken;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ProviderInfo &&
-          runtimeType == other.runtimeType &&
-          name == other.name &&
-          uid == other.uid &&
-          accessToken == other.accessToken &&
-          accessTokenExpirationDate == other.accessTokenExpirationDate &&
-          refreshToken == other.refreshToken;
+  String toString() => 'ProviderInfoModel{'
+      'name: $name, '
+      'uid: $uid, '
+      'accessToken: $accessToken, '
+      'accessTokenExpirationDate: $accessTokenExpirationDate, '
+      'refreshToken: $refreshToken'
+      '}';
 
   @override
-  int get hashCode =>
-      name.hashCode ^
-      uid.hashCode ^
-      accessToken.hashCode ^
-      accessTokenExpirationDate.hashCode ^
-      refreshToken.hashCode;
+  List<Object> get props => [
+        name,
+        uid,
+        accessToken,
+        accessTokenExpirationDate,
+        refreshToken,
+      ];
 }
 
-@immutable
-class OperatingSystemInfo {
-  const OperatingSystemInfo({
+class OperatingSystemInfoModel extends Equatable {
+  const OperatingSystemInfoModel({
     required this.code,
     required this.name,
     required this.version,
@@ -113,21 +108,18 @@ class OperatingSystemInfo {
   final String version;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is OperatingSystemInfo &&
-          runtimeType == other.runtimeType &&
-          code == other.code &&
-          name == other.name &&
-          version == other.version;
+  String toString() => 'OperatingSystemInfoModel{'
+      'code: $code, '
+      'name: $name, '
+      'version: $version'
+      '}';
 
   @override
-  int get hashCode => code.hashCode ^ name.hashCode ^ version.hashCode;
+  List<Object> get props => [code, name, version];
 }
 
-@immutable
-class ClientInfo {
-  const ClientInfo({
+class ClientInfoModel extends Equatable {
+  const ClientInfoModel({
     required this.type,
     required this.code,
     required this.name,
@@ -144,30 +136,28 @@ class ClientInfo {
   final String engineVersion;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ClientInfo &&
-          runtimeType == other.runtimeType &&
-          type == other.type &&
-          code == other.code &&
-          name == other.name &&
-          version == other.version &&
-          engineName == other.engineName &&
-          engineVersion == other.engineVersion;
+  String toString() => 'ClientInfoModel{'
+      'type: $type, '
+      'code: $code, '
+      'name: $name, '
+      'version: $version, '
+      'engineName: $engineName, '
+      'engineVersion: $engineVersion'
+      '}';
 
   @override
-  int get hashCode =>
-      type.hashCode ^
-      code.hashCode ^
-      name.hashCode ^
-      version.hashCode ^
-      engineName.hashCode ^
-      engineVersion.hashCode;
+  List<Object> get props => [
+        type,
+        code,
+        name,
+        version,
+        engineName,
+        engineVersion,
+      ];
 }
 
-@immutable
-class DeviceInfo {
-  const DeviceInfo({
+class DeviceInfoModel extends Equatable {
+  const DeviceInfoModel({
     required this.name,
     required this.brand,
     required this.model,
@@ -178,14 +168,9 @@ class DeviceInfo {
   final String model;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DeviceInfo &&
-          runtimeType == other.runtimeType &&
-          name == other.name &&
-          brand == other.brand &&
-          model == other.model;
+  String toString() =>
+      'DeviceInfoModel{name: $name, brand: $brand, model: $model}';
 
   @override
-  int get hashCode => name.hashCode ^ brand.hashCode ^ model.hashCode;
+  List<Object> get props => [name, brand, model];
 }

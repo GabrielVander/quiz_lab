@@ -124,7 +124,7 @@ void main() {
                 sessionId: 'phnC',
                 sessionCreationDate: 'U&JX',
                 sessionExpirationDate: '*2B',
-                sessionProviderInfo: ProviderInfo(
+                sessionProviderInfo: ProviderInfoModel(
                   accessToken: '@*SLcY3',
                   accessTokenExpirationDate: '3%*uvHY8',
                   name: '4JI5Nd0y',
@@ -132,12 +132,12 @@ void main() {
                   uid: '#qoc3e',
                 ),
                 ipUsedInSession: 'fUJ32z*Q',
-                operatingSystemInfo: OperatingSystemInfo(
+                operatingSystemInfo: OperatingSystemInfoModel(
                   code: 'qzq&D',
                   name: 'e3u6cVJG',
                   version: 'a%^M',
                 ),
-                clientInfo: ClientInfo(
+                clientInfo: ClientInfoModel(
                   type: '*&91B',
                   code: 'h*Py',
                   name: '4AzW1k8y',
@@ -145,7 +145,7 @@ void main() {
                   engineName: 'iP*4',
                   engineVersion: 'aJix',
                 ),
-                deviceInfo: DeviceInfo(
+                deviceInfo: DeviceInfoModel(
                   name: '7v39',
                   brand: r'^n$qM5*2',
                   model: '96#76!P',
@@ -188,7 +188,7 @@ void main() {
                 sessionId: 'R#U!&',
                 sessionCreationDate: '7pR^PS%',
                 sessionExpirationDate: 'y^ac33%f',
-                sessionProviderInfo: ProviderInfo(
+                sessionProviderInfo: ProviderInfoModel(
                   uid: 'zCPD62',
                   accessToken: 'b47j',
                   accessTokenExpirationDate: r'$@2E',
@@ -196,12 +196,12 @@ void main() {
                   refreshToken: 'tK32T2y',
                 ),
                 ipUsedInSession: 'F^7ey^',
-                operatingSystemInfo: OperatingSystemInfo(
+                operatingSystemInfo: OperatingSystemInfoModel(
                   code: 'AwU*3n',
                   name: 'wh&',
                   version: '4yY#p9*V',
                 ),
-                clientInfo: ClientInfo(
+                clientInfo: ClientInfoModel(
                   type: 'WTmED6',
                   code: 'f^s',
                   name: r'25k$vV',
@@ -209,7 +209,7 @@ void main() {
                   engineName: '#6&9gvX',
                   engineVersion: r'@gwK$E3m',
                 ),
-                deviceInfo: DeviceInfo(
+                deviceInfo: DeviceInfoModel(
                   name: 'a^P8q',
                   brand: '6fqG7eH',
                   model: '*qg9',
@@ -238,9 +238,7 @@ void main() {
                 ),
               );
 
-              expect(result.isOk, true);
-              expect(result.unwrap(), expectedSessionModel);
-              expect(result.unwrap().hashCode, expectedSessionModel.hashCode);
+              expect(result, Ok<SessionModel, String>(expectedSessionModel));
             });
           }
         },

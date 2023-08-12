@@ -1,6 +1,7 @@
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/core/data/models/email_session_credentials_model.dart';
+import 'package:quiz_lab/core/data/models/session_model.dart';
 import 'package:quiz_lab/core/domain/entities/current_user_session.dart';
 import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
@@ -60,8 +61,27 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<CurrentUserSession?, String>> getCurrentSession() {
-    // TODO: implement getCurrentSession
-    throw UnimplementedError();
+  Future<Result<CurrentUserSession?, String>> getCurrentSession() async {
+    logger.debug('Fetching current session...');
+
+    return (await authDataSource.getSession('current'))
+        .inspectErr(logger.error)
+        .mapErr((_) => 'Unable to fetch current session')
+        .map(
+          (model) => model != null
+              ? CurrentUserSession(provider: _buildProvider(model))
+              : null,
+        );
+  }
+
+  SessionProvider _buildProvider(SessionModel model) {
+    switch (model.sessionProviderInfo.name) {
+      case 'email':
+        return SessionProvider.email;
+      case 'anonymous':
+        return SessionProvider.anonymous;
+      default:
+        return SessionProvider.unknown;
+    }
   }
 }

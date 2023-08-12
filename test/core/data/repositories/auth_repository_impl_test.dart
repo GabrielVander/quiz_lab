@@ -6,23 +6,24 @@ import 'package:quiz_lab/core/data/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/models/session_model.dart';
 import 'package:quiz_lab/core/data/models/user_model.dart';
 import 'package:quiz_lab/core/data/repositories/auth_repository_impl.dart';
+import 'package:quiz_lab/core/domain/entities/current_user_session.dart';
 import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 
 void main() {
-  late AuthAppwriteDataSource authDataSourceMock;
+  late AuthAppwriteDataSource authDataSource;
   late QuizLabLogger logger;
 
   late AuthRepositoryImpl repository;
 
   setUp(() {
     logger = _MockQuizLabLogger();
-    authDataSourceMock = _AuthAppwriteDataSourceMock();
+    authDataSource = _AuthAppwriteDataSourceMock();
 
     repository = AuthRepositoryImpl(
       logger: logger,
-      authDataSource: authDataSourceMock,
+      authDataSource: authDataSource,
     );
 
     registerFallbackValue(_MockEmailSessionCredentialsModel());
@@ -34,7 +35,7 @@ void main() {
       () {
         for (final errorMessage in ['', 'R02!OA']) {
           test(errorMessage, () async {
-            when(() => authDataSourceMock.createEmailSession(any()))
+            when(() => authDataSource.createEmailSession(any()))
                 .thenAnswer((_) async => Err(errorMessage));
 
             final result = await repository
@@ -64,7 +65,7 @@ void main() {
             final password = values[1];
 
             when(
-              () => authDataSourceMock.createEmailSession(
+              () => authDataSource.createEmailSession(
                 EmailSessionCredentialsModel(
                   email: email,
                   password: password,
@@ -86,7 +87,7 @@ void main() {
 
   group('loginAnonymously()', () {
     test('should log initial message', () async {
-      when(() => authDataSourceMock.createAnonymousSession())
+      when(() => authDataSource.createAnonymousSession())
           .thenAnswer((_) async => const Err('UPjDe'));
 
       await repository.loginAnonymously();
@@ -97,7 +98,7 @@ void main() {
     group('should fail if auth data source fails', () {
       for (final errorMessage in ['73sOg87', '3Eq7Yt']) {
         test(errorMessage, () async {
-          when(() => authDataSourceMock.createAnonymousSession())
+          when(() => authDataSource.createAnonymousSession())
               .thenAnswer((_) async => Err(errorMessage));
 
           final result = await repository.loginAnonymously();
@@ -112,7 +113,7 @@ void main() {
     });
 
     test('should return ok if auth data source returns ok', () async {
-      when(() => authDataSourceMock.createAnonymousSession())
+      when(() => authDataSource.createAnonymousSession())
           .thenAnswer((_) async => const Ok(unit));
 
       final result = await repository.loginAnonymously();
@@ -123,7 +124,7 @@ void main() {
 
   group('isLoggedIn', () {
     test('should log initial message', () async {
-      when(() => authDataSourceMock.getCurrentUser())
+      when(() => authDataSource.getCurrentUser())
           .thenAnswer((_) async => const Err('35W5a41'));
 
       await repository.isLoggedIn();
@@ -134,7 +135,7 @@ void main() {
     group('should return false if auth data source fails', () {
       for (final errorMessage in ['I3vI1Q5s', 'EtiUuAzt']) {
         test(errorMessage, () async {
-          when(() => authDataSourceMock.getCurrentUser())
+          when(() => authDataSource.getCurrentUser())
               .thenAnswer((_) async => Err(errorMessage));
 
           final result = await repository.isLoggedIn();
@@ -146,7 +147,7 @@ void main() {
     });
 
     test('should return true if auth data source returns ok', () async {
-      when(() => authDataSourceMock.getCurrentUser())
+      when(() => authDataSource.getCurrentUser())
           .thenAnswer((_) async => Ok(_MockUserModel()));
 
       final result = await repository.isLoggedIn();
@@ -154,6 +155,66 @@ void main() {
       verifyNever(() => logger.error(any()));
       verify(() => logger.debug('User is logged in')).called(1);
       expect(result, const Ok<bool, String>(true));
+    });
+  });
+
+  group('getCurrentSession', () {
+    test('should log initial message', () async {
+      when(() => authDataSource.getSession(any()))
+          .thenAnswer((_) async => const Err('ZV8cMY'));
+
+      await repository.getCurrentSession();
+
+      verify(() => logger.debug('Fetching current session...')).called(1);
+    });
+
+    group('should log and fail if auth data source fails', () {
+      for (final errorMessage in ['4Sx', 'ILi']) {
+        test(errorMessage, () async {
+          when(() => authDataSource.getSession('current')).thenAnswer(
+            (_) async => Err(errorMessage),
+          );
+
+          final result = await repository.getCurrentSession();
+
+          verify(() => logger.error(errorMessage)).called(1);
+          expect(
+            result,
+            const Err<CurrentUserSession?, String>(
+              'Unable to fetch current session',
+            ),
+          );
+        });
+      }
+    });
+
+    group('should return expected', () {
+      for (final testCase in <(SessionModel?, CurrentUserSession?)>[
+        (
+          _FakeAnonymousSessionModel(),
+          const CurrentUserSession(provider: SessionProvider.anonymous)
+        ),
+        (
+          _FakeEmailSessionModel(),
+          const CurrentUserSession(provider: SessionProvider.email),
+        ),
+        (
+          _FakeUnknownSessionModel(),
+          const CurrentUserSession(provider: SessionProvider.unknown),
+        ),
+        (null, null),
+      ]) {
+        test(testCase.toString(), () async {
+          when(() => authDataSource.getSession('current')).thenAnswer(
+            (_) async => Ok(testCase.$1),
+          );
+
+          final result = await repository.getCurrentSession();
+
+          verifyNever(() => logger.error(any()));
+          expect(result, Ok<CurrentUserSession?, String>(testCase.$2));
+        });
+      }
     });
   });
 }
@@ -177,3 +238,35 @@ class _MockEmailCredentials extends Mock implements EmailCredentials {
 class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
 
 class _MockUserModel extends Mock implements UserModel {}
+
+class _FakeEmailSessionModel extends Fake implements SessionModel {
+  @override
+  final ProviderInfoModel sessionProviderInfo = _FakeEmailProviderInfoModel();
+}
+
+class _FakeAnonymousSessionModel extends Fake implements SessionModel {
+  @override
+  final ProviderInfoModel sessionProviderInfo =
+      _FakeAnonymousProviderInfoModel();
+}
+
+class _FakeUnknownSessionModel extends Fake implements SessionModel {
+  @override
+  final ProviderInfoModel sessionProviderInfo = _FakeUnknownProviderInfoModel();
+}
+
+class _FakeEmailProviderInfoModel extends Fake implements ProviderInfoModel {
+  @override
+  final String name = 'email';
+}
+
+class _FakeAnonymousProviderInfoModel extends Fake
+    implements ProviderInfoModel {
+  @override
+  final String name = 'anonymous';
+}
+
+class _FakeUnknownProviderInfoModel extends Fake implements ProviderInfoModel {
+  @override
+  final String name = '2i17';
+}

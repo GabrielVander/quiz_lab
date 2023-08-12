@@ -15,6 +15,8 @@ abstract interface class AuthAppwriteDataSource {
   Future<Result<Unit, String>> createAnonymousSession();
 
   Future<Result<UserModel, String>> getCurrentUser();
+
+  Future<Result<SessionModel?, String>> getSession(String sessionId);
 }
 
 class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
@@ -46,7 +48,7 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
           sessionId: session.$id,
           sessionCreationDate: session.$createdAt,
           sessionExpirationDate: session.expire,
-          sessionProviderInfo: ProviderInfo(
+          sessionProviderInfo: ProviderInfoModel(
             uid: session.providerUid,
             name: session.provider,
             accessToken: session.providerAccessToken,
@@ -54,12 +56,12 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
             refreshToken: session.providerRefreshToken,
           ),
           ipUsedInSession: session.ip,
-          operatingSystemInfo: OperatingSystemInfo(
+          operatingSystemInfo: OperatingSystemInfoModel(
             code: session.osCode,
             name: session.osName,
             version: session.osVersion,
           ),
-          clientInfo: ClientInfo(
+          clientInfo: ClientInfoModel(
             type: session.clientType,
             code: session.clientCode,
             name: session.clientName,
@@ -67,7 +69,7 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
             engineName: session.clientEngine,
             engineVersion: session.clientEngineVersion,
           ),
-          deviceInfo: DeviceInfo(
+          deviceInfo: DeviceInfoModel(
             name: session.deviceName,
             brand: session.deviceBrand,
             model: session.deviceModel,
@@ -133,5 +135,11 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
     } on AppwriteException catch (e) {
       return Err(e);
     }
+  }
+
+  @override
+  Future<Result<SessionModel?, String>> getSession(String sessionId) {
+    // TODO: implement getSession
+    throw UnimplementedError();
   }
 }
