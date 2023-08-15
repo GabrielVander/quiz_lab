@@ -1,6 +1,7 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/data/models/appwrite_error_model.dart';
 import 'package:quiz_lab/core/data/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/models/session_model.dart';
 import 'package:quiz_lab/core/data/models/user_model.dart';
@@ -16,7 +17,9 @@ abstract interface class AuthAppwriteDataSource {
 
   Future<Result<UserModel, String>> getCurrentUser();
 
-  Future<Result<SessionModel?, String>> getSession(String sessionId);
+  Future<Result<SessionModel, AppwriteErrorModel>> getSession(
+    String sessionId,
+  );
 }
 
 class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
@@ -45,38 +48,30 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
       return Ok(
         SessionModel(
           userId: session.userId,
-          sessionId: session.$id,
-          sessionCreationDate: session.$createdAt,
-          sessionExpirationDate: session.expire,
-          sessionProviderInfo: ProviderInfoModel(
-            uid: session.providerUid,
-            name: session.provider,
-            accessToken: session.providerAccessToken,
-            accessTokenExpirationDate: session.providerAccessTokenExpiry,
-            refreshToken: session.providerRefreshToken,
-          ),
-          ipUsedInSession: session.ip,
-          operatingSystemInfo: OperatingSystemInfoModel(
-            code: session.osCode,
-            name: session.osName,
-            version: session.osVersion,
-          ),
-          clientInfo: ClientInfoModel(
-            type: session.clientType,
-            code: session.clientCode,
-            name: session.clientName,
-            version: session.clientVersion,
-            engineName: session.clientEngine,
-            engineVersion: session.clientEngineVersion,
-          ),
-          deviceInfo: DeviceInfoModel(
-            name: session.deviceName,
-            brand: session.deviceBrand,
-            model: session.deviceModel,
-          ),
+          $id: session.$id,
+          $createdAt: session.$createdAt,
+          expire: session.expire,
+          providerUid: session.providerUid,
+          provider: session.provider,
+          providerAccessToken: session.providerAccessToken,
+          providerAccessTokenExpiry: session.providerAccessTokenExpiry,
+          providerRefreshToken: session.providerRefreshToken,
+          ip: session.ip,
+          osCode: session.osCode,
+          osName: session.osName,
+          osVersion: session.osVersion,
+          clientType: session.clientType,
+          clientCode: session.clientCode,
+          clientName: session.clientName,
+          clientVersion: session.clientVersion,
+          clientEngine: session.clientEngine,
+          clientEngineVersion: session.clientEngineVersion,
+          deviceName: session.deviceName,
+          deviceBrand: session.deviceBrand,
+          deviceModel: session.deviceModel,
           countryCode: session.countryCode,
           countryName: session.countryName,
-          isCurrentSession: session.current,
+          current: session.current,
         ),
       );
     } on AppwriteException catch (e) {
@@ -138,8 +133,25 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
   }
 
   @override
-  Future<Result<SessionModel?, String>> getSession(String sessionId) {
-    // TODO: implement getSession
-    throw UnimplementedError();
+  Future<Result<SessionModel, AppwriteErrorModel>> getSession(
+    String sessionId,
+  ) async {
+    logger.debug('Retrieving given Appwrite session...');
+
+    return (await _fetchAppwriteSession(sessionId))
+        .inspectErr((error) => logger.error(error.toString()))
+        .mapErr(AppwriteErrorModel.fromAppwriteException)
+        .inspect((_) => logger.debug('Appwrite session retrieved successfully'))
+        .map(SessionModel.fromAppwriteSession);
+  }
+
+  Future<Result<Session, AppwriteException>> _fetchAppwriteSession(
+    String sessionId,
+  ) async {
+    try {
+      return Ok(await appwriteAccountService.getSession(sessionId: sessionId));
+    } on AppwriteException catch (e) {
+      return Err(e);
+    }
   }
 }

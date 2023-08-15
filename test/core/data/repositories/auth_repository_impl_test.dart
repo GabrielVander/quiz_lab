@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/auth_appwrite_data_source.dart';
+import 'package:quiz_lab/core/data/models/appwrite_error_model.dart';
 import 'package:quiz_lab/core/data/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/models/session_model.dart';
 import 'package:quiz_lab/core/data/models/user_model.dart';
@@ -161,7 +162,7 @@ void main() {
   group('getCurrentSession', () {
     test('should log initial message', () async {
       when(() => authDataSource.getSession(any()))
-          .thenAnswer((_) async => const Err('ZV8cMY'));
+          .thenAnswer((_) async => const Err(UnknownAppwriteErrorModel()));
 
       await repository.getCurrentSession();
 

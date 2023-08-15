@@ -1,176 +1,144 @@
+import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 
 class SessionModel extends Equatable {
   const SessionModel({
+    required this.$id,
+    required this.$createdAt,
     required this.userId,
-    required this.sessionId,
-    required this.sessionCreationDate,
-    required this.sessionExpirationDate,
-    required this.sessionProviderInfo,
-    required this.ipUsedInSession,
-    required this.operatingSystemInfo,
-    required this.clientInfo,
-    required this.deviceInfo,
+    required this.expire,
+    required this.provider,
+    required this.providerUid,
+    required this.providerAccessToken,
+    required this.providerAccessTokenExpiry,
+    required this.providerRefreshToken,
+    required this.ip,
+    required this.osCode,
+    required this.osName,
+    required this.osVersion,
+    required this.clientType,
+    required this.clientCode,
+    required this.clientName,
+    required this.clientVersion,
+    required this.clientEngine,
+    required this.clientEngineVersion,
+    required this.deviceName,
+    required this.deviceBrand,
+    required this.deviceModel,
     required this.countryCode,
     required this.countryName,
-    required this.isCurrentSession,
+    required this.current,
   });
 
+  factory SessionModel.fromAppwriteSession(Session session) => SessionModel(
+        $id: session.$id,
+        $createdAt: session.$createdAt,
+        userId: session.userId,
+        expire: session.expire,
+        provider: session.provider,
+        providerUid: session.providerUid,
+        providerAccessToken: session.providerAccessToken,
+        providerAccessTokenExpiry: session.providerAccessTokenExpiry,
+        providerRefreshToken: session.providerRefreshToken,
+        ip: session.ip,
+        osCode: session.osCode,
+        osName: session.osName,
+        osVersion: session.osVersion,
+        clientType: session.clientType,
+        clientCode: session.clientCode,
+        clientName: session.clientName,
+        clientVersion: session.clientVersion,
+        clientEngine: session.clientEngine,
+        clientEngineVersion: session.clientEngineVersion,
+        deviceName: session.deviceName,
+        deviceBrand: session.deviceBrand,
+        deviceModel: session.deviceModel,
+        countryCode: session.countryCode,
+        countryName: session.countryName,
+        current: session.current,
+      );
+
+  final String $id;
+  final String $createdAt;
   final String userId;
-  final String sessionId;
-  final String sessionCreationDate;
-  final String sessionExpirationDate;
-  final ProviderInfoModel sessionProviderInfo;
-  final String ipUsedInSession;
-  final OperatingSystemInfoModel operatingSystemInfo;
-  final ClientInfoModel clientInfo;
-  final DeviceInfoModel deviceInfo;
+  final String expire;
+  final String provider;
+  final String providerUid;
+  final String providerAccessToken;
+  final String providerAccessTokenExpiry;
+  final String providerRefreshToken;
+  final String ip;
+  final String osCode;
+  final String osName;
+  final String osVersion;
+  final String clientType;
+  final String clientCode;
+  final String clientName;
+  final String clientVersion;
+  final String clientEngine;
+  final String clientEngineVersion;
+  final String deviceName;
+  final String deviceBrand;
+  final String deviceModel;
   final String countryCode;
   final String countryName;
-  final bool isCurrentSession;
-
-  @override
-  List<Object> get props => [
-        userId,
-        sessionId,
-        sessionCreationDate,
-        sessionExpirationDate,
-        sessionProviderInfo,
-        ipUsedInSession,
-        operatingSystemInfo,
-        clientInfo,
-        deviceInfo,
-        countryCode,
-        countryName,
-        isCurrentSession,
-      ];
+  final bool current;
 
   @override
   String toString() => 'SessionModel{'
+      '\$id: ${$id}, '
+      '\$createdAt: ${$createdAt}, '
       'userId: $userId, '
-      'sessionId: $sessionId, '
-      'sessionCreationDate: $sessionCreationDate, '
-      'sessionExpirationDate: $sessionExpirationDate, '
-      'sessionProviderInfo: $sessionProviderInfo, '
-      'ipUsedInSession: $ipUsedInSession, '
-      'operatingSystemInfo: $operatingSystemInfo, '
-      'clientInfo: $clientInfo, '
-      'deviceInfo: $deviceInfo, '
+      'expire: $expire, '
+      'provider: $provider, '
+      'providerUid: $providerUid, '
+      'providerAccessToken: $providerAccessToken, '
+      'providerAccessTokenExpiry: $providerAccessTokenExpiry, '
+      'providerRefreshToken: $providerRefreshToken, '
+      'ip: $ip, '
+      'osCode: $osCode, '
+      'osName: $osName, '
+      'osVersion: $osVersion, '
+      'clientType: $clientType, '
+      'clientCode: $clientCode, '
+      'clientName: $clientName, '
+      'clientVersion: $clientVersion, '
+      'clientEngine: $clientEngine, '
+      'clientEngineVersion: $clientEngineVersion, '
+      'deviceName: $deviceName, '
+      'deviceBrand: $deviceBrand, '
+      'deviceModel: $deviceModel, '
       'countryCode: $countryCode, '
       'countryName: $countryName, '
-      'isCurrentSession: $isCurrentSession'
-      '}';
-}
-
-class ProviderInfoModel extends Equatable {
-  const ProviderInfoModel({
-    required this.name,
-    required this.uid,
-    required this.accessToken,
-    required this.accessTokenExpirationDate,
-    required this.refreshToken,
-  });
-
-  final String name;
-  final String uid;
-  final String accessToken;
-  final String accessTokenExpirationDate;
-  final String refreshToken;
-
-  @override
-  String toString() => 'ProviderInfoModel{'
-      'name: $name, '
-      'uid: $uid, '
-      'accessToken: $accessToken, '
-      'accessTokenExpirationDate: $accessTokenExpirationDate, '
-      'refreshToken: $refreshToken'
+      'current: $current'
       '}';
 
   @override
   List<Object> get props => [
-        name,
-        uid,
-        accessToken,
-        accessTokenExpirationDate,
-        refreshToken,
+        $id,
+        $createdAt,
+        userId,
+        expire,
+        provider,
+        providerUid,
+        providerAccessToken,
+        providerAccessTokenExpiry,
+        providerRefreshToken,
+        ip,
+        osCode,
+        osName,
+        osVersion,
+        clientType,
+        clientCode,
+        clientName,
+        clientVersion,
+        clientEngine,
+        clientEngineVersion,
+        deviceName,
+        deviceBrand,
+        deviceModel,
+        countryCode,
+        countryName,
+        current,
       ];
-}
-
-class OperatingSystemInfoModel extends Equatable {
-  const OperatingSystemInfoModel({
-    required this.code,
-    required this.name,
-    required this.version,
-  });
-
-  final String code;
-  final String name;
-  final String version;
-
-  @override
-  String toString() => 'OperatingSystemInfoModel{'
-      'code: $code, '
-      'name: $name, '
-      'version: $version'
-      '}';
-
-  @override
-  List<Object> get props => [code, name, version];
-}
-
-class ClientInfoModel extends Equatable {
-  const ClientInfoModel({
-    required this.type,
-    required this.code,
-    required this.name,
-    required this.version,
-    required this.engineName,
-    required this.engineVersion,
-  });
-
-  final String type;
-  final String code;
-  final String name;
-  final String version;
-  final String engineName;
-  final String engineVersion;
-
-  @override
-  String toString() => 'ClientInfoModel{'
-      'type: $type, '
-      'code: $code, '
-      'name: $name, '
-      'version: $version, '
-      'engineName: $engineName, '
-      'engineVersion: $engineVersion'
-      '}';
-
-  @override
-  List<Object> get props => [
-        type,
-        code,
-        name,
-        version,
-        engineName,
-        engineVersion,
-      ];
-}
-
-class DeviceInfoModel extends Equatable {
-  const DeviceInfoModel({
-    required this.name,
-    required this.brand,
-    required this.model,
-  });
-
-  final String name;
-  final String brand;
-  final String model;
-
-  @override
-  String toString() =>
-      'DeviceInfoModel{name: $name, brand: $brand, model: $model}';
-
-  @override
-  List<Object> get props => [name, brand, model];
 }

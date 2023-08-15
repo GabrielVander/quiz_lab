@@ -65,17 +65,13 @@ class AuthRepositoryImpl implements AuthRepository {
     logger.debug('Fetching current session...');
 
     return (await authDataSource.getSession('current'))
-        .inspectErr(logger.error)
+        .inspectErr((error) => logger.error(error.toString()))
         .mapErr((_) => 'Unable to fetch current session')
-        .map(
-          (model) => model != null
-              ? CurrentUserSession(provider: _buildProvider(model))
-              : null,
-        );
+        .map((model) => CurrentUserSession(provider: _buildProvider(model)));
   }
 
   SessionProvider _buildProvider(SessionModel model) {
-    switch (model.sessionProviderInfo.name) {
+    switch (model.provider) {
       case 'email':
         return SessionProvider.email;
       case 'anonymous':

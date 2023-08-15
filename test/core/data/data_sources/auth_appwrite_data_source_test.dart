@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/auth_appwrite_data_source.dart';
+import 'package:quiz_lab/core/data/models/appwrite_error_model.dart';
 import 'package:quiz_lab/core/data/models/email_session_credentials_model.dart';
 import 'package:quiz_lab/core/data/models/preferences_model.dart';
 import 'package:quiz_lab/core/data/models/session_model.dart';
@@ -121,38 +122,30 @@ void main() {
               ),
               const SessionModel(
                 userId: 'K0qY0',
-                sessionId: 'phnC',
-                sessionCreationDate: 'U&JX',
-                sessionExpirationDate: '*2B',
-                sessionProviderInfo: ProviderInfoModel(
-                  accessToken: '@*SLcY3',
-                  accessTokenExpirationDate: '3%*uvHY8',
-                  name: '4JI5Nd0y',
-                  refreshToken: 'sEJS7c',
-                  uid: '#qoc3e',
-                ),
-                ipUsedInSession: 'fUJ32z*Q',
-                operatingSystemInfo: OperatingSystemInfoModel(
-                  code: 'qzq&D',
-                  name: 'e3u6cVJG',
-                  version: 'a%^M',
-                ),
-                clientInfo: ClientInfoModel(
-                  type: '*&91B',
-                  code: 'h*Py',
-                  name: '4AzW1k8y',
-                  version: r'$04',
-                  engineName: 'iP*4',
-                  engineVersion: 'aJix',
-                ),
-                deviceInfo: DeviceInfoModel(
-                  name: '7v39',
-                  brand: r'^n$qM5*2',
-                  model: '96#76!P',
-                ),
+                $id: 'phnC',
+                $createdAt: 'U&JX',
+                expire: '*2B',
+                providerAccessToken: '@*SLcY3',
+                providerAccessTokenExpiry: '3%*uvHY8',
+                provider: '4JI5Nd0y',
+                providerRefreshToken: 'sEJS7c',
+                providerUid: '#qoc3e',
+                ip: 'fUJ32z*Q',
+                osCode: 'qzq&D',
+                osName: 'e3u6cVJG',
+                osVersion: 'a%^M',
+                clientType: '*&91B',
+                clientCode: 'h*Py',
+                clientName: '4AzW1k8y',
+                clientVersion: r'$04',
+                clientEngine: 'iP*4',
+                clientEngineVersion: 'aJix',
+                deviceName: '7v39',
+                deviceBrand: r'^n$qM5*2',
+                deviceModel: '96#76!P',
                 countryCode: 'L%J',
                 countryName: 'SoZly',
-                isCurrentSession: false,
+                current: false,
               )
             ],
             [
@@ -185,38 +178,30 @@ void main() {
               ),
               const SessionModel(
                 userId: 'yw&C',
-                sessionId: 'R#U!&',
-                sessionCreationDate: '7pR^PS%',
-                sessionExpirationDate: 'y^ac33%f',
-                sessionProviderInfo: ProviderInfoModel(
-                  uid: 'zCPD62',
-                  accessToken: 'b47j',
-                  accessTokenExpirationDate: r'$@2E',
-                  name: 'mTg^',
-                  refreshToken: 'tK32T2y',
-                ),
-                ipUsedInSession: 'F^7ey^',
-                operatingSystemInfo: OperatingSystemInfoModel(
-                  code: 'AwU*3n',
-                  name: 'wh&',
-                  version: '4yY#p9*V',
-                ),
-                clientInfo: ClientInfoModel(
-                  type: 'WTmED6',
-                  code: 'f^s',
-                  name: r'25k$vV',
-                  version: '3sQW9',
-                  engineName: '#6&9gvX',
-                  engineVersion: r'@gwK$E3m',
-                ),
-                deviceInfo: DeviceInfoModel(
-                  name: 'a^P8q',
-                  brand: '6fqG7eH',
-                  model: '*qg9',
-                ),
+                $id: 'R#U!&',
+                $createdAt: '7pR^PS%',
+                expire: 'y^ac33%f',
+                providerUid: 'zCPD62',
+                providerAccessToken: 'b47j',
+                providerAccessTokenExpiry: r'$@2E',
+                provider: 'mTg^',
+                providerRefreshToken: 'tK32T2y',
+                ip: 'F^7ey^',
+                osCode: 'AwU*3n',
+                osName: 'wh&',
+                osVersion: '4yY#p9*V',
+                clientType: 'WTmED6',
+                clientCode: 'f^s',
+                clientName: r'25k$vV',
+                clientVersion: '3sQW9',
+                clientEngine: '#6&9gvX',
+                clientEngineVersion: r'@gwK$E3m',
+                deviceName: 'a^P8q',
+                deviceBrand: '6fqG7eH',
+                deviceModel: '*qg9',
                 countryCode: '65Tf',
                 countryName: 'S3fFYu',
-                isCurrentSession: true,
+                current: true,
               )
             ],
           ]) {
@@ -377,6 +362,136 @@ void main() {
         ),
       );
     });
+  });
+
+  group('getSession', () {
+    test('should log initial message', () async {
+      when(
+        () => appwriteAccountServiceMock.getSession(
+          sessionId: any(named: 'sessionId'),
+        ),
+      ).thenThrow(AppwriteException('aCM'));
+
+      await dataSource.getSession('pAHfxO1');
+
+      verify(() => logger.debug('Retrieving given Appwrite session...'))
+          .called(1);
+    });
+
+    for (final sessionId in ['MEB', '6p5']) {
+      group('when given id: $sessionId', () {
+        group('should log and fail if account service throws', () {
+          for (final error in ['R4ZDBKXi', 'dGMX']) {
+            test('when thrown error: $error', () async {
+              final exception = AppwriteException(error);
+
+              when(
+                () => appwriteAccountServiceMock.getSession(
+                  sessionId: sessionId,
+                ),
+              ).thenThrow(exception);
+
+              final result = await dataSource.getSession(sessionId);
+
+              verify(() => logger.error(exception.toString())).called(1);
+              expect(
+                result,
+                Err<SessionModel?, AppwriteErrorModel>(
+                  UnknownAppwriteErrorModel(message: error),
+                ),
+              );
+            });
+          }
+        });
+
+        group('should return expected', () {
+          for (final testCase in [
+            (
+              Session(
+                $id: '',
+                $createdAt: '',
+                userId: '',
+                expire: '',
+                provider: '',
+                providerUid: '',
+                providerAccessToken: '',
+                providerAccessTokenExpiry: '',
+                providerRefreshToken: '',
+                ip: '',
+                osCode: '',
+                osName: '',
+                osVersion: '',
+                clientType: '',
+                clientCode: '',
+                clientName: '',
+                clientVersion: '',
+                clientEngine: '',
+                clientEngineVersion: '',
+                deviceName: '',
+                deviceBrand: '',
+                deviceModel: '',
+                countryCode: '',
+                countryName: '',
+                current: false,
+              ),
+              const SessionModel(
+                $id: '',
+                $createdAt: '',
+                userId: '',
+                expire: '',
+                provider: '',
+                providerUid: '',
+                providerAccessToken: '',
+                providerAccessTokenExpiry: '',
+                providerRefreshToken: '',
+                ip: '',
+                osCode: '',
+                osName: '',
+                osVersion: '',
+                clientType: '',
+                clientCode: '',
+                clientName: '',
+                clientVersion: '',
+                clientEngine: '',
+                clientEngineVersion: '',
+                deviceName: '',
+                deviceBrand: '',
+                deviceModel: '',
+                countryCode: '',
+                countryName: '',
+                current: false,
+              )
+            )
+          ]) {
+            final appwriteSession = testCase.$1;
+            final expectedSessionModel = testCase.$2;
+
+            test(
+              'when receiving $appwriteSession should return $expectedSessionModel',
+              () async {
+                when(
+                  () => appwriteAccountServiceMock.getSession(
+                    sessionId: sessionId,
+                  ),
+                ).thenAnswer((_) async => appwriteSession);
+
+                final result = await dataSource.getSession(sessionId);
+
+                verify(
+                  () => logger.debug('Appwrite session retrieved successfully'),
+                ).called(1);
+                expect(
+                  result,
+                  Ok<SessionModel?, AppwriteErrorModel>(
+                    expectedSessionModel,
+                  ),
+                );
+              },
+            );
+          }
+        });
+      });
+    }
   });
 }
 
