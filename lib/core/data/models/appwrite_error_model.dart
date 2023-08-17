@@ -8,12 +8,10 @@ sealed class AppwriteErrorModel extends Equatable {
     this.code,
   });
 
-  factory AppwriteErrorModel.fromAppwriteException(
-      AppwriteException exception) {
+  factory AppwriteErrorModel.fromAppwriteException(AppwriteException exception) {
     switch (exception.type) {
       case 'general_argument_invalid':
-        return GeneralArgumentInvalidAppwriteErrorModel(
-            message: exception.message);
+        return GeneralArgumentInvalidAppwriteErrorModel(message: exception.message);
       case 'database_not_found':
         return DatabaseNotFoundAppwriteErrorModel(message: exception.message);
       case 'collection_not_found':

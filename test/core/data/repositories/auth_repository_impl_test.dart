@@ -36,16 +36,13 @@ void main() {
       () {
         for (final errorMessage in ['', 'R02!OA']) {
           test(errorMessage, () async {
-            when(() => authDataSource.createEmailSession(any()))
-                .thenAnswer((_) async => Err(errorMessage));
+            when(() => authDataSource.createEmailSession(any())).thenAnswer((_) async => Err(errorMessage));
 
-            final result = await repository
-                .loginWithEmailCredentials(_MockEmailCredentials());
+            final result = await repository.loginWithEmailCredentials(_MockEmailCredentials());
 
             expect(result.isErr, true);
 
-            final expected =
-                AuthRepositoryError.unexpected(message: errorMessage);
+            final expected = AuthRepositoryError.unexpected(message: errorMessage);
             expect(result.unwrapErr(), expected);
             expect(result.unwrapErr().hashCode, expected.hashCode);
           });
@@ -88,8 +85,7 @@ void main() {
 
   group('loginAnonymously()', () {
     test('should log initial message', () async {
-      when(() => authDataSource.createAnonymousSession())
-          .thenAnswer((_) async => const Err('UPjDe'));
+      when(() => authDataSource.createAnonymousSession()).thenAnswer((_) async => const Err('UPjDe'));
 
       await repository.loginAnonymously();
 
@@ -99,8 +95,7 @@ void main() {
     group('should fail if auth data source fails', () {
       for (final errorMessage in ['73sOg87', '3Eq7Yt']) {
         test(errorMessage, () async {
-          when(() => authDataSource.createAnonymousSession())
-              .thenAnswer((_) async => Err(errorMessage));
+          when(() => authDataSource.createAnonymousSession()).thenAnswer((_) async => Err(errorMessage));
 
           final result = await repository.loginAnonymously();
 
@@ -114,8 +109,7 @@ void main() {
     });
 
     test('should return ok if auth data source returns ok', () async {
-      when(() => authDataSource.createAnonymousSession())
-          .thenAnswer((_) async => const Ok(unit));
+      when(() => authDataSource.createAnonymousSession()).thenAnswer((_) async => const Ok(unit));
 
       final result = await repository.loginAnonymously();
 
@@ -125,8 +119,7 @@ void main() {
 
   group('isLoggedIn', () {
     test('should log initial message', () async {
-      when(() => authDataSource.getCurrentUser())
-          .thenAnswer((_) async => const Err('35W5a41'));
+      when(() => authDataSource.getCurrentUser()).thenAnswer((_) async => const Err('35W5a41'));
 
       await repository.isLoggedIn();
 
@@ -136,8 +129,7 @@ void main() {
     group('should return false if auth data source fails', () {
       for (final errorMessage in ['I3vI1Q5s', 'EtiUuAzt']) {
         test(errorMessage, () async {
-          when(() => authDataSource.getCurrentUser())
-              .thenAnswer((_) async => Err(errorMessage));
+          when(() => authDataSource.getCurrentUser()).thenAnswer((_) async => Err(errorMessage));
 
           final result = await repository.isLoggedIn();
 
@@ -148,8 +140,7 @@ void main() {
     });
 
     test('should return true if auth data source returns ok', () async {
-      when(() => authDataSource.getCurrentUser())
-          .thenAnswer((_) async => Ok(_MockUserModel()));
+      when(() => authDataSource.getCurrentUser()).thenAnswer((_) async => Ok(_MockUserModel()));
 
       final result = await repository.isLoggedIn();
 
@@ -161,8 +152,7 @@ void main() {
 
   group('getCurrentSession', () {
     test('should log initial message', () async {
-      when(() => authDataSource.getSession(any()))
-          .thenAnswer((_) async => const Err(UnknownAppwriteErrorModel()));
+      when(() => authDataSource.getSession(any())).thenAnswer((_) async => const Err(UnknownAppwriteErrorModel()));
 
       await repository.getCurrentSession();
 
@@ -172,13 +162,13 @@ void main() {
     group('should log and fail if auth data source fails', () {
       for (final errorMessage in ['4Sx', 'ILi']) {
         test(errorMessage, () async {
-          when(() => authDataSource.getSession('current')).thenAnswer(
-            (_) async => Err(errorMessage),
-          );
+          final unknownAppwriteErrorModel = UnknownAppwriteErrorModel(message: errorMessage);
+
+          when(() => authDataSource.getSession('current')).thenAnswer((_) async => Err(unknownAppwriteErrorModel));
 
           final result = await repository.getCurrentSession();
 
-          verify(() => logger.error(errorMessage)).called(1);
+          verify(() => logger.error(unknownAppwriteErrorModel.toString())).called(1);
           expect(
             result,
             const Err<CurrentUserSession?, String>(
@@ -190,11 +180,8 @@ void main() {
     });
 
     group('should return expected', () {
-      for (final testCase in <(SessionModel?, CurrentUserSession?)>[
-        (
-          _FakeAnonymousSessionModel(),
-          const CurrentUserSession(provider: SessionProvider.anonymous)
-        ),
+      for (final testCase in [
+        (_FakeAnonymousSessionModel(), const CurrentUserSession(provider: SessionProvider.anonymous)),
         (
           _FakeEmailSessionModel(),
           const CurrentUserSession(provider: SessionProvider.email),
@@ -203,7 +190,6 @@ void main() {
           _FakeUnknownSessionModel(),
           const CurrentUserSession(provider: SessionProvider.unknown),
         ),
-        (null, null),
       ]) {
         test(testCase.toString(), () async {
           when(() => authDataSource.getSession('current')).thenAnswer(
@@ -220,11 +206,9 @@ void main() {
   });
 }
 
-class _AuthAppwriteDataSourceMock extends Mock
-    implements AuthAppwriteDataSource {}
+class _AuthAppwriteDataSourceMock extends Mock implements AuthAppwriteDataSource {}
 
-class _MockEmailSessionCredentialsModel extends Mock
-    implements EmailSessionCredentialsModel {}
+class _MockEmailSessionCredentialsModel extends Mock implements EmailSessionCredentialsModel {}
 
 class _MockSessionModel extends Mock implements SessionModel {}
 
@@ -242,32 +226,15 @@ class _MockUserModel extends Mock implements UserModel {}
 
 class _FakeEmailSessionModel extends Fake implements SessionModel {
   @override
-  final ProviderInfoModel sessionProviderInfo = _FakeEmailProviderInfoModel();
+  final String provider = 'email';
 }
 
 class _FakeAnonymousSessionModel extends Fake implements SessionModel {
   @override
-  final ProviderInfoModel sessionProviderInfo =
-      _FakeAnonymousProviderInfoModel();
+  final String provider = 'anonymous';
 }
 
 class _FakeUnknownSessionModel extends Fake implements SessionModel {
   @override
-  final ProviderInfoModel sessionProviderInfo = _FakeUnknownProviderInfoModel();
-}
-
-class _FakeEmailProviderInfoModel extends Fake implements ProviderInfoModel {
-  @override
-  final String name = 'email';
-}
-
-class _FakeAnonymousProviderInfoModel extends Fake
-    implements ProviderInfoModel {
-  @override
-  final String name = 'anonymous';
-}
-
-class _FakeUnknownProviderInfoModel extends Fake implements ProviderInfoModel {
-  @override
-  final String name = '2i17';
+  final String provider = '2i17';
 }
