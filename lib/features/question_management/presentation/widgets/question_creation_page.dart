@@ -268,64 +268,31 @@ class _Form extends StatelessWidget {
               ),
             ),
             _FormSection(
-              child: Row(
-                children: [
-                  Flexible(
-                    flex: 3,
-                    child: HookBuilder(
-                      builder: (context) {
-                        final state = useBlocBuilder(
-                          cubit,
-                          buildWhen: (current) => current is QuestionCreationViewModelUpdated,
-                        );
+              child: HookBuilder(
+                builder: (context) {
+                  final state = useBlocBuilder(
+                    cubit,
+                    buildWhen: (current) => [QuestionCreationHidePublicToggle, QuestionCreationShowPublicToggle]
+                        .contains(current.runtimeType),
+                  );
 
-                        if (state is QuestionCreationViewModelUpdated) {
-                          return _DifficultySelector(
-                            viewModel: state.viewModel.difficulty,
-                            onChange: onDifficultyChanged,
-                          );
-                        }
+                  if (state is QuestionCreationHidePublicToggle) {
+                    return _DifficultySelectorDisplay(cubit: cubit);
+                  }
 
-                        return const CircularProgressIndicator();
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  HookBuilder(
-                    builder: (context) {
-                      final state = useBlocBuilder(
-                        cubit,
-                        buildWhen: (current) => [QuestionCreationHidePublicToggle, QuestionCreationShowPublicToggle]
-                            .contains(current.runtimeType),
-                      );
-
-                      if (state is QuestionCreationHidePublicToggle) {
-                        return const SizedBox.shrink();
-                      }
-
-                      return Flexible(
-                        child: HookBuilder(
-                          builder: (context) {
-                            final state = useBlocBuilder(
-                              cubit,
-                              buildWhen: (current) => current is QuestionCreationPublicStatusUpdated,
-                            );
-
-                            return QLCheckbox.standard(
-                              state: state is QuestionCreationPublicStatusUpdated && state.isPublic
-                                  ? QLCheckboxState.checked
-                                  : QLCheckboxState.unchecked,
-                              onChanged: (_) => cubit.toggleIsQuestionPublic(),
-                              labelText: S.of(context).isQuestionPublicLabel,
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                  return Row(
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: _DifficultySelectorDisplay(cubit: cubit),
+                      ),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: _PublicQuestionToggle(cubit: cubit),
+                      )
+                    ],
+                  );
+                },
               ),
             ),
             _FormSection(
@@ -386,6 +353,32 @@ class _FormSection extends StatelessWidget {
   }
 }
 
+class _PublicQuestionToggle extends StatelessWidget {
+  const _PublicQuestionToggle({required this.cubit});
+
+  final QuestionCreationCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    return HookBuilder(
+      builder: (context) {
+        final state = useBlocBuilder(
+          cubit,
+          buildWhen: (current) => current is QuestionCreationPublicStatusUpdated,
+        );
+
+        return QLCheckbox.standard(
+          state: state is QuestionCreationPublicStatusUpdated && state.isPublic
+              ? QLCheckboxState.checked
+              : QLCheckboxState.unchecked,
+          onChanged: (_) => cubit.toggleIsQuestionPublic(),
+          labelText: S.of(context).isQuestionPublicLabel,
+        );
+      },
+    );
+  }
+}
+
 class _TitleField extends StatelessWidget {
   const _TitleField({
     required this.viewModel,
@@ -435,6 +428,33 @@ class _DescriptionField extends StatelessWidget {
       onChanged: onChanged,
       maxLines: 20,
       textInputAction: TextInputAction.next,
+    );
+  }
+}
+
+class _DifficultySelectorDisplay extends StatelessWidget {
+  const _DifficultySelectorDisplay({required this.cubit});
+
+  final QuestionCreationCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    return HookBuilder(
+      builder: (context) {
+        final state = useBlocBuilder(
+          cubit,
+          buildWhen: (current) => current is QuestionCreationViewModelUpdated,
+        );
+
+        if (state is QuestionCreationViewModelUpdated) {
+          return _DifficultySelector(
+            viewModel: state.viewModel.difficulty,
+            onChange: cubit.onDifficultyChanged,
+          );
+        }
+
+        return const CircularProgressIndicator();
+      },
     );
   }
 }
