@@ -1,11 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
+import 'package:quiz_lab/core/data/data_sources/models/appwrite_permission_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_list_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_realtime_message_model.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
@@ -17,181 +19,214 @@ import 'package:quiz_lab/features/question_management/domain/entities/question_d
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 void main() {
+  late QuizLabLogger logger;
   late AppwriteDataSource appwriteDataSourceMock;
-  late QuestionCollectionAppwriteDataSource questionsAppwriteDataSourceMock;
+  late QuestionCollectionAppwriteDataSourceImpl questionsAppwriteDataSourceMock;
+
   late QuestionRepositoryImpl repository;
 
   setUp(() {
-    appwriteDataSourceMock = _AppwriteDataSourceMock();
-    questionsAppwriteDataSourceMock = _QuestionsAppwriteDataSourceMock();
+    logger = _MockQuizLabLogger();
+    appwriteDataSourceMock = _MockAppwriteDataSource();
+    questionsAppwriteDataSourceMock = _MockQuestionsAppwriteDataSource();
+
     repository = QuestionRepositoryImpl(
+      logger: logger,
       appwriteDataSource: appwriteDataSourceMock,
       questionsAppwriteDataSource: questionsAppwriteDataSourceMock,
     );
   });
 
-  tearDown(mocktail.resetMocktailState);
+  tearDown(resetMocktailState);
 
-  group('createSingle()', () {
-    setUp(() {
-      mocktail.registerFallbackValue(
-        const AppwriteQuestionCreationModel(
-          title: '',
-          description: '',
-          options: [],
-          difficulty: 'easy',
-          categories: [],
-          id: '',
+  group(
+    'createSingle()',
+    () {
+      setUp(
+        () => registerFallbackValue(
+          const AppwriteQuestionCreationModel(
+            title: '',
+            description: '',
+            options: [],
+            difficulty: 'easy',
+            categories: [],
+            id: '',
+          ),
         ),
       );
-    });
 
-    group(
-      'should call Appwrite data source correctly',
-      () {
-        for (final values in [
-          [
-            const Question(
-              id: QuestionId(''),
-              shortDescription: '',
-              description: '',
-              answerOptions: [],
-              difficulty: QuestionDifficulty.easy,
-              categories: [],
-            ),
-            const AppwriteQuestionCreationModel(
-              title: '',
-              description: '',
-              options: [],
-              difficulty: 'easy',
-              categories: [],
-              id: '',
-            )
-          ],
-          [
-            const Question(
-              id: QuestionId('hqWk^#'),
-              shortDescription: r'1HFm$Ny',
-              description: 'g18QU',
-              answerOptions: [
-                AnswerOption(description: '!nC#', isCorrect: false),
-              ],
-              difficulty: QuestionDifficulty.medium,
-              categories: [
-                QuestionCategory(value: 'Az75%p8'),
-              ],
-            ),
-            const AppwriteQuestionCreationModel(
-              id: 'hqWk^#',
-              title: r'1HFm$Ny',
-              description: 'g18QU',
-              options: [
-                AppwriteQuestionOptionModel(
-                  description: '!nC#',
-                  isCorrect: false,
-                ),
-              ],
-              difficulty: 'medium',
-              categories: [
-                'Az75%p8',
-              ],
-            )
-          ],
-          [
-            const Question(
-              id: QuestionId('H00D4'),
-              shortDescription: '79FgDD',
-              description: r'N915*v$R',
-              answerOptions: [
-                AnswerOption(description: 'nh92Pe6', isCorrect: true),
-                AnswerOption(description: r'0N2W%S$', isCorrect: true),
-                AnswerOption(description: '@W2', isCorrect: true),
-              ],
-              difficulty: QuestionDifficulty.hard,
-              categories: [
-                QuestionCategory(value: '40eb2q'),
-                QuestionCategory(value: 'k4h'),
-                QuestionCategory(value: '7h5M!fse'),
-                QuestionCategory(value: 'Ea5'),
-              ],
-            ),
-            const AppwriteQuestionCreationModel(
-              id: 'H00D4',
-              title: '79FgDD',
-              description: r'N915*v$R',
-              options: [
-                AppwriteQuestionOptionModel(
-                  description: 'nh92Pe6',
-                  isCorrect: true,
-                ),
-                AppwriteQuestionOptionModel(
-                  description: r'0N2W%S$',
-                  isCorrect: true,
-                ),
-                AppwriteQuestionOptionModel(
-                  description: '@W2',
-                  isCorrect: true,
-                ),
-              ],
-              difficulty: 'hard',
-              categories: [
-                '40eb2q',
-                'k4h',
-                '7h5M!fse',
-                'Ea5',
-              ],
-            )
-          ],
-        ]) {
-          test(values.toString(), () async {
-            final question = values[0] as Question;
-            final expected = values[1] as AppwriteQuestionCreationModel;
+      test('should log initial message', () {
+        when(() => questionsAppwriteDataSourceMock.createSingle(any()))
+            .thenAnswer((_) async => const Err('dALlzcb'));
 
-            mocktail
-                .when(
-                  () => questionsAppwriteDataSourceMock
-                      .createSingle(mocktail.any()),
-                )
-                .thenAnswer(
-                  (_) async => Err(
-                    QuestionsAppwriteDataSourceUnexpectedFailure(''),
-                  ),
-                );
+        repository.createSingle(
+          const Question(
+            id: QuestionId(''),
+            shortDescription: '',
+            description: '',
+            answerOptions: [],
+            difficulty: QuestionDifficulty.easy,
+            categories: [],
+          ),
+        );
 
-            await repository.createSingle(question);
+        verify(() => logger.debug('Creating question...')).called(1);
+      });
 
-            mocktail
-                .verify(
-                  () => questionsAppwriteDataSourceMock.createSingle(expected),
-                )
-                .called(1);
-          });
-        }
-      },
-    );
-
-    test('should return expected', () async {
-      mocktail
-          .when(
-            () => questionsAppwriteDataSourceMock.createSingle(mocktail.any()),
+      for (final values in [
+        (
+          const Question(
+            id: QuestionId(''),
+            shortDescription: '',
+            description: '',
+            answerOptions: [],
+            difficulty: QuestionDifficulty.easy,
+            categories: [],
+          ),
+          const AppwriteQuestionCreationModel(
+            title: '',
+            description: '',
+            options: [],
+            difficulty: 'easy',
+            categories: [],
+            id: '',
           )
-          .thenAnswer((_) async => Ok(_AppwriteQuestionModelMock()));
-
-      final result = await repository.createSingle(
-        const Question(
-          id: QuestionId(''),
-          shortDescription: '',
-          description: '',
-          answerOptions: [],
-          difficulty: QuestionDifficulty.easy,
-          categories: [],
         ),
-      );
+        (
+          const Question(
+            id: QuestionId('hqWk^#'),
+            shortDescription: r'1HFm$Ny',
+            description: 'g18QU',
+            answerOptions: [
+              AnswerOption(description: '!nC#', isCorrect: false),
+            ],
+            difficulty: QuestionDifficulty.medium,
+            categories: [
+              QuestionCategory(value: 'Az75%p8'),
+            ],
+            isPublic: true,
+          ),
+          AppwriteQuestionCreationModel(
+            id: 'hqWk^#',
+            title: r'1HFm$Ny',
+            description: 'g18QU',
+            options: const [
+              AppwriteQuestionOptionModel(
+                description: '!nC#',
+                isCorrect: false,
+              ),
+            ],
+            difficulty: 'medium',
+            categories: const [
+              'Az75%p8',
+            ],
+            permissions: [
+              AppwritePermissionTypeModel.read(
+                AppwritePermissionRoleModel.any(),
+              )
+            ],
+          )
+        ),
+        (
+          const Question(
+            id: QuestionId('H00D4'),
+            shortDescription: '79FgDD',
+            description: r'N915*v$R',
+            answerOptions: [
+              AnswerOption(description: 'nh92Pe6', isCorrect: true),
+              AnswerOption(description: r'0N2W%S$', isCorrect: true),
+              AnswerOption(description: '@W2', isCorrect: true),
+            ],
+            difficulty: QuestionDifficulty.hard,
+            categories: [
+              QuestionCategory(value: '40eb2q'),
+              QuestionCategory(value: 'k4h'),
+              QuestionCategory(value: '7h5M!fse'),
+              QuestionCategory(value: 'Ea5'),
+            ],
+          ),
+          const AppwriteQuestionCreationModel(
+            id: 'H00D4',
+            title: '79FgDD',
+            description: r'N915*v$R',
+            options: [
+              AppwriteQuestionOptionModel(
+                description: 'nh92Pe6',
+                isCorrect: true,
+              ),
+              AppwriteQuestionOptionModel(
+                description: r'0N2W%S$',
+                isCorrect: true,
+              ),
+              AppwriteQuestionOptionModel(
+                description: '@W2',
+                isCorrect: true,
+              ),
+            ],
+            difficulty: 'hard',
+            categories: [
+              '40eb2q',
+              'k4h',
+              '7h5M!fse',
+              'Ea5',
+            ],
+          )
+        ),
+      ]) {
+        final question = values.$1;
+        final expected = values.$2;
 
-      expect(result.isOk, true);
-      expect(result.unwrap(), unit);
-    });
-  });
+        group(
+          'when given $question should call appwrite data source with $expected',
+          () {
+            setUp(() {
+              registerFallbackValue(
+                const AppwriteQuestionCreationModel(
+                  title: '',
+                  description: '',
+                  options: [],
+                  difficulty: 'easy',
+                  categories: [],
+                  id: '',
+                ),
+              );
+            });
+
+            for (final message in ['dyu7oXw', 'c4cnG6i']) {
+              test(
+                'and return error if it fails with message $message',
+                () async {
+                  when(
+                    () =>
+                        questionsAppwriteDataSourceMock.createSingle(expected),
+                  ).thenAnswer((_) async => Err(message));
+
+                  final result = await repository.createSingle(question);
+
+                  verify(() => logger.error(message)).called(1);
+                  expect(
+                    result,
+                    const Err<Unit, String>('Failed to create question'),
+                  );
+                },
+              );
+            }
+
+            test('and return ok if it succeeds', () async {
+              when(() => questionsAppwriteDataSourceMock.createSingle(expected))
+                  .thenAnswer((_) async => Ok(_MockAppwriteQuestionModel()));
+
+              final result = await repository.createSingle(question);
+
+              verify(() => logger.debug('Question created successfully'))
+                  .called(1);
+              expect(result, const Ok<Unit, String>(unit));
+            });
+          },
+        );
+      }
+    },
+  );
 
   group('watchAll()', () {
     group(
@@ -205,41 +240,32 @@ void main() {
         ]) {
           test(amountOfUpdates.toString(), () async {
             final appwriteQuestionListModelMock =
-                _AppwriteQuestionListModelMock();
+                _MockAppwriteQuestionListModel();
 
             final updateMessages = List.generate(
               amountOfUpdates,
-              (_) => _AppwriteRealtimeQuestionMessageModelMock(),
+              (_) => _MockAppwriteRealtimeQuestionMessageModel(),
             );
 
             final stream = Stream.fromIterable(updateMessages);
 
-            mocktail
-                .when(
-                  () =>
-                      appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
-                )
-                .thenAnswer((_) => stream);
+            when(
+              () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+            ).thenAnswer((_) => stream);
 
-            mocktail
-                .when(() => appwriteQuestionListModelMock.total)
-                .thenReturn(0);
-            mocktail
-                .when(() => appwriteQuestionListModelMock.questions)
-                .thenReturn([]);
+            when(() => appwriteQuestionListModelMock.total).thenReturn(0);
+            when(() => appwriteQuestionListModelMock.questions).thenReturn([]);
 
-            mocktail
-                .when(() => appwriteDataSourceMock.getAllQuestions())
+            when(() => appwriteDataSourceMock.getAllQuestions())
                 .thenAnswer((_) async => appwriteQuestionListModelMock);
 
             await repository.watchAll();
 
-            mocktail.verify(
+            verify(
               () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
             );
 
-            mocktail
-                .verify(() => appwriteDataSourceMock.getAllQuestions())
+            verify(() => appwriteDataSourceMock.getAllQuestions())
                 .called(amountOfUpdates + 1);
           });
         }
@@ -341,17 +367,13 @@ void main() {
                 values[0] as AppwriteQuestionListModel;
             final expected = values[1] as List<Question>;
 
-            mocktail
-                .when(
-                  () =>
-                      appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
-                )
-                .thenAnswer(
-                  (_) => const Stream.empty(),
-                );
+            when(
+              () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
+            ).thenAnswer(
+              (_) => const Stream.empty(),
+            );
 
-            mocktail
-                .when(() => appwriteDataSourceMock.getAllQuestions())
+            when(() => appwriteDataSourceMock.getAllQuestions())
                 .thenAnswer((_) async => appwriteQuestionListModel);
 
             final result = await repository.watchAll();
@@ -375,25 +397,20 @@ void main() {
             const QuestionId('olp'),
           ]) {
             test(questionId.toString(), () {
-              mocktail
-                  .when(
-                    () => questionsAppwriteDataSourceMock
-                        .deleteSingle(mocktail.any()),
-                  )
-                  .thenAnswer(
-                    (_) async => Err(
-                      QuestionsAppwriteDataSourceUnexpectedFailure(r'T8$W7'),
-                    ),
-                  );
+              when(
+                () => questionsAppwriteDataSourceMock.deleteSingle(any()),
+              ).thenAnswer(
+                (_) async => Err(
+                  QuestionsAppwriteDataSourceUnexpectedFailure(r'T8$W7'),
+                ),
+              );
 
               repository.deleteSingle(questionId);
 
-              mocktail
-                  .verify(
-                    () => questionsAppwriteDataSourceMock
-                        .deleteSingle(questionId.value),
-                  )
-                  .called(1);
+              verify(
+                () => questionsAppwriteDataSourceMock
+                    .deleteSingle(questionId.value),
+              ).called(1);
             });
           }
         },
@@ -402,15 +419,14 @@ void main() {
       test(
         'should call return nothing if questions Appwrite data source succeeds',
         () async {
-          mocktail
-              .when(
-                () => questionsAppwriteDataSourceMock.deleteSingle(mocktail.any()),
-              )
-              .thenAnswer(
-                (_) async => const Ok(unit),
-              );
+          when(
+            () => questionsAppwriteDataSourceMock.deleteSingle(any()),
+          ).thenAnswer(
+            (_) async => const Ok(unit),
+          );
 
-          final result = await repository.deleteSingle(const QuestionId('6xSamAUC'));
+          final result =
+              await repository.deleteSingle(const QuestionId('6xSamAUC'));
 
           expect(result.isOk, true);
           expect(result.unwrap(), unit);
@@ -442,16 +458,16 @@ void main() {
             ],
           ]) {
             test(values.toString(), () async {
-              final dataSourceFailure = values[0] as QuestionsAppwriteDataSourceFailure;
+              final dataSourceFailure =
+                  values[0] as QuestionsAppwriteDataSourceFailure;
               final expected = values[1] as QuestionRepositoryFailure;
 
-              mocktail
-                  .when(
-                    () => questionsAppwriteDataSourceMock.deleteSingle(mocktail.any()),
-                  )
-                  .thenAnswer((_) async => Err(dataSourceFailure));
+              when(
+                () => questionsAppwriteDataSourceMock.deleteSingle(any()),
+              ).thenAnswer((_) async => Err(dataSourceFailure));
 
-              final result = await repository.deleteSingle(const QuestionId('cNPJl@*x'));
+              final result =
+                  await repository.deleteSingle(const QuestionId('cNPJl@*x'));
 
               expect(result.isErr, true);
               expect(result.unwrapErr(), expected);
@@ -471,20 +487,17 @@ void main() {
           'P6m74A',
         ]) {
           test(questionId, () {
-            mocktail
-                .when(
-                  () => questionsAppwriteDataSourceMock
-                      .fetchSingle(mocktail.any()),
-                )
-                .thenAnswer(
-                  (_) async => Err(
-                    QuestionsAppwriteDataSourceUnexpectedFailure('X90^#SU'),
-                  ),
-                );
+            when(
+              () => questionsAppwriteDataSourceMock.fetchSingle(any()),
+            ).thenAnswer(
+              (_) async => Err(
+                QuestionsAppwriteDataSourceUnexpectedFailure('X90^#SU'),
+              ),
+            );
 
             repository.getSingle(QuestionId(questionId));
 
-            mocktail.verify(
+            verify(
               () => questionsAppwriteDataSourceMock.fetchSingle(questionId),
             );
           });
@@ -495,16 +508,14 @@ void main() {
     test(
       'should map question appwrite model to question entity and return it',
       () async {
-        final appwriteQuestionModelMock = _AppwriteQuestionModelMock();
-        final questionMock = _QuestionMock();
+        final appwriteQuestionModelMock = _MockAppwriteQuestionModel();
+        final questionMock = _MockQuestion();
 
-        mocktail.when(appwriteQuestionModelMock.toQuestion).thenReturn(questionMock);
+        when(appwriteQuestionModelMock.toQuestion).thenReturn(questionMock);
 
-        mocktail
-            .when(
-              () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
-            )
-            .thenAnswer((_) async => Ok(appwriteQuestionModelMock));
+        when(
+          () => questionsAppwriteDataSourceMock.fetchSingle(any()),
+        ).thenAnswer((_) async => Ok(appwriteQuestionModelMock));
 
         final result = await repository.getSingle(const QuestionId('o^Y*lN'));
 
@@ -538,16 +549,16 @@ void main() {
           ],
         ]) {
           test(values.toString(), () async {
-            final dataSourceFailure = values[0] as QuestionsAppwriteDataSourceFailure;
+            final dataSourceFailure =
+                values[0] as QuestionsAppwriteDataSourceFailure;
             final expected = values[1] as QuestionRepositoryFailure;
 
-            mocktail
-                .when(
-                  () => questionsAppwriteDataSourceMock.fetchSingle(mocktail.any()),
-                )
-                .thenAnswer((_) async => Err(dataSourceFailure));
+            when(
+              () => questionsAppwriteDataSourceMock.fetchSingle(any()),
+            ).thenAnswer((_) async => Err(dataSourceFailure));
 
-            final result = await repository.getSingle(const QuestionId('2%E5%'));
+            final result =
+                await repository.getSingle(const QuestionId('2%E5%'));
 
             expect(result.isErr, true);
             expect(result.unwrapErr(), expected);
@@ -560,26 +571,27 @@ void main() {
   group('updateSingle', () {
     test('unimplemented', () {
       expect(
-        () async => repository.updateSingle(_QuestionMock()),
+        () async => repository.updateSingle(_MockQuestion()),
         throwsUnimplementedError,
       );
     });
   });
 }
 
-class _AppwriteDataSourceMock extends mocktail.Mock
-    implements AppwriteDataSource {}
+class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
 
-class _AppwriteRealtimeQuestionMessageModelMock extends mocktail.Mock
+class _MockAppwriteDataSource extends Mock implements AppwriteDataSource {}
+
+class _MockAppwriteRealtimeQuestionMessageModel extends Mock
     implements AppwriteRealtimeQuestionMessageModel {}
 
-class _AppwriteQuestionListModelMock extends mocktail.Mock
+class _MockAppwriteQuestionListModel extends Mock
     implements AppwriteQuestionListModel {}
 
-class _QuestionsAppwriteDataSourceMock extends mocktail.Mock
-    implements QuestionCollectionAppwriteDataSource {}
+class _MockQuestionsAppwriteDataSource extends Mock
+    implements QuestionCollectionAppwriteDataSourceImpl {}
 
-class _AppwriteQuestionModelMock extends mocktail.Mock
+class _MockAppwriteQuestionModel extends Mock
     implements AppwriteQuestionModel {}
 
-class _QuestionMock extends mocktail.Mock implements Question {}
+class _MockQuestion extends Mock implements Question {}

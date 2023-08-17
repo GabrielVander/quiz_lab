@@ -34,13 +34,11 @@ class AppwriteQuestionCreationModel extends Equatable {
         permissions ?? [],
       ];
 
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'description': description,
-      'difficulty': difficulty,
-      'options': jsonEncode(options.map((o) => o.toMap()).toList()),
-      'categories': categories,
-    };
-  }
+  Map<String, dynamic> toMap() => {
+        'title': title,
+        'description': description,
+        'difficulty': difficulty,
+        'options': jsonEncode(options.map((o) => o.toMap()).toList()),
+        'categories': categories,
+      };
 }

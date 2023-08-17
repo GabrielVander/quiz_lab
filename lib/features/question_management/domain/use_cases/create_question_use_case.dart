@@ -1,150 +1,75 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
-class CreateQuestionUseCase {
-  const CreateQuestionUseCase({
-    required QuestionRepository questionRepository,
-    required ResourceUuidGenerator uuidGenerator,
-  })  : _uuidGenerator = uuidGenerator,
-        _questionRepository = questionRepository;
-
-  final QuestionRepository _questionRepository;
-  final ResourceUuidGenerator _uuidGenerator;
-
-  Future<Result<Unit, CreateQuestionUseCaseFailure>> execute(
-    QuestionCreationInput input,
-  ) async {
-    final inputParsingResult = _parseInputToEntity(input);
-
-    if (inputParsingResult.isErr) {
-      return Err(inputParsingResult.unwrapErr());
-    }
-
-    final question = _generateQuestionId(inputParsingResult.unwrap());
-    final creationResult = await _createQuestion(question);
-
-    return creationResult.mapErr(
-      (error) => CreateQuestionUseCaseFailure.unableToCreate(
-        receivedInput: input,
-        message: error.message,
-      ),
-    );
-  }
-
-  Result<Question, _InputParseFailure> _parseInputToEntity(
-    QuestionCreationInput input,
-  ) =>
-      _InputParser.toEntity(input);
-
-  Future<Result<Unit, QuestionRepositoryFailure>> _createQuestion(
-    Question question,
-  ) async {
-    return _questionRepository.createSingle(question);
-  }
-
-  Question _generateQuestionId(Question question) =>
-      question.copyWith(id: QuestionId(_uuidGenerator.generate()));
+// ignore: one_member_abstracts
+abstract interface class CreateQuestionUseCase {
+  Future<Result<Unit, String>> call(DraftQuestion draft);
 }
 
-@immutable
-class QuestionCreationInput extends Equatable {
-  const QuestionCreationInput({
-    required this.shortDescription,
-    required this.description,
-    required this.difficulty,
-    required this.options,
-    required this.categories,
+class CreateQuestionUseCaseImpl implements CreateQuestionUseCase {
+  const CreateQuestionUseCaseImpl({
+    required this.logger,
+    required this.questionRepository,
+    required this.uuidGenerator,
   });
 
-  final String shortDescription;
-  final String description;
-  final String difficulty;
-  final List<QuestionCreationOptionInput> options;
-  final List<String> categories;
+  final QuizLabLogger logger;
+  final QuestionRepository questionRepository;
+  final ResourceUuidGenerator uuidGenerator;
 
   @override
-  List<Object> get props => [
-        shortDescription,
-        description,
-        difficulty,
-        options,
-        categories,
-      ];
+  Future<Result<Unit, String>> call(DraftQuestion draft) async {
+    logger.info('Executing...');
 
-  @override
-  bool get stringify => true;
-}
-
-class QuestionCreationOptionInput extends Equatable {
-  const QuestionCreationOptionInput({
-    required this.description,
-    required this.isCorrect,
-  });
-
-  final String description;
-  final bool isCorrect;
-
-  @override
-  List<Object?> get props => [
-        description,
-        isCorrect,
-      ];
-}
-
-class _InputParser {
-  static Result<Question, _InputParseFailure> toEntity(
-    QuestionCreationInput input,
-  ) {
-    final difficultyParseResult = _parseDifficulty(input);
-
-    if (difficultyParseResult.isErr) {
-      return Err(difficultyParseResult.unwrapErr());
-    }
-
-    return Ok(
-      Question(
-        id: const QuestionId(''),
-        shortDescription: input.shortDescription,
-        description: input.description,
-        answerOptions: input.options
-            .map(
-              (e) => AnswerOption(
-                description: e.description,
-                isCorrect: e.isCorrect,
-              ),
-            )
-            .toList(),
-        difficulty: difficultyParseResult.unwrap(),
-        categories: input.categories.map((e) => QuestionCategory(value: e)).toList(),
-      ),
-    );
+    return _toQuestion(draft)
+        .mapErr((error) => 'Unable to create question: $error')
+        .when(
+          ok: (q) async => (await _createQuestion(q))
+              .inspect((_) => logger.info('Question created successfully')),
+          err: Err.new,
+        );
   }
 
-  static Result<QuestionDifficulty, _InputParseFailure> _parseDifficulty(
-    QuestionCreationInput input,
-  ) {
+  Result<Question, String> _toQuestion(DraftQuestion draft) =>
+      _parseDifficulty(draft).map(
+        (difficulty) => Question(
+          id: _generateQuestionId(),
+          shortDescription: draft.title,
+          description: draft.description,
+          difficulty: difficulty,
+          categories: draft.categories,
+          answerOptions: draft.options,
+          isPublic: draft.isPublic,
+        ),
+      );
+
+  Result<QuestionDifficulty, String> _parseDifficulty(DraftQuestion input) {
     final mappings = {
       'easy': QuestionDifficulty.easy,
       'medium': QuestionDifficulty.medium,
       'hard': QuestionDifficulty.hard,
     };
 
-    if (mappings.containsKey(input.difficulty)) {
-      return Ok(mappings[input.difficulty]!);
-    } else {
-      return Err(
-        _InputParseFailure.difficulty(receivedValue: input.difficulty),
-      );
-    }
+    return (mappings.containsKey(input.difficulty))
+        ? Ok(mappings[input.difficulty]!)
+        : Err("Received unparseable difficulty '${input.difficulty}'");
   }
+
+  Future<Result<Unit, String>> _createQuestion(Question question) async =>
+      (await questionRepository.createSingle(question))
+          .inspectErr(logger.error)
+          .mapErr((_) => 'Unable to create question')
+          .map((_) => unit);
+
+  QuestionId _generateQuestionId() => QuestionId(uuidGenerator.generate());
 }
 
 @immutable
@@ -152,7 +77,7 @@ abstract class CreateQuestionUseCaseFailure extends Equatable {
   const CreateQuestionUseCaseFailure._({required this.message});
 
   factory CreateQuestionUseCaseFailure.unableToCreate({
-    required QuestionCreationInput receivedInput,
+    required DraftQuestion receivedInput,
     required String message,
   }) =>
       UnableToCreateQuestion._(receivedInput: receivedInput, message: message);
@@ -178,7 +103,7 @@ class UnableToCreateQuestion extends CreateQuestionUseCaseFailure {
     required super.message,
   }) : super._();
 
-  final QuestionCreationInput receivedInput;
+  final DraftQuestion receivedInput;
 
   @override
   List<Object> get props => super.props..addAll([receivedInput]);
@@ -205,5 +130,6 @@ abstract class _InputParseFailure extends CreateQuestionUseCaseFailure {
 
 @immutable
 class DifficultyParseFailure extends _InputParseFailure {
-  const DifficultyParseFailure._({required super.receivedValue}) : super._(fieldName: 'difficulty');
+  const DifficultyParseFailure._({required super.receivedValue})
+      : super._(fieldName: 'difficulty');
 }

@@ -9,14 +9,6 @@ class AnswerOption extends Equatable {
   final String description;
   final bool isCorrect;
 
-  @override
-  String toString() {
-    return 'AnswerOption{ '
-        'description: $description, '
-        'isCorrect: $isCorrect, '
-        '}';
-  }
-
   AnswerOption copyWith({
     String? description,
     bool? isCorrect,
@@ -26,6 +18,12 @@ class AnswerOption extends Equatable {
       isCorrect: isCorrect ?? this.isCorrect,
     );
   }
+
+  @override
+  String toString() => 'AnswerOption{ '
+      'description: $description, '
+      'isCorrect: $isCorrect, '
+      '}';
 
   @override
   List<Object?> get props => [
