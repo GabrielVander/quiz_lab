@@ -2,7 +2,6 @@ import 'package:ansicolor/ansicolor.dart';
 import 'package:appwrite/appwrite.dart' as appwrite;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
@@ -12,7 +11,6 @@ import 'package:quiz_lab/core/presentation/quiz_lab_application.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/environment.dart';
-import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/features/auth/infrastructure/auth_di_setup.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
 
@@ -40,8 +38,6 @@ Future<void> _setUpHive() async {
 
 void _setUpLogger() {
   ansiColorDisabled = false;
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen(QuizLabLoggerImpl.onListen);
 }
 
 Future<void> _setUpInjections() async {

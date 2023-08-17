@@ -8,8 +8,8 @@ import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.
 import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_display/question_display_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_display/view_models/question_display_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/question_display_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/view_models/question_display_view_model.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionDisplayPage extends HookWidget {
@@ -284,11 +284,14 @@ class _AnswerButton extends StatelessWidget {
         builder: (context) {
           final state = useBlocBuilder(
             cubit,
-            buildWhen: (current) => current is QuestionDisplayAnswerButtonEnabled,
+            buildWhen: (current) =>
+                current is QuestionDisplayAnswerButtonEnabled,
           );
 
           return QLPrimaryButton.text(
-            onPressed: state is QuestionDisplayAnswerButtonEnabled ? cubit.onAnswer : null,
+            onPressed: state is QuestionDisplayAnswerButtonEnabled
+                ? cubit.onAnswer
+                : null,
             text: S.of(context).answerQuestionButtonLabel,
           );
         },

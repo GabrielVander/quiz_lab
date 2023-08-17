@@ -1,11 +1,11 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
@@ -13,267 +13,216 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 
 void main() {
-  late QuestionRepository questionRepositoryMock;
-  late ResourceUuidGenerator mockUuidGenerator;
+  late QuizLabLogger logger;
+  late ResourceUuidGenerator uuidGenerator;
+  late QuestionRepository questionRepository;
   late CreateQuestionUseCase useCase;
 
   setUp(() {
-    questionRepositoryMock = _QuestionRepositoryMock();
-    mockUuidGenerator = _MockResourceUuidGenerator();
+    logger = _MockQuizLabLogger();
+    uuidGenerator = _MockResourceUuidGenerator();
+    questionRepository = _MockQuestionRepository();
 
-    useCase = CreateQuestionUseCase(
-      questionRepository: questionRepositoryMock,
-      uuidGenerator: mockUuidGenerator,
+    useCase = CreateQuestionUseCaseImpl(
+      logger: logger,
+      questionRepository: questionRepository,
+      uuidGenerator: uuidGenerator,
     );
   });
 
   tearDown(resetMocktailState);
 
-  group('err flow', () {
-    setUp(() => registerFallbackValue(_FakeQuestion()));
-
-    group(
-      'unable to parse input',
-      () {
-        for (final values in [
-          [
-            const QuestionCreationInput(
-              shortDescription: '',
-              description: '',
-              difficulty: '',
-              options: [],
-              categories: [],
-            ),
-            CreateQuestionUseCaseFailure.unableToParseDifficulty(value: ''),
-          ],
-          [
-            const QuestionCreationInput(
-              shortDescription: '3Yd0',
-              description: 'f19!t',
-              difficulty: '8Fy',
-              options: [],
-              categories: ['Du0QQGO', 'O95eCUO'],
-            ),
-            CreateQuestionUseCaseFailure.unableToParseDifficulty(value: '8Fy'),
-          ]
-        ]) {
-          test(values.toString(), () async {
-            final input = values[0] as QuestionCreationInput;
-            final expectedFailure = values[1] as CreateQuestionUseCaseFailure;
-
-            final result = await useCase.execute(input);
-
-            expect(result.isErr, isTrue);
-            expect(result.unwrapErr(), expectedFailure);
-          });
-        }
-      },
+  test('should log initial message', () {
+    useCase.call(
+      const DraftQuestion(
+        title: '',
+        description: '',
+        difficulty: '',
+        options: [],
+        categories: [],
+      ),
     );
 
-    group(
-      'question repository fails',
-      () {
-        for (final values in [
-          [
-            const QuestionCreationInput(
-              shortDescription: '',
-              description: '',
-              difficulty: 'medium',
-              options: [],
-              categories: [],
-            ),
-            '',
-            QuestionRepositoryFailure.unableToCreate(
-              question: _FakeQuestion(),
-              message: '8&tL6xjE',
-            ),
-            CreateQuestionUseCaseFailure.unableToCreate(
-              receivedInput: const QuestionCreationInput(
-                shortDescription: '',
-                description: '',
-                difficulty: 'medium',
-                options: [],
-                categories: [],
-              ),
-              message: '8&tL6xjE',
-            ),
-          ],
-          [
-            const QuestionCreationInput(
-              shortDescription: 'short',
-              description: 'description',
-              difficulty: 'easy',
-              options: [
-                QuestionCreationOptionInput(
-                  description: 'description',
-                  isCorrect: false,
-                )
-              ],
-              categories: ['category'],
-            ),
-            'uuid',
-            QuestionRepositoryFailure.unableToParseEntity(message: ''),
-            CreateQuestionUseCaseFailure.unableToCreate(
-              receivedInput: const QuestionCreationInput(
-                shortDescription: 'short',
-                description: 'description',
-                difficulty: 'easy',
-                options: [
-                  QuestionCreationOptionInput(
-                    description: 'description',
-                    isCorrect: false,
-                  )
-                ],
-                categories: ['category'],
-              ),
-              message: '',
-            ),
-          ],
-          [
-            const QuestionCreationInput(
-              shortDescription: '336dhR',
-              description: '91A^*#Z',
-              difficulty: 'hard',
-              options: [
-                QuestionCreationOptionInput(
-                  description: '3W55p',
-                  isCorrect: false,
-                ),
-                QuestionCreationOptionInput(
-                  description: 'n&!MLH1',
-                  isCorrect: true,
-                ),
-              ],
-              categories: ['y6q729L', '3^*#Z'],
-            ),
-            'pvx',
-            QuestionRepositoryFailure.unableToParseEntity(message: '4p&'),
-            CreateQuestionUseCaseFailure.unableToCreate(
-              receivedInput: const QuestionCreationInput(
-                shortDescription: '336dhR',
-                description: '91A^*#Z',
-                difficulty: 'hard',
-                options: [
-                  QuestionCreationOptionInput(
-                    description: '3W55p',
-                    isCorrect: false,
-                  ),
-                  QuestionCreationOptionInput(
-                    description: 'n&!MLH1',
-                    isCorrect: true,
-                  ),
-                ],
-                categories: ['y6q729L', '3^*#Z'],
-              ),
-              message: '4p&',
-            ),
-          ],
-        ]) {
-          test(values.toString(), () async {
-            final input = values[0] as QuestionCreationInput;
-            final uuid = values[1] as String;
-            final repositoryFailure = values[2] as QuestionRepositoryFailure;
-            final expectedFailure = values[3] as CreateQuestionUseCaseFailure;
-
-            when(() => mockUuidGenerator.generate()).thenReturn(uuid);
-
-            when(() => questionRepositoryMock.createSingle(any()))
-                .thenAnswer((_) async => Err(repositoryFailure));
-
-            final result = await useCase.execute(input);
-
-            expect(result.isErr, isTrue);
-            expect(result.unwrapErr(), expectedFailure);
-          });
-        }
-      },
-    );
+    verify(() => logger.info('Executing...')).called(1);
   });
 
-  group('ok flow', () {
-    group(
-      'should call repository correctly',
-      () {
-        for (final values in [
-          [
-            const QuestionCreationInput(
-              shortDescription: 'shortDescription',
-              description: 'description',
-              difficulty: 'easy',
-              options: [],
-              categories: [],
-            ),
-            '',
-            const Question(
-              id: QuestionId(''),
-              shortDescription: 'shortDescription',
-              description: 'description',
-              answerOptions: [],
-              difficulty: QuestionDifficulty.easy,
-              categories: [],
-            )
-          ],
-          [
-            const QuestionCreationInput(
-              shortDescription: 'nkl!',
-              description: 'oaK',
-              difficulty: 'medium',
-              options: [
-                QuestionCreationOptionInput(
-                  description: '!Iu6RU',
-                  isCorrect: false,
-                ),
-                QuestionCreationOptionInput(
-                  description: 'xBq',
-                  isCorrect: true,
-                )
-              ],
-              categories: ['3@0lv*ip', '@1H7'],
-            ),
-            'LO^*8O*4',
-            const Question(
-              id: QuestionId('LO^*8O*4'),
-              shortDescription: 'nkl!',
-              description: 'oaK',
-              answerOptions: [
-                AnswerOption(description: '!Iu6RU', isCorrect: false),
-                AnswerOption(description: 'xBq', isCorrect: true),
-              ],
-              difficulty: QuestionDifficulty.medium,
-              categories: [
-                QuestionCategory(value: '3@0lv*ip'),
-                QuestionCategory(value: '@1H7')
-              ],
-            )
-          ],
-        ]) {
-          test(values.toString(), () async {
-            final input = values[0] as QuestionCreationInput;
-            final uuid = values[1] as String;
-            final expected = values[2] as Question;
+  group(
+    'when given unparsable difficulty',
+    () {
+      for (final values in [
+        (
+          const DraftQuestion(
+            title: '',
+            description: '',
+            difficulty: '',
+            options: [],
+            categories: [],
+          ),
+          "Unable to create question: Received unparseable difficulty ''",
+        ),
+        (
+          const DraftQuestion(
+            title: '3Yd0',
+            description: 'f19!t',
+            difficulty: '8Fy',
+            options: [],
+            categories: [
+              QuestionCategory(value: 'Du0QQGO'),
+              QuestionCategory(value: 'O95eCUO')
+            ],
+          ),
+          "Unable to create question: Received unparseable difficulty '8Fy'",
+        )
+      ]) {
+        final draft = values.$1;
+        final expectedMessage = values.$2;
 
-            when(() => mockUuidGenerator.generate()).thenReturn(uuid);
+        test('should fail with $expectedMessage', () async {
+          final result = await useCase(draft);
 
-            when(() => questionRepositoryMock.createSingle(any()))
-                .thenAnswer((_) async => const Ok(unit));
+          expect(result, Err<Unit, String>(expectedMessage));
+        });
+      }
+    },
+  );
 
-            await useCase.execute(input);
+  for (final values in [
+    (
+      const DraftQuestion(
+        title: '',
+        description: '',
+        difficulty: 'medium',
+        options: [],
+        categories: [],
+      ),
+      '',
+      '8&tL6xjE',
+      const Question(
+        id: QuestionId(''),
+        shortDescription: '',
+        description: '',
+        answerOptions: [],
+        difficulty: QuestionDifficulty.medium,
+        categories: [],
+      )
+    ),
+    (
+      const DraftQuestion(
+        title: 'title',
+        description: 'description',
+        difficulty: 'easy',
+        options: [
+          AnswerOption(
+            description: 'description',
+            isCorrect: false,
+          )
+        ],
+        categories: [QuestionCategory(value: 'category')],
+        isPublic: true,
+      ),
+      'uuid',
+      'zVW7N',
+      const Question(
+        id: QuestionId('uuid'),
+        shortDescription: 'title',
+        description: 'description',
+        answerOptions: [
+          AnswerOption(
+            description: 'description',
+            isCorrect: false,
+          )
+        ],
+        difficulty: QuestionDifficulty.easy,
+        categories: [QuestionCategory(value: 'category')],
+        isPublic: true,
+      )
+    ),
+    (
+      const DraftQuestion(
+        title: '336dhR',
+        description: '91A^*#Z',
+        difficulty: 'hard',
+        options: [
+          AnswerOption(
+            description: '3W55p',
+            isCorrect: false,
+          ),
+          AnswerOption(
+            description: 'n&!MLH1',
+            isCorrect: true,
+          ),
+        ],
+        categories: [
+          QuestionCategory(value: 'y6q729L'),
+          QuestionCategory(value: '3^*#Z')
+        ],
+      ),
+      'pvx',
+      '4p&',
+      const Question(
+        id: QuestionId('pvx'),
+        shortDescription: '336dhR',
+        description: '91A^*#Z',
+        difficulty: QuestionDifficulty.hard,
+        answerOptions: [
+          AnswerOption(
+            description: '3W55p',
+            isCorrect: false,
+          ),
+          AnswerOption(
+            description: 'n&!MLH1',
+            isCorrect: true,
+          ),
+        ],
+        categories: [
+          QuestionCategory(value: 'y6q729L'),
+          QuestionCategory(value: '3^*#Z')
+        ],
+      )
+    ),
+  ]) {
+    final draft = values.$1;
+    final uuid = values.$2;
+    final repositoryFailure = values.$3;
+    final expectedQuestion = values.$4;
 
-            verify(() => questionRepositoryMock.createSingle(expected)).called(1);
-          });
-        }
-      },
-    );
-  });
+    group('should return failure when questions repository fails with', () {
+      setUp(() => registerFallbackValue(_MockQuestion()));
+
+      test(repositoryFailure, () async {
+        when(() => uuidGenerator.generate()).thenReturn(uuid);
+        when(() => questionRepository.createSingle(any()))
+            .thenAnswer((_) async => Err(repositoryFailure));
+
+        final result = await useCase(draft);
+
+        verify(() => questionRepository.createSingle(expectedQuestion));
+        verify(() => logger.error(repositoryFailure)).called(1);
+        expect(
+          result,
+          const Err<Unit, String>('Unable to create question'),
+        );
+      });
+    });
+
+    test('should return ok if questions repository succeeds', () async {
+      when(() => uuidGenerator.generate()).thenReturn(uuid);
+      when(() => questionRepository.createSingle(expectedQuestion))
+          .thenAnswer((_) async => const Ok(unit));
+
+      final result = await useCase(draft);
+
+      verify(() => logger.info('Question created successfully')).called(1);
+      expect(result, const Ok<Unit, String>(unit));
+    });
+  }
 }
 
-@immutable
-class _FakeQuestion extends Fake with EquatableMixin implements Question {
-  @override
-  List<Object> get props => [];
-}
+class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
 
-class _QuestionRepositoryMock extends Mock implements QuestionRepository {}
+class _MockQuestionRepository extends Mock implements QuestionRepository {}
 
 class _MockResourceUuidGenerator extends Mock
     implements ResourceUuidGenerator {}
+
+class _MockQuestion extends Mock implements Question {}

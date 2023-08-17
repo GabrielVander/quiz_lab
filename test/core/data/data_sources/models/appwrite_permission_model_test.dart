@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/core/data/data_sources/models/appwrite_permission_model.dart';
 
 void main() {
@@ -64,63 +63,69 @@ void main() {
           for (final values in [
             [
               AppwritePermissionTypeModel.read(
-                _FakeAppwritePermissionRoleModel(''),
+                AppwritePermissionRoleModel.any(),
               ),
-              'read("")'
+              'read("any")'
             ],
             [
               AppwritePermissionTypeModel.read(
-                _FakeAppwritePermissionRoleModel('DZX'),
+                AppwritePermissionRoleModel.user(userId: 'DZX'),
               ),
-              'read("DZX")'
+              'read("user:DZX/verified")'
             ],
             [
               AppwritePermissionTypeModel.create(
-                _FakeAppwritePermissionRoleModel(''),
+                AppwritePermissionRoleModel.guests(),
               ),
-              'create("")'
+              'create("guests")'
             ],
             [
               AppwritePermissionTypeModel.create(
-                _FakeAppwritePermissionRoleModel(r'R$#AXdS5'),
+                AppwritePermissionRoleModel.member(membershipId: r'R$#AXdS5'),
               ),
-              r'create("R$#AXdS5")'
+              r'create("member:R$#AXdS5")'
             ],
             [
               AppwritePermissionTypeModel.update(
-                _FakeAppwritePermissionRoleModel(''),
+                AppwritePermissionRoleModel.team(teamId: ''),
               ),
-              'update("")'
+              'update("team:")'
             ],
             [
               AppwritePermissionTypeModel.update(
-                _FakeAppwritePermissionRoleModel('l9NzQ'),
+                AppwritePermissionRoleModel.teamRole(
+                  teamId: 'l9NzQ',
+                  role: 'Kc8Ev',
+                ),
               ),
-              'update("l9NzQ")'
+              'update("team:l9NzQ/Kc8Ev")'
             ],
             [
               AppwritePermissionTypeModel.delete(
-                _FakeAppwritePermissionRoleModel(''),
+                AppwritePermissionRoleModel.users(),
               ),
-              'delete("")'
+              'delete("users/verified")'
             ],
             [
               AppwritePermissionTypeModel.delete(
-                _FakeAppwritePermissionRoleModel('P5y9CFp#'),
+                AppwritePermissionRoleModel.member(membershipId: 'P5y9CFp#'),
               ),
-              'delete("P5y9CFp#")'
+              'delete("member:P5y9CFp#")'
             ],
             [
               AppwritePermissionTypeModel.write(
-                _FakeAppwritePermissionRoleModel(''),
+                AppwritePermissionRoleModel.users(verified: false),
               ),
-              'write("")'
+              'write("users/unverified")'
             ],
             [
               AppwritePermissionTypeModel.write(
-                _FakeAppwritePermissionRoleModel(r'7W$71'),
+                AppwritePermissionRoleModel.user(
+                  userId: r'7W$71',
+                  verified: false,
+                ),
               ),
-              r'write("7W$71")'
+              r'write("user:7W$71/unverified")'
             ],
           ]) {
             test(values.toString(), () {
@@ -134,14 +139,4 @@ void main() {
       );
     });
   });
-}
-
-class _FakeAppwritePermissionRoleModel extends mocktail.Fake
-    implements AppwritePermissionRoleModel {
-  _FakeAppwritePermissionRoleModel(this.toStringValue);
-
-  final String toStringValue;
-
-  @override
-  String toString() => toStringValue;
 }
