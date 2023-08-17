@@ -7,6 +7,11 @@ class QuestionCategory extends Equatable {
 
   final String value;
 
+  QuestionCategory copyWith({
+    String? value,
+  }) =>
+      QuestionCategory(value: value ?? this.value);
+
   @override
   String toString() {
     return 'QuestionCategory{ '
@@ -14,14 +19,6 @@ class QuestionCategory extends Equatable {
         '}';
   }
 
-  QuestionCategory copyWith({
-    String? value,
-  }) {
-    return QuestionCategory(value: value ?? this.value);
-  }
-
   @override
-  List<Object?> get props => [
-        value,
-      ];
+  List<Object?> get props => [value];
 }

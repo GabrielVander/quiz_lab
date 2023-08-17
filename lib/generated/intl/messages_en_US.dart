@@ -66,6 +66,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "goHomeLabel": MessageLookupByLibrary.simpleMessage("Go home"),
         "isOptionCorrectLabel":
             MessageLookupByLibrary.simpleMessage("Is Correct"),
+        "isQuestionPublicLabel":
+            MessageLookupByLibrary.simpleMessage("Is Public"),
         "logInButtonLabel": MessageLookupByLibrary.simpleMessage("Log in"),
         "loginPageDisplayTitle":
             MessageLookupByLibrary.simpleMessage("Login to your account"),

@@ -179,5 +179,6 @@
   "loginPageSignUpButtonLabel": "Sign Up",
   "genericErrorMessage": "Something went wrong",
   "notYetImplemented": "Not yet implemented",
-  "unableToLogin": "Unable to login"
+  "unableToLogin": "Unable to login",
+  "isQuestionPublicLabel": "Is Public"
 }

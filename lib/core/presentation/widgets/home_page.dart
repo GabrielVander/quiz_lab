@@ -6,7 +6,7 @@ import 'package:quiz_lab/core/presentation/widgets/network_checker.dart';
 import 'package:quiz_lab/core/presentation/widgets/quiz_lab_app_bar.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({
