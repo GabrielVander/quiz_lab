@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
+import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
 import 'package:quiz_lab/core/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
@@ -10,6 +11,7 @@ import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_can_create_public_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
@@ -24,16 +26,14 @@ void questionManagementDiSetup(DependencyInjection di) {
   di
     ..registerInstance<AppwriteQuestionCollectionId>(
       (_) => AppwriteQuestionCollectionId(
-        value:
-            EnvironmentVariable.appwriteQuestionCollectionId.getRequiredValue,
+        value: EnvironmentVariable.appwriteQuestionCollectionId.getRequiredValue,
       ),
     )
     ..registerBuilder<QuestionCollectionAppwriteDataSource>(
       (DependencyInjection i) => QuestionCollectionAppwriteDataSourceImpl(
         logger: QuizLabLoggerImpl<QuestionCollectionAppwriteDataSourceImpl>(),
         appwriteDatabaseId: i.get<AppwriteDatabaseId>().value,
-        appwriteQuestionCollectionId:
-            i.get<AppwriteQuestionCollectionId>().value,
+        appwriteQuestionCollectionId: i.get<AppwriteQuestionCollectionId>().value,
         appwriteWrapper: i.get<AppwriteWrapper>(),
         databases: i.get<Databases>(),
       ),
@@ -42,8 +42,7 @@ void questionManagementDiSetup(DependencyInjection di) {
       (DependencyInjection i) => QuestionRepositoryImpl(
         logger: QuizLabLoggerImpl<QuestionRepositoryImpl>(),
         appwriteDataSource: i.get<AppwriteDataSource>(),
-        questionsAppwriteDataSource:
-            i.get<QuestionCollectionAppwriteDataSource>(),
+        questionsAppwriteDataSource: i.get<QuestionCollectionAppwriteDataSource>(),
       ),
     )
     ..registerBuilder(
@@ -73,6 +72,12 @@ void questionManagementDiSetup(DependencyInjection di) {
         questionRepository: i.get<QuestionRepository>(),
       ),
     )
+    ..registerBuilder<CheckIfUserCanCreatePublicQuestionsUseCase>(
+      (DependencyInjection i) => CheckIfUserCanCreatePublicQuestionsUseCaseImpl(
+        logger: QuizLabLoggerImpl<CheckIfUserCanCreatePublicQuestionsUseCaseImpl>(),
+        authRepository: i.get<AuthRepository>(),
+      ),
+    )
     ..registerBuilder<AssessmentsOverviewCubit>(
       (DependencyInjection i) => AssessmentsOverviewCubit(),
     )
@@ -80,6 +85,7 @@ void questionManagementDiSetup(DependencyInjection di) {
       (DependencyInjection i) => QuestionCreationCubit(
         logger: QuizLabLoggerImpl<QuestionCreationCubit>(),
         createQuestionUseCase: i.get<CreateQuestionUseCase>(),
+        checkIfUserCanCreatePublicQuestionsUseCase: i.get<CheckIfUserCanCreatePublicQuestionsUseCase>(),
       ),
     )
     ..registerBuilder<QuestionsOverviewCubit>(

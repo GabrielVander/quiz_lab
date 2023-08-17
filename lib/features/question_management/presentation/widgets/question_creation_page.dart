@@ -46,8 +46,7 @@ class QuestionCreationPage extends HookWidget {
                     if (GoRouter.of(context).canPop()) {
                       GoRouter.of(context).pop();
                     } else {
-                      GoRouter.of(context)
-                          .goNamed(Routes.questionsOverview.name);
+                      GoRouter.of(context).goNamed(Routes.questionsOverview.name);
                     }
                   });
                 }
@@ -235,8 +234,7 @@ class _Form extends StatelessWidget {
                 builder: (context) {
                   final state = useBlocBuilder(
                     cubit,
-                    buildWhen: (current) =>
-                        current is QuestionCreationViewModelUpdated,
+                    buildWhen: (current) => current is QuestionCreationViewModelUpdated,
                   );
 
                   if (state is QuestionCreationViewModelUpdated) {
@@ -255,8 +253,7 @@ class _Form extends StatelessWidget {
                 builder: (context) {
                   final state = useBlocBuilder(
                     cubit,
-                    buildWhen: (current) =>
-                        current is QuestionCreationViewModelUpdated,
+                    buildWhen: (current) => current is QuestionCreationViewModelUpdated,
                   );
 
                   if (state is QuestionCreationViewModelUpdated) {
@@ -279,8 +276,7 @@ class _Form extends StatelessWidget {
                       builder: (context) {
                         final state = useBlocBuilder(
                           cubit,
-                          buildWhen: (current) =>
-                              current is QuestionCreationViewModelUpdated,
+                          buildWhen: (current) => current is QuestionCreationViewModelUpdated,
                         );
 
                         if (state is QuestionCreationViewModelUpdated) {
@@ -297,25 +293,37 @@ class _Form extends StatelessWidget {
                   const SizedBox(
                     width: 15,
                   ),
-                  Flexible(
-                    child: HookBuilder(
-                      builder: (context) {
-                        final state = useBlocBuilder(
-                          cubit,
-                          buildWhen: (current) =>
-                              current is QuestionCreationPublicStatusUpdated,
-                        );
+                  HookBuilder(
+                    builder: (context) {
+                      final state = useBlocBuilder(
+                        cubit,
+                        buildWhen: (current) => [QuestionCreationHidePublicToggle, QuestionCreationShowPublicToggle]
+                            .contains(current.runtimeType),
+                      );
 
-                        return QLCheckbox.standard(
-                          state: state is QuestionCreationPublicStatusUpdated &&
-                                  state.isPublic
-                              ? QLCheckboxState.checked
-                              : QLCheckboxState.unchecked,
-                          onChanged: (_) => cubit.toggleIsQuestionPublic(),
-                          labelText: S.of(context).isQuestionPublicLabel,
-                        );
-                      },
-                    ),
+                      if (state is QuestionCreationHidePublicToggle) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return Flexible(
+                        child: HookBuilder(
+                          builder: (context) {
+                            final state = useBlocBuilder(
+                              cubit,
+                              buildWhen: (current) => current is QuestionCreationPublicStatusUpdated,
+                            );
+
+                            return QLCheckbox.standard(
+                              state: state is QuestionCreationPublicStatusUpdated && state.isPublic
+                                  ? QLCheckboxState.checked
+                                  : QLCheckboxState.unchecked,
+                              onChanged: (_) => cubit.toggleIsQuestionPublic(),
+                              labelText: S.of(context).isQuestionPublicLabel,
+                            );
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -325,8 +333,7 @@ class _Form extends StatelessWidget {
                 builder: (context) {
                   final state = useBlocBuilder(
                     cubit,
-                    buildWhen: (current) =>
-                        current is QuestionCreationViewModelUpdated,
+                    buildWhen: (current) => current is QuestionCreationViewModelUpdated,
                   );
 
                   if (state is QuestionCreationViewModelUpdated) {
@@ -334,9 +341,7 @@ class _Form extends StatelessWidget {
                       viewModels: state.viewModel.options,
                       onOptionChanged: onOptionChanged,
                       onToggleOptionIsCorrect: onToggleOptionIsCorrect,
-                      onAddOption: state.viewModel.addOptionButtonEnabled
-                          ? onAddOption
-                          : null,
+                      onAddOption: state.viewModel.addOptionButtonEnabled ? onAddOption : null,
                     );
                   }
 
@@ -348,8 +353,7 @@ class _Form extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 QLDefaultButton.text(
-                  onPressed: () => GoRouter.of(context)
-                      .goNamed(Routes.questionsOverview.name),
+                  onPressed: () => GoRouter.of(context).goNamed(Routes.questionsOverview.name),
                   text: S.of(context).goBackLabel,
                 ),
                 const SizedBox(

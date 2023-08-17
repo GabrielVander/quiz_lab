@@ -41,15 +41,27 @@ class QuestionCreationViewModelUpdated extends QuestionCreationState {
 }
 
 class QuestionCreationPublicStatusUpdated extends QuestionCreationState {
-  const QuestionCreationPublicStatusUpdated({required this.isPublic})
-      : super._();
+  const QuestionCreationPublicStatusUpdated({required this.isPublic}) : super._();
 
   final bool isPublic;
 
   @override
-  String toString() =>
-      'QuestionCreationPublicStatusUpdated{isPublic: $isPublic}';
+  String toString() => 'QuestionCreationPublicStatusUpdated{isPublic: $isPublic}';
 
   @override
   List<Object> get props => [isPublic];
+}
+
+class QuestionCreationHidePublicToggle extends QuestionCreationState {
+  const QuestionCreationHidePublicToggle() : super._();
+
+  @override
+  List<Object> get props => [];
+}
+
+class QuestionCreationShowPublicToggle extends QuestionCreationState {
+  const QuestionCreationShowPublicToggle() : super._();
+
+  @override
+  List<Object> get props => [];
 }

@@ -45,35 +45,7 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
 
       logger.debug('Email session created successfully');
 
-      return Ok(
-        SessionModel(
-          userId: session.userId,
-          $id: session.$id,
-          $createdAt: session.$createdAt,
-          expire: session.expire,
-          providerUid: session.providerUid,
-          provider: session.provider,
-          providerAccessToken: session.providerAccessToken,
-          providerAccessTokenExpiry: session.providerAccessTokenExpiry,
-          providerRefreshToken: session.providerRefreshToken,
-          ip: session.ip,
-          osCode: session.osCode,
-          osName: session.osName,
-          osVersion: session.osVersion,
-          clientType: session.clientType,
-          clientCode: session.clientCode,
-          clientName: session.clientName,
-          clientVersion: session.clientVersion,
-          clientEngine: session.clientEngine,
-          clientEngineVersion: session.clientEngineVersion,
-          deviceName: session.deviceName,
-          deviceBrand: session.deviceBrand,
-          deviceModel: session.deviceModel,
-          countryCode: session.countryCode,
-          countryName: session.countryName,
-          current: session.current,
-        ),
-      );
+      return Ok(SessionModel.fromAppwriteSession(session));
     } on AppwriteException catch (e) {
       logger.error(e.toString());
 
@@ -91,16 +63,6 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
         .mapErr((_) => 'Unable to create anonymous session');
   }
 
-  Future<Result<Unit, AppwriteException>>
-      _createAnonymousSessionOnAccountService() async {
-    try {
-      await appwriteAccountService.createAnonymousSession();
-      return const Ok(unit);
-    } on AppwriteException catch (e) {
-      return Err(e);
-    }
-  }
-
   @override
   Future<Result<UserModel, String>> getCurrentUser() async {
     logger.debug('Fetching user information...');
@@ -109,10 +71,29 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
         .inspectErr((e) => logger.error(e.toString()))
         .mapErr((_) => 'Unable to fetch user information')
         .andThen(
-          (appwriteModel) => _appwriteUserToUserModel(appwriteModel).inspect(
-            (_) => logger.debug('User information fetched successfully'),
-          ),
+          (appwriteModel) => _appwriteUserToUserModel(appwriteModel)
+              .inspect((_) => logger.debug('User information fetched successfully')),
         );
+  }
+
+  @override
+  Future<Result<SessionModel, AppwriteErrorModel>> getSession(String sessionId) async {
+    logger.debug('Retrieving given Appwrite session...');
+
+    return (await _fetchAppwriteSession(sessionId))
+        .inspectErr((error) => logger.error(error.toString()))
+        .mapErr(AppwriteErrorModel.fromAppwriteException)
+        .inspect((_) => logger.debug('Appwrite session retrieved successfully'))
+        .map(SessionModel.fromAppwriteSession);
+  }
+
+  Future<Result<Unit, AppwriteException>> _createAnonymousSessionOnAccountService() async {
+    try {
+      await appwriteAccountService.createAnonymousSession();
+      return const Ok(unit);
+    } on AppwriteException catch (e) {
+      return Err(e);
+    }
   }
 
   Result<UserModel, String> _appwriteUserToUserModel(User user) {
@@ -130,19 +111,6 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
     } on AppwriteException catch (e) {
       return Err(e);
     }
-  }
-
-  @override
-  Future<Result<SessionModel, AppwriteErrorModel>> getSession(
-    String sessionId,
-  ) async {
-    logger.debug('Retrieving given Appwrite session...');
-
-    return (await _fetchAppwriteSession(sessionId))
-        .inspectErr((error) => logger.error(error.toString()))
-        .mapErr(AppwriteErrorModel.fromAppwriteException)
-        .inspect((_) => logger.debug('Appwrite session retrieved successfully'))
-        .map(SessionModel.fromAppwriteSession);
   }
 
   Future<Result<Session, AppwriteException>> _fetchAppwriteSession(

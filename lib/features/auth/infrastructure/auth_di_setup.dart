@@ -1,6 +1,3 @@
-import 'package:appwrite/appwrite.dart';
-import 'package:quiz_lab/core/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/core/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
@@ -12,18 +9,6 @@ import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_
 
 void authenticationDiSetup(DependencyInjection di) {
   di
-    ..registerBuilder<AuthAppwriteDataSource>(
-      (DependencyInjection di) => AuthAppwriteDataSourceImpl(
-        logger: QuizLabLoggerImpl<AuthAppwriteDataSourceImpl>(),
-        appwriteAccountService: di.get<Account>(),
-      ),
-    )
-    ..registerBuilder<AuthRepository>(
-      (DependencyInjection di) => AuthRepositoryImpl(
-        logger: QuizLabLoggerImpl<AuthRepositoryImpl>(),
-        authDataSource: di.get<AuthAppwriteDataSource>(),
-      ),
-    )
     ..registerBuilder<LoginWithCredentialsUseCase>(
       (di) => LoginWithCredentialsUseCaseImpl(
         authRepository: di.get<AuthRepository>(),
@@ -46,8 +31,7 @@ void authenticationDiSetup(DependencyInjection di) {
         logger: QuizLabLoggerImpl<LoginPageCubit>(),
         loginWithCredentionsUseCase: di.get<LoginWithCredentialsUseCase>(),
         loginAnonymouslyUseCase: di.get<LoginAnonymouslyUseCase>(),
-        fetchApplicationVersionUseCase:
-            di.get<FetchApplicationVersionUseCase>(),
+        fetchApplicationVersionUseCase: di.get<FetchApplicationVersionUseCase>(),
       ),
     );
 }

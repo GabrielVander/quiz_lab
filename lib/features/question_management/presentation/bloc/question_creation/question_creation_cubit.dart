@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_can_create_public_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/view_models/question_creation_view_model.dart';
 import 'package:uuid/uuid.dart';
@@ -13,10 +14,12 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   QuestionCreationCubit({
     required this.logger,
     required this.createQuestionUseCase,
+    required this.checkIfUserCanCreatePublicQuestionsUseCase,
   }) : super(const QuestionCreationInitial());
 
   final QuizLabLogger logger;
   final CreateQuestionUseCase createQuestionUseCase;
+  final CheckIfUserCanCreatePublicQuestionsUseCase checkIfUserCanCreatePublicQuestionsUseCase;
 
   final QuestionCreationViewModel defaultViewModel = QuestionCreationViewModel(
     title: const QuestionCreationTitleViewModel(
@@ -63,7 +66,11 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
   late QuestionCreationViewModel _viewModel = defaultViewModel;
   _QuestionFormState _questionFormState = const _QuestionFormState();
 
-  void load() => _updateViewModel(defaultViewModel);
+  Future<void> load() async {
+    emit(const QuestionCreationLoading());
+    await _maybeEnableIsPublicToggle();
+    _updateViewModel(defaultViewModel);
+  }
 
   void onTitleChanged(String newValue) {
     logger.debug('Title changed');
@@ -201,8 +208,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     logger.debug('Toggling public status...');
 
     _questionFormState = _questionFormState.copyWith(
-      isPublic:
-          _questionFormState.isPublic == null || !_questionFormState.isPublic!,
+      isPublic: _questionFormState.isPublic == null || !_questionFormState.isPublic!,
     );
 
     emit(
@@ -313,6 +319,19 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     }
 
     return true;
+  }
+
+  Future<void> _maybeEnableIsPublicToggle() async {
+    logger.info('Checking if user can create public questions...');
+
+    (await checkIfUserCanCreatePublicQuestionsUseCase())
+        .inspect(
+          (shouldDisplay) => shouldDisplay
+              ? emit(const QuestionCreationShowPublicToggle())
+              : emit(const QuestionCreationHidePublicToggle()),
+        )
+        .inspectErr(logger.error)
+        .inspectErr((_) => emit(const QuestionCreationHidePublicToggle()));
   }
 }
 
