@@ -52,7 +52,7 @@ dependencies:
   appwrite: ^9.0.1
   super_banners: ^0.0.1
   package_info_plus: ^4.1.0
-  intl: ^0.18.1
+  intl: ^0.18.0
 
 dev_dependencies:
   bloc_test: ^9.1.4
