@@ -7,9 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
-import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
-import 'package:quiz_lab/features/auth/presentation/widgets/login_page.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/login_page.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 import '../../../../test_utils/helper_functions.dart' show safeTapByKey;
@@ -22,8 +22,7 @@ void main() {
 
   setUp(() {
     localizationsMock = _SMock();
-    localizationsDelegateMock =
-        _LocalizationsDelegateMock(localizations: localizationsMock);
+    localizationsDelegateMock = _LocalizationsDelegateMock(localizations: localizationsMock);
     goRouterMock = _GoRouterMock();
     loginPageCubitMock = _LoginPageCubitMock();
   });
@@ -31,8 +30,7 @@ void main() {
   tearDown(resetMocktailState);
 
   testWidgets('should always call hydrate()', (widgetTester) async {
-    when(() => loginPageCubitMock.stream)
-        .thenAnswer((_) => const Stream.empty());
+    when(() => loginPageCubitMock.stream).thenAnswer((_) => const Stream.empty());
     when(() => loginPageCubitMock.state).thenReturn(const LoginPageInitial());
 
     await _pumpTarget(
@@ -45,11 +43,9 @@ void main() {
     verify(() => loginPageCubitMock.hydrate()).called(1);
   });
 
-  testWidgets(
-      'should display a circular progress indicator if cubit state is [LoginPageInitial]',
+  testWidgets('should display a circular progress indicator if cubit state is [LoginPageInitial]',
       (widgetTester) async {
-    when(() => loginPageCubitMock.stream)
-        .thenAnswer((_) => Stream.value(const LoginPageInitial()));
+    when(() => loginPageCubitMock.stream).thenAnswer((_) => Stream.value(const LoginPageInitial()));
     when(() => loginPageCubitMock.state).thenReturn(const LoginPageInitial());
 
     await _pumpTarget(
@@ -65,11 +61,9 @@ void main() {
     );
   });
 
-  testWidgets(
-      'should display a circular progress indicator if cubit state is [LoginPageLoading]',
+  testWidgets('should display a circular progress indicator if cubit state is [LoginPageLoading]',
       (widgetTester) async {
-    when(() => loginPageCubitMock.stream)
-        .thenAnswer((_) => const Stream.empty());
+    when(() => loginPageCubitMock.stream).thenAnswer((_) => const Stream.empty());
     when(() => loginPageCubitMock.state).thenReturn(const LoginPageLoading());
 
     await _pumpTarget(
@@ -86,8 +80,7 @@ void main() {
   });
 
   for (final route in Routes.values) {
-    testWidgets(
-        'should redirect to ${route.name} if cubit state is [LoginPagePushRouteReplacing]',
+    testWidgets('should redirect to ${route.name} if cubit state is [LoginPagePushRouteReplacing]',
         (widgetTester) async {
       when(() => loginPageCubitMock.stream).thenAnswer(
         (_) => Stream<LoginPageState>.value(
@@ -95,8 +88,7 @@ void main() {
         ),
       );
 
-      when(() => loginPageCubitMock.state)
-          .thenReturn(LoginPagePushRouteReplacing(route: route));
+      when(() => loginPageCubitMock.state).thenReturn(LoginPagePushRouteReplacing(route: route));
 
       await _pumpTarget(
         widgetTester,
@@ -111,10 +103,8 @@ void main() {
     });
   }
 
-  testWidgets('should have expected structure',
-      (WidgetTester widgetTester) async {
-    when(() => loginPageCubitMock.stream)
-        .thenAnswer((_) => const Stream.empty());
+  testWidgets('should have expected structure', (WidgetTester widgetTester) async {
+    when(() => loginPageCubitMock.stream).thenAnswer((_) => const Stream.empty());
     when(() => loginPageCubitMock.state).thenReturn(
       const LoginPageViewModelUpdated(
         viewModel: LoginPageViewModel(
@@ -188,8 +178,7 @@ void main() {
           ),
         );
 
-        when(() => loginPageCubitMock.stream)
-            .thenAnswer((_) => Stream.value(state));
+        when(() => loginPageCubitMock.stream).thenAnswer((_) => Stream.value(state));
         when(() => loginPageCubitMock.state).thenReturn(state);
 
         await _pumpTarget(
@@ -204,9 +193,7 @@ void main() {
     }
   });
 
-  group(
-      'should replace with given route when cubit state is [LoginPagePushRouteReplacing]',
-      () {
+  group('should replace with given route when cubit state is [LoginPagePushRouteReplacing]', () {
     for (final route in Routes.values) {
       testWidgets(
         route.toString(),
@@ -214,8 +201,7 @@ void main() {
           when(() => loginPageCubitMock.stream).thenAnswer(
             (_) => Stream.value(LoginPagePushRouteReplacing(route: route)),
           );
-          when(() => loginPageCubitMock.state)
-              .thenReturn(LoginPagePushRouteReplacing(route: route));
+          when(() => loginPageCubitMock.state).thenReturn(LoginPagePushRouteReplacing(route: route));
 
           await _pumpTarget(
             widgetTester,
@@ -232,8 +218,7 @@ void main() {
     }
   });
 
-  group('should display form errors when a form error view model is emitted',
-      () {
+  group('should display form errors when a form error view model is emitted', () {
     testWidgets(
       'empty password error',
       (WidgetTester widgetTester) async {
@@ -431,10 +416,8 @@ void main() {
         string,
         (WidgetTester widgetTester) async {
           when(() => localizationsMock.genericErrorMessage).thenReturn(string);
-          when(() => loginPageCubitMock.stream)
-              .thenAnswer((_) => Stream.value(const LoginPageError()));
-          when(() => loginPageCubitMock.state)
-              .thenReturn(const LoginPageError());
+          when(() => loginPageCubitMock.stream).thenAnswer((_) => Stream.value(const LoginPageError()));
+          when(() => loginPageCubitMock.state).thenReturn(const LoginPageError());
 
           await _pumpTarget(
             widgetTester,
@@ -452,18 +435,14 @@ void main() {
     }
   });
 
-  group(
-      'should display correct message when cubit emits [LoginPageUnableToLogin]',
-      () {
+  group('should display correct message when cubit emits [LoginPageUnableToLogin]', () {
     for (final string in ['8Xwng', '2g0jg1th']) {
       testWidgets(
         string,
         (WidgetTester widgetTester) async {
           when(() => localizationsMock.unableToLogin).thenReturn(string);
-          when(() => loginPageCubitMock.stream)
-              .thenAnswer((_) => Stream.value(const LoginPageUnableToLogin()));
-          when(() => loginPageCubitMock.state)
-              .thenReturn(const LoginPageUnableToLogin());
+          when(() => loginPageCubitMock.stream).thenAnswer((_) => Stream.value(const LoginPageUnableToLogin()));
+          when(() => loginPageCubitMock.state).thenReturn(const LoginPageUnableToLogin());
 
           await _pumpTarget(
             widgetTester,
@@ -481,8 +460,7 @@ void main() {
     }
   });
 
-  testWidgets('should call cubit when login button is pressed',
-      (WidgetTester widgetTester) async {
+  testWidgets('should call cubit when login button is pressed', (WidgetTester widgetTester) async {
     when(() => loginPageCubitMock.stream).thenAnswer(
       (_) => const Stream.empty(),
     );
@@ -512,8 +490,7 @@ void main() {
     verify(() => loginPageCubitMock.login()).called(1);
   });
 
-  testWidgets('should call cubit when sign up button is pressed',
-      (WidgetTester widgetTester) async {
+  testWidgets('should call cubit when sign up button is pressed', (WidgetTester widgetTester) async {
     when(() => loginPageCubitMock.stream).thenAnswer(
       (_) => const Stream.empty(),
     );
@@ -539,17 +516,14 @@ void main() {
     verify(() => loginPageCubitMock.signUp()).called(1);
   });
 
-  group(
-      'should display not yet implemented message when cubit emits [LoginPageDisplayNotYetImplementedMessage]',
-      () {
+  group('should display not yet implemented message when cubit emits [LoginPageDisplayNotYetImplementedMessage]', () {
     for (final text in ['*mgS', 'DyDM']) {
       testWidgets(
         text,
         (widgetTester) async {
           when(() => localizationsMock.notYetImplemented).thenReturn(text);
 
-          when(() => loginPageCubitMock.state)
-              .thenReturn(const LoginPageNotYetImplemented());
+          when(() => loginPageCubitMock.state).thenReturn(const LoginPageNotYetImplemented());
 
           when(() => loginPageCubitMock.stream).thenAnswer(
             (_) => Stream.value(const LoginPageNotYetImplemented()),
@@ -573,10 +547,8 @@ void main() {
   });
 
   group('anonymous login', () {
-    testWidgets('should call cubit when enter anonymously section is pressed',
-        (WidgetTester widgetTester) async {
-      when(() => loginPageCubitMock.stream)
-          .thenAnswer((_) => const Stream.empty());
+    testWidgets('should call cubit when enter anonymously section is pressed', (WidgetTester widgetTester) async {
+      when(() => loginPageCubitMock.stream).thenAnswer((_) => const Stream.empty());
       when(() => loginPageCubitMock.state).thenReturn(
         const LoginPageViewModelUpdated(
           viewModel: LoginPageViewModel(
@@ -643,8 +615,7 @@ Future<void> _pumpTarget(
   );
 }
 
-class _LocalizationsDelegateMock extends Mock
-    implements AppLocalizationDelegate {
+class _LocalizationsDelegateMock extends Mock implements AppLocalizationDelegate {
   _LocalizationsDelegateMock({required S localizations}) : s = localizations;
 
   final S s;
@@ -689,5 +660,4 @@ class _LoginPageCubitMock extends Mock implements LoginPageCubit {}
 
 class _GoRouterMock extends Mock implements GoRouter {}
 
-class LoginPageCubitMock extends MockCubit<LoginPageState>
-    implements LoginPageCubit {}
+class LoginPageCubitMock extends MockCubit<LoginPageState> implements LoginPageCubit {}
