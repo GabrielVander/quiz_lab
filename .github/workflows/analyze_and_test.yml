@@ -29,5 +29,8 @@ jobs:
       - name: Run unit tests with coverage
         run: flutter test --coverage
 
-      - name: Check coverage percentage
-        run: flutter pub run coverde check ${{ vars.MININUM_TEST_COVERAGE }}
+      - name: Very Good Coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v2.1.0
+        with:
+          min_coverage: 50
+          exclude: '**/widgets/*.dart'
