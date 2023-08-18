@@ -42,8 +42,7 @@ void main() {
       () {
         for (final applicationVersion in ['', '%%@%Z@', 'S&b0^F']) {
           test(applicationVersion, () {
-            when(() => fetchApplicationVersionUseCaseMock.execute())
-                .thenReturn(applicationVersion);
+            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(applicationVersion);
 
             cubit.hydrate();
 
@@ -75,8 +74,7 @@ void main() {
           test(email, () {
             const dummyApplicationVersion = 'T4qkCa#n';
 
-            when(() => fetchApplicationVersionUseCaseMock.execute())
-                .thenReturn(dummyApplicationVersion);
+            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
 
             cubit
               ..hydrate()
@@ -115,8 +113,7 @@ void main() {
           test(password, () {
             const dummyApplicationVersion = 'wQg01jsN';
 
-            when(() => fetchApplicationVersionUseCaseMock.execute())
-                .thenReturn(dummyApplicationVersion);
+            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
 
             cubit
               ..hydrate()
@@ -153,8 +150,7 @@ void main() {
           test(values.toString(), () {
             const dummyApplicationVersion = 'jF%';
 
-            when(() => fetchApplicationVersionUseCaseMock.execute())
-                .thenReturn(dummyApplicationVersion);
+            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
 
             final email = values[0];
             final password = values[1];
@@ -194,8 +190,7 @@ void main() {
           const password = 'eG#*2IGw';
           const dummyApplicationVersion = 'jF%';
 
-          when(() => fetchApplicationVersionUseCaseMock.execute())
-              .thenReturn(dummyApplicationVersion);
+          when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
 
           when(
             () => loginWithCredentionsUseCaseMock.call(
@@ -238,8 +233,7 @@ void main() {
             const dummyPassword = '5G4tC3';
             const dummyApplicationVersion = 'jF%';
 
-            when(() => fetchApplicationVersionUseCaseMock.execute())
-                .thenReturn(dummyApplicationVersion);
+            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
 
             when(
               () => loginWithCredentionsUseCaseMock.call(
@@ -297,8 +291,7 @@ void main() {
 
   group('enterAnonymously', () {
     test('should emit [LoginPageLoading]', () {
-      when(() => loginAnonymouslyUseCaseMock.call())
-          .thenAnswer((_) async => const Err('DGI'));
+      when(() => loginAnonymouslyUseCaseMock.call()).thenAnswer((_) async => const Err('DGI'));
 
       expectLater(cubit.stream, emits(const LoginPageLoading()));
 
@@ -310,8 +303,7 @@ void main() {
       () {
         for (final error in ['8dNTWA', '1FAaAW2']) {
           test(error, () async {
-            when(loginAnonymouslyUseCaseMock.call)
-                .thenAnswer((_) async => Err(error));
+            when(loginAnonymouslyUseCaseMock.call).thenAnswer((_) async => Err(error));
 
             unawaited(
               expectLater(
@@ -320,7 +312,7 @@ void main() {
                   const LoginPageLoading(),
                   const LoginPageUnableToLogin(),
                   const LoginPageInitial(),
-                  emitsDone
+                  emitsDone,
                 ]),
               ),
             );
@@ -334,11 +326,8 @@ void main() {
       },
     );
 
-    test(
-        'should emit [LoginPageLoggedInSuccessfully, LoginPagePushRouteReplacing]',
-        () async {
-      when(loginAnonymouslyUseCaseMock.call)
-          .thenAnswer((_) async => const Ok(unit));
+    test('should emit [LoginPageLoggedInSuccessfully, LoginPagePushRouteReplacing]', () async {
+      when(loginAnonymouslyUseCaseMock.call).thenAnswer((_) async => const Ok(unit));
 
       unawaited(
         expectLater(
@@ -355,19 +344,15 @@ void main() {
       await cubit.enterAnonymously();
       await cubit.close();
 
-      verify(() => logger.info('Logged in successfully. Redirecting...'))
-          .called(1);
+      verify(() => logger.info('Logged in successfully. Redirecting...')).called(1);
     });
   });
 }
 
-class _MockLoginWithCredentionsUseCase extends Mock
-    implements LoginWithCredentialsUseCase {}
+class _MockLoginWithCredentionsUseCase extends Mock implements LoginWithCredentialsUseCase {}
 
-class _MockFetchApplicationVersionUseCase extends Mock
-    implements FetchApplicationVersionUseCase {}
+class _MockFetchApplicationVersionUseCase extends Mock implements FetchApplicationVersionUseCase {}
 
-class _MockLoginAnonymouslyUseCase extends Mock
-    implements LoginAnonymouslyUseCase {}
+class _MockLoginAnonymouslyUseCase extends Mock implements LoginAnonymouslyUseCase {}
 
 class _MockQuizLabLogger extends Mock implements QuizLabLogger {}

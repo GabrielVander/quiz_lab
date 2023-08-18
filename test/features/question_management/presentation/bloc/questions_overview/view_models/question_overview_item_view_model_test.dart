@@ -21,7 +21,7 @@ void main() {
               description: 'L#SHde',
               categories: ['wD1h', 'q#iUA', '2@C6'],
               difficulty: '6NZ',
-            )
+            ),
           ],
           [
             const QuestionsOverviewItemViewModel(
@@ -37,7 +37,7 @@ void main() {
               description: '',
               categories: [],
               difficulty: '',
-            )
+            ),
           ]
         ]) {
           test(values.toString(), () {

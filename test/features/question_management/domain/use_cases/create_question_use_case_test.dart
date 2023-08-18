@@ -66,13 +66,10 @@ void main() {
             description: 'f19!t',
             difficulty: '8Fy',
             options: [],
-            categories: [
-              QuestionCategory(value: 'Du0QQGO'),
-              QuestionCategory(value: 'O95eCUO')
-            ],
+            categories: [QuestionCategory(value: 'Du0QQGO'), QuestionCategory(value: 'O95eCUO')],
           ),
           "Unable to create question: Received unparseable difficulty '8Fy'",
-        )
+        ),
       ]) {
         final draft = values.$1;
         final expectedMessage = values.$2;
@@ -115,7 +112,7 @@ void main() {
           AnswerOption(
             description: 'description',
             isCorrect: false,
-          )
+          ),
         ],
         categories: [QuestionCategory(value: 'category')],
         isPublic: true,
@@ -130,7 +127,7 @@ void main() {
           AnswerOption(
             description: 'description',
             isCorrect: false,
-          )
+          ),
         ],
         difficulty: QuestionDifficulty.easy,
         categories: [QuestionCategory(value: 'category')],
@@ -152,10 +149,7 @@ void main() {
             isCorrect: true,
           ),
         ],
-        categories: [
-          QuestionCategory(value: 'y6q729L'),
-          QuestionCategory(value: '3^*#Z')
-        ],
+        categories: [QuestionCategory(value: 'y6q729L'), QuestionCategory(value: '3^*#Z')],
       ),
       'pvx',
       '4p&',
@@ -174,10 +168,7 @@ void main() {
             isCorrect: true,
           ),
         ],
-        categories: [
-          QuestionCategory(value: 'y6q729L'),
-          QuestionCategory(value: '3^*#Z')
-        ],
+        categories: [QuestionCategory(value: 'y6q729L'), QuestionCategory(value: '3^*#Z')],
       )
     ),
   ]) {
@@ -191,8 +182,7 @@ void main() {
 
       test(repositoryFailure, () async {
         when(() => uuidGenerator.generate()).thenReturn(uuid);
-        when(() => questionRepository.createSingle(any()))
-            .thenAnswer((_) async => Err(repositoryFailure));
+        when(() => questionRepository.createSingle(any())).thenAnswer((_) async => Err(repositoryFailure));
 
         final result = await useCase(draft);
 
@@ -207,8 +197,7 @@ void main() {
 
     test('should return ok if questions repository succeeds', () async {
       when(() => uuidGenerator.generate()).thenReturn(uuid);
-      when(() => questionRepository.createSingle(expectedQuestion))
-          .thenAnswer((_) async => const Ok(unit));
+      when(() => questionRepository.createSingle(expectedQuestion)).thenAnswer((_) async => const Ok(unit));
 
       final result = await useCase(draft);
 
@@ -222,7 +211,6 @@ class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
 
 class _MockQuestionRepository extends Mock implements QuestionRepository {}
 
-class _MockResourceUuidGenerator extends Mock
-    implements ResourceUuidGenerator {}
+class _MockResourceUuidGenerator extends Mock implements ResourceUuidGenerator {}
 
 class _MockQuestion extends Mock implements Question {}

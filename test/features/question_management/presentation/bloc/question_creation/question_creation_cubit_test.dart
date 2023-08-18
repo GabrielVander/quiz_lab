@@ -65,7 +65,7 @@ void main() {
 
       for (final testCase in [
         (false, const QuestionCreationHidePublicToggle()),
-        (true, const QuestionCreationShowPublicToggle())
+        (true, const QuestionCreationShowPublicToggle()),
       ]) {
         final canCreatePublicQuestions = testCase.$1;
         final expectedState = testCase.$2;
@@ -109,7 +109,7 @@ void main() {
               const QuestionCreationPublicStatusUpdated(isPublic: true),
               const QuestionCreationPublicStatusUpdated(isPublic: false),
               const QuestionCreationPublicStatusUpdated(isPublic: true),
-              emitsDone
+              emitsDone,
             ],
           ),
         ),

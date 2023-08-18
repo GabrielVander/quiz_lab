@@ -33,12 +33,7 @@ void main() {
           'status': true,
           'emailVerification': true,
           'phoneVerification': true,
-          'prefs': <String, dynamic>{
-            'we': 'are',
-            'the': 'champions',
-            'my': 'friend',
-            'Yx3Y': 573
-          },
+          'prefs': <String, dynamic>{'we': 'are', 'the': 'champions', 'my': 'friend', 'Yx3Y': 573},
         },
         const UserModel(
           $id: '',
@@ -53,12 +48,7 @@ void main() {
           emailVerification: true,
           phoneVerification: true,
           prefs: PreferencesModel(
-            data: <String, dynamic>{
-              'we': 'are',
-              'the': 'champions',
-              'my': 'friend',
-              'Yx3Y': 573
-            },
+            data: <String, dynamic>{'we': 'are', 'the': 'champions', 'my': 'friend', 'Yx3Y': 573},
           ),
         )
       ),

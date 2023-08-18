@@ -37,8 +37,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
         .mapErr((_) => 'Failed to create question');
   }
 
-  AppwriteQuestionCreationModel _toCreationModel(Question question) =>
-      AppwriteQuestionCreationModel(
+  AppwriteQuestionCreationModel _toCreationModel(Question question) => AppwriteQuestionCreationModel(
         id: question.id.value,
         title: question.shortDescription,
         description: question.description,
@@ -52,13 +51,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
             .toList(),
         difficulty: question.difficulty.name,
         categories: question.categories.map((e) => e.value).toList(),
-        permissions: question.isPublic
-            ? [
-                AppwritePermissionTypeModel.read(
-                  AppwritePermissionRoleModel.any(),
-                )
-              ]
-            : null,
+        permissions: question.isPublic ? [AppwritePermissionTypeModel.read(AppwritePermissionRoleModel.any())] : null,
       );
 
   @override
@@ -67,8 +60,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
   ) async {
     logger.debug('Deleting question...');
 
-    final deletionResult =
-        await questionsAppwriteDataSource.deleteSingle(id.value);
+    final deletionResult = await questionsAppwriteDataSource.deleteSingle(id.value);
 
     return deletionResult.when(
       ok: (_) {
@@ -106,15 +98,11 @@ class QuestionRepositoryImpl implements QuestionRepository {
     switch (dataSourceFailure.runtimeType) {
       case QuestionsAppwriteDataSourceUnexpectedFailure:
         repoFailure = QuestionRepositoryUnexpectedFailure(
-          message: (dataSourceFailure
-                  as QuestionsAppwriteDataSourceUnexpectedFailure)
-              .message,
+          message: (dataSourceFailure as QuestionsAppwriteDataSourceUnexpectedFailure).message,
         );
       case QuestionsAppwriteDataSourceAppwriteFailure:
         repoFailure = QuestionRepositoryExternalServiceErrorFailure(
-          message:
-              (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure)
-                  .message,
+          message: (dataSourceFailure as QuestionsAppwriteDataSourceAppwriteFailure).message,
         );
     }
 
@@ -129,15 +117,12 @@ class QuestionRepositoryImpl implements QuestionRepository {
       throw UnimplementedError();
 
   @override
-  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>>
-      watchAll() async {
+  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll() async {
     logger.debug('Watching questions...');
 
     await _emitQuestions();
 
-    appwriteDataSource
-        .watchForQuestionCollectionUpdate()
-        .listen(_onQuestionsUpdate);
+    appwriteDataSource.watchForQuestionCollectionUpdate().listen(_onQuestionsUpdate);
 
     return Ok(_questionsStreamController.stream);
   }
@@ -155,8 +140,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
     logger.debug('Fetched ${questionsListModel.total} questions');
 
-    final questions =
-        questionsListModel.questions.map((e) => e.toQuestion()).toList();
+    final questions = questionsListModel.questions.map((e) => e.toQuestion()).toList();
 
     _questionsStreamController.add(questions);
   }

@@ -8,8 +8,7 @@ abstract interface class CheckIfUserCanCreatePublicQuestionsUseCase {
   Future<Result<bool, String>> call();
 }
 
-class CheckIfUserCanCreatePublicQuestionsUseCaseImpl
-    implements CheckIfUserCanCreatePublicQuestionsUseCase {
+class CheckIfUserCanCreatePublicQuestionsUseCaseImpl implements CheckIfUserCanCreatePublicQuestionsUseCase {
   CheckIfUserCanCreatePublicQuestionsUseCaseImpl({
     required this.logger,
     required this.authRepository,
@@ -21,7 +20,7 @@ class CheckIfUserCanCreatePublicQuestionsUseCaseImpl
   static const sessionProvidersThatAreNotAllowed = [
     SessionProvider.anonymous,
     SessionProvider.unknown,
-    null
+    null,
   ];
 
   @override

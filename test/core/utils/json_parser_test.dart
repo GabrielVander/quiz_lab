@@ -19,15 +19,11 @@ void main() {
         'should return failure when exception occurs',
         () {
           for (final values in [
-            [
-              <String, Object>{},
-              Exception(''),
-              EncodeFailure.exception(message: 'Exception: ')
-            ],
+            [<String, Object>{}, Exception(''), EncodeFailure.exception(message: 'Exception: ')],
             [
               {'D5N': 'QLGG', 'QPuP!Dnd': 23},
               Exception(r'lK1$BDx'),
-              EncodeFailure.exception(message: r'Exception: lK1$BDx')
+              EncodeFailure.exception(message: r'Exception: lK1$BDx'),
             ],
           ]) {
             test(values.toString(), () {
@@ -84,16 +80,8 @@ void main() {
         'should return failure when exception occurs',
         () {
           for (final values in [
-            [
-              '',
-              Exception(''),
-              DecodeFailure.exception(message: 'Exception: ')
-            ],
-            [
-              'EOQ86',
-              Exception('*uDo5B9r'),
-              DecodeFailure.exception(message: 'Exception: *uDo5B9r')
-            ],
+            ['', Exception(''), DecodeFailure.exception(message: 'Exception: ')],
+            ['EOQ86', Exception('*uDo5B9r'), DecodeFailure.exception(message: 'Exception: *uDo5B9r')],
           ]) {
             test(values.toString(), () {
               final input = values[0] as String;

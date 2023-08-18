@@ -15,10 +15,9 @@ void main() {
       const _TestCase(
         imageAssetName: Images.forklift,
         imageHeight: 82,
-        message:
-            'Ecce, extum! Germanus heuretes inciviliter quaestios solem est.',
+        message: 'Ecce, extum! Germanus heuretes inciviliter quaestios solem est.',
         fontSize: 7,
-      )
+      ),
     ]) {
       testWidgets(testCase.toString(), (widgetTester) async {
         await widgetTester.pumpWidget(

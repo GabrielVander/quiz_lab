@@ -146,7 +146,7 @@ void main() {
                 countryCode: 'L%J',
                 countryName: 'SoZly',
                 current: false,
-              )
+              ),
             ],
             [
               appwrite_models.Session(
@@ -202,7 +202,7 @@ void main() {
                 countryCode: '65Tf',
                 countryName: 'S3fFYu',
                 current: true,
-              )
+              ),
             ],
           ]) {
             test(values.toString(), () async {
@@ -233,8 +233,7 @@ void main() {
 
   group('createAnonymousSession', () {
     test('should log initial message', () {
-      when(() => appwriteAccountServiceMock.createAnonymousSession())
-          .thenThrow(AppwriteException('rPXyEK6n'));
+      when(() => appwriteAccountServiceMock.createAnonymousSession()).thenThrow(AppwriteException('rPXyEK6n'));
 
       dataSource.createAnonymousSession();
 
@@ -246,8 +245,7 @@ void main() {
         test(errorMessage, () async {
           final exception = AppwriteException(errorMessage);
 
-          when(() => appwriteAccountServiceMock.createAnonymousSession())
-              .thenThrow(exception);
+          when(() => appwriteAccountServiceMock.createAnonymousSession()).thenThrow(exception);
 
           final result = await dataSource.createAnonymousSession();
 
@@ -261,21 +259,18 @@ void main() {
     });
 
     test('should succeed if appwrite account service succeeds', () async {
-      when(() => appwriteAccountServiceMock.createAnonymousSession())
-          .thenAnswer((_) async => _MockSession());
+      when(() => appwriteAccountServiceMock.createAnonymousSession()).thenAnswer((_) async => _MockSession());
 
       final result = await dataSource.createAnonymousSession();
 
-      verify(() => logger.debug('Anonymous session created successfully'))
-          .called(1);
+      verify(() => logger.debug('Anonymous session created successfully')).called(1);
       expect(result, const Ok<Unit, String>(unit));
     });
   });
 
   group('getCurrentUser', () {
     test('should log initial message', () async {
-      when(() => appwriteAccountServiceMock.get())
-          .thenThrow(AppwriteException('4rvOY'));
+      when(() => appwriteAccountServiceMock.get()).thenThrow(AppwriteException('4rvOY'));
 
       await dataSource.getCurrentUser();
 
@@ -301,8 +296,7 @@ void main() {
     });
 
     test('should fail if user mapping fails', () async {
-      when(() => appwriteAccountServiceMock.get())
-          .thenAnswer((_) async => _MockUser());
+      when(() => appwriteAccountServiceMock.get()).thenAnswer((_) async => _MockUser());
 
       final result = await dataSource.getCurrentUser();
 
@@ -316,10 +310,7 @@ void main() {
     test('should succeed', () async {
       final user = _MockUser();
       final preferences = _MockPreferences();
-      final preferencesData = <String, dynamic>{
-        'qo1b9': 'U11u0MaW',
-        'oRQ': 783
-      };
+      final preferencesData = <String, dynamic>{'qo1b9': 'U11u0MaW', 'oRQ': 783};
 
       when(() => user.$id).thenReturn(r'$id');
       when(() => user.$createdAt).thenReturn(r'$createdAt');
@@ -334,14 +325,12 @@ void main() {
       when(() => user.passwordUpdate).thenReturn('passwordUpdate');
       when(() => user.emailVerification).thenReturn(true);
       when(() => preferences.data).thenReturn(preferencesData);
-      when(() => appwriteAccountServiceMock.get())
-          .thenAnswer((_) async => user);
+      when(() => appwriteAccountServiceMock.get()).thenAnswer((_) async => user);
 
       final result = await dataSource.getCurrentUser();
 
       verifyNever(() => logger.error(any()));
-      verify(() => logger.debug('User information fetched successfully'))
-          .called(1);
+      verify(() => logger.debug('User information fetched successfully')).called(1);
       expect(
         result,
         Ok<UserModel, String>(
@@ -374,8 +363,7 @@ void main() {
 
       await dataSource.getSession('pAHfxO1');
 
-      verify(() => logger.debug('Retrieving given Appwrite session...'))
-          .called(1);
+      verify(() => logger.debug('Retrieving given Appwrite session...')).called(1);
     });
 
     for (final sessionId in ['MEB', '6p5']) {
@@ -461,7 +449,7 @@ void main() {
                 countryName: '',
                 current: false,
               )
-            )
+            ),
           ]) {
             final appwriteSession = testCase.$1;
             final expectedSessionModel = testCase.$2;

@@ -8,14 +8,8 @@ void main() {
         'should return a new instance of [EmailViewModel] with given values',
         () {
           for (final values in [
-            [
-              const EmailViewModel(value: ''),
-              const EmailViewModel(value: 'vX3qp9d', showError: true)
-            ],
-            [
-              const EmailViewModel(value: '*Uqi', showError: true),
-              const EmailViewModel(value: 'QxE@2')
-            ],
+            [const EmailViewModel(value: ''), const EmailViewModel(value: 'vX3qp9d', showError: true)],
+            [const EmailViewModel(value: '*Uqi', showError: true), const EmailViewModel(value: 'QxE@2')],
           ]) {
             test(values.toString(), () {
               final original = values[0];
@@ -40,14 +34,8 @@ void main() {
         'should return a new instance of [PasswordViewModel] with given values',
         () {
           for (final values in [
-            [
-              const PasswordViewModel(value: ''),
-              const PasswordViewModel(value: r'805$M$Zh', showError: true)
-            ],
-            [
-              const PasswordViewModel(value: '9d!r', showError: true),
-              const PasswordViewModel(value: '9bf*')
-            ],
+            [const PasswordViewModel(value: ''), const PasswordViewModel(value: r'805$M$Zh', showError: true)],
+            [const PasswordViewModel(value: '9d!r', showError: true), const PasswordViewModel(value: '9bf*')],
           ]) {
             test(values.toString(), () {
               final original = values[0];

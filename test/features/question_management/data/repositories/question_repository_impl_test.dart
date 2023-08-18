@@ -56,8 +56,7 @@ void main() {
       );
 
       test('should log initial message', () {
-        when(() => questionsAppwriteDataSourceMock.createSingle(any()))
-            .thenAnswer((_) async => const Err('dALlzcb'));
+        when(() => questionsAppwriteDataSourceMock.createSingle(any())).thenAnswer((_) async => const Err('dALlzcb'));
 
         repository.createSingle(
           const Question(
@@ -120,11 +119,7 @@ void main() {
             categories: const [
               'Az75%p8',
             ],
-            permissions: [
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.any(),
-              )
-            ],
+            permissions: [AppwritePermissionTypeModel.read(AppwritePermissionRoleModel.any())],
           )
         ),
         (
@@ -197,8 +192,7 @@ void main() {
                 'and return error if it fails with message $message',
                 () async {
                   when(
-                    () =>
-                        questionsAppwriteDataSourceMock.createSingle(expected),
+                    () => questionsAppwriteDataSourceMock.createSingle(expected),
                   ).thenAnswer((_) async => Err(message));
 
                   final result = await repository.createSingle(question);
@@ -218,8 +212,7 @@ void main() {
 
               final result = await repository.createSingle(question);
 
-              verify(() => logger.debug('Question created successfully'))
-                  .called(1);
+              verify(() => logger.debug('Question created successfully')).called(1);
               expect(result, const Ok<Unit, String>(unit));
             });
           },
@@ -239,8 +232,7 @@ void main() {
           // 99, mocktail does not register calls made inside a callback
         ]) {
           test(amountOfUpdates.toString(), () async {
-            final appwriteQuestionListModelMock =
-                _MockAppwriteQuestionListModel();
+            final appwriteQuestionListModelMock = _MockAppwriteQuestionListModel();
 
             final updateMessages = List.generate(
               amountOfUpdates,
@@ -256,8 +248,7 @@ void main() {
             when(() => appwriteQuestionListModelMock.total).thenReturn(0);
             when(() => appwriteQuestionListModelMock.questions).thenReturn([]);
 
-            when(() => appwriteDataSourceMock.getAllQuestions())
-                .thenAnswer((_) async => appwriteQuestionListModelMock);
+            when(() => appwriteDataSourceMock.getAllQuestions()).thenAnswer((_) async => appwriteQuestionListModelMock);
 
             await repository.watchAll();
 
@@ -265,8 +256,7 @@ void main() {
               () => appwriteDataSourceMock.watchForQuestionCollectionUpdate(),
             );
 
-            verify(() => appwriteDataSourceMock.getAllQuestions())
-                .called(amountOfUpdates + 1);
+            verify(() => appwriteDataSourceMock.getAllQuestions()).called(amountOfUpdates + 1);
           });
         }
       },
@@ -276,10 +266,7 @@ void main() {
       'should emit expected',
       () {
         for (final values in [
-          [
-            const AppwriteQuestionListModel(total: 0, questions: []),
-            <Question>[]
-          ],
+          [const AppwriteQuestionListModel(total: 0, questions: []), <Question>[]],
           [
             const AppwriteQuestionListModel(
               total: 1,
@@ -296,7 +283,7 @@ void main() {
                   difficulty: '',
                   options: [],
                   categories: [],
-                )
+                ),
               ],
             ),
             <Question>[
@@ -307,7 +294,7 @@ void main() {
                 answerOptions: [],
                 difficulty: QuestionDifficulty.unknown,
                 categories: [],
-              )
+              ),
             ]
           ],
           [
@@ -339,7 +326,7 @@ void main() {
                     ),
                   ],
                   categories: ['@#Ij', '@s@urTl', '4UPz'],
-                )
+                ),
               ],
             ),
             <Question>[
@@ -358,13 +345,12 @@ void main() {
                   QuestionCategory(value: '@s@urTl'),
                   QuestionCategory(value: '4UPz'),
                 ],
-              )
+              ),
             ]
           ],
         ]) {
           test(values.toString(), () async {
-            final appwriteQuestionListModel =
-                values[0] as AppwriteQuestionListModel;
+            final appwriteQuestionListModel = values[0] as AppwriteQuestionListModel;
             final expected = values[1] as List<Question>;
 
             when(
@@ -373,8 +359,7 @@ void main() {
               (_) => const Stream.empty(),
             );
 
-            when(() => appwriteDataSourceMock.getAllQuestions())
-                .thenAnswer((_) async => appwriteQuestionListModel);
+            when(() => appwriteDataSourceMock.getAllQuestions()).thenAnswer((_) async => appwriteQuestionListModel);
 
             final result = await repository.watchAll();
 
@@ -408,8 +393,7 @@ void main() {
               repository.deleteSingle(questionId);
 
               verify(
-                () => questionsAppwriteDataSourceMock
-                    .deleteSingle(questionId.value),
+                () => questionsAppwriteDataSourceMock.deleteSingle(questionId.value),
               ).called(1);
             });
           }
@@ -425,8 +409,7 @@ void main() {
             (_) async => const Ok(unit),
           );
 
-          final result =
-              await repository.deleteSingle(const QuestionId('6xSamAUC'));
+          final result = await repository.deleteSingle(const QuestionId('6xSamAUC'));
 
           expect(result.isOk, true);
           expect(result.unwrap(), unit);
@@ -458,16 +441,14 @@ void main() {
             ],
           ]) {
             test(values.toString(), () async {
-              final dataSourceFailure =
-                  values[0] as QuestionsAppwriteDataSourceFailure;
+              final dataSourceFailure = values[0] as QuestionsAppwriteDataSourceFailure;
               final expected = values[1] as QuestionRepositoryFailure;
 
               when(
                 () => questionsAppwriteDataSourceMock.deleteSingle(any()),
               ).thenAnswer((_) async => Err(dataSourceFailure));
 
-              final result =
-                  await repository.deleteSingle(const QuestionId('cNPJl@*x'));
+              final result = await repository.deleteSingle(const QuestionId('cNPJl@*x'));
 
               expect(result.isErr, true);
               expect(result.unwrapErr(), expected);
@@ -549,16 +530,14 @@ void main() {
           ],
         ]) {
           test(values.toString(), () async {
-            final dataSourceFailure =
-                values[0] as QuestionsAppwriteDataSourceFailure;
+            final dataSourceFailure = values[0] as QuestionsAppwriteDataSourceFailure;
             final expected = values[1] as QuestionRepositoryFailure;
 
             when(
               () => questionsAppwriteDataSourceMock.fetchSingle(any()),
             ).thenAnswer((_) async => Err(dataSourceFailure));
 
-            final result =
-                await repository.getSingle(const QuestionId('2%E5%'));
+            final result = await repository.getSingle(const QuestionId('2%E5%'));
 
             expect(result.isErr, true);
             expect(result.unwrapErr(), expected);
@@ -582,16 +561,12 @@ class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
 
 class _MockAppwriteDataSource extends Mock implements AppwriteDataSource {}
 
-class _MockAppwriteRealtimeQuestionMessageModel extends Mock
-    implements AppwriteRealtimeQuestionMessageModel {}
+class _MockAppwriteRealtimeQuestionMessageModel extends Mock implements AppwriteRealtimeQuestionMessageModel {}
 
-class _MockAppwriteQuestionListModel extends Mock
-    implements AppwriteQuestionListModel {}
+class _MockAppwriteQuestionListModel extends Mock implements AppwriteQuestionListModel {}
 
-class _MockQuestionsAppwriteDataSource extends Mock
-    implements QuestionCollectionAppwriteDataSourceImpl {}
+class _MockQuestionsAppwriteDataSource extends Mock implements QuestionCollectionAppwriteDataSourceImpl {}
 
-class _MockAppwriteQuestionModel extends Mock
-    implements AppwriteQuestionModel {}
+class _MockAppwriteQuestionModel extends Mock implements AppwriteQuestionModel {}
 
 class _MockQuestion extends Mock implements Question {}

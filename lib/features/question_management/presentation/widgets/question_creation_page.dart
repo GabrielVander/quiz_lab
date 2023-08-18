@@ -289,7 +289,7 @@ class _Form extends StatelessWidget {
                       const SizedBox(width: 10),
                       Flexible(
                         child: _PublicQuestionToggle(cubit: cubit),
-                      )
+                      ),
                     ],
                   );
                 },
@@ -331,7 +331,7 @@ class _Form extends StatelessWidget {
                   text: S.of(context).createLabel,
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

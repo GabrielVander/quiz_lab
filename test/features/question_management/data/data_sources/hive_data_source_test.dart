@@ -120,8 +120,7 @@ void main() {
                 const dummyEncodedJsonString = 'X1Tt';
                 final fakeModel = _FakeHiveQuestionModel();
 
-                when(() => mockJsonParser.encode(any()))
-                    .thenReturn(const Ok(dummyEncodedJsonString));
+                when(() => mockJsonParser.encode(any())).thenReturn(const Ok(dummyEncodedJsonString));
 
                 when(
                   () => mockQuestionsBox.put(
@@ -174,8 +173,7 @@ void main() {
                 expect(model.id, isNotNull);
                 expect(model.id, isNotEmpty);
 
-                when(() => mockJsonParser.encode(model.toMap()))
-                    .thenReturn(const Ok(dummyJsonEncodedString));
+                when(() => mockJsonParser.encode(model.toMap())).thenReturn(const Ok(dummyJsonEncodedString));
 
                 when(
                   () => mockQuestionsBox.put(model.id, dummyJsonEncodedString),
@@ -386,11 +384,9 @@ void main() {
 
                   when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
 
-                  when(() => mockQuestionsBox.get(dummySingleKey))
-                      .thenReturn(dummyJsonEncodedString);
+                  when(() => mockQuestionsBox.get(dummySingleKey)).thenReturn(dummyJsonEncodedString);
 
-                  when(() => mockJsonParser.decode(dummyJsonEncodedString))
-                      .thenReturn(Err(decodeFailure));
+                  when(() => mockJsonParser.decode(dummyJsonEncodedString)).thenReturn(Err(decodeFailure));
 
                   final result = dataSource.watchAllQuestions();
 
@@ -424,11 +420,9 @@ void main() {
 
                   when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
 
-                  when(() => mockJsonParser.decode(dummyJsonEncodedString))
-                      .thenReturn(const Ok(dummyJsonDecodedMap));
+                  when(() => mockJsonParser.decode(dummyJsonEncodedString)).thenReturn(const Ok(dummyJsonDecodedMap));
 
-                  when(() => mockQuestionsBox.get(dummySingleKey))
-                      .thenReturn(dummyJsonEncodedString);
+                  when(() => mockQuestionsBox.get(dummySingleKey)).thenReturn(dummyJsonEncodedString);
 
                   when(() => mockQuestionsBox.watch()).thenThrow(hiveError);
 
@@ -465,10 +459,8 @@ void main() {
                   const dummySingleKey = '8TO#8C';
 
                   when(() => mockQuestionsBox.keys).thenReturn([dummySingleKey]);
-                  when(() => mockQuestionsBox.get(dummySingleKey))
-                      .thenReturn(dummyJsonEncodedString);
-                  when(() => mockJsonParser.decode(dummyJsonEncodedString))
-                      .thenReturn(const Ok(dummyJsonDecodedMap));
+                  when(() => mockQuestionsBox.get(dummySingleKey)).thenReturn(dummyJsonEncodedString);
+                  when(() => mockJsonParser.decode(dummyJsonEncodedString)).thenReturn(const Ok(dummyJsonDecodedMap));
                   when(() => mockQuestionsBox.watch()).thenThrow(hiveError);
 
                   final result = dataSource.watchAllQuestions();
@@ -506,7 +498,7 @@ void main() {
                   [],
                   ['someKey'],
                   ['someKey'],
-                  ['someKey', 'anotherKey']
+                  ['someKey', 'anotherKey'],
                 ],
                 <List<HiveQuestionModel>>[
                   [],
@@ -518,7 +510,7 @@ void main() {
                       difficulty: '',
                       categories: [],
                       options: [],
-                    )
+                    ),
                   ],
                   [
                     const HiveQuestionModel(
@@ -528,7 +520,7 @@ void main() {
                       difficulty: '',
                       categories: [],
                       options: [],
-                    )
+                    ),
                   ],
                   [
                     const HiveQuestionModel(
@@ -546,7 +538,7 @@ void main() {
                       difficulty: '',
                       categories: [],
                       options: [],
-                    )
+                    ),
                   ],
                 ],
               ],
@@ -560,7 +552,7 @@ void main() {
                   ['lke46'],
                   ['lke46', 'Rqh9r'],
                   ['lke46', 'Rqh9r'],
-                  ['lke46', 'Rqh9r', '0Mth40']
+                  ['lke46', 'Rqh9r', '0Mth40'],
                 ],
                 <List<HiveQuestionModel>>[
                   [
@@ -589,7 +581,7 @@ void main() {
                       difficulty: '',
                       categories: [],
                       options: [],
-                    )
+                    ),
                   ],
                   [
                     const HiveQuestionModel(
@@ -607,7 +599,7 @@ void main() {
                       difficulty: '',
                       categories: [],
                       options: [],
-                    )
+                    ),
                   ],
                   [
                     const HiveQuestionModel(
@@ -633,7 +625,7 @@ void main() {
                       difficulty: '',
                       categories: [],
                       options: [],
-                    )
+                    ),
                   ],
                 ],
               ],
@@ -641,8 +633,7 @@ void main() {
               test(values.toString(), () async {
                 final boxEvents = values[0] as List<BoxEvent>;
                 final keysToEmit = values[1] as List<List<String>>;
-                final expectedEmissions =
-                    values[2] as List<List<HiveQuestionModel>>;
+                final expectedEmissions = values[2] as List<List<HiveQuestionModel>>;
 
                 when(() => mockQuestionsBox.keys).thenAnswer((_) {
                   final keys = keysToEmit.removeAt(0);
@@ -663,8 +654,7 @@ void main() {
                   return keys;
                 });
 
-                when(() => mockQuestionsBox.watch())
-                    .thenAnswer((_) => Stream.fromIterable(boxEvents));
+                when(() => mockQuestionsBox.watch()).thenAnswer((_) => Stream.fromIterable(boxEvents));
 
                 final result = dataSource.watchAllQuestions();
 
@@ -709,5 +699,4 @@ class _FakeBoxEvent extends Fake implements BoxEvent {
 
 class _MockHiveBox extends Mock implements Box<String> {}
 
-class _MockJsonParser extends Mock
-    implements JsonParser<Map<String, dynamic>> {}
+class _MockJsonParser extends Mock implements JsonParser<Map<String, dynamic>> {}

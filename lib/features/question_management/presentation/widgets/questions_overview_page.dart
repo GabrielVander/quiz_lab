@@ -60,8 +60,7 @@ class QuestionsOverviewPage extends HookWidget {
           Container(
             margin: const EdgeInsets.only(bottom: 15),
             child: _Header(
-              onAddQuestion: () =>
-                  GoRouter.of(context).pushNamed(Routes.createQuestion.name),
+              onAddQuestion: () => GoRouter.of(context).pushNamed(Routes.createQuestion.name),
             ),
           ),
           Expanded(
@@ -235,10 +234,8 @@ class _QuestionList extends StatelessWidget {
   });
 
   final List<QuestionsOverviewItemViewModel> questions;
-  final void Function(QuestionsOverviewItemViewModel viewModel)
-      onDeleteQuestion;
-  final void Function(QuestionsOverviewItemViewModel viewModel)
-      onSaveUpdatedQuestion;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onDeleteQuestion;
+  final void Function(QuestionsOverviewItemViewModel viewModel) onSaveUpdatedQuestion;
   final void Function(QuestionsOverviewItemViewModel viewModel) onQuestionClick;
 
   @override
@@ -401,7 +398,7 @@ class _QuestionItemDifficulty extends StatelessWidget {
             color: textColor,
             fontSize: fontSize,
           ),
-        )
+        ),
       ],
     );
   }

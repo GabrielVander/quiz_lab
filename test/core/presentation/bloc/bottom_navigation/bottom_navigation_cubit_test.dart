@@ -24,7 +24,7 @@ void main() {
           BottomNavigationIndexChangedState(
             newIndex: NavigationIndex.assessments.indexNumber,
           ),
-          const BottomNavigationNavigateToRoute(route: Routes.assessments)
+          const BottomNavigationNavigateToRoute(route: Routes.assessments),
         ],
         NavigationIndex.questions: [
           BottomNavigationIndexChangedState(
@@ -53,11 +53,7 @@ void main() {
 
     group('emits in order', () {
       <List<NavigationIndex>, List<BottomNavigationState>>{
-        [
-          NavigationIndex.assessments,
-          NavigationIndex.questions,
-          NavigationIndex.results
-        ]: [
+        [NavigationIndex.assessments, NavigationIndex.questions, NavigationIndex.results]: [
           BottomNavigationIndexChangedState(
             newIndex: NavigationIndex.assessments.indexNumber,
           ),
@@ -75,11 +71,7 @@ void main() {
           ),
           const BottomNavigationNavigateToRoute(route: Routes.resultsOverview),
         ],
-        [
-          NavigationIndex.questions,
-          NavigationIndex.assessments,
-          NavigationIndex.results
-        ]: [
+        [NavigationIndex.questions, NavigationIndex.assessments, NavigationIndex.results]: [
           BottomNavigationIndexChangedState(
             newIndex: NavigationIndex.questions.indexNumber,
           ),
@@ -97,11 +89,7 @@ void main() {
           ),
           const BottomNavigationNavigateToRoute(route: Routes.resultsOverview),
         ],
-        [
-          NavigationIndex.results,
-          NavigationIndex.questions,
-          NavigationIndex.assessments
-        ]: [
+        [NavigationIndex.results, NavigationIndex.questions, NavigationIndex.assessments]: [
           BottomNavigationIndexChangedState(
             newIndex: NavigationIndex.results.indexNumber,
           ),
@@ -118,7 +106,7 @@ void main() {
             newIndex: NavigationIndex.assessments.indexNumber,
           ),
           const BottomNavigationNavigateToRoute(route: Routes.assessments),
-        ]
+        ],
       }.forEach((List<NavigationIndex> indexes, value) {
         test('$indexes -> $value', () {
           expectLater(cubit.stream, emitsInOrder(value));

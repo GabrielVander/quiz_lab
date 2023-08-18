@@ -25,7 +25,7 @@ class ResultsPage extends StatelessWidget {
                   child: ForkLiftMessage(
                     message: S.of(context).workInProgressMessage,
                   ),
-                )
+                ),
               ],
             ),
           ),

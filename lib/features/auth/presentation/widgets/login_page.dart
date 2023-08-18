@@ -62,9 +62,7 @@ class LoginPage extends HookWidget {
         showSnackBar(context, snackbar);
       },
       listenWhen: (state) =>
-          state is LoginPageNotYetImplemented ||
-          state is LoginPageError ||
-          state is LoginPageUnableToLogin,
+          state is LoginPageNotYetImplemented || state is LoginPageError || state is LoginPageUnableToLogin,
     );
 
     useBlocListener<LoginPageCubit, LoginPageState>(
@@ -95,18 +93,14 @@ class LoginPage extends HookWidget {
                   builder: (context) {
                     final loadingState = useBlocBuilder(cubit);
 
-                    if (loadingState is LoginPageLoading ||
-                        loadingState is LoginPageInitial) {
+                    if (loadingState is LoginPageLoading || loadingState is LoginPageInitial) {
                       return const _Loading();
                     }
 
                     return ListView(
                       children: [
                         SizedBox(
-                          height: Theme.of(context)
-                              .textTheme
-                              .displayLarge!
-                              .fontSize,
+                          height: Theme.of(context).textTheme.displayLarge!.fontSize,
                           child: const QuizLabIcon(),
                         ),
                         separator,
@@ -118,8 +112,7 @@ class LoginPage extends HookWidget {
                           builder: (context) {
                             final state = useBlocBuilder(
                               cubit,
-                              buildWhen: (current) =>
-                                  current is LoginPageViewModelUpdated,
+                              buildWhen: (current) => current is LoginPageViewModelUpdated,
                             );
 
                             if (state is LoginPageViewModelUpdated) {
@@ -152,15 +145,11 @@ class LoginPage extends HookWidget {
                                   current is LoginPageLoading ||
                                   previous is! LoginPageViewModelUpdated ||
                                   (current is LoginPageViewModelUpdated &&
-                                      previous.viewModel.applicationVersion !=
-                                          current.viewModel.applicationVersion),
+                                      previous.viewModel.applicationVersion != current.viewModel.applicationVersion),
                             );
 
                             return switch (state) {
-                              LoginPageViewModelUpdated(
-                                viewModel: final viewModel
-                              ) =>
-                                Center(
+                              LoginPageViewModelUpdated(viewModel: final viewModel) => Center(
                                   child: Text(
                                     key: const ValueKey(
                                       'applicationVersion',
@@ -171,7 +160,7 @@ class LoginPage extends HookWidget {
                               _ => const _Loading(),
                             };
                           },
-                        )
+                        ),
                       ],
                     );
                   },
@@ -210,8 +199,7 @@ class _Title extends StatelessWidget {
     return Text(
       S.of(context).loginPageDisplayTitle,
       style: Theme.of(context).textTheme.displayMedium!.copyWith(
-            color:
-                Theme.of(context).extension<ThemeColors>()!.textColors.primary,
+            color: Theme.of(context).extension<ThemeColors>()!.textColors.primary,
           ),
     );
   }
@@ -364,7 +352,7 @@ class _AlternativeOptions extends StatelessWidget {
               key: const ValueKey('signUpButton'),
               onPressed: onSignUp,
               text: S.of(context).loginPageSignUpButtonLabel,
-            )
+            ),
           ],
         ),
       ],

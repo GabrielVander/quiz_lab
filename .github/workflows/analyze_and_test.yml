@@ -9,7 +9,7 @@ env:
       - feature/*
       - release/*
 jobs:
-  tests:
+  analyze_and_test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,5 +33,5 @@ jobs:
       - name: Very Good Coverage
         uses: VeryGoodOpenSource/very_good_coverage@v2.1.0
         with:
-         min_coverage: 80
-         exclude: '**/widgets/**/*.dart **/generated/** **/main.dart'
+          min_coverage: 80
+          exclude: '**/widgets/**/*.dart **/generated/** **/main.dart'

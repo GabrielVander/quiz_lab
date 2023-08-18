@@ -41,12 +41,12 @@ class AssessmentOverview extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                  Answers(answers: assessment.answers)
+                  Answers(answers: assessment.answers),
                 ],
               ),
               DueDate(dueDate: assessment.dueDate),
             ],
-          )
+          ),
         ],
       ),
     );

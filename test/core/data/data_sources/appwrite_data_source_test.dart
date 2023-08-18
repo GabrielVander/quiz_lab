@@ -56,9 +56,7 @@ void main() {
                 appwriteRealtimeService: appwriteRealtimeServiceMock,
               );
 
-              mocktail
-                  .when(() => realtimeSubscriptionMock.stream)
-                  .thenAnswer((_) => const Stream.empty());
+              mocktail.when(() => realtimeSubscriptionMock.stream).thenAnswer((_) => const Stream.empty());
 
               mocktail
                   .when(
@@ -192,8 +190,7 @@ void main() {
           ]) {
             test(values.toString(), () {
               final dummyRealtimeMessage = values[0] as RealtimeMessage;
-              final expectedAppwriteRealtimeQuestionMessageModel =
-                  values[1] as AppwriteRealtimeQuestionMessageModel;
+              final expectedAppwriteRealtimeQuestionMessageModel = values[1] as AppwriteRealtimeQuestionMessageModel;
 
               final realtimeSubscriptionMock = _RealtimeSubscriptionMock();
 
@@ -303,7 +300,7 @@ void main() {
                       'description': 'JLzh',
                       'categories': ['p4lM', r'#2$vxpA', 'cWnH2io'],
                     },
-                  )
+                  ),
                 ],
               ),
               const AppwriteQuestionListModel(
@@ -334,15 +331,14 @@ void main() {
                     collectionId: 'h^NjK84I',
                     createdAt: '516',
                     updatedAt: 'D3y^k#Hw',
-                  )
+                  ),
                 ],
               ),
             ],
           ]) {
             test(values.toString(), () async {
               final dummyDocumentList = values[0] as DocumentList;
-              final expectedAppwriteQuestionListModel =
-                  values[1] as AppwriteQuestionListModel;
+              final expectedAppwriteQuestionListModel = values[1] as AppwriteQuestionListModel;
 
               mocktail
                   .when(
@@ -368,7 +364,6 @@ class _DatabasesMock extends mocktail.Mock implements Databases {}
 
 class _RealtimeMock extends mocktail.Mock implements Realtime {}
 
-class _RealtimeSubscriptionMock extends mocktail.Mock
-    implements RealtimeSubscription {}
+class _RealtimeSubscriptionMock extends mocktail.Mock implements RealtimeSubscription {}
 
 class _DocumentListMock extends mocktail.Mock implements DocumentList {}

@@ -65,7 +65,7 @@ class QuestionDisplayPage extends HookWidget {
         bottomSheet: [
           QuestionDisplayFailure,
           QuestionDisplayQuestionAnsweredCorrectly,
-          QuestionDisplayQuestionAnsweredIncorrectly
+          QuestionDisplayQuestionAnsweredIncorrectly,
         ].contains(state.runtimeType)
             ? null
             : _AnswerButton(
@@ -284,14 +284,11 @@ class _AnswerButton extends StatelessWidget {
         builder: (context) {
           final state = useBlocBuilder(
             cubit,
-            buildWhen: (current) =>
-                current is QuestionDisplayAnswerButtonEnabled,
+            buildWhen: (current) => current is QuestionDisplayAnswerButtonEnabled,
           );
 
           return QLPrimaryButton.text(
-            onPressed: state is QuestionDisplayAnswerButtonEnabled
-                ? cubit.onAnswer
-                : null,
+            onPressed: state is QuestionDisplayAnswerButtonEnabled ? cubit.onAnswer : null,
             text: S.of(context).answerQuestionButtonLabel,
           );
         },
@@ -418,7 +415,7 @@ class _ResultDisplay extends StatelessWidget {
             QLDefaultButton.text(
               onPressed: onGoHome,
               text: S.of(context).goHomeLabel,
-            )
+            ),
           ],
         ),
       ),

@@ -123,7 +123,7 @@ void main() {
             answerOptions: [],
             categories: [],
             difficulty: QuestionDifficulty.unknown,
-          )
+          ),
         ],
         [
           const QuestionsOverviewItemViewModel(
@@ -148,7 +148,7 @@ void main() {
               QuestionCategory(value: 'Zra7R#'),
             ],
             difficulty: QuestionDifficulty.easy,
-          )
+          ),
         ],
       ]) {
         test(values.toString(), () {

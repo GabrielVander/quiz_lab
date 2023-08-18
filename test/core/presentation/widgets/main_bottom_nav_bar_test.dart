@@ -19,8 +19,7 @@ void main() {
   setUp(() {
     goRouterMock = _GoRouterMock();
     fakeS = _FakeS();
-    fakeLocalizationsDelegate =
-        _FakeLocalizationsDelegate(localizations: fakeS);
+    fakeLocalizationsDelegate = _FakeLocalizationsDelegate(localizations: fakeS);
     bottomNavigationCubitMock = _BottomNavigationCubitMock();
 
     widget = MaterialApp(
@@ -49,9 +48,7 @@ void main() {
     mocktail.when(() => bottomNavigationCubitMock.stream).thenAnswer(
           (_) => const Stream.empty(),
         );
-    mocktail
-        .when(() => bottomNavigationCubitMock.state)
-        .thenReturn(BottomNavigationInitial());
+    mocktail.when(() => bottomNavigationCubitMock.state).thenReturn(BottomNavigationInitial());
 
     await tester.pumpWidget(widget);
 
@@ -67,8 +64,7 @@ void main() {
     1: [Icons.ballot_outlined, Icons.question_answer, Icons.bar_chart_outlined],
     2: [Icons.ballot_outlined, Icons.question_answer_outlined, Icons.bar_chart],
   }.entries) {
-    testWidgets('should display expected icons when index ${entry.key}',
-        (widgetTester) async {
+    testWidgets('should display expected icons when index ${entry.key}', (widgetTester) async {
       mocktail.when(() => bottomNavigationCubitMock.stream).thenAnswer(
             (_) => const Stream.empty(),
           );
@@ -87,7 +83,7 @@ void main() {
   for (final route in [
     Routes.assessments,
     Routes.questionsOverview,
-    Routes.resultsOverview
+    Routes.resultsOverview,
   ]) {
     testWidgets(
       'should navigate to specified route ($route) when cubit emits '
@@ -109,8 +105,7 @@ void main() {
   }
 }
 
-class _BottomNavigationCubitMock extends mocktail.Mock
-    implements BottomNavigationCubit {}
+class _BottomNavigationCubitMock extends mocktail.Mock implements BottomNavigationCubit {}
 
 class _FakeS extends mocktail.Fake implements S {
   @override
@@ -123,8 +118,7 @@ class _FakeS extends mocktail.Fake implements S {
   String get resultsSectionDisplayName => '&!yl8';
 }
 
-class _FakeLocalizationsDelegate extends mocktail.Fake
-    implements AppLocalizationDelegate {
+class _FakeLocalizationsDelegate extends mocktail.Fake implements AppLocalizationDelegate {
   _FakeLocalizationsDelegate({required S localizations}) : s = localizations;
 
   final S s;

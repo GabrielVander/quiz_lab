@@ -107,7 +107,7 @@ void main() {
                 code: 500,
                 type: '',
               ),
-            )
+            ),
           ],
           [_AppwriteExceptionMock(), AppwriteWrapperServiceFailure(const UnknownAppwriteError())],
           [
@@ -118,55 +118,55 @@ void main() {
                 code: 32,
                 type: 'tB*g#',
               ),
-            )
+            ),
           ],
           [
             AppwriteException('', 400, 'general_argument_invalid'),
             AppwriteWrapperServiceFailure(
               const GeneralArgumentInvalidAppwriteError(message: ''),
-            )
+            ),
           ],
           [
             AppwriteException('#FsFcWB', 400, 'general_argument_invalid'),
             AppwriteWrapperServiceFailure(
               const GeneralArgumentInvalidAppwriteError(message: '#FsFcWB'),
-            )
+            ),
           ],
           [
             AppwriteException('', 404, 'database_not_found'),
             AppwriteWrapperServiceFailure(
               const DatabaseNotFoundAppwriteError(message: ''),
-            )
+            ),
           ],
           [
             AppwriteException('9aoF4', 404, 'database_not_found'),
             AppwriteWrapperServiceFailure(
               const DatabaseNotFoundAppwriteError(message: '9aoF4'),
-            )
+            ),
           ],
           [
             AppwriteException('', 404, 'collection_not_found'),
             AppwriteWrapperServiceFailure(
               const CollectionNotFoundAppwriteError(message: ''),
-            )
+            ),
           ],
           [
             AppwriteException('&!LBR', 404, 'collection_not_found'),
             AppwriteWrapperServiceFailure(
               const CollectionNotFoundAppwriteError(message: '&!LBR'),
-            )
+            ),
           ],
           [
             AppwriteException('', 404, 'document_not_found'),
             AppwriteWrapperServiceFailure(
               const DocumentNotFoundAppwriteError(message: ''),
-            )
+            ),
           ],
           [
             AppwriteException('XG##3R', 404, 'document_not_found'),
             AppwriteWrapperServiceFailure(
               const DocumentNotFoundAppwriteError(message: 'XG##3R'),
-            )
+            ),
           ],
         ]) {
           test(values.toString(), () async {
@@ -334,7 +334,7 @@ void main() {
                 code: 500,
                 type: '',
               ),
-            )
+            ),
           ],
           [_AppwriteExceptionMock(), AppwriteWrapperServiceFailure(const UnknownAppwriteError())],
           [
@@ -345,55 +345,55 @@ void main() {
                 code: 22,
                 type: 'y640p89',
               ),
-            )
+            ),
           ],
           [
             AppwriteException('', 400, 'general_argument_invalid'),
             AppwriteWrapperServiceFailure(
               const GeneralArgumentInvalidAppwriteError(message: ''),
-            )
+            ),
           ],
           [
             AppwriteException(r'Q$@!yG', 400, 'general_argument_invalid'),
             AppwriteWrapperServiceFailure(
               const GeneralArgumentInvalidAppwriteError(message: r'Q$@!yG'),
-            )
+            ),
           ],
           [
             AppwriteException('', 404, 'database_not_found'),
             AppwriteWrapperServiceFailure(
               const DatabaseNotFoundAppwriteError(message: ''),
-            )
+            ),
           ],
           [
             AppwriteException('45S6hm@', 404, 'database_not_found'),
             AppwriteWrapperServiceFailure(
               const DatabaseNotFoundAppwriteError(message: '45S6hm@'),
-            )
+            ),
           ],
           [
             AppwriteException('', 404, 'collection_not_found'),
             AppwriteWrapperServiceFailure(
               const CollectionNotFoundAppwriteError(message: ''),
-            )
+            ),
           ],
           [
             AppwriteException('7o2', 404, 'collection_not_found'),
             AppwriteWrapperServiceFailure(
               const CollectionNotFoundAppwriteError(message: '7o2'),
-            )
+            ),
           ],
           [
             AppwriteException('', 404, 'document_not_found'),
             AppwriteWrapperServiceFailure(
               const DocumentNotFoundAppwriteError(message: ''),
-            )
+            ),
           ],
           [
             AppwriteException('#G#5K@', 404, 'document_not_found'),
             AppwriteWrapperServiceFailure(
               const DocumentNotFoundAppwriteError(message: '#G#5K@'),
-            )
+            ),
           ],
         ]) {
           test(values.toString(), () async {
@@ -547,7 +547,7 @@ void main() {
                   code: 500,
                   type: '',
                 ),
-              )
+              ),
             ],
             [_AppwriteExceptionMock(), AppwriteWrapperServiceFailure(const UnknownAppwriteError())],
             [
@@ -558,55 +558,55 @@ void main() {
                   code: 32,
                   type: 'tB*g#',
                 ),
-              )
+              ),
             ],
             [
               AppwriteException('', 400, 'general_argument_invalid'),
               AppwriteWrapperServiceFailure(
                 const GeneralArgumentInvalidAppwriteError(message: ''),
-              )
+              ),
             ],
             [
               AppwriteException('#FsFcWB', 400, 'general_argument_invalid'),
               AppwriteWrapperServiceFailure(
                 const GeneralArgumentInvalidAppwriteError(message: '#FsFcWB'),
-              )
+              ),
             ],
             [
               AppwriteException('', 404, 'database_not_found'),
               AppwriteWrapperServiceFailure(
                 const DatabaseNotFoundAppwriteError(message: ''),
-              )
+              ),
             ],
             [
               AppwriteException('9aoF4', 404, 'database_not_found'),
               AppwriteWrapperServiceFailure(
                 const DatabaseNotFoundAppwriteError(message: '9aoF4'),
-              )
+              ),
             ],
             [
               AppwriteException('', 404, 'collection_not_found'),
               AppwriteWrapperServiceFailure(
                 const CollectionNotFoundAppwriteError(message: ''),
-              )
+              ),
             ],
             [
               AppwriteException('&!LBR', 404, 'collection_not_found'),
               AppwriteWrapperServiceFailure(
                 const CollectionNotFoundAppwriteError(message: '&!LBR'),
-              )
+              ),
             ],
             [
               AppwriteException('', 404, 'document_not_found'),
               AppwriteWrapperServiceFailure(
                 const DocumentNotFoundAppwriteError(message: ''),
-              )
+              ),
             ],
             [
               AppwriteException('XG##3R', 404, 'document_not_found'),
               AppwriteWrapperServiceFailure(
                 const DocumentNotFoundAppwriteError(message: 'XG##3R'),
-              )
+              ),
             ],
           ]) {
             test(values.toString(), () async {
