@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/login_anonymously_use_case.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 
 part 'login_page_state.dart';
 
@@ -42,8 +42,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     final applicationVersion = 'v$rawVersion';
 
     logger.debug('Fetched application version: $applicationVersion');
-    final defaultViewModelUpdatedWithApplicationVersion =
-        _defaultViewModel.copyWith(
+    final defaultViewModelUpdatedWithApplicationVersion = _defaultViewModel.copyWith(
       applicationVersion: applicationVersion,
     );
 

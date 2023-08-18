@@ -4,7 +4,7 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/login_anonymously_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 
 void main() {
   late QuizLabLogger loggerMock;
@@ -25,8 +25,7 @@ void main() {
   tearDown(resetMocktailState);
 
   test('should log initial message', () {
-    when(() => authRepositoryMock.loginAnonymously())
-        .thenAnswer((_) async => const Err('!meldT'));
+    when(() => authRepositoryMock.loginAnonymously()).thenAnswer((_) async => const Err('!meldT'));
 
     useCase();
 
@@ -35,8 +34,7 @@ void main() {
 
   group('should use auth repository', () {
     test('should call login anonymously', () async {
-      when(() => authRepositoryMock.loginAnonymously())
-          .thenAnswer((_) async => const Err('90c5uwE'));
+      when(() => authRepositoryMock.loginAnonymously()).thenAnswer((_) async => const Err('90c5uwE'));
 
       await useCase();
 
@@ -46,8 +44,7 @@ void main() {
     group('should handle error response', () {
       for (final error in ['WCIoS', 'p8gA*sxu']) {
         test(error, () async {
-          when(() => authRepositoryMock.loginAnonymously())
-              .thenAnswer((_) async => Err(error));
+          when(() => authRepositoryMock.loginAnonymously()).thenAnswer((_) async => Err(error));
 
           final result = await useCase();
 
@@ -58,8 +55,7 @@ void main() {
     });
 
     test('should return Unit if auth repository succeeds', () async {
-      when(() => authRepositoryMock.loginAnonymously())
-          .thenAnswer((_) async => const Ok(unit));
+      when(() => authRepositoryMock.loginAnonymously()).thenAnswer((_) async => const Ok(unit));
 
       final result = await useCase();
 

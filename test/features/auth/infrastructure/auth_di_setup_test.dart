@@ -4,11 +4,11 @@ import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/login_anonymously_use_case.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/auth/infrastructure/auth_di_setup.dart';
 import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 
 void main() {
   late DependencyInjection diMock;

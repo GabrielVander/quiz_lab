@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 
 void main() {
   late QuizLabLogger loggerMock;
@@ -24,8 +24,7 @@ void main() {
   tearDown(resetMocktailState);
 
   test('should log initial message', () {
-    when(() => authRepository.isLoggedIn())
-        .thenAnswer((_) async => const Err('a23'));
+    when(() => authRepository.isLoggedIn()).thenAnswer((_) async => const Err('a23'));
 
     useCase();
 
@@ -35,8 +34,7 @@ void main() {
   group('should fail if auth repository fails', () {
     for (final error in ['pdP', '3cN4ANF']) {
       test(error, () async {
-        when(() => authRepository.isLoggedIn())
-            .thenAnswer((_) async => Err(error));
+        when(() => authRepository.isLoggedIn()).thenAnswer((_) async => Err(error));
 
         final result = await useCase();
 
@@ -52,8 +50,7 @@ void main() {
   group('should return expected result if auth repository succeeds', () {
     for (final isLoggedIn in [true, false]) {
       test(isLoggedIn.toString(), () async {
-        when(() => authRepository.isLoggedIn())
-            .thenAnswer((_) async => Ok(isLoggedIn));
+        when(() => authRepository.isLoggedIn()).thenAnswer((_) async => Ok(isLoggedIn));
 
         final result = await useCase();
 

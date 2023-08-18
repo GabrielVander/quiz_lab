@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/login_with_credentials_use_case.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 
 void main() {
   late AuthRepository authRepository;
@@ -97,5 +97,4 @@ class _AuthRepositoryMock extends mocktail.Mock implements AuthRepository {}
 
 class _FakeEmailCredentials extends mocktail.Fake implements EmailCredentials {}
 
-class _FakeAuthRepositoryError extends mocktail.Fake
-    implements AuthRepositoryError {}
+class _FakeAuthRepositoryError extends mocktail.Fake implements AuthRepositoryError {}
