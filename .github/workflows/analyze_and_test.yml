@@ -32,5 +32,5 @@ jobs:
       - name: Very Good Coverage
         uses: VeryGoodOpenSource/very_good_coverage@v2.1.0
         with:
-          min_coverage: 50
-          exclude: '**/widgets/**/*.dart' '**/generated/**' '**/main.dart'
+         min_coverage: 50
+         exclude: '**/widgets/**/*.dart **/generated/** **/main.dart'
