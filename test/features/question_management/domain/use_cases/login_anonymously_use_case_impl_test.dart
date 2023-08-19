@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 
 void main() {

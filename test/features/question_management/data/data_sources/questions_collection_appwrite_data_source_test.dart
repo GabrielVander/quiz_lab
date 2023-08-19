@@ -4,14 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/data/data_sources/models/appwrite_permission_model.dart';
-import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
-import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_permission_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
+import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -598,9 +598,7 @@ void main() {
                 databaseId: databaseId,
                 documentId: creationModel.id,
                 data: creationModel.toMap(),
-                permissions: creationModel.permissions
-                    ?.map((p) => p.toString())
-                    .toList(),
+                permissions: creationModel.permissions?.map((p) => p.toString()).toList(),
               ),
             ).thenThrow(exception);
 
@@ -998,8 +996,7 @@ void main() {
 
 class _AppwriteWrapperMock extends mocktail.Mock implements AppwriteWrapper {}
 
-class _AppwriteQuestionCreationModelMock extends mocktail.Mock
-    implements AppwriteQuestionCreationModel {}
+class _AppwriteQuestionCreationModelMock extends mocktail.Mock implements AppwriteQuestionCreationModel {}
 
 class _MockDatabases extends Mock implements Databases {}
 

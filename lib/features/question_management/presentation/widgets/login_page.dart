@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
-import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/link.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/text_field/core.dart';
-import 'package:quiz_lab/core/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class LoginPage extends HookWidget {

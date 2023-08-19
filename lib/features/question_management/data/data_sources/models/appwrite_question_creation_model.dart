@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:quiz_lab/core/data/data_sources/models/appwrite_permission_model.dart';
-import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_option_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_permission_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
 
 class AppwriteQuestionCreationModel extends Equatable {
   const AppwriteQuestionCreationModel({

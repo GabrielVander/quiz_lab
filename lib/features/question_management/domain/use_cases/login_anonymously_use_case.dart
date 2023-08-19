@@ -1,7 +1,7 @@
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
 
 // ignore: one_member_abstracts
 abstract interface class LoginAnonymouslyUseCase {
@@ -26,6 +26,5 @@ class LoginAnonymouslyUseCaseImpl implements LoginAnonymouslyUseCase {
         .mapErr((_) => 'Unable to login anonymously');
   }
 
-  Future<Result<Unit, String>> performAnonymousAuthentication() async =>
-      authRepository.loginAnonymously();
+  Future<Result<Unit, String>> performAnonymousAuthentication() async => authRepository.loginAnonymously();
 }

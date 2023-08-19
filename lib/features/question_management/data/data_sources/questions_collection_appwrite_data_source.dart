@@ -2,11 +2,11 @@ import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
+import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 
 abstract interface class QuestionCollectionAppwriteDataSource {
   Future<Result<AppwriteQuestionModel, String>> createSingle(
@@ -17,12 +17,10 @@ abstract interface class QuestionCollectionAppwriteDataSource {
     String id,
   );
 
-  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
-      fetchSingle(String id);
+  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id);
 }
 
-class QuestionCollectionAppwriteDataSourceImpl
-    implements QuestionCollectionAppwriteDataSource {
+class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppwriteDataSource {
   QuestionCollectionAppwriteDataSourceImpl({
     required this.logger,
     required this.appwriteDatabaseId,
@@ -73,8 +71,7 @@ class QuestionCollectionAppwriteDataSourceImpl
   }
 
   @override
-  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
-      fetchSingle(String id) async {
+  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id) async {
     logger.debug('Fetching single question from Appwrite...');
 
     final documentFetchingResult = await appwriteWrapper.getDocument(
@@ -106,8 +103,7 @@ class QuestionCollectionAppwriteDataSourceImpl
           collectionId: appwriteQuestionCollectionId,
           documentId: creationModel.id,
           data: creationModel.toMap(),
-          permissions:
-              creationModel.permissions?.map((p) => p.toString()).toList(),
+          permissions: creationModel.permissions?.map((p) => p.toString()).toList(),
         ),
       );
     } on Exception catch (e) {
@@ -139,8 +135,7 @@ class QuestionCollectionAppwriteDataSourceImpl
 
 abstract class QuestionsAppwriteDataSourceFailure extends Equatable {}
 
-class QuestionsAppwriteDataSourceUnexpectedFailure
-    extends QuestionsAppwriteDataSourceFailure {
+class QuestionsAppwriteDataSourceUnexpectedFailure extends QuestionsAppwriteDataSourceFailure {
   QuestionsAppwriteDataSourceUnexpectedFailure(this.message);
 
   final String message;
@@ -149,8 +144,7 @@ class QuestionsAppwriteDataSourceUnexpectedFailure
   List<Object?> get props => [message];
 }
 
-class QuestionsAppwriteDataSourceAppwriteFailure
-    extends QuestionsAppwriteDataSourceFailure {
+class QuestionsAppwriteDataSourceAppwriteFailure extends QuestionsAppwriteDataSourceFailure {
   QuestionsAppwriteDataSourceAppwriteFailure(this.message);
 
   final String message;

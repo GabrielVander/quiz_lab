@@ -57,10 +57,8 @@ class QLDefaultButton extends StatelessWidget {
       onPressed: onPressed,
       backgroundColor: _backgroundBaseColor.withOpacity(_defaultBackgroundColorOpacityPercentage),
       spacing: spacing,
-      backgroundColorOnHover:
-          _backgroundBaseColor.withOpacity(_backgroundColorOpacityPercentageOnHover),
-      backgroundColorOnPressed:
-          _backgroundBaseColor.withOpacity(_backgroundColorOpacityPercentageOnPressed),
+      backgroundColorOnHover: _backgroundBaseColor.withOpacity(_backgroundColorOpacityPercentageOnHover),
+      backgroundColorOnPressed: _backgroundBaseColor.withOpacity(_backgroundColorOpacityPercentageOnPressed),
       textColor: _textColor,
       textColorOnPressed: _textColor,
       loading: loading,
