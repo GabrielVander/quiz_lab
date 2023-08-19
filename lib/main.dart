@@ -11,7 +11,6 @@ import 'package:quiz_lab/core/presentation/quiz_lab_application.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/environment.dart';
-import 'package:quiz_lab/features/auth/infrastructure/auth_di_setup.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
 
 void main() async {
@@ -47,7 +46,6 @@ Future<void> _setUpInjections() async {
     ..addSetup(_appwriteDependencyInjectionSetup)
     ..addSetup(coreDependencyInjectionSetup)
     ..addSetup(questionManagementDiSetup)
-    ..addSetup(authenticationDiSetup)
     ..addSetup(routerDiSetup)
     ..setUp();
 }
@@ -69,12 +67,19 @@ void _appwriteDependencyInjectionSetup(DependencyInjection di) {
     );
 }
 
-Future<void> _miscellaneousDependencyInjectionSetup(
-  DependencyInjection di,
-) async {
+Future<void> _miscellaneousDependencyInjectionSetup(DependencyInjection di) async {
   final packageInfo = await PackageInfo.fromPlatform();
 
-  di.registerInstance<PackageInfo>((_) => packageInfo);
+  di
+    ..registerInstance<PackageInfo>((_) => packageInfo)
+    ..registerInstance<AppwriteQuestionCollectionId>(
+      (_) => AppwriteQuestionCollectionId(value: EnvironmentVariable.appwriteQuestionCollectionId.getRequiredValue),
+    )
+    ..registerInstance<AppwriteDatabaseId>(
+      (_) => AppwriteDatabaseId(
+        value: EnvironmentVariable.appwriteDatabaseId.getRequiredValue,
+      ),
+    );
 }
 
 appwrite.Client _setUpAppwriteClient() {
