@@ -21,22 +21,20 @@ class UserModel extends Equatable {
     this.hashOptions,
   });
 
-  factory UserModel.fromAppwriteModel(User appwriteModel) {
-    return UserModel(
-      $id: appwriteModel.$id != 'null' ? appwriteModel.$id : '',
-      $createdAt: appwriteModel.$createdAt != 'null' ? appwriteModel.$createdAt : '',
-      $updatedAt: appwriteModel.$updatedAt != 'null' ? appwriteModel.$updatedAt : '',
-      name: appwriteModel.name != 'null' ? appwriteModel.name : '',
-      registration: appwriteModel.registration != 'null' ? appwriteModel.registration : '',
-      status: appwriteModel.status,
-      passwordUpdate: appwriteModel.passwordUpdate != 'null' ? appwriteModel.passwordUpdate : '',
-      email: appwriteModel.email != 'null' ? appwriteModel.email : '',
-      phone: appwriteModel.phone != 'null' ? appwriteModel.phone : '',
-      emailVerification: appwriteModel.emailVerification,
-      phoneVerification: appwriteModel.phoneVerification,
-      prefs: PreferencesModel.fromAppwriteModel(appwriteModel.prefs),
-    );
-  }
+  factory UserModel.fromAppwriteModel(User appwriteModel) => UserModel(
+        $id: appwriteModel.$id != 'null' ? appwriteModel.$id : '',
+        $createdAt: appwriteModel.$createdAt != 'null' ? appwriteModel.$createdAt : '',
+        $updatedAt: appwriteModel.$updatedAt != 'null' ? appwriteModel.$updatedAt : '',
+        name: appwriteModel.name != 'null' ? appwriteModel.name : '',
+        registration: appwriteModel.registration != 'null' ? appwriteModel.registration : '',
+        status: appwriteModel.status,
+        passwordUpdate: appwriteModel.passwordUpdate != 'null' ? appwriteModel.passwordUpdate : '',
+        email: appwriteModel.email != 'null' ? appwriteModel.email : '',
+        phone: appwriteModel.phone != 'null' ? appwriteModel.phone : '',
+        emailVerification: appwriteModel.emailVerification,
+        phoneVerification: appwriteModel.phoneVerification,
+        prefs: PreferencesModel.fromAppwriteModel(appwriteModel.prefs),
+      );
 
   final String $id;
   final String $createdAt;

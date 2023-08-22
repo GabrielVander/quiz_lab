@@ -8,18 +8,15 @@ import 'package:quiz_lab/features/question_management/data/data_sources/models/e
 import 'package:quiz_lab/features/question_management/data/data_sources/models/session_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/user_model.dart';
 
+// TODO(GabrielVander): Maybe this class would be better named AppwriteAccountDataSource
 abstract interface class AuthAppwriteDataSource {
-  Future<Result<SessionModel, String>> createEmailSession(
-    EmailSessionCredentialsModel credentialsModel,
-  );
+  Future<Result<SessionModel, String>> createEmailSession(EmailSessionCredentialsModel credentialsModel);
 
   Future<Result<Unit, String>> createAnonymousSession();
 
   Future<Result<UserModel, String>> getCurrentUser();
 
-  Future<Result<SessionModel, AppwriteErrorModel>> getSession(
-    String sessionId,
-  );
+  Future<Result<SessionModel, AppwriteErrorModel>> getSession(String sessionId);
 }
 
 class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
@@ -32,9 +29,7 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
   final Account appwriteAccountService;
 
   @override
-  Future<Result<SessionModel, String>> createEmailSession(
-    EmailSessionCredentialsModel credentialsModel,
-  ) async {
+  Future<Result<SessionModel, String>> createEmailSession(EmailSessionCredentialsModel credentialsModel) async {
     logger.debug('Creating email session...');
 
     try {

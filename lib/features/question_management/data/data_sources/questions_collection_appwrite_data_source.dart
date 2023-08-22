@@ -9,13 +9,9 @@ import 'package:quiz_lab/features/question_management/data/data_sources/models/a
 import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 
 abstract interface class QuestionCollectionAppwriteDataSource {
-  Future<Result<AppwriteQuestionModel, String>> createSingle(
-    AppwriteQuestionCreationModel creationModel,
-  );
+  Future<Result<AppwriteQuestionModel, String>> createSingle(AppwriteQuestionCreationModel creationModel);
 
-  Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(
-    String id,
-  );
+  Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(String id);
 
   Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id);
 }
@@ -36,24 +32,18 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
   final Databases databases;
 
   @override
-  Future<Result<AppwriteQuestionModel, String>> createSingle(
-    AppwriteQuestionCreationModel creationModel,
-  ) async {
+  Future<Result<AppwriteQuestionModel, String>> createSingle(AppwriteQuestionCreationModel creationModel) async {
     logger.debug('Creating single question on Appwrite...');
 
     return (await _performDocumentCreation(creationModel))
-        .inspect(
-          (_) => logger.debug('Question created successfully on Appwrite'),
-        )
+        .inspect((_) => logger.debug('Question created successfully on Appwrite'))
         .map(AppwriteQuestionModel.fromDocument)
         .inspectErr((e) => logger.error(e.toString()))
         .mapErr((_) => 'Unable to create question on Appwrite');
   }
 
   @override
-  Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(
-    String id,
-  ) async {
+  Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(String id) async {
     logger.debug('Deleting single question with id: $id from Appwrite...');
 
     final deletionResult = await _performAppwriteDeletion(id);
@@ -93,16 +83,16 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
     );
   }
 
-  Future<Result<Document, Exception>> _performDocumentCreation(
-    AppwriteQuestionCreationModel creationModel,
-  ) async {
+  Future<Result<Document, Exception>> _performDocumentCreation(AppwriteQuestionCreationModel creationModel) async {
     try {
+      final map = creationModel.toMap();
+
       return Ok(
         await databases.createDocument(
           databaseId: appwriteDatabaseId,
           collectionId: appwriteQuestionCollectionId,
-          documentId: creationModel.id,
-          data: creationModel.toMap(),
+          documentId: ID.unique(),
+          data: map,
           permissions: creationModel.permissions?.map((p) => p.toString()).toList(),
         ),
       );
@@ -127,9 +117,7 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
 
     return failure is AppwriteWrapperUnexpectedFailure
         ? QuestionsAppwriteDataSourceUnexpectedFailure(failure.message)
-        : QuestionsAppwriteDataSourceAppwriteFailure(
-            (failure as AppwriteWrapperServiceFailure).error.toString(),
-          );
+        : QuestionsAppwriteDataSourceAppwriteFailure((failure as AppwriteWrapperServiceFailure).error.toString());
   }
 }
 

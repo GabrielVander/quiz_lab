@@ -10,16 +10,13 @@ class AppwriteRealtimeQuestionMessageModel extends Equatable {
     required this.payload,
   });
 
-  factory AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage(
-    RealtimeMessage message,
-  ) {
-    return AppwriteRealtimeQuestionMessageModel(
-      events: message.events,
-      channels: message.channels,
-      timestamp: message.timestamp,
-      payload: AppwriteQuestionModel.fromMap(message.payload),
-    );
-  }
+  factory AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage(RealtimeMessage message) =>
+      AppwriteRealtimeQuestionMessageModel(
+        events: message.events,
+        channels: message.channels,
+        timestamp: message.timestamp,
+        payload: AppwriteQuestionModel.fromMap(message.payload),
+      );
 
   final List<String> events;
   final List<String> channels;

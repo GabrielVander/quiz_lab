@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_can_create_public_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
@@ -130,7 +131,7 @@ void main() {
         const DraftQuestion(
           title: 'title',
           description: 'description',
-          difficulty: 'difficulty',
+          difficulty: QuestionDifficulty.unknown,
           options: [],
           categories: [],
         ),
@@ -145,7 +146,7 @@ void main() {
       verify(() => logger.info('Creating question...')).called(1);
     });
 
-    group('should save questio with correct isPublic value', () {
+    group('should save question with correct isPublic value', () {
       for (final testCase in [(0, false), (1, true), (0, false), (3, true), (99, true), (100, false)]) {
         final amountOfToggles = testCase.$1;
         final expectedValue = testCase.$2;

@@ -53,9 +53,9 @@ void _appwriteDependencyInjectionSetup(DependencyInjection di) {
 
   di
     ..registerInstance<Client>((_) => client)
-    ..registerFactory<Account>((i) => Account(i.get<Client>()))
-    ..registerFactory<Databases>((i) => Databases(i.get<Client>()))
-    ..registerFactory<Realtime>((i) => Realtime(i.get<Client>()))
+    ..registerBuilder<Account>((i) => Account(i.get<Client>()))
+    ..registerBuilder<Databases>((i) => Databases(i.get<Client>()))
+    ..registerBuilder<Realtime>((i) => Realtime(i.get<Client>()))
     ..registerInstance<AppwriteReferencesConfig>(
       (_) => AppwriteReferencesConfig(
         databaseId: Environment.getRequiredEnvironmentVariable(EnvironmentVariable.appwriteDatabaseId),

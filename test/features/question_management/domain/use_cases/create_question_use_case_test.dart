@@ -26,18 +26,22 @@ void main() {
     useCase = CreateQuestionUseCaseImpl(
       logger: logger,
       questionRepository: questionRepository,
-      uuidGenerator: uuidGenerator,
     );
+
+    registerFallbackValue(_MockDraftQuestion());
   });
 
   tearDown(resetMocktailState);
 
   test('should log initial message', () {
+    when(() => uuidGenerator.generate()).thenReturn('8&tL6xjE');
+    when(() => questionRepository.createSingle(any())).thenAnswer((_) async => const Err('9qNsuf'));
+
     useCase.call(
       const DraftQuestion(
         title: '',
         description: '',
-        difficulty: '',
+        difficulty: QuestionDifficulty.unknown,
         options: [],
         categories: [],
       ),
@@ -46,68 +50,23 @@ void main() {
     verify(() => logger.info('Executing...')).called(1);
   });
 
-  group(
-    'when given unparsable difficulty',
-    () {
-      for (final values in [
-        (
-          const DraftQuestion(
-            title: '',
-            description: '',
-            difficulty: '',
-            options: [],
-            categories: [],
-          ),
-          "Unable to create question: Received unparseable difficulty ''",
-        ),
-        (
-          const DraftQuestion(
-            title: '3Yd0',
-            description: 'f19!t',
-            difficulty: '8Fy',
-            options: [],
-            categories: [QuestionCategory(value: 'Du0QQGO'), QuestionCategory(value: 'O95eCUO')],
-          ),
-          "Unable to create question: Received unparseable difficulty '8Fy'",
-        ),
-      ]) {
-        final draft = values.$1;
-        final expectedMessage = values.$2;
-
-        test('should fail with $expectedMessage', () async {
-          final result = await useCase(draft);
-
-          expect(result, Err<Unit, String>(expectedMessage));
-        });
-      }
-    },
-  );
-
   for (final values in [
     (
       const DraftQuestion(
         title: '',
         description: '',
-        difficulty: 'medium',
+        difficulty: QuestionDifficulty.medium,
         options: [],
         categories: [],
       ),
       '',
       '8&tL6xjE',
-      const Question(
-        id: QuestionId(''),
-        shortDescription: '',
-        description: '',
-        answerOptions: [],
-        difficulty: QuestionDifficulty.medium,
-        categories: [],
-      )
     ),
     (
       const DraftQuestion(
         title: 'title',
         description: 'description',
-        difficulty: 'easy',
+        difficulty: QuestionDifficulty.easy,
         options: [
           AnswerOption(
             description: 'description',
@@ -119,26 +78,12 @@ void main() {
       ),
       'uuid',
       'zVW7N',
-      const Question(
-        id: QuestionId('uuid'),
-        shortDescription: 'title',
-        description: 'description',
-        answerOptions: [
-          AnswerOption(
-            description: 'description',
-            isCorrect: false,
-          ),
-        ],
-        difficulty: QuestionDifficulty.easy,
-        categories: [QuestionCategory(value: 'category')],
-        isPublic: true,
-      )
     ),
     (
       const DraftQuestion(
         title: '336dhR',
         description: '91A^*#Z',
-        difficulty: 'hard',
+        difficulty: QuestionDifficulty.hard,
         options: [
           AnswerOption(
             description: '3W55p',
@@ -153,51 +98,28 @@ void main() {
       ),
       'pvx',
       '4p&',
-      const Question(
-        id: QuestionId('pvx'),
-        shortDescription: '336dhR',
-        description: '91A^*#Z',
-        difficulty: QuestionDifficulty.hard,
-        answerOptions: [
-          AnswerOption(
-            description: '3W55p',
-            isCorrect: false,
-          ),
-          AnswerOption(
-            description: 'n&!MLH1',
-            isCorrect: true,
-          ),
-        ],
-        categories: [QuestionCategory(value: 'y6q729L'), QuestionCategory(value: '3^*#Z')],
-      )
     ),
   ]) {
     final draft = values.$1;
     final uuid = values.$2;
     final repositoryFailure = values.$3;
-    final expectedQuestion = values.$4;
 
     group('should return failure when questions repository fails with', () {
       setUp(() => registerFallbackValue(_MockQuestion()));
 
       test(repositoryFailure, () async {
-        when(() => uuidGenerator.generate()).thenReturn(uuid);
-        when(() => questionRepository.createSingle(any())).thenAnswer((_) async => Err(repositoryFailure));
+        when(() => questionRepository.createSingle(draft)).thenAnswer((_) async => Err(repositoryFailure));
 
         final result = await useCase(draft);
 
-        verify(() => questionRepository.createSingle(expectedQuestion));
         verify(() => logger.error(repositoryFailure)).called(1);
-        expect(
-          result,
-          const Err<Unit, String>('Unable to create question'),
-        );
+        expect(result, const Err<Unit, String>('Unable to create question'));
       });
     });
 
     test('should return ok if questions repository succeeds', () async {
       when(() => uuidGenerator.generate()).thenReturn(uuid);
-      when(() => questionRepository.createSingle(expectedQuestion)).thenAnswer((_) async => const Ok(unit));
+      when(() => questionRepository.createSingle(draft)).thenAnswer((_) async => const Ok(unit));
 
       final result = await useCase(draft);
 
@@ -214,3 +136,5 @@ class _MockQuestionRepository extends Mock implements QuestionRepository {}
 class _MockResourceUuidGenerator extends Mock implements ResourceUuidGenerator {}
 
 class _MockQuestion extends Mock implements Question {}
+
+class _MockDraftQuestion extends Mock implements DraftQuestion {}

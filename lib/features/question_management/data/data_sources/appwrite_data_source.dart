@@ -5,7 +5,10 @@ import 'package:quiz_lab/features/question_management/data/data_sources/models/a
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
 
+// TODO(GabrielVander): Deprecated, we should phase this out
+@Deprecated('Too generic. Use a more specific data source instead')
 class AppwriteDataSource {
+  @Deprecated('Too generic. Use a more specific data source instead')
   AppwriteDataSource({
     required Databases appwriteDatabasesService,
     required AppwriteReferencesConfig configuration,

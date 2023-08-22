@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 
 class DraftQuestion extends Equatable {
   const DraftQuestion({
@@ -14,7 +15,7 @@ class DraftQuestion extends Equatable {
 
   final String title;
   final String description;
-  final String difficulty;
+  final QuestionDifficulty difficulty;
   final List<AnswerOption> options;
   final List<QuestionCategory> categories;
   final bool isPublic;
@@ -26,6 +27,7 @@ class DraftQuestion extends Equatable {
         difficulty,
         options,
         categories,
+        isPublic,
       ];
 
   @override
@@ -36,6 +38,7 @@ class DraftQuestion extends Equatable {
         'difficulty: $difficulty, '
         'options: $options, '
         'categories: $categories'
+        'isPublic: $isPublic'
         '}';
   }
 }

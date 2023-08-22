@@ -23,13 +23,9 @@ import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.
 
 void main() {
   late DependencyInjection dependencyInjection;
-  late Databases databases;
-  late AppwriteWrapper appwriteWrapper;
 
   setUp(() {
     dependencyInjection = _MockDependencyInjection();
-    databases = _MockDatabases();
-    appwriteWrapper = _MockAppwriteWrapper();
   });
 
   test('AuthAppwriteDataSource', () {
@@ -57,6 +53,9 @@ void main() {
       final collectionId = values.$2;
 
       test('with databaseId: $databaseId', () {
+        final databases = _MockDatabases();
+        final appwriteWrapper = _MockAppwriteWrapper();
+
         when(() => dependencyInjection.get<AppwriteReferencesConfig>())
             .thenReturn(AppwriteReferencesConfig(databaseId: databaseId, questionsCollectionId: collectionId));
         when(() => dependencyInjection.get<Databases>()).thenReturn(databases);
@@ -85,19 +84,20 @@ void main() {
   test('QuestionRepository', () {
     final appwriteDataSource = _MockAppwriteDataSource();
     final questionCollectionAppwriteDataSource = _MockQuestionCollectionAppwriteDataSource();
+    final authAppwriteDataSource = _MockAuthAppwriteDataSource();
 
     when(() => dependencyInjection.get<AppwriteDataSource>()).thenReturn(appwriteDataSource);
     when(() => dependencyInjection.get<QuestionCollectionAppwriteDataSource>())
         .thenReturn(questionCollectionAppwriteDataSource);
+    when(() => dependencyInjection.get<AuthAppwriteDataSource>()).thenReturn(authAppwriteDataSource);
 
     questionManagementDiSetup(dependencyInjection);
 
-    final captor = verify(
+    final builder = verify(
       () => dependencyInjection.registerBuilder<QuestionRepository>(
         captureAny(that: isA<QuestionRepository Function(DependencyInjection)>()),
       ),
-    ).captured;
-    final builder = captor.single;
+    ).captured.single;
 
     final repositoryBuilder = builder as QuestionRepository Function(DependencyInjection);
 
@@ -108,6 +108,7 @@ void main() {
     expect(repositoryImpl.logger, QuizLabLoggerImpl<QuestionRepositoryImpl>());
     expect(repositoryImpl.questionsAppwriteDataSource, questionCollectionAppwriteDataSource);
     expect(repositoryImpl.appwriteDataSource, appwriteDataSource);
+    expect(repositoryImpl.authAppwriteDataSource, authAppwriteDataSource);
   });
 
   test('AuthRepository', () {

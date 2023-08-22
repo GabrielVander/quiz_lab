@@ -190,7 +190,7 @@ void main() {
             '',
             '',
             const AppwriteQuestionCreationModel(
-              id: '',
+              ownerId: null,
               title: '',
               description: '',
               difficulty: '',
@@ -203,7 +203,7 @@ void main() {
             'Q!3CTr',
             r'^NW8$',
             const AppwriteQuestionCreationModel(
-              id: 'HH%',
+              ownerId: null,
               title: '#7d76V',
               description: r'$7zCt%Z@',
               difficulty: 'k4Y0r9p',
@@ -229,7 +229,7 @@ void main() {
             'jbM3Wi',
             'Fuh#',
             const AppwriteQuestionCreationModel(
-              id: 'v5ZD#0s@',
+              ownerId: null,
               title: 'P7R9',
               description: 'oOx',
               difficulty: '8n34Tg5I',
@@ -256,7 +256,7 @@ void main() {
             'jbM3Wi',
             'Fuh#',
             AppwriteQuestionCreationModel(
-              id: 'v5ZD#0s@',
+              ownerId: null,
               title: 'P7R9',
               description: 'oOx',
               difficulty: '8n34Tg5I',
@@ -596,7 +596,7 @@ void main() {
               () => databases.createDocument(
                 collectionId: collectionId,
                 databaseId: databaseId,
-                documentId: creationModel.id,
+                documentId: any(named: 'documentId'),
                 data: creationModel.toMap(),
                 permissions: creationModel.permissions?.map((p) => p.toString()).toList(),
               ),
@@ -705,9 +705,6 @@ void main() {
             final creationModelMock = _AppwriteQuestionCreationModelMock();
 
             mocktail.when(creationModelMock.toMap).thenReturn({});
-
-            mocktail.when(() => creationModelMock.id).thenReturn('&cY');
-
             mocktail
                 .when(
                   () => databases.createDocument(

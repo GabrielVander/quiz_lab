@@ -12,7 +12,6 @@ class AppwriteQuestionModel extends Equatable {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.permissions,
     required this.collectionId,
     required this.databaseId,
     required this.title,
@@ -20,39 +19,29 @@ class AppwriteQuestionModel extends Equatable {
     required this.difficulty,
     required this.options,
     required this.categories,
+    required this.profile,
   });
 
-  factory AppwriteQuestionModel.fromMap(
-    Map<String, dynamic> map,
-  ) =>
-      AppwriteQuestionModel(
+  factory AppwriteQuestionModel.fromMap(Map<String, dynamic> map) => AppwriteQuestionModel(
         id: map[r'$id'] as String,
         createdAt: map[r'$createdAt'] as String,
         updatedAt: map[r'$updatedAt'] as String,
-        permissions: (map[r'$permissions'] as List<dynamic>).map((p) => p as String).toList(),
         collectionId: map[r'$collectionId'] as String,
         databaseId: map[r'$databaseId'] as String,
         title: map['title'] as String,
         description: map['description'] as String,
         difficulty: map['difficulty'] as String,
         options: (jsonDecode(map['options'] as String) as List<dynamic>)
-            .map(
-              (o) => AppwriteQuestionOptionModel.fromMap(
-                o as Map<String, dynamic>,
-              ),
-            )
+            .map((o) => AppwriteQuestionOptionModel.fromMap(o as Map<String, dynamic>))
             .toList(),
         categories: (map['categories'] as List<dynamic>).map((c) => c as String).toList(),
+        profile: map['profile_'] as String?,
       );
 
-  factory AppwriteQuestionModel.fromDocument(
-    Document doc,
-  ) =>
-      AppwriteQuestionModel(
+  factory AppwriteQuestionModel.fromDocument(Document doc) => AppwriteQuestionModel(
         id: doc.$id,
         createdAt: doc.$createdAt,
         updatedAt: doc.$updatedAt,
-        permissions: null,
         collectionId: doc.$collectionId,
         databaseId: doc.$databaseId,
         title: doc.data['title'] as String,
@@ -67,12 +56,12 @@ class AppwriteQuestionModel extends Equatable {
             .where((c) => c != null)
             .map((c) => c!)
             .toList(),
+        profile: doc.data['profile_'] as String?,
       );
 
   final String id;
   final String createdAt;
   final String updatedAt;
-  final List<String>? permissions;
   final String collectionId;
   final String databaseId;
   final String title;
@@ -80,9 +69,10 @@ class AppwriteQuestionModel extends Equatable {
   final String difficulty;
   final List<AppwriteQuestionOptionModel> options;
   final List<String> categories;
+  final String? profile;
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         id,
         createdAt,
         updatedAt,
@@ -93,6 +83,7 @@ class AppwriteQuestionModel extends Equatable {
         difficulty,
         options,
         categories,
+        profile,
       ];
 
   @override
@@ -100,7 +91,6 @@ class AppwriteQuestionModel extends Equatable {
       'id: $id, '
       'createdAt: $createdAt, '
       'updatedAt: $updatedAt, '
-      'permissions: $permissions, '
       'collectionId: $collectionId, '
       'databaseId: $databaseId, '
       'title: $title, '
@@ -108,6 +98,7 @@ class AppwriteQuestionModel extends Equatable {
       'difficulty: $difficulty, '
       'options: $options, '
       'categories: $categories'
+      'profile: $profile'
       '}';
 
   Question toQuestion() => Question(
