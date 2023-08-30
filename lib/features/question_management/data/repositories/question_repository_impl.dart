@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_permission_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
@@ -16,13 +15,11 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 class QuestionRepositoryImpl implements QuestionRepository {
   QuestionRepositoryImpl({
     required this.logger,
-    required this.appwriteDataSource,
     required this.questionsAppwriteDataSource,
     required this.authAppwriteDataSource,
   });
 
   final QuizLabLogger logger;
-  final AppwriteDataSource appwriteDataSource;
   final QuestionCollectionAppwriteDataSource questionsAppwriteDataSource;
   final AuthAppwriteDataSource authAppwriteDataSource;
 
@@ -75,14 +72,15 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(Question question) => throw UnimplementedError();
 
   @override
-  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll() async {
+  Future<Result<Stream<List<Question>>, String>> watchAll() async {
     logger.debug('Watching questions...');
 
     await _emitQuestions();
 
-    appwriteDataSource.watchForQuestionCollectionUpdate().listen(_onQuestionsUpdate);
-
-    return Ok(_questionsStreamController.stream);
+    return (await questionsAppwriteDataSource.watchForUpdate())
+        .inspect((stream) => stream.listen(_onQuestionsUpdate))
+        .map((_) => _questionsStreamController.stream)
+        .mapErr((_) => 'Unable to watch questions');
   }
 
   Future<AppwriteQuestionCreationModel> _toCreationModel(DraftQuestion question) async {
@@ -143,7 +141,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<void> _emitQuestions() async {
     logger.debug('Fetching questions...');
 
-    (await questionsAppwriteDataSource.getAllQuestions())
+    (await questionsAppwriteDataSource.getAll())
         .inspect((value) => logger.debug('Fetched ${value.total} questions'))
         .map((model) => model.questions.map((e) => e.toQuestion()).toList())
         .inspect(_questionsStreamController.add);

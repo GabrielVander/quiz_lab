@@ -1,9 +1,9 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:quiz_lab/core/utils/appwrite_references_config.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/auth_repository_impl.dart';
@@ -54,12 +54,14 @@ void main() {
 
       test('with databaseId: $databaseId', () {
         final databases = _MockDatabases();
+        final realtime = _MockRealtime();
         final appwriteWrapper = _MockAppwriteWrapper();
 
         when(() => dependencyInjection.get<AppwriteReferencesConfig>())
             .thenReturn(AppwriteReferencesConfig(databaseId: databaseId, questionsCollectionId: collectionId));
         when(() => dependencyInjection.get<Databases>()).thenReturn(databases);
         when(() => dependencyInjection.get<AppwriteWrapper>()).thenReturn(appwriteWrapper);
+        when(() => dependencyInjection.get<Realtime>()).thenReturn(realtime);
 
         questionManagementDiSetup(dependencyInjection);
 
@@ -77,16 +79,15 @@ void main() {
         expect(dataSource.appwriteDatabaseId, databaseId);
         expect(dataSource.appwriteQuestionCollectionId, collectionId);
         expect(dataSource.databases, databases);
+        expect(dataSource.realtime, realtime);
       });
     }
   });
 
   test('QuestionRepository', () {
-    final appwriteDataSource = _MockAppwriteDataSource();
     final questionCollectionAppwriteDataSource = _MockQuestionCollectionAppwriteDataSource();
     final authAppwriteDataSource = _MockAuthAppwriteDataSource();
 
-    when(() => dependencyInjection.get<AppwriteDataSource>()).thenReturn(appwriteDataSource);
     when(() => dependencyInjection.get<QuestionCollectionAppwriteDataSource>())
         .thenReturn(questionCollectionAppwriteDataSource);
     when(() => dependencyInjection.get<AuthAppwriteDataSource>()).thenReturn(authAppwriteDataSource);
@@ -107,7 +108,6 @@ void main() {
 
     expect(repositoryImpl.logger, QuizLabLoggerImpl<QuestionRepositoryImpl>());
     expect(repositoryImpl.questionsAppwriteDataSource, questionCollectionAppwriteDataSource);
-    expect(repositoryImpl.appwriteDataSource, appwriteDataSource);
     expect(repositoryImpl.authAppwriteDataSource, authAppwriteDataSource);
   });
 
@@ -261,8 +261,6 @@ class _MockAppwriteWrapper extends Mock implements AppwriteWrapper {}
 
 class _MockDatabases extends Mock implements Databases {}
 
-class _MockAppwriteDataSource extends Mock implements AppwriteDataSource {}
-
 class _MockQuestionCollectionAppwriteDataSource extends Mock implements QuestionCollectionAppwriteDataSource {}
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
@@ -279,5 +277,7 @@ class _MockFetchApplicationVersionUseCase extends Mock implements FetchApplicati
 class _MockLoginAnonymouslyUseCase extends Mock implements LoginAnonymouslyUseCase {}
 
 class _MockAccount extends Mock implements Account {}
+
+class _MockRealtime extends Mock implements Realtime {}
 
 class _MockAuthAppwriteDataSource extends Mock implements AuthAppwriteDataSource {}

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +13,7 @@ import 'package:quiz_lab/features/question_management/data/data_sources/models/a
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 
@@ -18,6 +21,7 @@ void main() {
   late QuizLabLogger logger;
   late Databases databases;
   late AppwriteWrapper appwriteWrapperMock;
+  late Realtime realtime;
 
   late QuestionCollectionAppwriteDataSourceImpl dataSource;
 
@@ -169,7 +173,8 @@ void main() {
   setUp(() {
     logger = _MockQuizLabLogger();
     databases = _MockDatabases();
-    appwriteWrapperMock = _AppwriteWrapperMock();
+    realtime = _MockRealtime();
+    appwriteWrapperMock = _MockAppwriteWrapper();
 
     dataSource = QuestionCollectionAppwriteDataSourceImpl(
       logger: logger,
@@ -177,6 +182,7 @@ void main() {
       appwriteQuestionCollectionId: 'A9MnFkz',
       appwriteWrapper: appwriteWrapperMock,
       databases: databases,
+      realtime: realtime,
     );
   });
 
@@ -931,7 +937,7 @@ void main() {
         () => databases.listDocuments(databaseId: any(named: 'databaseId'), collectionId: any(named: 'collectionId')),
       ).thenAnswer((_) async => DocumentList(total: 0, documents: []));
 
-      dataSource.getAllQuestions();
+      dataSource.getAll();
 
       verify(() => logger.debug('Retrieving all questions from Appwrite...')).called(1);
     });
@@ -1016,7 +1022,7 @@ void main() {
               dataSource
                 ..appwriteDatabaseId = databaseId
                 ..appwriteQuestionCollectionId = collectionId;
-              final result = await dataSource.getAllQuestions();
+              final result = await dataSource.getAll();
 
               expect(result, Ok<AppwriteQuestionListModel, AppwriteErrorModel>(expected));
             });
@@ -1025,12 +1031,187 @@ void main() {
       });
     }
   });
+
+  group('watchForQuestionCollectionUpdate()', () {
+    group('ok', () {
+      group(
+        'should subscribe to realtime service correctly',
+        () {
+          for (final refConfig in [
+            (
+              'EPfM0058',
+              '10SC04',
+            ),
+            (
+              'JeGDX7',
+              'fm6!',
+            ),
+          ]) {
+            final databaseId = refConfig.$1;
+            final collectionId = refConfig.$2;
+
+            test(refConfig.toString(), () async {
+              final realtimeSubscriptionMock = _MockRealtimeSubscription();
+
+              when(() => realtimeSubscriptionMock.stream).thenAnswer((_) => const Stream.empty());
+              when(() => realtime.subscribe(any())).thenReturn(realtimeSubscriptionMock);
+
+              dataSource
+                ..appwriteDatabaseId = databaseId
+                ..appwriteQuestionCollectionId = collectionId;
+              await dataSource.watchForUpdate();
+
+              verify(
+                () => realtime.subscribe([
+                  'databases'
+                      '.$databaseId'
+                      '.collections'
+                      '.$collectionId'
+                      '.documents'
+                ]),
+              );
+            });
+          }
+        },
+      );
+
+      group(
+        '',
+        () {
+          for (final values in [
+            [
+              RealtimeMessage(
+                events: [],
+                payload: {
+                  r'$id': '',
+                  'title': '',
+                  'options': jsonEncode([]),
+                  'difficulty': '',
+                  'description': '',
+                  'categories': <dynamic>[],
+                  r'$permissions': <dynamic>[],
+                  r'$databaseId': '',
+                  r'$collectionId': '',
+                  r'$createdAt': '',
+                  r'$updatedAt': '',
+                },
+                channels: [],
+                timestamp: '',
+              ),
+              const AppwriteRealtimeQuestionMessageModel(
+                events: [],
+                channels: [],
+                timestamp: '',
+                payload: AppwriteQuestionModel(
+                  id: '',
+                  title: '',
+                  options: [],
+                  difficulty: '',
+                  description: '',
+                  categories: [],
+                  databaseId: '',
+                  collectionId: '',
+                  createdAt: '',
+                  updatedAt: '',
+                  profile: null,
+                ),
+              ),
+            ],
+            [
+              RealtimeMessage(
+                events: ['&Bp54', r'C*F$!Ah', '*8pg^4'],
+                payload: {
+                  r'$id': 'k2Kao43',
+                  'title': 'v5l!@',
+                  'options': jsonEncode([
+                    {
+                      'description': '7T5Tm0p',
+                      'isCorrect': false,
+                    },
+                    {
+                      'description': '!D@g3',
+                      'isCorrect': true,
+                    },
+                    {
+                      'description': 'V%#BGZ',
+                      'isCorrect': false,
+                    },
+                  ]),
+                  'difficulty': 'Tw&N9dD',
+                  'description': 'JLzh',
+                  'categories': ['p4lM', r'#2$vxpA', 'cWnH2io'],
+                  'profile_': '7XRx',
+                  r'$permissions': ['sqG', r'Ft3a7I$v', 'KCfj'],
+                  r'$databaseId': 'Cxc#Y1Cj',
+                  r'$collectionId': 'h^NjK84I',
+                  r'$createdAt': '516',
+                  r'$updatedAt': 'D3y^k#Hw',
+                },
+                channels: ['NR1', '^o58IQ5', 'No854Z0N'],
+                timestamp: '29O%1',
+              ),
+              const AppwriteRealtimeQuestionMessageModel(
+                events: ['&Bp54', r'C*F$!Ah', '*8pg^4'],
+                channels: ['NR1', '^o58IQ5', 'No854Z0N'],
+                timestamp: '29O%1',
+                payload: AppwriteQuestionModel(
+                  id: 'k2Kao43',
+                  title: 'v5l!@',
+                  options: [
+                    AppwriteQuestionOptionModel(
+                      description: '7T5Tm0p',
+                      isCorrect: false,
+                    ),
+                    AppwriteQuestionOptionModel(
+                      description: '!D@g3',
+                      isCorrect: true,
+                    ),
+                    AppwriteQuestionOptionModel(
+                      description: 'V%#BGZ',
+                      isCorrect: false,
+                    ),
+                  ],
+                  difficulty: 'Tw&N9dD',
+                  description: 'JLzh',
+                  categories: ['p4lM', r'#2$vxpA', 'cWnH2io'],
+                  databaseId: 'Cxc#Y1Cj',
+                  collectionId: 'h^NjK84I',
+                  createdAt: '516',
+                  updatedAt: 'D3y^k#Hw',
+                  profile: '7XRx',
+                ),
+              ),
+            ],
+          ]) {
+            test(values.toString(), () async {
+              final dummyRealtimeMessage = values[0] as RealtimeMessage;
+              final expectedAppwriteRealtimeQuestionMessageModel = values[1] as AppwriteRealtimeQuestionMessageModel;
+
+              final realtimeSubscriptionMock = _MockRealtimeSubscription();
+
+              when(() => realtimeSubscriptionMock.stream).thenAnswer((_) => Stream.value(dummyRealtimeMessage));
+              when(() => realtime.subscribe(any())).thenReturn(realtimeSubscriptionMock);
+
+              final result = await dataSource.watchForUpdate();
+
+              expect(result.isOk, true);
+              expect(result.unwrap(), emits(expectedAppwriteRealtimeQuestionMessageModel));
+            });
+          }
+        },
+      );
+    });
+  });
 }
 
-class _AppwriteWrapperMock extends Mock implements AppwriteWrapper {}
+class _MockAppwriteWrapper extends Mock implements AppwriteWrapper {}
 
 class _AppwriteQuestionCreationModelMock extends Mock implements AppwriteQuestionCreationModel {}
 
 class _MockDatabases extends Mock implements Databases {}
 
 class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
+
+class _MockRealtime extends Mock implements Realtime {}
+
+class _MockRealtimeSubscription extends Mock implements RealtimeSubscription {}

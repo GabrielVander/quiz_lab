@@ -3,7 +3,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_permission_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
@@ -24,7 +23,6 @@ import 'package:quiz_lab/features/question_management/domain/repositories/questi
 void main() {
   late QuizLabLogger logger;
   late AuthAppwriteDataSource authAppwriteDataSource;
-  late AppwriteDataSource appwriteDataSourceMock;
   late QuestionCollectionAppwriteDataSourceImpl questionsAppwriteDataSource;
 
   late QuestionRepository repository;
@@ -32,12 +30,10 @@ void main() {
   setUp(() {
     logger = _MockQuizLabLogger();
     authAppwriteDataSource = _MockAuthAppwriteDataSource();
-    appwriteDataSourceMock = _MockAppwriteDataSource();
     questionsAppwriteDataSource = _MockQuestionsAppwriteDataSource();
 
     repository = QuestionRepositoryImpl(
       logger: logger,
-      appwriteDataSource: appwriteDataSourceMock,
       questionsAppwriteDataSource: questionsAppwriteDataSource,
       authAppwriteDataSource: authAppwriteDataSource,
     );
@@ -247,16 +243,15 @@ void main() {
           final updateMessages = List.generate(amountOfUpdates, (_) => _MockAppwriteRealtimeQuestionMessageModel());
           final stream = Stream.fromIterable(updateMessages);
 
-          when(() => appwriteDataSourceMock.watchForQuestionCollectionUpdate()).thenAnswer((_) => stream);
+          when(() => questionsAppwriteDataSource.watchForUpdate()).thenAnswer((_) async => Ok(stream));
           when(() => appwriteQuestionListModelMock.total).thenReturn(0);
           when(() => appwriteQuestionListModelMock.questions).thenReturn([]);
-          when(() => questionsAppwriteDataSource.getAllQuestions())
-              .thenAnswer((_) async => Ok(appwriteQuestionListModelMock));
+          when(() => questionsAppwriteDataSource.getAll()).thenAnswer((_) async => Ok(appwriteQuestionListModelMock));
 
           await repository.watchAll();
 
-          verify(() => appwriteDataSourceMock.watchForQuestionCollectionUpdate()).called(1);
-          verify(() => questionsAppwriteDataSource.getAllQuestions()).called(amountOfUpdates + 1);
+          verify(() => questionsAppwriteDataSource.watchForUpdate()).called(1);
+          verify(() => questionsAppwriteDataSource.getAll()).called(amountOfUpdates + 1);
         });
       }
     });
@@ -350,9 +345,8 @@ void main() {
           final appwriteQuestionListModel = values.$1;
           final expected = values.$2;
 
-          when(() => appwriteDataSourceMock.watchForQuestionCollectionUpdate()).thenAnswer((_) => const Stream.empty());
-          when(() => questionsAppwriteDataSource.getAllQuestions())
-              .thenAnswer((_) async => Ok(appwriteQuestionListModel));
+          when(() => questionsAppwriteDataSource.watchForUpdate()).thenAnswer((_) async => const Ok(Stream.empty()));
+          when(() => questionsAppwriteDataSource.getAll()).thenAnswer((_) async => Ok(appwriteQuestionListModel));
 
           final result = await repository.watchAll();
 
@@ -495,8 +489,6 @@ void main() {
 }
 
 class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
-
-class _MockAppwriteDataSource extends Mock implements AppwriteDataSource {}
 
 class _MockAuthAppwriteDataSource extends Mock implements AuthAppwriteDataSource {}
 

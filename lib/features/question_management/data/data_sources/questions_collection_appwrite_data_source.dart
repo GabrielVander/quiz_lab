@@ -8,6 +8,7 @@ import 'package:quiz_lab/features/question_management/data/data_sources/models/a
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 
 abstract interface class QuestionCollectionAppwriteDataSource {
@@ -17,7 +18,9 @@ abstract interface class QuestionCollectionAppwriteDataSource {
 
   Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id);
 
-  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAllQuestions();
+  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAll();
+
+  Future<Result<Stream<AppwriteRealtimeQuestionMessageModel>, AppwriteErrorModel>> watchForUpdate();
 }
 
 class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppwriteDataSource {
@@ -27,6 +30,7 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
     required this.appwriteQuestionCollectionId,
     required this.appwriteWrapper,
     required this.databases,
+    required this.realtime,
   });
 
   final QuizLabLogger logger;
@@ -34,6 +38,7 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
   String appwriteQuestionCollectionId;
   final AppwriteWrapper appwriteWrapper;
   final Databases databases;
+  final Realtime realtime;
 
   @override
   Future<Result<AppwriteQuestionModel, String>> createSingle(AppwriteQuestionCreationModel creationModel) async {
@@ -88,12 +93,27 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
   }
 
   @override
-  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAllQuestions() async {
+  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAll() async {
     logger.debug('Retrieving all questions from Appwrite...');
 
     return (await _listDocuments())
         .map(AppwriteQuestionListModel.fromAppwriteDocumentList)
         .mapErr(AppwriteErrorModel.fromAppwriteException);
+  }
+
+  @override
+  Future<Result<Stream<AppwriteRealtimeQuestionMessageModel>, AppwriteErrorModel>> watchForUpdate() async {
+    logger.debug('Watching for question collection updates...');
+
+    final s = realtime.subscribe([
+      'databases'
+          '.$appwriteDatabaseId'
+          '.collections'
+          '.$appwriteQuestionCollectionId'
+          '.documents'
+    ]);
+
+    return Ok(s.stream.map(AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage));
   }
 
   Future<Result<DocumentList, AppwriteException>> _listDocuments() async {

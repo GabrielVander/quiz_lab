@@ -8,7 +8,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/question.d
 abstract interface class QuestionRepository {
   Future<Result<Unit, String>> createSingle(DraftQuestion question);
 
-  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll();
+  Future<Result<Stream<List<Question>>, String>> watchAll();
 
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,

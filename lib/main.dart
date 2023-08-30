@@ -7,9 +7,9 @@ import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/infrastructure/router_di_setup.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_application.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
+import 'package:quiz_lab/core/utils/appwrite_references_config.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/environment.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
 
 void main() async {

@@ -1,8 +1,8 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:quiz_lab/core/utils/appwrite_references_config.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/auth_repository_impl.dart';
@@ -55,12 +55,7 @@ void _registerDataSources(DependencyInjection di) {
         appwriteQuestionCollectionId: i.get<AppwriteReferencesConfig>().questionsCollectionId,
         appwriteWrapper: i.get<AppwriteWrapper>(),
         databases: i.get<Databases>(),
-      ),
-    )
-    ..registerFactory<AppwriteDataSource>(
-      (i) => AppwriteDataSource(
-        configuration: i.get<AppwriteReferencesConfig>(),
-        appwriteRealtimeService: i.get<Realtime>(),
+        realtime: i.get<Realtime>(),
       ),
     )
     ..registerBuilder<AuthAppwriteDataSource>(
@@ -76,7 +71,6 @@ void _registerRepositories(DependencyInjection di) {
     ..registerBuilder<QuestionRepository>(
       (i) => QuestionRepositoryImpl(
         logger: QuizLabLoggerImpl<QuestionRepositoryImpl>(),
-        appwriteDataSource: i.get<AppwriteDataSource>(),
         questionsAppwriteDataSource: i.get<QuestionCollectionAppwriteDataSource>(),
         authAppwriteDataSource: i.get<AuthAppwriteDataSource>(),
       ),
