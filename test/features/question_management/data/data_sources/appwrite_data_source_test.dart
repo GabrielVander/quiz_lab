@@ -1,27 +1,22 @@
 import 'dart:convert';
 
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:quiz_lab/features/question_management/data/data_sources/appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
 
 void main() {
-  late Databases appwriteDatabasesServiceMock;
   late Realtime appwriteRealtimeServiceMock;
 
   late AppwriteDataSource dataSource;
 
   setUp(() {
-    appwriteDatabasesServiceMock = _DatabasesMock();
     appwriteRealtimeServiceMock = _RealtimeMock();
 
     dataSource = AppwriteDataSource(
-      appwriteDatabasesService: appwriteDatabasesServiceMock,
       appwriteRealtimeService: appwriteRealtimeServiceMock,
       configuration: const AppwriteReferencesConfig(
         databaseId: 'F4G9rL^G',
@@ -51,7 +46,6 @@ void main() {
               final realtimeSubscriptionMock = _RealtimeSubscriptionMock();
 
               final dummyAppwriteDataSource = AppwriteDataSource(
-                appwriteDatabasesService: appwriteDatabasesServiceMock,
                 configuration: refConfig,
                 appwriteRealtimeService: appwriteRealtimeServiceMock,
               );
@@ -217,154 +211,8 @@ void main() {
       );
     });
   });
-
-  group('getAllQuestions()', () {
-    group('ok', () {
-      group(
-        'should call databases service correctly',
-        () {
-          for (final refConfig in [
-            const AppwriteReferencesConfig(
-              databaseId: '',
-              questionsCollectionId: '',
-            ),
-            const AppwriteReferencesConfig(
-              databaseId: 'wQD67',
-              questionsCollectionId: r'$aDf',
-            ),
-          ]) {
-            test(refConfig.toString(), () async {
-              final documentListMock = _DocumentListMock();
-
-              mocktail.when(() => documentListMock.total).thenReturn(0);
-              mocktail.when(() => documentListMock.documents).thenReturn([]);
-
-              mocktail
-                  .when(
-                    () => appwriteDatabasesServiceMock.listDocuments(
-                      databaseId: mocktail.any(named: 'databaseId'),
-                      collectionId: mocktail.any(named: 'collectionId'),
-                    ),
-                  )
-                  .thenAnswer((_) async => documentListMock);
-
-              await AppwriteDataSource(
-                appwriteDatabasesService: appwriteDatabasesServiceMock,
-                configuration: refConfig,
-                appwriteRealtimeService: appwriteRealtimeServiceMock,
-              ).getAllQuestions();
-
-              mocktail.verify(
-                () => appwriteDatabasesServiceMock.listDocuments(
-                  databaseId: refConfig.databaseId,
-                  collectionId: refConfig.questionsCollectionId,
-                ),
-              );
-            });
-          }
-        },
-      );
-
-      group(
-        'should return expected',
-        () {
-          for (final values in [
-            [
-              DocumentList(
-                total: 0,
-                documents: [],
-              ),
-              const AppwriteQuestionListModel(
-                total: 0,
-                questions: <AppwriteQuestionModel>[],
-              ),
-            ],
-            [
-              DocumentList(
-                total: 1,
-                documents: [
-                  Document(
-                    $id: 'k2Kao43',
-                    $collectionId: 'h^NjK84I',
-                    $databaseId: 'Cxc#Y1Cj',
-                    $createdAt: '516',
-                    $updatedAt: 'D3y^k#Hw',
-                    $permissions: ['sqG', r'Ft3a7I$v', 'KCfj'],
-                    data: {
-                      'title': 'v5l!@',
-                      'options': '['
-                          '{"description":"7T5Tm0p","isCorrect":false},'
-                          '{"description":"!D@g3","isCorrect":true},'
-                          '{"description":"V%#BGZ","isCorrect":false}'
-                          ']',
-                      'difficulty': 'Tw&N9dD',
-                      'description': 'JLzh',
-                      'categories': ['p4lM', r'#2$vxpA', 'cWnH2io'],
-                    },
-                  ),
-                ],
-              ),
-              const AppwriteQuestionListModel(
-                total: 1,
-                questions: [
-                  AppwriteQuestionModel(
-                    id: 'k2Kao43',
-                    title: 'v5l!@',
-                    options: [
-                      AppwriteQuestionOptionModel(
-                        description: '7T5Tm0p',
-                        isCorrect: false,
-                      ),
-                      AppwriteQuestionOptionModel(
-                        description: '!D@g3',
-                        isCorrect: true,
-                      ),
-                      AppwriteQuestionOptionModel(
-                        description: 'V%#BGZ',
-                        isCorrect: false,
-                      ),
-                    ],
-                    difficulty: 'Tw&N9dD',
-                    description: 'JLzh',
-                    categories: ['p4lM', r'#2$vxpA', 'cWnH2io'],
-                    permissions: ['sqG', r'Ft3a7I$v', 'KCfj'],
-                    databaseId: 'Cxc#Y1Cj',
-                    collectionId: 'h^NjK84I',
-                    createdAt: '516',
-                    updatedAt: 'D3y^k#Hw',
-                  ),
-                ],
-              ),
-            ],
-          ]) {
-            test(values.toString(), () async {
-              final dummyDocumentList = values[0] as DocumentList;
-              final expectedAppwriteQuestionListModel = values[1] as AppwriteQuestionListModel;
-
-              mocktail
-                  .when(
-                    () => appwriteDatabasesServiceMock.listDocuments(
-                      databaseId: mocktail.any(named: 'databaseId'),
-                      collectionId: mocktail.any(named: 'collectionId'),
-                    ),
-                  )
-                  .thenAnswer((_) async => dummyDocumentList);
-
-              final result = await dataSource.getAllQuestions();
-
-              expect(result, expectedAppwriteQuestionListModel);
-            });
-          }
-        },
-      );
-    });
-  });
 }
-
-class _DatabasesMock extends mocktail.Mock implements Databases {}
 
 class _RealtimeMock extends mocktail.Mock implements Realtime {}
 
 class _RealtimeSubscriptionMock extends mocktail.Mock implements RealtimeSubscription {}
-
-class _DocumentListMock extends mocktail.Mock implements DocumentList {}

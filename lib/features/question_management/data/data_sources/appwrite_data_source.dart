@@ -1,8 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
 
 // TODO(GabrielVander): Deprecated, we should phase this out
@@ -10,16 +8,13 @@ import 'package:quiz_lab/features/question_management/data/data_sources/models/a
 class AppwriteDataSource {
   @Deprecated('Too generic. Use a more specific data source instead')
   AppwriteDataSource({
-    required Databases appwriteDatabasesService,
     required AppwriteReferencesConfig configuration,
     required Realtime appwriteRealtimeService,
-  })  : _appwriteDatabasesService = appwriteDatabasesService,
-        _appwriteRealtimeService = appwriteRealtimeService,
+  })  : _appwriteRealtimeService = appwriteRealtimeService,
         _configuration = configuration;
 
   final _logger = QuizLabLoggerFactory.createLogger<AppwriteDataSource>();
 
-  final Databases _appwriteDatabasesService;
   final Realtime _appwriteRealtimeService;
   final AppwriteReferencesConfig _configuration;
 
@@ -34,23 +29,12 @@ class AppwriteDataSource {
           '.documents'
     ]);
 
-    return s.stream.map(AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage);
-  }
-
-  Future<AppwriteQuestionListModel> getAllQuestions() async {
-    _logger.debug('Retrieving all questions...');
-
-    final documentList = await _appwriteDatabasesService.listDocuments(
-      databaseId: _configuration.databaseId,
-      collectionId: _configuration.questionsCollectionId,
-    );
-
-    _logger.debug('Retrieved ${documentList.total} questions');
-
-    return AppwriteQuestionListModel(
-      total: documentList.total,
-      questions: documentList.documents.map(AppwriteQuestionModel.fromDocument).toList(),
-    );
+    return s.stream.map((m) {
+      _logger
+        ..debug('Received realtime message: $m')
+        ..debug('With payload ${m.payload}');
+      return AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage(m);
+    });
   }
 }
 

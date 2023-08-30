@@ -59,7 +59,6 @@ void _registerDataSources(DependencyInjection di) {
     )
     ..registerFactory<AppwriteDataSource>(
       (i) => AppwriteDataSource(
-        appwriteDatabasesService: i.get<Databases>(),
         configuration: i.get<AppwriteReferencesConfig>(),
         appwriteRealtimeService: i.get<Realtime>(),
       ),

@@ -143,12 +143,9 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<void> _emitQuestions() async {
     logger.debug('Fetching questions...');
 
-    final questionsListModel = await appwriteDataSource.getAllQuestions();
-
-    logger.debug('Fetched ${questionsListModel.total} questions');
-
-    final questions = questionsListModel.questions.map((e) => e.toQuestion()).toList();
-
-    _questionsStreamController.add(questions);
+    (await questionsAppwriteDataSource.getAllQuestions())
+        .inspect((value) => logger.debug('Fetched ${value.total} questions'))
+        .map((model) => model.questions.map((e) => e.toQuestion()).toList())
+        .inspect(_questionsStreamController.add);
   }
 }

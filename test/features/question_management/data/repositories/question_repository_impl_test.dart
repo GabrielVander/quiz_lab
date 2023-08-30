@@ -250,12 +250,13 @@ void main() {
           when(() => appwriteDataSourceMock.watchForQuestionCollectionUpdate()).thenAnswer((_) => stream);
           when(() => appwriteQuestionListModelMock.total).thenReturn(0);
           when(() => appwriteQuestionListModelMock.questions).thenReturn([]);
-          when(() => appwriteDataSourceMock.getAllQuestions()).thenAnswer((_) async => appwriteQuestionListModelMock);
+          when(() => questionsAppwriteDataSource.getAllQuestions())
+              .thenAnswer((_) async => Ok(appwriteQuestionListModelMock));
 
           await repository.watchAll();
 
-          verify(() => appwriteDataSourceMock.watchForQuestionCollectionUpdate());
-          verify(() => appwriteDataSourceMock.getAllQuestions()).called(amountOfUpdates + 1);
+          verify(() => appwriteDataSourceMock.watchForQuestionCollectionUpdate()).called(1);
+          verify(() => questionsAppwriteDataSource.getAllQuestions()).called(amountOfUpdates + 1);
         });
       }
     });
@@ -350,7 +351,8 @@ void main() {
           final expected = values.$2;
 
           when(() => appwriteDataSourceMock.watchForQuestionCollectionUpdate()).thenAnswer((_) => const Stream.empty());
-          when(() => appwriteDataSourceMock.getAllQuestions()).thenAnswer((_) async => appwriteQuestionListModel);
+          when(() => questionsAppwriteDataSource.getAllQuestions())
+              .thenAnswer((_) async => Ok(appwriteQuestionListModel));
 
           final result = await repository.watchAll();
 

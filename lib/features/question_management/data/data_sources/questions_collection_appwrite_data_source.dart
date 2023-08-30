@@ -4,7 +4,9 @@ import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_error_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 
@@ -14,6 +16,8 @@ abstract interface class QuestionCollectionAppwriteDataSource {
   Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(String id);
 
   Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id);
+
+  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAllQuestions();
 }
 
 class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppwriteDataSource {
@@ -83,6 +87,25 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
     );
   }
 
+  @override
+  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAllQuestions() async {
+    logger.debug('Retrieving all questions from Appwrite...');
+
+    return (await _listDocuments())
+        .map(AppwriteQuestionListModel.fromAppwriteDocumentList)
+        .mapErr(AppwriteErrorModel.fromAppwriteException);
+  }
+
+  Future<Result<DocumentList, AppwriteException>> _listDocuments() async {
+    try {
+      return Ok(
+        await databases.listDocuments(databaseId: appwriteDatabaseId, collectionId: appwriteQuestionCollectionId),
+      );
+    } on AppwriteException catch (e) {
+      return Err(e);
+    }
+  }
+
   Future<Result<Document, Exception>> _performDocumentCreation(AppwriteQuestionCreationModel creationModel) async {
     try {
       final map = creationModel.toMap();
@@ -101,18 +124,14 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
     }
   }
 
-  Future<Result<Unit, AppwriteWrapperFailure>> _performAppwriteDeletion(
-    String id,
-  ) async =>
+  Future<Result<Unit, AppwriteWrapperFailure>> _performAppwriteDeletion(String id) async =>
       appwriteWrapper.deleteDocument(
         databaseId: appwriteDatabaseId,
         collectionId: appwriteQuestionCollectionId,
         documentId: id,
       );
 
-  QuestionsAppwriteDataSourceFailure _mapAppwriteWrapperFailure(
-    AppwriteWrapperFailure failure,
-  ) {
+  QuestionsAppwriteDataSourceFailure _mapAppwriteWrapperFailure(AppwriteWrapperFailure failure) {
     logger.debug('Mapping Appwrite wrapper failure to data source failure...');
 
     return failure is AppwriteWrapperUnexpectedFailure
