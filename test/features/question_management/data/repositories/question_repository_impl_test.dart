@@ -18,6 +18,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/draft_ques
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 void main() {
@@ -274,7 +275,7 @@ void main() {
                 difficulty: '',
                 options: [],
                 categories: [],
-                profile: '',
+                profile: null,
               ),
             ],
           ),
@@ -337,6 +338,7 @@ void main() {
                 QuestionCategory(value: '@s@urTl'),
                 QuestionCategory(value: '4UPz'),
               ],
+              owner: QuestionOwner(displayName: '8c8O9R6x'),
             ),
           ]
         ),

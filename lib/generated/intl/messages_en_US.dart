@@ -38,7 +38,9 @@ class MessageLookup extends MessageLookupByLibrary {
             'other': 'Unknown',
           })}";
 
-  static String m5(failureReason) =>
+  static String m5(displayName) => "by ${displayName}";
+
+  static String m6(failureReason) =>
       "Unable to save question: ${failureReason}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -98,9 +100,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Correct"),
         "questionDisplayIncorrectAnswer":
             MessageLookupByLibrary.simpleMessage("Incorrect"),
+        "questionOwnerDisplayName": m5,
         "questionSavedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Question Saved"),
-        "questionSavingFailure": m5,
+        "questionSavingFailure": m6,
         "questionSavingFailureNoCorrectOption":
             MessageLookupByLibrary.simpleMessage(
                 "Unable to save question: No correct option"),
@@ -114,6 +117,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Unable to display question"),
         "unableToLogin":
             MessageLookupByLibrary.simpleMessage("Unable to login"),
+        "unknownQuestionOwnerDisplayName":
+            MessageLookupByLibrary.simpleMessage("Unknown"),
         "workInProgressMessage": MessageLookupByLibrary.simpleMessage(
             "We\'re still working on that!")
       };

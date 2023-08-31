@@ -1,7 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -19,15 +18,17 @@ class S {
   static S? _current;
 
   static S get current {
-    assert(
-        _current != null, 'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
+    assert(_current != null,
+        'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
     return _current!;
   }
 
   static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
 
   static Future<S> load(Locale locale) {
-    final name = (locale.countryCode?.isEmpty ?? false) ? locale.languageCode : locale.toString();
+    final name = (locale.countryCode?.isEmpty ?? false)
+        ? locale.languageCode
+        : locale.toString();
     final localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
@@ -336,7 +337,8 @@ class S {
     return Intl.message(
       'Unable to save question: $failureReason',
       name: 'questionSavingFailure',
-      desc: 'Snack bar message for when a failure occurs during question saving',
+      desc:
+          'Snack bar message for when a failure occurs during question saving',
       args: [failureReason],
     );
   }
@@ -346,7 +348,8 @@ class S {
     return Intl.message(
       'Unable to save question: No correct option',
       name: 'questionSavingFailureNoCorrectOption',
-      desc: 'Snack bar message for when attempting to save a question with no correct option',
+      desc:
+          'Snack bar message for when attempting to save a question with no correct option',
       args: [],
     );
   }
@@ -526,6 +529,26 @@ class S {
     return Intl.message(
       'Is Public',
       name: 'isQuestionPublicLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `by {displayName}`
+  String questionOwnerDisplayName(Object displayName) {
+    return Intl.message(
+      'by $displayName',
+      name: 'questionOwnerDisplayName',
+      desc: '',
+      args: [displayName],
+    );
+  }
+
+  /// `Unknown`
+  String get unknownQuestionOwnerDisplayName {
+    return Intl.message(
+      'Unknown',
+      name: 'unknownQuestionOwnerDisplayName',
       desc: '',
       args: [],
     );

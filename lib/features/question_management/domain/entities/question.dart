@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 
 class Question extends Equatable {
   const Question({
@@ -12,6 +13,7 @@ class Question extends Equatable {
     required this.difficulty,
     required this.categories,
     this.isPublic = false,
+    this.owner,
   });
 
   final QuestionId id;
@@ -21,19 +23,19 @@ class Question extends Equatable {
   final QuestionDifficulty difficulty;
   final List<QuestionCategory> categories;
   final bool isPublic;
+  final QuestionOwner? owner;
 
   @override
-  String toString() {
-    return 'Question{'
-        'id: $id, '
-        'shortDescription: $shortDescription, '
-        'description: $description, '
-        'answerOptions: $answerOptions, '
-        'difficulty: $difficulty, '
-        'categories: $categories, '
-        'isPublic: $isPublic'
-        '}';
-  }
+  String toString() => 'Question{'
+      'id: $id, '
+      'shortDescription: $shortDescription, '
+      'description: $description, '
+      'answerOptions: $answerOptions, '
+      'difficulty: $difficulty, '
+      'categories: $categories, '
+      'isPublic: $isPublic'
+      'owner: $owner'
+      '}';
 
   @override
   List<Object?> get props => [
@@ -44,6 +46,7 @@ class Question extends Equatable {
         difficulty,
         categories,
         isPublic,
+        owner,
       ];
 
   @override

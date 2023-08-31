@@ -6,6 +6,7 @@ import 'package:quiz_lab/features/question_management/data/data_sources/models/a
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 
 class AppwriteQuestionModel extends Equatable {
   const AppwriteQuestionModel({
@@ -108,6 +109,7 @@ class AppwriteQuestionModel extends Equatable {
         difficulty: _mapDifficulty(difficulty),
         answerOptions: options.map((o) => o.toAnswerOption()).toList(),
         categories: categories.map((c) => QuestionCategory(value: c)).toList(),
+        owner: profile != null ? QuestionOwner(displayName: profile!) : null,
       );
 
   QuestionDifficulty _mapDifficulty(String difficulty) {

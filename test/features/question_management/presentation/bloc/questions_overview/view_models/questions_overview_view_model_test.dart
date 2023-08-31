@@ -3,6 +3,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/answer_opt
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/view_models/questions_overview_view_model.dart';
 
 void main() {
@@ -24,6 +25,7 @@ void main() {
             description: '',
             difficulty: 'unknown',
             categories: [],
+            owner: null,
           ),
         ],
         [
@@ -36,6 +38,7 @@ void main() {
             ],
             difficulty: QuestionDifficulty.easy,
             categories: [QuestionCategory(value: r'7$P')],
+            owner: QuestionOwner(displayName: '0RZ'),
           ),
           const QuestionsOverviewItemViewModel(
             id: 'b5h',
@@ -43,6 +46,7 @@ void main() {
             description: '0kt4S3',
             difficulty: 'easy',
             categories: [r'7$P'],
+            owner: '0RZ',
           ),
         ],
         [
@@ -61,6 +65,7 @@ void main() {
               QuestionCategory(value: '#NHS1bgU'),
               QuestionCategory(value: r'C^$D%QK'),
             ],
+            owner: QuestionOwner(displayName: 'itlEvFR9'),
           ),
           const QuestionsOverviewItemViewModel(
             id: r'$U!',
@@ -72,6 +77,7 @@ void main() {
               '#NHS1bgU',
               r'C^$D%QK',
             ],
+            owner: 'itlEvFR9',
           ),
         ],
         [
@@ -89,6 +95,7 @@ void main() {
             description: '!nBfpz&6',
             difficulty: 'hard',
             categories: [],
+            owner: null,
           ),
         ],
       ]) {
@@ -115,6 +122,7 @@ void main() {
             description: '',
             categories: [],
             difficulty: 'unknown',
+            owner: null,
           ),
           const Question(
             id: QuestionId(''),
@@ -136,6 +144,7 @@ void main() {
               'Zra7R#',
             ],
             difficulty: 'easy',
+            owner: '7u8Oc9',
           ),
           const Question(
             id: QuestionId('hiTGMK'),
@@ -148,6 +157,7 @@ void main() {
               QuestionCategory(value: 'Zra7R#'),
             ],
             difficulty: QuestionDifficulty.easy,
+            owner: QuestionOwner(displayName: '7u8Oc9'),
           ),
         ],
       ]) {
