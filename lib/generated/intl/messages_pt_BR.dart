@@ -38,7 +38,9 @@ class MessageLookup extends MessageLookupByLibrary {
             'other': 'Desconhecido',
           })}";
 
-  static String m5(failureReason) =>
+  static String m5(displayName) => "por ${displayName}";
+
+  static String m6(failureReason) =>
       "Problemas ao salvar questão: ${failureReason}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -66,6 +68,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "goBackLabel": MessageLookupByLibrary.simpleMessage("Voltar"),
         "goHomeLabel": MessageLookupByLibrary.simpleMessage("Página inicial"),
         "isOptionCorrectLabel": MessageLookupByLibrary.simpleMessage("Correta"),
+        "isQuestionPublicLabel":
+            MessageLookupByLibrary.simpleMessage("Pública"),
         "logInButtonLabel": MessageLookupByLibrary.simpleMessage("Entrar"),
         "loginPageDisplayTitle":
             MessageLookupByLibrary.simpleMessage("Entre com sua conta"),
@@ -98,9 +102,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Correto"),
         "questionDisplayIncorrectAnswer":
             MessageLookupByLibrary.simpleMessage("Incorreto"),
+        "questionOwnerDisplayName": m5,
         "questionSavedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Questão salva"),
-        "questionSavingFailure": m5,
+        "questionSavingFailure": m6,
         "questionSavingFailureNoCorrectOption":
             MessageLookupByLibrary.simpleMessage(
                 "Problema ao salvar questão: Nenhumas das opções está marcada como correta"),
@@ -114,6 +119,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Não foi possível exibir a questão"),
         "unableToLogin":
             MessageLookupByLibrary.simpleMessage("Não foi possível entrar"),
+        "unknownQuestionOwnerDisplayName":
+            MessageLookupByLibrary.simpleMessage("Desconhecido"),
         "workInProgressMessage": MessageLookupByLibrary.simpleMessage(
             "Ainda Estamos Trabalhando Nisso!")
       };

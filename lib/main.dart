@@ -1,19 +1,15 @@
 import 'package:ansicolor/ansicolor.dart';
-import 'package:appwrite/appwrite.dart' as appwrite;
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quiz_lab/core/constants.dart';
-import 'package:quiz_lab/core/data/data_sources/appwrite_data_source.dart';
-import 'package:quiz_lab/core/infrastructure/core_di_setup.dart';
 import 'package:quiz_lab/core/infrastructure/router_di_setup.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_application.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
+import 'package:quiz_lab/core/utils/appwrite_references_config.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/environment.dart';
-import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
-import 'package:quiz_lab/features/auth/infrastructure/auth_di_setup.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
 
 void main() async {
@@ -40,8 +36,6 @@ Future<void> _setUpHive() async {
 
 void _setUpLogger() {
   ansiColorDisabled = false;
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen(QuizLabLoggerImpl.onListen);
 }
 
 Future<void> _setUpInjections() async {
@@ -49,9 +43,7 @@ Future<void> _setUpInjections() async {
 
   dependencyInjection
     ..addSetup(_appwriteDependencyInjectionSetup)
-    ..addSetup(coreDependencyInjectionSetup)
     ..addSetup(questionManagementDiSetup)
-    ..addSetup(authenticationDiSetup)
     ..addSetup(routerDiSetup)
     ..setUp();
 }
@@ -60,28 +52,28 @@ void _appwriteDependencyInjectionSetup(DependencyInjection di) {
   final client = _setUpAppwriteClient();
 
   di
-    ..registerInstance<appwrite.Client>((_) => client)
+    ..registerInstance<Client>((_) => client)
+    ..registerBuilder<Account>((i) => Account(i.get<Client>()))
+    ..registerBuilder<Databases>((i) => Databases(i.get<Client>()))
+    ..registerBuilder<Realtime>((i) => Realtime(i.get<Client>()))
     ..registerInstance<AppwriteReferencesConfig>(
       (_) => AppwriteReferencesConfig(
-        databaseId: Environment.getRequiredEnvironmentVariable(
-          EnvironmentVariable.appwriteDatabaseId,
-        ),
-        questionsCollectionId: Environment.getRequiredEnvironmentVariable(
-          EnvironmentVariable.appwriteQuestionCollectionId,
-        ),
+        databaseId: Environment.getRequiredEnvironmentVariable(EnvironmentVariable.appwriteDatabaseId),
+        questionCollectionId:
+            Environment.getRequiredEnvironmentVariable(EnvironmentVariable.appwriteQuestionCollectionId),
+        profileCollectionId:
+            Environment.getRequiredEnvironmentVariable(EnvironmentVariable.appwriteProfileCollectionId),
       ),
     );
 }
 
-Future<void> _miscellaneousDependencyInjectionSetup(
-  DependencyInjection di,
-) async {
+Future<void> _miscellaneousDependencyInjectionSetup(DependencyInjection di) async {
   final packageInfo = await PackageInfo.fromPlatform();
 
   di.registerInstance<PackageInfo>((_) => packageInfo);
 }
 
-appwrite.Client _setUpAppwriteClient() {
+Client _setUpAppwriteClient() {
   final environmentType = Environment.getEnvironmentType();
   final endpoint = Environment.getRequiredEnvironmentVariable(
     EnvironmentVariable.appwriteEndpoint,
@@ -90,7 +82,7 @@ appwrite.Client _setUpAppwriteClient() {
     EnvironmentVariable.appwriteProjectId,
   );
 
-  final client = appwrite.Client().setEndpoint(endpoint).setProject(projectId);
+  final client = Client().setEndpoint(endpoint).setProject(projectId);
 
   if (environmentType == EnvironmentType.development) {
     client.setSelfSigned();

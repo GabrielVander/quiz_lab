@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/default.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/subtle.dart';
@@ -10,25 +9,26 @@ import 'package:quiz_lab/core/presentation/widgets/design_system/checkbox/core.d
 import 'package:quiz_lab/core/presentation/widgets/design_system/select/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/text_area/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/text_field/core.dart';
-import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/question_creation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/question_creation/view_models/question_creation_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/view_models/question_creation_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionCreationPage extends HookWidget {
   const QuestionCreationPage({
-    required QuestionCreationCubit cubit,
+    required this.cubit,
     super.key,
-  }) : _cubit = cubit;
+  });
 
-  final QuestionCreationCubit _cubit;
+  final QuestionCreationCubit cubit;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(_cubit);
+    final state = useBlocBuilder(cubit);
 
     return SafeArea(
       child: Scaffold(
@@ -38,7 +38,7 @@ class QuestionCreationPage extends HookWidget {
             child: Builder(
               builder: (context) {
                 if (state is QuestionCreationInitial) {
-                  _cubit.load();
+                  cubit.load();
                 }
 
                 if (state is QuestionCreationGoBack) {
@@ -60,21 +60,17 @@ class QuestionCreationPage extends HookWidget {
                       _showSnackBarMessage(context, viewModel.message!);
                     });
                   }
-
-                  return _Body(
-                    viewModel: viewModel,
-                    onTitleChanged: _cubit.onTitleChanged,
-                    onDescriptionChanged: _cubit.onDescriptionChanged,
-                    onDifficultyChanged: _cubit.onDifficultyChanged,
-                    onOptionChanged: _cubit.onOptionChanged,
-                    onToggleOptionIsCorrect: _cubit.toggleOptionIsCorrect,
-                    onAddOption: _cubit.onAddOption,
-                    onCreateQuestion: _cubit.onCreateQuestion,
-                  );
                 }
 
-                return const Center(
-                  child: CircularProgressIndicator(),
+                return _Body(
+                  cubit: cubit,
+                  onTitleChanged: cubit.onTitleChanged,
+                  onDescriptionChanged: cubit.onDescriptionChanged,
+                  onDifficultyChanged: cubit.onDifficultyChanged,
+                  onOptionChanged: cubit.onOptionChanged,
+                  onToggleOptionIsCorrect: cubit.toggleOptionIsCorrect,
+                  onAddOption: cubit.onAddOption,
+                  onCreateQuestion: cubit.onCreateQuestion,
                 );
               },
             ),
@@ -115,7 +111,7 @@ class QuestionCreationPage extends HookWidget {
 
 class _Body extends StatelessWidget {
   const _Body({
-    required this.viewModel,
+    required this.cubit,
     required this.onTitleChanged,
     required this.onDescriptionChanged,
     required this.onDifficultyChanged,
@@ -125,7 +121,7 @@ class _Body extends StatelessWidget {
     required this.onCreateQuestion,
   });
 
-  final QuestionCreationViewModel viewModel;
+  final QuestionCreationCubit cubit;
   final void Function(String newValue) onTitleChanged;
   final void Function(String newValue) onDescriptionChanged;
   final void Function(String? newValue) onDifficultyChanged;
@@ -151,7 +147,7 @@ class _Body extends StatelessWidget {
           child: Builder(
             builder: (context) {
               return _Form(
-                viewModel: viewModel,
+                cubit: cubit,
                 onTitleChanged: onTitleChanged,
                 onDescriptionChanged: onDescriptionChanged,
                 onDifficultyChanged: onDifficultyChanged,
@@ -206,7 +202,7 @@ class _PageTitle extends StatelessWidget {
 
 class _Form extends StatelessWidget {
   const _Form({
-    required this.viewModel,
+    required this.cubit,
     required this.onTitleChanged,
     required this.onDescriptionChanged,
     required this.onDifficultyChanged,
@@ -216,7 +212,7 @@ class _Form extends StatelessWidget {
     required this.onCreateQuestion,
   });
 
-  final QuestionCreationViewModel viewModel;
+  final QuestionCreationCubit cubit;
   final void Function(String newValue) onTitleChanged;
   final void Function(String newValue) onDescriptionChanged;
   final void Function(String? newValue) onDifficultyChanged;
@@ -234,29 +230,90 @@ class _Form extends StatelessWidget {
           children: [
             const SizedBox(height: 15),
             _FormSection(
-              child: _TitleField(
-                viewModel: viewModel.title,
-                onChanged: onTitleChanged,
+              child: HookBuilder(
+                builder: (context) {
+                  final state = useBlocBuilder(
+                    cubit,
+                    buildWhen: (current) => current is QuestionCreationViewModelUpdated,
+                  );
+
+                  if (state is QuestionCreationViewModelUpdated) {
+                    return _TitleField(
+                      viewModel: state.viewModel.title,
+                      onChanged: onTitleChanged,
+                    );
+                  }
+
+                  return const CircularProgressIndicator();
+                },
               ),
             ),
             _FormSection(
-              child: _DescriptionField(
-                viewModel: viewModel.description,
-                onChanged: onDescriptionChanged,
+              child: HookBuilder(
+                builder: (context) {
+                  final state = useBlocBuilder(
+                    cubit,
+                    buildWhen: (current) => current is QuestionCreationViewModelUpdated,
+                  );
+
+                  if (state is QuestionCreationViewModelUpdated) {
+                    return _DescriptionField(
+                      viewModel: state.viewModel.description,
+                      onChanged: onDescriptionChanged,
+                    );
+                  }
+
+                  return const CircularProgressIndicator();
+                },
               ),
             ),
             _FormSection(
-              child: _DifficultySelector(
-                viewModel: viewModel.difficulty,
-                onChange: onDifficultyChanged,
+              child: HookBuilder(
+                builder: (context) {
+                  final state = useBlocBuilder(
+                    cubit,
+                    buildWhen: (current) => [QuestionCreationHidePublicToggle, QuestionCreationShowPublicToggle]
+                        .contains(current.runtimeType),
+                  );
+
+                  if (state is QuestionCreationHidePublicToggle) {
+                    return _DifficultySelectorDisplay(cubit: cubit);
+                  }
+
+                  return Row(
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: _DifficultySelectorDisplay(cubit: cubit),
+                      ),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: _PublicQuestionToggle(cubit: cubit),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
             _FormSection(
-              child: _Options(
-                viewModels: viewModel.options,
-                onOptionChanged: onOptionChanged,
-                onToggleOptionIsCorrect: onToggleOptionIsCorrect,
-                onAddOption: viewModel.addOptionButtonEnabled ? onAddOption : null,
+              child: HookBuilder(
+                builder: (context) {
+                  final state = useBlocBuilder(
+                    cubit,
+                    buildWhen: (current) => current is QuestionCreationViewModelUpdated,
+                  );
+
+                  if (state is QuestionCreationViewModelUpdated) {
+                    return _Options(
+                      viewModels: state.viewModel.options,
+                      onOptionChanged: onOptionChanged,
+                      onToggleOptionIsCorrect: onToggleOptionIsCorrect,
+                      onAddOption: state.viewModel.addOptionButtonEnabled ? onAddOption : null,
+                    );
+                  }
+
+                  return const CircularProgressIndicator();
+                },
               ),
             ),
             Row(
@@ -274,7 +331,7 @@ class _Form extends StatelessWidget {
                   text: S.of(context).createLabel,
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -292,6 +349,32 @@ class _FormSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: child,
+    );
+  }
+}
+
+class _PublicQuestionToggle extends StatelessWidget {
+  const _PublicQuestionToggle({required this.cubit});
+
+  final QuestionCreationCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    return HookBuilder(
+      builder: (context) {
+        final state = useBlocBuilder(
+          cubit,
+          buildWhen: (current) => current is QuestionCreationPublicStatusUpdated,
+        );
+
+        return QLCheckbox.standard(
+          state: state is QuestionCreationPublicStatusUpdated && state.isPublic
+              ? QLCheckboxState.checked
+              : QLCheckboxState.unchecked,
+          onChanged: (_) => cubit.toggleIsQuestionPublic(),
+          labelText: S.of(context).isQuestionPublicLabel,
+        );
+      },
     );
   }
 }
@@ -345,6 +428,33 @@ class _DescriptionField extends StatelessWidget {
       onChanged: onChanged,
       maxLines: 20,
       textInputAction: TextInputAction.next,
+    );
+  }
+}
+
+class _DifficultySelectorDisplay extends StatelessWidget {
+  const _DifficultySelectorDisplay({required this.cubit});
+
+  final QuestionCreationCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    return HookBuilder(
+      builder: (context) {
+        final state = useBlocBuilder(
+          cubit,
+          buildWhen: (current) => current is QuestionCreationViewModelUpdated,
+        );
+
+        if (state is QuestionCreationViewModelUpdated) {
+          return _DifficultySelector(
+            viewModel: state.viewModel.difficulty,
+            onChange: cubit.onDifficultyChanged,
+          );
+        }
+
+        return const CircularProgressIndicator();
+      },
     );
   }
 }

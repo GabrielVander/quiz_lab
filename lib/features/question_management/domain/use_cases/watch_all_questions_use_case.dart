@@ -12,20 +12,18 @@ class WatchAllQuestionsUseCase {
     required QuestionRepository questionRepository,
   }) : _questionRepository = questionRepository;
 
-  final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<WatchAllQuestionsUseCase>();
+  final QuizLabLogger _logger = QuizLabLoggerFactory.createLogger<WatchAllQuestionsUseCase>();
 
   final QuestionRepository _questionRepository;
 
-  Future<Result<Stream<List<Question>>, WatchAllQuestionsFailure>>
-      execute() async {
+  Future<Result<Stream<List<Question>>, WatchAllQuestionsFailure>> execute() async {
     _logger.info('Watching all questions...');
 
     final streamResult = await _questionRepository.watchAll();
 
     if (streamResult.isErr) {
       final failure = WatchAllQuestionsFailure.generic(
-        message: streamResult.unwrapErr().message,
+        message: streamResult.unwrapErr(),
       );
 
       _logger.error(failure.message);

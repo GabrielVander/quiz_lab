@@ -1,136 +1,168 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/data/data_sources/models/appwrite_question_model.dart';
-import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/core/wrappers/appwrite_wrapper.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_error_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
+import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 
-class QuestionCollectionAppwriteDataSource {
-  QuestionCollectionAppwriteDataSource({
-    required QuestionsAppwriteDataSourceConfig config,
-    required AppwriteWrapper appwriteWrapper,
-  })  : _config = config,
-        _appwriteWrapper = appwriteWrapper;
+abstract interface class QuestionCollectionAppwriteDataSource {
+  Future<Result<AppwriteQuestionModel, String>> createSingle(AppwriteQuestionCreationModel creationModel);
 
-  final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<QuestionCollectionAppwriteDataSource>();
+  Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(String id);
 
-  QuestionsAppwriteDataSourceConfig _config;
-  final AppwriteWrapper _appwriteWrapper;
+  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id);
 
-  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
-      createSingle(AppwriteQuestionCreationModel creationModel) async {
-    _logger.debug('Creating single question on Appwrite...');
-    final creationResult = await _performDocumentCreation(creationModel);
+  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAll();
 
-    return creationResult.when(
-      ok: (doc) {
-        _logger.debug('Question created successfully on Appwrite');
-        return Ok(AppwriteQuestionModel.fromDocument(doc));
-      },
-      err: (failure) {
-        _logger.error('Unable to create question on Appwrite');
-        return Err(_mapAppwriteWrapperFailure(failure));
-      },
-    );
+  Future<Result<Stream<AppwriteRealtimeQuestionMessageModel>, AppwriteErrorModel>> watchForUpdate();
+}
+
+class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppwriteDataSource {
+  QuestionCollectionAppwriteDataSourceImpl({
+    required this.logger,
+    required this.appwriteDatabaseId,
+    required this.appwriteQuestionCollectionId,
+    required this.appwriteWrapper,
+    required this.databases,
+    required this.realtime,
+  });
+
+  final QuizLabLogger logger;
+  String appwriteDatabaseId;
+  String appwriteQuestionCollectionId;
+  final AppwriteWrapper appwriteWrapper;
+  final Databases databases;
+  final Realtime realtime;
+
+  @override
+  Future<Result<AppwriteQuestionModel, String>> createSingle(AppwriteQuestionCreationModel creationModel) async {
+    logger.debug('Creating single question on Appwrite...');
+
+    return (await _performDocumentCreation(creationModel))
+        .inspect((_) => logger.debug('Question created successfully on Appwrite'))
+        .map(AppwriteQuestionModel.fromDocument)
+        .inspectErr((e) => logger.error(e.toString()))
+        .mapErr((_) => 'Unable to create question on Appwrite');
   }
 
-  Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(
-    String id,
-  ) async {
-    _logger.debug('Deleting single question with id: $id from Appwrite...');
+  @override
+  Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(String id) async {
+    logger.debug('Deleting single question with id: $id from Appwrite...');
 
     final deletionResult = await _performAppwriteDeletion(id);
 
     return deletionResult.when(
       ok: (_) {
-        _logger.debug('Question deleted successfully from Appwrite');
+        logger.debug('Question deleted successfully from Appwrite');
         return const Ok(unit);
       },
       err: (failure) {
-        _logger.error('Unable to delete question on Appwrite');
+        logger.error('Unable to delete question on Appwrite');
         return Err(_mapAppwriteWrapperFailure(failure));
       },
     );
   }
 
-  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>>
-      fetchSingle(String id) async {
-    _logger.debug('Fetching single question from Appwrite...');
+  @override
+  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id) async {
+    logger.debug('Fetching single question from Appwrite...');
 
-    final documentFetchingResult = await _appwriteWrapper.getDocument(
-      databaseId: _config.databaseId,
-      collectionId: _config.collectionId,
+    final documentFetchingResult = await appwriteWrapper.getDocument(
+      databaseId: appwriteDatabaseId,
+      collectionId: appwriteQuestionCollectionId,
       documentId: id,
     );
 
     return documentFetchingResult.when(
       ok: (document) {
-        _logger.debug('Question fetched from Appwrite successfully');
+        logger.debug('Question fetched from Appwrite successfully');
 
         return Ok(AppwriteQuestionModel.fromDocument(document));
       },
       err: (failure) {
-        _logger.error('Unable to fetch question from Appwrite');
+        logger.error('Unable to fetch question from Appwrite');
         return Err(_mapAppwriteWrapperFailure(failure));
       },
     );
   }
 
-  // ignore: avoid_setters_without_getters
-  set config(QuestionsAppwriteDataSourceConfig config) => _config = config;
+  @override
+  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAll() async {
+    logger.debug('Retrieving all questions from Appwrite...');
 
-  Future<Result<Document, AppwriteWrapperFailure>> _performDocumentCreation(
-    AppwriteQuestionCreationModel creationModel,
-  ) async =>
-      _appwriteWrapper.createDocument(
-        databaseId: _config.databaseId,
-        collectionId: _config.collectionId,
-        documentId: creationModel.id,
-        data: creationModel.toMap(),
-        permissions:
-            creationModel.permissions?.map((p) => p.toString()).toList(),
+    return (await _listDocuments())
+        .map(AppwriteQuestionListModel.fromAppwriteDocumentList)
+        .mapErr(AppwriteErrorModel.fromAppwriteException);
+  }
+
+  @override
+  Future<Result<Stream<AppwriteRealtimeQuestionMessageModel>, AppwriteErrorModel>> watchForUpdate() async {
+    logger.debug('Watching for question collection updates...');
+
+    final s = realtime.subscribe([
+      'databases'
+          '.$appwriteDatabaseId'
+          '.collections'
+          '.$appwriteQuestionCollectionId'
+          '.documents'
+    ]);
+
+    return Ok(s.stream.map(AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage));
+  }
+
+  Future<Result<DocumentList, AppwriteException>> _listDocuments() async {
+    try {
+      return Ok(
+        await databases.listDocuments(databaseId: appwriteDatabaseId, collectionId: appwriteQuestionCollectionId),
       );
+    } on AppwriteException catch (e) {
+      return Err(e);
+    }
+  }
 
-  Future<Result<Unit, AppwriteWrapperFailure>> _performAppwriteDeletion(
-    String id,
-  ) async =>
-      _appwriteWrapper.deleteDocument(
-        databaseId: _config.databaseId,
-        collectionId: _config.collectionId,
+  Future<Result<Document, Exception>> _performDocumentCreation(AppwriteQuestionCreationModel creationModel) async {
+    try {
+      final map = creationModel.toMap();
+
+      return Ok(
+        await databases.createDocument(
+          databaseId: appwriteDatabaseId,
+          collectionId: appwriteQuestionCollectionId,
+          documentId: ID.unique(),
+          data: map,
+          permissions: creationModel.permissions?.map((p) => p.toString()).toList(),
+        ),
+      );
+    } on Exception catch (e) {
+      return Err(e);
+    }
+  }
+
+  Future<Result<Unit, AppwriteWrapperFailure>> _performAppwriteDeletion(String id) async =>
+      appwriteWrapper.deleteDocument(
+        databaseId: appwriteDatabaseId,
+        collectionId: appwriteQuestionCollectionId,
         documentId: id,
       );
 
-  QuestionsAppwriteDataSourceFailure _mapAppwriteWrapperFailure(
-    AppwriteWrapperFailure failure,
-  ) {
-    _logger.debug('Mapping Appwrite wrapper failure to data source failure...');
+  QuestionsAppwriteDataSourceFailure _mapAppwriteWrapperFailure(AppwriteWrapperFailure failure) {
+    logger.debug('Mapping Appwrite wrapper failure to data source failure...');
 
     return failure is AppwriteWrapperUnexpectedFailure
         ? QuestionsAppwriteDataSourceUnexpectedFailure(failure.message)
-        : QuestionsAppwriteDataSourceAppwriteFailure(
-            (failure as AppwriteWrapperServiceFailure).error.toString(),
-          );
+        : QuestionsAppwriteDataSourceAppwriteFailure((failure as AppwriteWrapperServiceFailure).error.toString());
   }
-}
-
-class QuestionsAppwriteDataSourceConfig {
-  QuestionsAppwriteDataSourceConfig({
-    required this.databaseId,
-    required this.collectionId,
-  });
-
-  final String databaseId;
-  final String collectionId;
 }
 
 abstract class QuestionsAppwriteDataSourceFailure extends Equatable {}
 
-class QuestionsAppwriteDataSourceUnexpectedFailure
-    extends QuestionsAppwriteDataSourceFailure {
+class QuestionsAppwriteDataSourceUnexpectedFailure extends QuestionsAppwriteDataSourceFailure {
   QuestionsAppwriteDataSourceUnexpectedFailure(this.message);
 
   final String message;
@@ -139,8 +171,7 @@ class QuestionsAppwriteDataSourceUnexpectedFailure
   List<Object?> get props => [message];
 }
 
-class QuestionsAppwriteDataSourceAppwriteFailure
-    extends QuestionsAppwriteDataSourceFailure {
+class QuestionsAppwriteDataSourceAppwriteFailure extends QuestionsAppwriteDataSourceFailure {
   QuestionsAppwriteDataSourceAppwriteFailure(this.message);
 
   final String message;

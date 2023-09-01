@@ -26,22 +26,14 @@ void main() {
       'question repository fails',
       () {
         for (final values in [
-          [
-            QuestionRepositoryFailure.unableToWatchAll(message: ''),
-            WatchAllQuestionsFailure.generic(message: '')
-          ],
-          [
-            QuestionRepositoryFailure.unableToWatchAll(message: 'f9T'),
-            WatchAllQuestionsFailure.generic(message: 'f9T')
-          ],
+          ['', WatchAllQuestionsFailure.generic(message: '')],
+          ['f9T', WatchAllQuestionsFailure.generic(message: 'f9T')],
         ]) {
           test(values.toString(), () async {
-            final repositoryFailure = values[0] as QuestionRepositoryFailure;
+            final repositoryFailure = values[0] as String;
             final expectedFailure = values[1] as WatchAllQuestionsFailure;
 
-            mocktail
-                .when(questionRepositoryMock.watchAll)
-                .thenAnswer((_) async => Err(repositoryFailure));
+            mocktail.when(questionRepositoryMock.watchAll).thenAnswer((_) async => Err(repositoryFailure));
 
             final result = await useCase.execute();
 
@@ -68,7 +60,7 @@ void main() {
                 answerOptions: [],
                 difficulty: QuestionDifficulty.hard,
                 categories: [],
-              )
+              ),
             ]
           ],
           [
@@ -118,5 +110,4 @@ void main() {
   });
 }
 
-class _QuestionRepositoryMock extends mocktail.Mock
-    implements QuestionRepository {}
+class _QuestionRepositoryMock extends mocktail.Mock implements QuestionRepository {}

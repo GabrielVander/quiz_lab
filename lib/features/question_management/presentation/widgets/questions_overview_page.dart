@@ -4,15 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quiz_lab/core/presentation/themes/extensions.dart';
-import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
-import 'package:quiz_lab/core/presentation/widgets/ghost_pill_text_button.dart';
-import 'package:quiz_lab/core/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/managers/questions_overview/view_models/questions_overview_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/view_models/questions_overview_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/difficulty_color.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/ghost_pill_text_button.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/no_questions.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/page_subtitle.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionsOverviewPage extends HookWidget {
@@ -295,7 +295,21 @@ class _QuestionItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: _QuestionItemTitle(title: question.shortDescription),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _QuestionItemTitle(title: question.shortDescription),
+                        Text(
+                          S.of(context).questionOwnerDisplayName(
+                                question.owner ?? S.of(context).unknownQuestionOwnerDisplayName,
+                              ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
+                              ?.copyWith(color: Theme.of(context).secondaryHeaderColor),
+                        ),
+                      ],
+                    ),
                   ),
                   _QuestionItemDifficulty(
                     difficulty: question.difficulty,
@@ -320,7 +334,6 @@ class _QuestionItemTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = _getTextColor(context);
-    final fontSize = _getFontSize(context);
 
     return Wrap(
       children: [
@@ -334,11 +347,7 @@ class _QuestionItemTitle extends StatelessWidget {
         Text(
           title,
           softWrap: true,
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.bold,
-            fontSize: fontSize,
-          ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: textColor),
         ),
       ],
     );
@@ -348,24 +357,6 @@ class _QuestionItemTitle extends StatelessWidget {
     final themeColors = Theme.of(context).extension<ThemeColors>();
     final textColor = themeColors?.textColors.contrast;
     return textColor;
-  }
-
-  double _getFontSize(BuildContext context) {
-    return ScreenBreakpoints.getValueForScreenType<double>(
-      context: context,
-      map: (p) {
-        switch (p.runtimeType) {
-          case MobileBreakpoint:
-            return 20;
-          case TabletBreakpoint:
-            return 22;
-          case DesktopBreakpoint:
-            return 24;
-          default:
-            return 20;
-        }
-      },
-    );
   }
 }
 
@@ -398,7 +389,7 @@ class _QuestionItemDifficulty extends StatelessWidget {
             color: textColor,
             fontSize: fontSize,
           ),
-        )
+        ),
       ],
     );
   }

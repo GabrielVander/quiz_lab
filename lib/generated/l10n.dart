@@ -523,6 +523,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Is Public`
+  String get isQuestionPublicLabel {
+    return Intl.message(
+      'Is Public',
+      name: 'isQuestionPublicLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `by {displayName}`
+  String questionOwnerDisplayName(Object displayName) {
+    return Intl.message(
+      'by $displayName',
+      name: 'questionOwnerDisplayName',
+      desc: '',
+      args: [displayName],
+    );
+  }
+
+  /// `Unknown`
+  String get unknownQuestionOwnerDisplayName {
+    return Intl.message(
+      'Unknown',
+      name: 'unknownQuestionOwnerDisplayName',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

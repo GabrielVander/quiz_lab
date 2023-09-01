@@ -1,6 +1,6 @@
 name: 'Analyze and test code'
 env:
-  FLUTTER_VERSION: "3.10.6"
+  FLUTTER_VERSION: "3.13.0"
 'on':
   pull_request:
     branches:
@@ -9,16 +9,17 @@ env:
       - feature/*
       - release/*
 jobs:
-  tests:
+  analyze_and_test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Setup Flutter
-        uses: britannio/action-install-flutter@v1
+        uses: subosito/flutter-action@v2
         with:
-          version: $FLUTTER_VERSION
+          channel: 'stable'
+          cache: true
 
       - name: Get packages
         run: flutter pub get
@@ -29,5 +30,8 @@ jobs:
       - name: Run unit tests with coverage
         run: flutter test --coverage
 
-      - name: Check coverage percentage
-        run: flutter pub run coverde check ${{ vars.MININUM_TEST_COVERAGE }}
+      - name: Very Good Coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v2.1.0
+        with:
+          min_coverage: 80
+          exclude: '**/widgets/**/*.dart **/generated/** **/main.dart'
