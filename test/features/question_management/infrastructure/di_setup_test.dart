@@ -58,8 +58,13 @@ void main() {
         final realtime = _MockRealtime();
         final appwriteWrapper = _MockAppwriteWrapper();
 
-        when(() => dependencyInjection.get<AppwriteReferencesConfig>()).thenReturn(AppwriteReferencesConfig(
-            databaseId: databaseId, questionCollectionId: collectionId, profileCollectionId: 'S04'));
+        when(() => dependencyInjection.get<AppwriteReferencesConfig>()).thenReturn(
+          AppwriteReferencesConfig(
+            databaseId: databaseId,
+            questionCollectionId: collectionId,
+            profileCollectionId: 'S04',
+          ),
+        );
         when(() => dependencyInjection.get<Databases>()).thenReturn(databases);
         when(() => dependencyInjection.get<AppwriteWrapper>()).thenReturn(appwriteWrapper);
         when(() => dependencyInjection.get<Realtime>()).thenReturn(realtime);
@@ -93,8 +98,13 @@ void main() {
       test('with databaseId: $databaseId', () {
         final databases = _MockDatabases();
 
-        when(() => dependencyInjection.get<AppwriteReferencesConfig>()).thenReturn(AppwriteReferencesConfig(
-            databaseId: databaseId, profileCollectionId: collectionId, questionCollectionId: 'ZPth6'));
+        when(() => dependencyInjection.get<AppwriteReferencesConfig>()).thenReturn(
+          AppwriteReferencesConfig(
+            databaseId: databaseId,
+            profileCollectionId: collectionId,
+            questionCollectionId: 'ZPth6',
+          ),
+        );
         when(() => dependencyInjection.get<Databases>()).thenReturn(databases);
 
         questionManagementDiSetup(dependencyInjection);

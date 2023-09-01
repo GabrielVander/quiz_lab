@@ -1,10 +1,4 @@
-v0.4.0
+v0.4.1
 
 Ajustes
-* Melhorias visuais
-* Versão do Flutter atualizada
-* Adicionada a possibilidade de login anônimo
-* Melhorias no tratamento do formulário de login
-
-Bugs Arrumados
-* Um usuário previamente logado não será mais deslogado quando o app for fechado
+* Adicionado informações do criador da pergunta
