@@ -1,10 +1,4 @@
-v0.4.0
+v0.4.1
 
 Adjustments
-* Visual improvements
-* Updated Flutter version
-* Added ability to login anonymously
-* Improved login form handling
-
-Bug Fixes
-* A previously logged in user will no longer be logged out when the app is closed
+* Started displaying question creator information

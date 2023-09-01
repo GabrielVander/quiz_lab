@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/default.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
-import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/question_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/view_models/question_display_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionDisplayPage extends HookWidget {
@@ -65,7 +65,7 @@ class QuestionDisplayPage extends HookWidget {
         bottomSheet: [
           QuestionDisplayFailure,
           QuestionDisplayQuestionAnsweredCorrectly,
-          QuestionDisplayQuestionAnsweredIncorrectly
+          QuestionDisplayQuestionAnsweredIncorrectly,
         ].contains(state.runtimeType)
             ? null
             : _AnswerButton(
@@ -284,14 +284,11 @@ class _AnswerButton extends StatelessWidget {
         builder: (context) {
           final state = useBlocBuilder(
             cubit,
-            buildWhen: (current) =>
-                current is QuestionDisplayAnswerButtonEnabled,
+            buildWhen: (current) => current is QuestionDisplayAnswerButtonEnabled,
           );
 
           return QLPrimaryButton.text(
-            onPressed: state is QuestionDisplayAnswerButtonEnabled
-                ? cubit.onAnswer
-                : null,
+            onPressed: state is QuestionDisplayAnswerButtonEnabled ? cubit.onAnswer : null,
             text: S.of(context).answerQuestionButtonLabel,
           );
         },
@@ -418,7 +415,7 @@ class _ResultDisplay extends StatelessWidget {
             QLDefaultButton.text(
               onPressed: onGoHome,
               text: S.of(context).goHomeLabel,
-            )
+            ),
           ],
         ),
       ),

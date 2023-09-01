@@ -38,7 +38,7 @@ class HiveQuestionModel extends Equatable {
       'description': description,
       'difficulty': difficulty,
       'options': options,
-      'categories': categories
+      'categories': categories,
     };
   }
 

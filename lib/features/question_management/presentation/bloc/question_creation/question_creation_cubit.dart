@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_can_create_public_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/view_models/question_creation_view_model.dart';
@@ -229,7 +230,7 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
     final draftQuestion = DraftQuestion(
       title: _viewModel.title.value,
       description: _viewModel.description.value,
-      difficulty: _viewModel.difficulty.formField.value,
+      difficulty: _parseDifficulty(_viewModel.difficulty.formField.value),
       options: _viewModel.options
           .map(
             (e) => AnswerOption(
@@ -332,6 +333,16 @@ class QuestionCreationCubit extends Cubit<QuestionCreationState> {
         )
         .inspectErr(logger.error)
         .inspectErr((_) => emit(const QuestionCreationHidePublicToggle()));
+  }
+
+  QuestionDifficulty _parseDifficulty(String rawValue) {
+    final mappings = {
+      'easy': QuestionDifficulty.easy,
+      'medium': QuestionDifficulty.medium,
+      'hard': QuestionDifficulty.hard,
+    };
+
+    return (mappings.containsKey(rawValue)) ? mappings[rawValue]! : QuestionDifficulty.unknown;
   }
 }
 

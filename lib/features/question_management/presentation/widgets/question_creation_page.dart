@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/presentation/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/default.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/primary.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/button/subtle.dart';
@@ -10,12 +9,13 @@ import 'package:quiz_lab/core/presentation/widgets/design_system/checkbox/core.d
 import 'package:quiz_lab/core/presentation/widgets/design_system/select/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/text_area/core.dart';
 import 'package:quiz_lab/core/presentation/widgets/design_system/text_field/core.dart';
-import 'package:quiz_lab/core/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/view_models/question_creation_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/difficulty_color.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionCreationPage extends HookWidget {
@@ -289,7 +289,7 @@ class _Form extends StatelessWidget {
                       const SizedBox(width: 10),
                       Flexible(
                         child: _PublicQuestionToggle(cubit: cubit),
-                      )
+                      ),
                     ],
                   );
                 },
@@ -331,7 +331,7 @@ class _Form extends StatelessWidget {
                   text: S.of(context).createLabel,
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

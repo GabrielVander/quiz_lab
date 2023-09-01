@@ -11,7 +11,7 @@ void main() {
       const _ToStringTestCase(
         entity: QuestionCategory(value: 'indoor'),
         expectedResult: 'QuestionCategory{ value: indoor, }',
-      )
+      ),
     ]) {
       test(testCase.expectedResult, () {
         expect(testCase.entity.toString(), testCase.expectedResult);

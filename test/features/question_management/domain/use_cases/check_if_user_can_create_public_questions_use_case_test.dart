@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/core/domain/entities/current_user_session.dart';
-import 'package:quiz_lab/core/domain/repository/auth_repository.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/current_user_session.dart';
+import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_can_create_public_questions_use_case.dart';
 
 void main() {
@@ -23,8 +23,7 @@ void main() {
   });
 
   test('should log initial message', () async {
-    when(() => authRepository.getCurrentSession())
-        .thenAnswer((_) async => const Err('UYE8SH'));
+    when(() => authRepository.getCurrentSession()).thenAnswer((_) async => const Err('UYE8SH'));
 
     await useCase();
 
@@ -58,11 +57,8 @@ void main() {
       (_FakeCurrentAnonymousSession(), false),
       (null, false),
     ]) {
-      test(
-          'when receiving session: ${testCase.$1} should return ${testCase.$2}',
-          () async {
-        when(() => authRepository.getCurrentSession())
-            .thenAnswer((_) async => Ok(testCase.$1));
+      test('when receiving session: ${testCase.$1} should return ${testCase.$2}', () async {
+        when(() => authRepository.getCurrentSession()).thenAnswer((_) async => Ok(testCase.$1));
 
         final result = await useCase();
 

@@ -2,11 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 // ignore: one_member_abstracts
@@ -18,58 +15,23 @@ class CreateQuestionUseCaseImpl implements CreateQuestionUseCase {
   const CreateQuestionUseCaseImpl({
     required this.logger,
     required this.questionRepository,
-    required this.uuidGenerator,
   });
 
   final QuizLabLogger logger;
   final QuestionRepository questionRepository;
-  final ResourceUuidGenerator uuidGenerator;
 
   @override
   Future<Result<Unit, String>> call(DraftQuestion draft) async {
     logger.info('Executing...');
 
-    return _toQuestion(draft)
-        .mapErr((error) => 'Unable to create question: $error')
-        .when(
-          ok: (q) async => (await _createQuestion(q))
-              .inspect((_) => logger.info('Question created successfully')),
-          err: Err.new,
-        );
+    return (await _createQuestion(draft)).inspect((_) => logger.info('Question created successfully'));
   }
 
-  Result<Question, String> _toQuestion(DraftQuestion draft) =>
-      _parseDifficulty(draft).map(
-        (difficulty) => Question(
-          id: _generateQuestionId(),
-          shortDescription: draft.title,
-          description: draft.description,
-          difficulty: difficulty,
-          categories: draft.categories,
-          answerOptions: draft.options,
-          isPublic: draft.isPublic,
-        ),
-      );
-
-  Result<QuestionDifficulty, String> _parseDifficulty(DraftQuestion input) {
-    final mappings = {
-      'easy': QuestionDifficulty.easy,
-      'medium': QuestionDifficulty.medium,
-      'hard': QuestionDifficulty.hard,
-    };
-
-    return (mappings.containsKey(input.difficulty))
-        ? Ok(mappings[input.difficulty]!)
-        : Err("Received unparseable difficulty '${input.difficulty}'");
-  }
-
-  Future<Result<Unit, String>> _createQuestion(Question question) async =>
-      (await questionRepository.createSingle(question))
+  Future<Result<Unit, String>> _createQuestion(DraftQuestion draft) async =>
+      (await questionRepository.createSingle(draft))
           .inspectErr(logger.error)
           .mapErr((_) => 'Unable to create question')
           .map((_) => unit);
-
-  QuestionId _generateQuestionId() => QuestionId(uuidGenerator.generate());
 }
 
 @immutable
@@ -130,6 +92,5 @@ abstract class _InputParseFailure extends CreateQuestionUseCaseFailure {
 
 @immutable
 class DifficultyParseFailure extends _InputParseFailure {
-  const DifficultyParseFailure._({required super.receivedValue})
-      : super._(fieldName: 'difficulty');
+  const DifficultyParseFailure._({required super.receivedValue}) : super._(fieldName: 'difficulty');
 }

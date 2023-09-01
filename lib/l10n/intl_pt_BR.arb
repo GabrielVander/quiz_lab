@@ -46,5 +46,7 @@
   "genericErrorMessage": "Something went wrong",
   "notYetImplemented": "Ainda não implementado",
   "unableToLogin": "Não foi possível entrar",
-  "isQuestionPublicLabel": "Pública"
+  "isQuestionPublicLabel": "Pública",
+  "questionOwnerDisplayName": "por {displayName}",
+  "unknownQuestionOwnerDisplayName": "Desconhecido"
 }

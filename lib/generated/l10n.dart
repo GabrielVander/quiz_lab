@@ -533,6 +533,26 @@ class S {
       args: [],
     );
   }
+
+  /// `by {displayName}`
+  String questionOwnerDisplayName(Object displayName) {
+    return Intl.message(
+      'by $displayName',
+      name: 'questionOwnerDisplayName',
+      desc: '',
+      args: [displayName],
+    );
+  }
+
+  /// `Unknown`
+  String get unknownQuestionOwnerDisplayName {
+    return Intl.message(
+      'Unknown',
+      name: 'unknownQuestionOwnerDisplayName',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:quiz_lab/core/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/core/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
-import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
 
@@ -59,16 +59,12 @@ void main() {
 
 class _MockNetworkCubit extends Mock implements NetworkCubit {}
 
-class _MockBottomNavigationCubit extends Mock
-    implements BottomNavigationCubit {}
+class _MockBottomNavigationCubit extends Mock implements BottomNavigationCubit {}
 
-class _MockQuestionCreationCubit extends Mock
-    implements QuestionCreationCubit {}
+class _MockQuestionCreationCubit extends Mock implements QuestionCreationCubit {}
 
-class _MockQuestionsOverviewCubit extends Mock
-    implements QuestionsOverviewCubit {}
+class _MockQuestionsOverviewCubit extends Mock implements QuestionsOverviewCubit {}
 
 class _MockLoginPageCubit extends Mock implements LoginPageCubit {}
 
-class _MockCheckIfUserIsLoggedInUseCase extends Mock
-    implements CheckIfUserIsLoggedInUseCase {}
+class _MockCheckIfUserIsLoggedInUseCase extends Mock implements CheckIfUserIsLoggedInUseCase {}

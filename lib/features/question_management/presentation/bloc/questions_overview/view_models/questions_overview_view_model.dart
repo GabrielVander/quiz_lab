@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 
 @immutable
 class QuestionsOverviewViewModel {
@@ -20,8 +21,7 @@ class QuestionsOverviewViewModel {
   }) {
     return QuestionsOverviewViewModel(
       questions: questions ?? this.questions,
-      isRandomQuestionButtonEnabled:
-          isRandomQuestionButtonEnabled ?? this.isRandomQuestionButtonEnabled,
+      isRandomQuestionButtonEnabled: isRandomQuestionButtonEnabled ?? this.isRandomQuestionButtonEnabled,
     );
   }
 }
@@ -33,15 +33,16 @@ class QuestionsOverviewItemViewModel extends Equatable {
     required this.description,
     required this.categories,
     required this.difficulty,
+    required this.owner,
   });
 
-  factory QuestionsOverviewItemViewModel.fromQuestion(Question question) =>
-      QuestionsOverviewItemViewModel(
+  factory QuestionsOverviewItemViewModel.fromQuestion(Question question) => QuestionsOverviewItemViewModel(
         id: question.id.value,
         shortDescription: question.shortDescription,
         description: question.description,
         categories: question.categories.map((c) => c.value).toList(),
         difficulty: question.difficulty.name,
+        owner: question.owner?.displayName,
       );
 
   final String id;
@@ -49,21 +50,7 @@ class QuestionsOverviewItemViewModel extends Equatable {
   final String description;
   final List<String> categories;
   final String difficulty;
-
-  QuestionsOverviewItemViewModel copyWith({
-    String? id,
-    String? shortDescription,
-    String? description,
-    List<String>? categories,
-    String? difficulty,
-  }) =>
-      QuestionsOverviewItemViewModel(
-        id: id ?? this.id,
-        shortDescription: shortDescription ?? this.shortDescription,
-        description: description ?? this.description,
-        categories: categories ?? this.categories,
-        difficulty: difficulty ?? this.difficulty,
-      );
+  final String? owner;
 
   Question toQuestion() => Question(
         id: QuestionId(id),
@@ -75,6 +62,7 @@ class QuestionsOverviewItemViewModel extends Equatable {
           orElse: () => QuestionDifficulty.unknown,
         ),
         answerOptions: const [],
+        owner: owner != null ? QuestionOwner(displayName: owner!) : null,
       );
 
   @override
@@ -84,6 +72,7 @@ class QuestionsOverviewItemViewModel extends Equatable {
         description,
         categories,
         difficulty,
+        owner,
       ];
 
   @override
@@ -94,6 +83,7 @@ class QuestionsOverviewItemViewModel extends Equatable {
         'description: $description, '
         'categories: $categories, '
         'difficulty: $difficulty'
+        'owner: $owner'
         '}';
   }
 }

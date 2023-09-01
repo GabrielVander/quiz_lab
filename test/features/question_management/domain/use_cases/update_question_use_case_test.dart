@@ -67,8 +67,7 @@ void main() {
             final repoFailure = values[1] as QuestionRepositoryFailure;
             final expectedFailure = values[2] as UpdateQuestionUseCaseFailure;
 
-            when(() => questionRepositoryMock.updateSingle(question))
-                .thenAnswer((_) async => Err(repoFailure));
+            when(() => questionRepositoryMock.updateSingle(question)).thenAnswer((_) async => Err(repoFailure));
 
             final result = await useCase.execute(question);
 
@@ -108,11 +107,10 @@ void main() {
               AnswerOption(description: 'yardarm ', isCorrect: true),
               AnswerOption(description: 'fortune ', isCorrect: false),
             ],
-          )
+          ),
         ]) {
           test(input.toString(), () async {
-            when(() => questionRepositoryMock.updateSingle(input))
-                .thenAnswer((_) async => const Ok(unit));
+            when(() => questionRepositoryMock.updateSingle(input)).thenAnswer((_) async => const Ok(unit));
 
             final result = await useCase.execute(input);
 

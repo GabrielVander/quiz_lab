@@ -24,15 +24,13 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     _viewModel = _defaultViewModel;
   }
 
-  final QuizLabLogger _logger =
-      QuizLabLoggerFactory.createLogger<QuestionsOverviewCubit>();
+  final QuizLabLogger _logger = QuizLabLoggerFactory.createLogger<QuestionsOverviewCubit>();
 
   final UpdateQuestionUseCase _updateQuestionUseCase;
   final DeleteQuestionUseCase _deleteQuestionUseCase;
   final WatchAllQuestionsUseCase _watchAllQuestionsUseCase;
 
-  final QuestionsOverviewViewModel _defaultViewModel =
-      const QuestionsOverviewViewModel(
+  final QuestionsOverviewViewModel _defaultViewModel = const QuestionsOverviewViewModel(
     questions: [],
     isRandomQuestionButtonEnabled: false,
   );
@@ -59,8 +57,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
       emit(const QuestionsOverviewLoading());
       final viewModelAsQuestion = viewModel.toQuestion();
 
-      final updateResult =
-          await _updateQuestionUseCase.execute(viewModelAsQuestion);
+      final updateResult = await _updateQuestionUseCase.execute(viewModelAsQuestion);
 
       updateResult.when(
         ok: (_) {},
@@ -81,8 +78,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     _emitOpenQuestion(randomQuestionId);
   }
 
-  void onQuestionClick(QuestionsOverviewItemViewModel viewModel) =>
-      _emitOpenQuestion(viewModel.id);
+  void onQuestionClick(QuestionsOverviewItemViewModel viewModel) => _emitOpenQuestion(viewModel.id);
 
   Future<void> _watchQuestions() async {
     final watchResult = await _watchAllQuestionsUseCase.execute();
@@ -109,8 +105,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
       _deleteQuestionUseCase.execute(question.id);
 
   void _emitNewQuestions(List<Question> newQuestions) {
-    final viewModels =
-        newQuestions.map(QuestionsOverviewItemViewModel.fromQuestion).toList();
+    final viewModels = newQuestions.map(QuestionsOverviewItemViewModel.fromQuestion).toList();
 
     _viewModel = _viewModel.copyWith(
       questions: viewModels,

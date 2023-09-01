@@ -2,12 +2,13 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 
 abstract interface class QuestionRepository {
-  Future<Result<Unit, String>> createSingle(Question question);
+  Future<Result<Unit, String>> createSingle(DraftQuestion question);
 
-  Future<Result<Stream<List<Question>>, QuestionRepositoryFailure>> watchAll();
+  Future<Result<Stream<List<Question>>, String>> watchAll();
 
   Future<Result<Unit, QuestionRepositoryFailure>> updateSingle(
     Question question,
@@ -91,13 +92,10 @@ class UnableToUpdateQuestion extends QuestionRepositoryFailure {
 
 @immutable
 class QuestionRepositoryUnexpectedFailure extends QuestionRepositoryFailure {
-  const QuestionRepositoryUnexpectedFailure({required super.message})
-      : super._();
+  const QuestionRepositoryUnexpectedFailure({required super.message}) : super._();
 }
 
 @immutable
-class QuestionRepositoryExternalServiceErrorFailure
-    extends QuestionRepositoryFailure {
-  const QuestionRepositoryExternalServiceErrorFailure({required super.message})
-      : super._();
+class QuestionRepositoryExternalServiceErrorFailure extends QuestionRepositoryFailure {
+  const QuestionRepositoryExternalServiceErrorFailure({required super.message}) : super._();
 }

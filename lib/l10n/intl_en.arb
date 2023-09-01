@@ -180,5 +180,7 @@
   "genericErrorMessage": "Something went wrong",
   "notYetImplemented": "Not yet implemented",
   "unableToLogin": "Unable to login",
-  "isQuestionPublicLabel": "Is Public"
+  "isQuestionPublicLabel": "Is Public",
+  "questionOwnerDisplayName": "by {displayName}",
+  "unknownQuestionOwnerDisplayName": "Unknown"
 }

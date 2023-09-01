@@ -2,21 +2,21 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_lab/core/constants.dart';
-import 'package:quiz_lab/core/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
-import 'package:quiz_lab/core/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/core/presentation/bloc/network/network_cubit.dart';
-import 'package:quiz_lab/core/presentation/widgets/assessments_page.dart';
-import 'package:quiz_lab/core/presentation/widgets/home_page.dart';
-import 'package:quiz_lab/core/presentation/widgets/results_page.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/auth/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
-import 'package:quiz_lab/features/auth/presentation/bloc/login_page_cubit/login_page_cubit.dart';
-import 'package:quiz_lab/features/auth/presentation/widgets/login_page.dart';
+import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/assessments_page.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/home_page.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/login_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_creation_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_display_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/questions_overview_page.dart';
+import 'package:quiz_lab/features/question_management/presentation/widgets/results_page.dart';
 
 abstract interface class QuizLabRouter {
   RouteInformationProvider get routeInformationProvider;
@@ -43,10 +43,8 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
   final LoginPageCubit loginPageCubit;
   final CheckIfUserIsLoggedInUseCase checkIfUserIsLoggedInUseCase;
 
-  static final _shellNavigatorKey =
-      GlobalKey<NavigatorState>(debugLabel: 'root');
-  static final _rootNavigatorKey =
-      GlobalKey<NavigatorState>(debugLabel: 'shell');
+  static final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+  static final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
   late final GoRouter _goRouter = GoRouter(
     initialLocation: Routes.questionsOverview.path,
@@ -67,8 +65,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
           GoRoute(
             name: Routes.assessments.name,
             path: Routes.assessments.path,
-            pageBuilder: (BuildContext context, GoRouterState state) =>
-                NoTransitionPage(
+            pageBuilder: (BuildContext context, GoRouterState state) => NoTransitionPage(
               child: AssessmentsPage(
                 assessmentsOverviewCubit: AssessmentsOverviewCubit(),
               ),
@@ -78,13 +75,11 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
             parentNavigatorKey: _shellNavigatorKey,
             name: Routes.questionsOverview.name,
             path: Routes.questionsOverview.path,
-            redirect: (buildContext, routerState) async =>
-                (await checkIfUserIsLoggedInUseCase()).mapOrElse(
+            redirect: (buildContext, routerState) async => (await checkIfUserIsLoggedInUseCase()).mapOrElse(
               errMap: (_) => null,
               okMap: (isLoggedIn) => isLoggedIn ? null : Routes.login.path,
             ),
-            pageBuilder: (BuildContext context, GoRouterState state) =>
-                NoTransitionPage(
+            pageBuilder: (BuildContext context, GoRouterState state) => NoTransitionPage(
               child: QuestionsOverviewPage(
                 questionsOverviewCubit: questionsOverviewCubit,
               ),
@@ -110,18 +105,17 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
                     questionId: state.pathParameters['id'],
                   );
                 },
-              )
+              ),
             ],
           ),
           GoRoute(
             parentNavigatorKey: _shellNavigatorKey,
             name: Routes.resultsOverview.name,
             path: Routes.resultsOverview.path,
-            pageBuilder: (BuildContext context, GoRouterState state) =>
-                const NoTransitionPage(
+            pageBuilder: (BuildContext context, GoRouterState state) => const NoTransitionPage(
               child: ResultsPage(),
             ),
-          )
+          ),
         ],
       ),
       GoRoute(
@@ -138,12 +132,10 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
   );
 
   @override
-  RouteInformationParser<Object> get routeInformationParser =>
-      _goRouter.routeInformationParser;
+  RouteInformationParser<Object> get routeInformationParser => _goRouter.routeInformationParser;
 
   @override
-  RouteInformationProvider get routeInformationProvider =>
-      _goRouter.routeInformationProvider;
+  RouteInformationProvider get routeInformationProvider => _goRouter.routeInformationProvider;
 
   @override
   RouterDelegate<Object> get routerDelegate => _goRouter.routerDelegate;

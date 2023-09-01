@@ -7,15 +7,13 @@ void main() {
       const _ToStringTestCase(
         description: 'description',
         isCorrect: false,
-        expectedResult:
-            'AnswerOption{ description: description, isCorrect: false, }',
+        expectedResult: 'AnswerOption{ description: description, isCorrect: false, }',
       ),
       const _ToStringTestCase(
         description: 'medicine',
         isCorrect: true,
-        expectedResult:
-            'AnswerOption{ description: medicine, isCorrect: true, }',
-      )
+        expectedResult: 'AnswerOption{ description: medicine, isCorrect: true, }',
+      ),
     ]) {
       test(testCase.expectedResult, () {
         final entity = AnswerOption(
@@ -32,8 +30,7 @@ void main() {
     group('description', () {
       for (final value in ['profit', 'mouse']) {
         test(value, () {
-          const entity =
-              AnswerOption(description: 'description', isCorrect: false);
+          const entity = AnswerOption(description: 'description', isCorrect: false);
 
           final copy = entity.copyWith(description: value);
 
@@ -45,8 +42,7 @@ void main() {
     group('isCorrect', () {
       for (final value in [true, false]) {
         test(value, () {
-          const entity =
-              AnswerOption(description: 'description', isCorrect: false);
+          const entity = AnswerOption(description: 'description', isCorrect: false);
 
           final copy = entity.copyWith(isCorrect: value);
 

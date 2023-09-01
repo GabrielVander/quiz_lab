@@ -96,7 +96,7 @@ void main() {
                   ),
                 ],
                 answerButtonIsEnabled: false,
-              )
+              ),
             ],
             [
               const Question(
@@ -143,7 +143,7 @@ void main() {
                   ),
                 ],
                 answerButtonIsEnabled: false,
-              )
+              ),
             ],
           ]) {
             test(values.toString(), () async {
@@ -152,8 +152,7 @@ void main() {
 
               mocktail
                   .when(
-                    () =>
-                        getSingleQuestionUseCaseMock.execute(question.id.value),
+                    () => getSingleQuestionUseCaseMock.execute(question.id.value),
                   )
                   .thenAnswer((_) async => Ok(question));
 
@@ -187,7 +186,7 @@ void main() {
                             (state) => state.viewModel.options,
                             'options',
                             containsAll(expectedViewModel.options),
-                          )
+                          ),
                     ],
                   ),
                 ),
@@ -219,5 +218,4 @@ void main() {
   });
 }
 
-class _GetSingleQuestionUseCaseMock extends mocktail.Mock
-    implements GetSingleQuestionUseCase {}
+class _GetSingleQuestionUseCaseMock extends mocktail.Mock implements GetSingleQuestionUseCase {}
