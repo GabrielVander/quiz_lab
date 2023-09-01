@@ -53,7 +53,7 @@ void _registerDataSources(DependencyInjection di) {
       (i) => QuestionCollectionAppwriteDataSourceImpl(
         logger: QuizLabLoggerImpl<QuestionCollectionAppwriteDataSourceImpl>(),
         appwriteDatabaseId: i.get<AppwriteReferencesConfig>().databaseId,
-        appwriteQuestionCollectionId: i.get<AppwriteReferencesConfig>().questionsCollectionId,
+        appwriteQuestionCollectionId: i.get<AppwriteReferencesConfig>().questionCollectionId,
         appwriteWrapper: i.get<AppwriteWrapper>(),
         databases: i.get<Databases>(),
         realtime: i.get<Realtime>(),
@@ -63,7 +63,7 @@ void _registerDataSources(DependencyInjection di) {
       (i) => ProfileCollectionAppwriteDataSourceImpl(
         logger: QuizLabLoggerImpl<ProfileCollectionAppwriteDataSourceImpl>(),
         appwriteDatabaseId: i.get<AppwriteReferencesConfig>().databaseId,
-        appwriteProfileCollectionId: i.get<AppwriteReferencesConfig>().questionsCollectionId,
+        appwriteProfileCollectionId: i.get<AppwriteReferencesConfig>().profileCollectionId,
         databases: i.get<Databases>(),
       ),
     )
@@ -82,6 +82,7 @@ void _registerRepositories(DependencyInjection di) {
         logger: QuizLabLoggerImpl<QuestionRepositoryImpl>(),
         questionsAppwriteDataSource: i.get<QuestionCollectionAppwriteDataSource>(),
         authAppwriteDataSource: i.get<AuthAppwriteDataSource>(),
+        profileAppwriteDataSource: i.get<ProfileCollectionAppwriteDataSource>(),
       ),
     )
     ..registerBuilder<AuthRepository>(

@@ -59,8 +59,10 @@ void _appwriteDependencyInjectionSetup(DependencyInjection di) {
     ..registerInstance<AppwriteReferencesConfig>(
       (_) => AppwriteReferencesConfig(
         databaseId: Environment.getRequiredEnvironmentVariable(EnvironmentVariable.appwriteDatabaseId),
-        questionsCollectionId:
+        questionCollectionId:
             Environment.getRequiredEnvironmentVariable(EnvironmentVariable.appwriteQuestionCollectionId),
+        profileCollectionId:
+            Environment.getRequiredEnvironmentVariable(EnvironmentVariable.appwriteProfileCollectionId),
       ),
     );
 }

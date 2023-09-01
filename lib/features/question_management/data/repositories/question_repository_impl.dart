@@ -6,7 +6,9 @@ import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_permission_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
@@ -16,11 +18,13 @@ class QuestionRepositoryImpl implements QuestionRepository {
   QuestionRepositoryImpl({
     required this.logger,
     required this.questionsAppwriteDataSource,
+    required this.profileAppwriteDataSource,
     required this.authAppwriteDataSource,
   });
 
   final QuizLabLogger logger;
   final QuestionCollectionAppwriteDataSource questionsAppwriteDataSource;
+  final ProfileCollectionAppwriteDataSource profileAppwriteDataSource;
   final AuthAppwriteDataSource authAppwriteDataSource;
 
   final _questionsStreamController = StreamController<List<Question>>();
@@ -143,7 +147,28 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
     (await questionsAppwriteDataSource.getAll())
         .inspect((value) => logger.debug('Fetched ${value.total} questions'))
-        .map((model) => model.questions.map((e) => e.toQuestion()).toList())
-        .inspect(_questionsStreamController.add);
+        .when(ok: _mapQuestions, err: (err) => logger.error(err.toString()));
+  }
+
+  Future<List<Question>> _mapQuestions(AppwriteQuestionListModel model) async {
+    final questions = <Question>[];
+
+    for (final questionModel in model.questions) {
+      final ownerId = questionModel.profile;
+
+      if (ownerId != null) {
+        final result = await profileAppwriteDataSource.fetchSingle(ownerId);
+
+        if (result.isOk) {
+          final profileModel = result.unwrap();
+          questions.add(questionModel.copyWith(profile: profileModel.displayName).toQuestion());
+          continue;
+        }
+      }
+      questions.add(questionModel.toQuestion());
+    }
+
+    _questionsStreamController.add(questions);
+    return questions;
   }
 }

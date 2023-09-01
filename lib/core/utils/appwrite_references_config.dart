@@ -1,17 +1,20 @@
 class AppwriteReferencesConfig {
   const AppwriteReferencesConfig({
     required this.databaseId,
-    required this.questionsCollectionId,
+    required this.questionCollectionId,
+    required this.profileCollectionId,
   });
 
   final String databaseId;
-  final String questionsCollectionId;
+  final String questionCollectionId;
+  final String profileCollectionId;
 
   @override
   String toString() {
     return 'AppwriteDataSourceConfiguration{'
         'databaseId: $databaseId, '
-        'questionsCollectionId: $questionsCollectionId'
+        'questionCollectionId: $questionCollectionId'
+        'profileCollectionId: $profileCollectionId'
         '}';
   }
 }

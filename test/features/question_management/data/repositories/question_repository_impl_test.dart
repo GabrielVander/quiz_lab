@@ -5,12 +5,14 @@ import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_permission_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_profile_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/models/user_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
@@ -25,6 +27,7 @@ void main() {
   late QuizLabLogger logger;
   late AuthAppwriteDataSource authAppwriteDataSource;
   late QuestionCollectionAppwriteDataSourceImpl questionsAppwriteDataSource;
+  late ProfileCollectionAppwriteDataSource profileAppwriteDataSource;
 
   late QuestionRepository repository;
 
@@ -32,10 +35,12 @@ void main() {
     logger = _MockQuizLabLogger();
     authAppwriteDataSource = _MockAuthAppwriteDataSource();
     questionsAppwriteDataSource = _MockQuestionsAppwriteDataSource();
+    profileAppwriteDataSource = _MockProfileCollectionAppwriteDataSource();
 
     repository = QuestionRepositoryImpl(
       logger: logger,
       questionsAppwriteDataSource: questionsAppwriteDataSource,
+      profileAppwriteDataSource: profileAppwriteDataSource,
       authAppwriteDataSource: authAppwriteDataSource,
     );
   });
@@ -349,6 +354,8 @@ void main() {
 
           when(() => questionsAppwriteDataSource.watchForUpdate()).thenAnswer((_) async => const Ok(Stream.empty()));
           when(() => questionsAppwriteDataSource.getAll()).thenAnswer((_) async => Ok(appwriteQuestionListModel));
+          when(() => profileAppwriteDataSource.fetchSingle(any()))
+              .thenAnswer((_) async => const Ok(AppwriteProfileModel(id: 'hi2jW', displayName: '8c8O9R6x')));
 
           final result = await repository.watchAll();
 
@@ -441,7 +448,6 @@ void main() {
       final questionMock = _MockQuestion();
 
       when(appwriteQuestionModelMock.toQuestion).thenReturn(questionMock);
-
       when(() => questionsAppwriteDataSource.fetchSingle(any())).thenAnswer((_) async => Ok(appwriteQuestionModelMock));
 
       final result = await repository.getSingle(const QuestionId('o^Y*lN'));
@@ -505,3 +511,5 @@ class _MockAppwriteQuestionModel extends Mock implements AppwriteQuestionModel {
 class _MockQuestion extends Mock implements Question {}
 
 class _MockUserModel extends Mock implements UserModel {}
+
+class _MockProfileCollectionAppwriteDataSource extends Mock implements ProfileCollectionAppwriteDataSource {}

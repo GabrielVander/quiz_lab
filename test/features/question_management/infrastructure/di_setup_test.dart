@@ -58,8 +58,8 @@ void main() {
         final realtime = _MockRealtime();
         final appwriteWrapper = _MockAppwriteWrapper();
 
-        when(() => dependencyInjection.get<AppwriteReferencesConfig>())
-            .thenReturn(AppwriteReferencesConfig(databaseId: databaseId, questionsCollectionId: collectionId));
+        when(() => dependencyInjection.get<AppwriteReferencesConfig>()).thenReturn(AppwriteReferencesConfig(
+            databaseId: databaseId, questionCollectionId: collectionId, profileCollectionId: 'S04'));
         when(() => dependencyInjection.get<Databases>()).thenReturn(databases);
         when(() => dependencyInjection.get<AppwriteWrapper>()).thenReturn(appwriteWrapper);
         when(() => dependencyInjection.get<Realtime>()).thenReturn(realtime);
@@ -93,8 +93,8 @@ void main() {
       test('with databaseId: $databaseId', () {
         final databases = _MockDatabases();
 
-        when(() => dependencyInjection.get<AppwriteReferencesConfig>())
-            .thenReturn(AppwriteReferencesConfig(databaseId: databaseId, questionsCollectionId: collectionId));
+        when(() => dependencyInjection.get<AppwriteReferencesConfig>()).thenReturn(AppwriteReferencesConfig(
+            databaseId: databaseId, profileCollectionId: collectionId, questionCollectionId: 'ZPth6'));
         when(() => dependencyInjection.get<Databases>()).thenReturn(databases);
 
         questionManagementDiSetup(dependencyInjection);
@@ -119,10 +119,13 @@ void main() {
   test('QuestionRepository', () {
     final questionCollectionAppwriteDataSource = _MockQuestionCollectionAppwriteDataSource();
     final authAppwriteDataSource = _MockAuthAppwriteDataSource();
+    final profileCollectionAppwriteDataSource = _MockProfileCollectionAppwriteDataSource();
 
     when(() => dependencyInjection.get<QuestionCollectionAppwriteDataSource>())
         .thenReturn(questionCollectionAppwriteDataSource);
     when(() => dependencyInjection.get<AuthAppwriteDataSource>()).thenReturn(authAppwriteDataSource);
+    when(() => dependencyInjection.get<ProfileCollectionAppwriteDataSource>())
+        .thenReturn(profileCollectionAppwriteDataSource);
 
     questionManagementDiSetup(dependencyInjection);
 
@@ -141,6 +144,7 @@ void main() {
     expect(repositoryImpl.logger, QuizLabLoggerImpl<QuestionRepositoryImpl>());
     expect(repositoryImpl.questionsAppwriteDataSource, questionCollectionAppwriteDataSource);
     expect(repositoryImpl.authAppwriteDataSource, authAppwriteDataSource);
+    expect(repositoryImpl.profileAppwriteDataSource, profileCollectionAppwriteDataSource);
   });
 
   test('AuthRepository', () {
@@ -313,3 +317,5 @@ class _MockAccount extends Mock implements Account {}
 class _MockRealtime extends Mock implements Realtime {}
 
 class _MockAuthAppwriteDataSource extends Mock implements AuthAppwriteDataSource {}
+
+class _MockProfileCollectionAppwriteDataSource extends Mock implements ProfileCollectionAppwriteDataSource {}

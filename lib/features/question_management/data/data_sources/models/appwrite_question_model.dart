@@ -124,4 +124,31 @@ class AppwriteQuestionModel extends Equatable {
         return QuestionDifficulty.unknown;
     }
   }
+
+  AppwriteQuestionModel copyWith({
+    String? id,
+    String? createdAt,
+    String? updatedAt,
+    String? collectionId,
+    String? databaseId,
+    String? title,
+    String? description,
+    String? difficulty,
+    List<AppwriteQuestionOptionModel>? options,
+    List<String>? categories,
+    String? profile,
+  }) =>
+      AppwriteQuestionModel(
+        id: id ?? this.id,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        collectionId: collectionId ?? this.collectionId,
+        databaseId: databaseId ?? this.databaseId,
+        title: title ?? this.title,
+        description: description ?? this.description,
+        difficulty: difficulty ?? this.difficulty,
+        options: options ?? this.options,
+        categories: categories ?? this.categories,
+        profile: profile ?? this.profile,
+      );
 }
