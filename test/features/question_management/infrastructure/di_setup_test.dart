@@ -5,6 +5,7 @@ import 'package:quiz_lab/core/utils/appwrite_references_config.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
@@ -80,6 +81,37 @@ void main() {
         expect(dataSource.appwriteQuestionCollectionId, collectionId);
         expect(dataSource.databases, databases);
         expect(dataSource.realtime, realtime);
+      });
+    }
+  });
+
+  group('ProfileCollectionAppwriteDataSource', () {
+    for (final values in [('a5XM8DQ', 'Gsdt3Zo'), ('3C64', '8Y4dNY')]) {
+      final databaseId = values.$1;
+      final collectionId = values.$2;
+
+      test('with databaseId: $databaseId', () {
+        final databases = _MockDatabases();
+
+        when(() => dependencyInjection.get<AppwriteReferencesConfig>())
+            .thenReturn(AppwriteReferencesConfig(databaseId: databaseId, questionsCollectionId: collectionId));
+        when(() => dependencyInjection.get<Databases>()).thenReturn(databases);
+
+        questionManagementDiSetup(dependencyInjection);
+
+        final builder =
+            verify(() => dependencyInjection.registerBuilder<ProfileCollectionAppwriteDataSource>(captureAny()))
+                .captured
+                .single;
+
+        expect(builder, isA<ProfileCollectionAppwriteDataSourceImpl Function(DependencyInjection)>());
+        final dataSourceBuilder = builder as ProfileCollectionAppwriteDataSourceImpl Function(DependencyInjection);
+
+        final dataSource = dataSourceBuilder(dependencyInjection);
+
+        expect(dataSource.logger, QuizLabLoggerImpl<ProfileCollectionAppwriteDataSourceImpl>());
+        expect(dataSource.appwriteDatabaseId, databaseId);
+        expect(dataSource.databases, databases);
       });
     }
   });

@@ -4,6 +4,7 @@ import 'package:quiz_lab/core/utils/appwrite_references_config.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
@@ -56,6 +57,14 @@ void _registerDataSources(DependencyInjection di) {
         appwriteWrapper: i.get<AppwriteWrapper>(),
         databases: i.get<Databases>(),
         realtime: i.get<Realtime>(),
+      ),
+    )
+    ..registerBuilder<ProfileCollectionAppwriteDataSource>(
+      (i) => ProfileCollectionAppwriteDataSourceImpl(
+        logger: QuizLabLoggerImpl<ProfileCollectionAppwriteDataSourceImpl>(),
+        appwriteDatabaseId: i.get<AppwriteReferencesConfig>().databaseId,
+        appwriteProfileCollectionId: i.get<AppwriteReferencesConfig>().questionsCollectionId,
+        databases: i.get<Databases>(),
       ),
     )
     ..registerBuilder<AuthAppwriteDataSource>(
