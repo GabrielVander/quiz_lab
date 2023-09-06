@@ -25,8 +25,8 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_n
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/question_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering_screen/bloc/question_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/wrappers/package_info_wrapper.dart';
 
@@ -167,7 +167,10 @@ void _registerCubits(DependencyInjection di) {
       ),
     )
     ..registerBuilder<QuestionDisplayCubit>(
-      (i) => QuestionDisplayCubit(getSingleQuestionUseCase: i.get<GetSingleQuestionUseCase>()),
+      (i) => QuestionDisplayCubit(
+        logger: QuizLabLoggerImpl<QuestionDisplayCubit>(),
+        getSingleQuestionUseCase: i.get<GetSingleQuestionUseCase>(),
+      ),
     )
     ..registerFactory<NetworkCubit>((_) => NetworkCubit())
     ..registerFactory<BottomNavigationCubit>((_) => BottomNavigationCubit());

@@ -9,6 +9,7 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/login_pa
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering_screen/bloc/question_display_cubit.dart';
 
 void main() {
   late DependencyInjection dependencyInjection;
@@ -22,6 +23,7 @@ void main() {
   test('QuizLabRouter', () {
     final networkCubit = _MockNetworkCubit();
     final bottomNavigationCubit = _MockBottomNavigationCubit();
+    final questionDisplayCubit = _MockQuestionDisplayCubit();
     final questionCreationCubit = _MockQuestionCreationCubit();
     final questionsOverviewCubit = _MockQuestionsOverviewCubit();
     final loginPageCubit = _MockLoginPageCubit();
@@ -49,6 +51,7 @@ void main() {
       QuizLabRouterImpl(
         networkCubit: networkCubit,
         bottomNavigationCubit: bottomNavigationCubit,
+        questionDisplayCubit: questionDisplayCubit,
         questionCreationCubit: questionCreationCubit,
         questionsOverviewCubit: questionsOverviewCubit,
         loginPageCubit: loginPageCubit,
@@ -63,6 +66,8 @@ class _DependencyInjectionMock extends Mock implements DependencyInjection {}
 class _MockNetworkCubit extends Mock implements NetworkCubit {}
 
 class _MockBottomNavigationCubit extends Mock implements BottomNavigationCubit {}
+
+class _MockQuestionDisplayCubit extends Mock implements QuestionDisplayCubit {}
 
 class _MockQuestionCreationCubit extends Mock implements QuestionCreationCubit {}
 

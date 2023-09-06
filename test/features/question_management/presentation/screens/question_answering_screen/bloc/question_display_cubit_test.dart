@@ -2,23 +2,29 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/question_display_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/question_display/view_models/question_display_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering_screen/bloc/question_display_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering_screen/bloc/view_models/question_display_view_model.dart';
 
 void main() {
+  late QuizLabLogger logger;
   late GetSingleQuestionUseCase getSingleQuestionUseCaseMock;
 
   late QuestionDisplayCubit cubit;
 
   setUp(() {
+    logger = _MockQuizLabLogger();
     getSingleQuestionUseCaseMock = _GetSingleQuestionUseCaseMock();
+
     cubit = QuestionDisplayCubit(
+      logger: logger,
       getSingleQuestionUseCase: getSingleQuestionUseCaseMock,
     );
   });
@@ -48,7 +54,7 @@ void main() {
               cubit.stream,
               emitsInOrder(
                 [
-                  isA<QuestionDisplayFailure>(),
+                  isA<QuestionDisplayError>(),
                 ],
               ),
             ),
@@ -61,8 +67,7 @@ void main() {
 
     group('ok flow', () {
       group(
-        'should emit QuestionDisplayViewModelSubjectUpdated with expected '
-        'viewModel',
+        'should emit QuestionDisplayViewModelSubjectUpdated with expected viewModel',
         () {
           for (final values in [
             [
@@ -151,9 +156,7 @@ void main() {
               final expectedViewModel = values[1] as QuestionDisplayViewModel;
 
               mocktail
-                  .when(
-                    () => getSingleQuestionUseCaseMock.execute(question.id.value),
-                  )
+                  .when(() => getSingleQuestionUseCaseMock.execute(question.id.value))
                   .thenAnswer((_) async => Ok(question));
 
               unawaited(
@@ -161,31 +164,21 @@ void main() {
                   cubit.stream,
                   emitsInOrder(
                     [
-                      isA<QuestionDisplayViewModelUpdated>()
+                      isA<QuestionDisplayQuestionInformationUpdated>()
                           .having(
-                            (state) => state.viewModel.title,
+                            (state) => state.title,
                             'title',
                             expectedViewModel.title,
                           )
                           .having(
-                            (state) => state.viewModel.description,
+                            (state) => state.description,
                             'description',
                             expectedViewModel.description,
                           )
                           .having(
-                            (state) => state.viewModel.difficulty,
+                            (state) => state.difficulty,
                             'difficulty',
                             expectedViewModel.difficulty,
-                          )
-                          .having(
-                            (state) => state.viewModel.answerButtonIsEnabled,
-                            'answerButtonIsEnabled',
-                            expectedViewModel.answerButtonIsEnabled,
-                          )
-                          .having(
-                            (state) => state.viewModel.options,
-                            'options',
-                            containsAll(expectedViewModel.options),
                           ),
                     ],
                   ),
@@ -217,5 +210,7 @@ void main() {
     });
   });
 }
+
+class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
 
 class _GetSingleQuestionUseCaseMock extends mocktail.Mock implements GetSingleQuestionUseCase {}

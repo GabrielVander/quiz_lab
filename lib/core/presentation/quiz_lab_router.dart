@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
@@ -10,11 +9,12 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/login_pa
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering_screen/bloc/question_display_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering_screen/question_display_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/assessments_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/home_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/login_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/question_creation_page.dart';
-import 'package:quiz_lab/features/question_management/presentation/widgets/question_display_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/questions_overview_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/results_page.dart';
 
@@ -30,6 +30,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
   QuizLabRouterImpl({
     required this.networkCubit,
     required this.bottomNavigationCubit,
+    required this.questionDisplayCubit,
     required this.questionCreationCubit,
     required this.questionsOverviewCubit,
     required this.loginPageCubit,
@@ -38,6 +39,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
 
   final NetworkCubit networkCubit;
   final BottomNavigationCubit bottomNavigationCubit;
+  final QuestionDisplayCubit questionDisplayCubit;
   final QuestionCreationCubit questionCreationCubit;
   final QuestionsOverviewCubit questionsOverviewCubit;
   final LoginPageCubit loginPageCubit;
@@ -101,7 +103,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
                 path: Routes.displayQuestion.path,
                 builder: (BuildContext context, GoRouterState state) {
                   return QuestionDisplayPage(
-                    dependencyInjection: dependencyInjection,
+                    cubit: questionDisplayCubit,
                     questionId: state.pathParameters['id'],
                   );
                 },
