@@ -8,10 +8,10 @@ import 'package:quiz_lab/features/question_management/domain/entities/question_d
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:uuid/uuid.dart';
 
-part 'question_display_state.dart';
+part 'answering_screen_state.dart';
 
-class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
-  QuestionDisplayCubit({required this.logger, required this.getSingleQuestionUseCase})
+class AnsweringScreenCubit extends Cubit<AnsweringScreenState> {
+  AnsweringScreenCubit({required this.logger, required this.getSingleQuestionUseCase})
       : super(const QuestionDisplayInitial());
 
   final QuizLabLogger logger;
@@ -83,24 +83,25 @@ class QuestionDisplayCubit extends Cubit<QuestionDisplayState> {
   }
 
   Future<void> onAnswer() async {
-    await _emit(const QuestionDisplayLoading());
     await _emit(const QuestionDisplayHideAnswerButton());
 
     final correctAnswers = _answers.where((answer) => answer.isCorrect);
+    final firstCorrectAnswer = correctAnswers.first.id;
+    final firstSelectedAnswer = _answers.firstWhere((answer) => answer.isSelected).id;
 
-    if (correctAnswers.every((answer) => answer.isSelected)) {
-      await _emit(const QuestionDisplayQuestionAnsweredCorrectly());
-      return;
-    }
-
-    await _emit(const QuestionDisplayQuestionAnsweredIncorrectly());
+    await _emit(
+      QuestionDisplayShowResult(
+        correctAnswerId: firstCorrectAnswer,
+        selectedAnswerId: firstSelectedAnswer,
+      ),
+    );
   }
 
   void onGoHome() => _emit(const QuestionDisplayGoHome());
 
-  Future<void> _emit(QuestionDisplayState state) async {
+  Future<void> _emit(AnsweringScreenState state) async {
     emit(state);
-    await Future<void>.delayed(const Duration(milliseconds: 10));
+    await Future<void>.delayed(const Duration(milliseconds: 15));
   }
 
   Future<Result<Question, void>> _getQuestionForId(String? questionId) async =>

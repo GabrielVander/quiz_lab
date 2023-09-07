@@ -9,7 +9,7 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/login_pa
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering_screen/bloc/question_display_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/bloc/answering_screen_cubit.dart';
 
 void main() {
   late DependencyInjection dependencyInjection;
@@ -67,7 +67,7 @@ class _MockNetworkCubit extends Mock implements NetworkCubit {}
 
 class _MockBottomNavigationCubit extends Mock implements BottomNavigationCubit {}
 
-class _MockQuestionDisplayCubit extends Mock implements QuestionDisplayCubit {}
+class _MockQuestionDisplayCubit extends Mock implements AnsweringScreenCubit {}
 
 class _MockQuestionCreationCubit extends Mock implements QuestionCreationCubit {}
 
