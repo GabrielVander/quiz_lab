@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/widgets/design_system/button/core.dart';
+import 'package:quiz_lab/core/presentation/design_system/button/core.dart';
 
-class QLDefaultButton extends StatelessWidget {
-  const QLDefaultButton._({
+class QLWarningButton extends StatelessWidget {
+  const QLWarningButton._({
     required this.onPressed,
     required this.child,
     required this.spacing,
@@ -10,55 +10,54 @@ class QLDefaultButton extends StatelessWidget {
     super.key,
   });
 
-  factory QLDefaultButton.text({
+  factory QLWarningButton.text({
     required String text,
-    void Function()? onPressed,
     QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
+    void Function()? onPressed,
     bool loading = false,
     Key? key,
   }) =>
-      _QLDefaultButtonText(
-        text: text,
+      _QLWarningButtonText(
         onPressed: onPressed,
+        text: text,
         spacing: spacing,
         loading: loading,
         key: key,
       );
 
-  factory QLDefaultButton.icon({
+  factory QLWarningButton.icon({
     required IconData iconData,
-    void Function()? onPressed,
     QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
+    void Function()? onPressed,
     bool loading = false,
     Key? key,
   }) =>
-      _QLDefaultIconButton(
-        data: iconData,
+      _QLWarningIconButton(
         onPressed: onPressed,
+        data: iconData,
         color: _textColor,
         spacing: spacing,
         loading: loading,
         key: key,
       );
 
-  static const Color _textColor = Color(0xFF172B4D);
-  static const Color _backgroundBaseColor = Color(0xFF091E42);
-  static const double _defaultBackgroundColorOpacityPercentage = .06;
-  static const double _backgroundColorOpacityPercentageOnHover = .14;
-  static const double _backgroundColorOpacityPercentageOnPressed = .31;
+  static const Color _textColor = Colors.white;
+  static const Color _defaultBackgroundColor = Color(0xFFE2B203);
+  static const Color _backgroundColorOnHover = Color(0xFFCF9F02);
+  static const Color _backgroundColorOnPressed = Color(0xFFB38600);
+  final void Function()? onPressed;
   final Widget child;
   final QLButtonSpacing spacing;
   final bool loading;
-  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return QLButton(
       onPressed: onPressed,
-      backgroundColor: _backgroundBaseColor.withOpacity(_defaultBackgroundColorOpacityPercentage),
+      backgroundColor: _defaultBackgroundColor,
       spacing: spacing,
-      backgroundColorOnHover: _backgroundBaseColor.withOpacity(_backgroundColorOpacityPercentageOnHover),
-      backgroundColorOnPressed: _backgroundBaseColor.withOpacity(_backgroundColorOpacityPercentageOnPressed),
+      backgroundColorOnHover: _backgroundColorOnHover,
+      backgroundColorOnPressed: _backgroundColorOnPressed,
       textColor: _textColor,
       textColorOnPressed: _textColor,
       loading: loading,
@@ -68,8 +67,8 @@ class QLDefaultButton extends StatelessWidget {
   }
 }
 
-class _QLDefaultButtonText extends QLDefaultButton {
-  _QLDefaultButtonText({
+class _QLWarningButtonText extends QLWarningButton {
+  _QLWarningButtonText({
     required String text,
     required super.onPressed,
     required super.spacing,
@@ -78,8 +77,8 @@ class _QLDefaultButtonText extends QLDefaultButton {
   }) : super._(child: QLButtonText(text: text));
 }
 
-class _QLDefaultIconButton extends QLDefaultButton {
-  _QLDefaultIconButton({
+class _QLWarningIconButton extends QLWarningButton {
+  _QLWarningIconButton({
     required IconData data,
     required Color color,
     required super.onPressed,

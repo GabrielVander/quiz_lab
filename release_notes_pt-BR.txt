@@ -1,4 +1,5 @@
-v0.4.1
+v0.4.5
 
 Ajustes
-* Adicionado informações do criador da pergunta
+* Tela de resposta de questão reelaborada
+* Ajustes gerais de bugs

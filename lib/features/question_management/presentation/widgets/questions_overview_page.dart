@@ -9,7 +9,7 @@ import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/view_models/questions_overview_view_model.dart';
-import 'package:quiz_lab/features/question_management/presentation/widgets/difficulty_color.dart';
+import 'package:quiz_lab/features/question_management/presentation/shared/widgets/difficulty_color.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/ghost_pill_text_button.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/no_questions.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/page_subtitle.dart';

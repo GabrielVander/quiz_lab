@@ -34,4 +34,4 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v2.1.0
         with:
           min_coverage: 80
-          exclude: '**/widgets/**/*.dart **/generated/** **/main.dart'
+          exclude: '**/widgets/**/*.dart **/design_system/**/*.dart **/generated/** **/main.dart'
