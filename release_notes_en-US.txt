@@ -1,4 +1,5 @@
-v0.4.1
+v0.4.5
 
 Adjustments
-* Started displaying question creator information
+* Overhauled question answering screen
+* General bug fixes
