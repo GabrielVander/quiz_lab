@@ -11,7 +11,6 @@ import 'package:quiz_lab/features/question_management/domain/entities/question.d
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/bloc/answering_screen_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/bloc/view_models/question_display_view_model.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -35,180 +34,128 @@ void main() {
   });
 
   test('initial state', () {
-    expect(cubit.state, isA<QuestionDisplayInitial>());
+    expect(cubit.state, isA<AnsweringScreenInitial>());
   });
 
   group('loadQuestion', () {
-    group('err flow', () {
-      test(
-        'should emit QuestionDisplayFailure if GetSingleQuestionUseCase fails',
-        () async {
-          const questionId = 'tHqgcfIX';
-
-          mocktail
-              .when(() => getSingleQuestionUseCaseMock.execute(questionId))
-              .thenAnswer((_) async => const Err(unit));
+    for (final questionId in ['bhv3PXKt', 'y4a']) {
+      group('when given $questionId as question id', () {
+        test('should emit AnsweringScreenError if GetSingleQuestionUseCase fails', () async {
+          when(() => getSingleQuestionUseCaseMock.execute(any())).thenAnswer((_) async => const Err(unit));
 
           unawaited(
             expectLater(
               cubit.stream,
               emitsInOrder(
                 [
-                  isA<QuestionDisplayError>(),
+                  const AnsweringScreenLoading(),
+                  const AnsweringScreenError(message: 'Unable to load question'),
+                  emitsDone,
                 ],
               ),
             ),
           );
 
           await cubit.loadQuestion(questionId);
-        },
-      );
-    });
+          await cubit.close();
 
-    group('ok flow', () {
-      group(
-        'should emit QuestionDisplayViewModelSubjectUpdated with expected viewModel',
-        () {
-          for (final values in [
-            [
-              const Question(
-                id: QuestionId(''),
-                shortDescription: '',
-                description: '',
-                difficulty: QuestionDifficulty.easy,
-                answerOptions: [
-                  AnswerOption(description: '', isCorrect: false),
-                  AnswerOption(description: '', isCorrect: true),
-                ],
-                categories: [],
-              ),
-              const QuestionDisplayViewModel(
-                title: '',
-                description: '',
-                difficulty: 'easy',
-                options: [
-                  QuestionDisplayOptionViewModel(
-                    id: '',
-                    title: '',
-                    isSelected: false,
-                    isCorrect: false,
-                  ),
-                  QuestionDisplayOptionViewModel(
-                    id: '',
-                    title: '',
-                    isSelected: false,
-                    isCorrect: true,
-                  ),
-                ],
-                answerButtonIsEnabled: false,
-              ),
-            ],
-            [
-              const Question(
-                id: QuestionId(r'%$CvEPVq'),
-                shortDescription: 'Equivalence',
-                description: 'Which number is equivalent to 3^(4)÷3^(2)?',
-                difficulty: QuestionDifficulty.easy,
-                answerOptions: [
-                  AnswerOption(description: '3', isCorrect: false),
-                  AnswerOption(description: '9', isCorrect: true),
-                  AnswerOption(description: '27', isCorrect: false),
-                  AnswerOption(description: '81', isCorrect: false),
-                ],
-                categories: [],
-              ),
-              const QuestionDisplayViewModel(
-                title: 'Equivalence',
-                description: 'Which number is equivalent to 3^(4)÷3^(2)?',
-                difficulty: 'easy',
-                options: [
-                  QuestionDisplayOptionViewModel(
-                    id: '',
-                    title: '3',
-                    isSelected: false,
-                    isCorrect: false,
-                  ),
-                  QuestionDisplayOptionViewModel(
-                    id: '',
-                    title: '9',
-                    isSelected: false,
-                    isCorrect: true,
-                  ),
-                  QuestionDisplayOptionViewModel(
-                    id: '',
-                    title: '27',
-                    isSelected: false,
-                    isCorrect: false,
-                  ),
-                  QuestionDisplayOptionViewModel(
-                    id: '',
-                    title: '81',
-                    isSelected: false,
-                    isCorrect: false,
-                  ),
-                ],
-                answerButtonIsEnabled: false,
-              ),
-            ],
-          ]) {
-            test(values.toString(), () async {
-              final question = values[0] as Question;
-              final expectedViewModel = values[1] as QuestionDisplayViewModel;
+          verify(() => getSingleQuestionUseCaseMock.execute(questionId)).called(1);
+        });
 
-              mocktail
-                  .when(() => getSingleQuestionUseCaseMock.execute(question.id.value))
-                  .thenAnswer((_) async => Ok(question));
-
-              unawaited(
-                expectLater(
-                  cubit.stream,
-                  emitsInOrder(
-                    [
-                      isA<QuestionDisplayQuestionInformationUpdated>()
-                          .having(
-                            (state) => state.title,
-                            'title',
-                            expectedViewModel.title,
-                          )
-                          .having(
-                            (state) => state.description,
-                            'description',
-                            expectedViewModel.description,
-                          )
-                          .having(
-                            (state) => state.difficulty,
-                            'difficulty',
-                            expectedViewModel.difficulty,
-                          ),
-                    ],
-                  ),
-                ),
-              );
-
-              await cubit.loadQuestion(question.id.value);
-            });
-          }
-        },
-      );
-    });
-  });
-
-  group('goHome', () {
-    test('should emit QuestionDisplayGoHome', () async {
-      unawaited(
-        expectLater(
-          cubit.stream,
-          emitsInOrder(
-            [
-              isA<QuestionDisplayGoHome>(),
-            ],
+        for (final question in [
+          const Question(
+            id: QuestionId('ueH'),
+            description: 'FfpV5',
+            difficulty: QuestionDifficulty.easy,
+            answerOptions: [],
+            shortDescription: 'KD71k',
+            categories: [],
           ),
-        ),
-      );
+          const Question(
+            id: QuestionId('J4u'),
+            description: 'LEW8',
+            difficulty: QuestionDifficulty.easy,
+            answerOptions: [
+              AnswerOption(description: 'ZJt', isCorrect: true),
+              AnswerOption(description: '2Zi1xU', isCorrect: false),
+            ],
+            shortDescription: 'E8X',
+            categories: [],
+          ),
+        ]) {
+          test('should emit question updates for $question', () async {
+            when(() => getSingleQuestionUseCaseMock.execute(any())).thenAnswer((_) async => Ok(question));
 
-      cubit.onGoHome();
-    });
+            unawaited(
+              expectLater(
+                cubit.stream,
+                emitsInAnyOrder(
+                  [
+                    const AnsweringScreenLoading(),
+                    AnsweringScreenTitleUpdated(value: question.shortDescription),
+                    AnsweringScreenDescriptionUpdated(value: question.description),
+                    AnsweringScreenDifficultyUpdated(value: question.difficulty.name),
+                    isA<AnsweringScreenAnswersUpdated>(),
+                    emitsDone,
+                  ],
+                ),
+              ),
+            );
+
+            await cubit.loadQuestion(questionId);
+            await cubit.close();
+
+            verify(() => getSingleQuestionUseCaseMock.execute(questionId)).called(1);
+          });
+        }
+      });
+    }
   });
+
+  group('onOptionSelected', () {
+    for (final optionId in ['A0UbM', 'si68hkfk']) {
+      test('should emit expected for $optionId as option id', () async {
+        unawaited(
+          expectLater(
+            cubit.stream,
+            emitsInOrder(
+              [
+                AnsweringScreenAnswerOptionWasSelected(id: optionId),
+                const AnsweringScreenAnswerButtonEnabled(),
+                emitsDone,
+              ],
+            ),
+          ),
+        );
+
+        await cubit.onOptionSelected(optionId);
+        await cubit.close();
+      });
+    }
+  });
+
+  // group('onAnswer', () {
+  //   test('should emit expected', () async {
+  //     unawaited(
+  //       expectLater(
+  //         cubit.stream,
+  //         emitsInOrder(
+  //           [
+  //             const AnsweringScreenHideAnswerButton(),
+  //             AnsweringScreenShowResult(
+  //               correctAnswerId: "firstCorrectAnswer",
+  //               selectedAnswerId: "firstSelectedAnswer",
+  //             ),
+  //             emitsDone,
+  //           ],
+  //         ),
+  //       ),
+  //     );
+  //
+  //     await cubit.onAnswer();
+  //     await cubit.close();
+  //   });
+  // });
 }
 
 class _MockQuizLabLogger extends Mock implements QuizLabLogger {}

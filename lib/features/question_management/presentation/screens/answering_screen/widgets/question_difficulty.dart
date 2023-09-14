@@ -15,9 +15,9 @@ class QuestionDifficulty extends StatelessWidget {
   Widget build(BuildContext context) {
     return HookBuilder(
       builder: (context) {
-        final state = useBlocBuilder(cubit, buildWhen: (current) => current is QuestionDisplayDifficultyUpdated);
+        final state = useBlocBuilder(cubit, buildWhen: (current) => current is AnsweringScreenDifficultyUpdated);
 
-        if (state is QuestionDisplayDifficultyUpdated) {
+        if (state is AnsweringScreenDifficultyUpdated) {
           return _QuestionDifficultyDisplay(value: state.value);
         }
 

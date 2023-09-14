@@ -26,7 +26,7 @@ class AnsweringScreen extends HookWidget {
       cubit,
       (bloc, current, context) => WidgetsBinding.instance
           .addPostFrameCallback((_) => GoRouter.of(context).goNamed(Routes.questionsOverview.name)),
-      listenWhen: (current) => current is QuestionDisplayGoHome,
+      listenWhen: (current) => current is AnsweringScreenGoHome,
     );
 
     useEffect(
@@ -44,21 +44,21 @@ class AnsweringScreen extends HookWidget {
           final state = useBlocBuilder(
             cubit,
             buildWhen: (current) =>
-                [QuestionDisplayHideAnswerButton, QuestionDisplayShowAnswerButton].contains(current.runtimeType),
+                [AnsweringScreenHideAnswerButton, AnsweringScreenShowAnswerButton].contains(current.runtimeType),
           );
 
           return Scaffold(
             appBar: const AnswerAppBar(),
-            bottomSheet: state is QuestionDisplayHideAnswerButton ? null : AnswerButton(cubit: cubit),
+            bottomSheet: state is AnsweringScreenHideAnswerButton ? null : AnswerButton(cubit: cubit),
             body: HookBuilder(
               builder: (context) {
                 final state = useBlocBuilder(cubit);
 
-                if (state is QuestionDisplayLoading || state is QuestionDisplayInitial) {
+                if (state is AnsweringScreenLoading || state is AnsweringScreenInitial) {
                   return const SimpleLoading();
                 }
 
-                if (state is QuestionDisplayError) {
+                if (state is AnsweringScreenError) {
                   return Center(child: Text(S.current.genericErrorMessage));
                 }
 

@@ -13,9 +13,9 @@ class QuestionDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     return HookBuilder(
       builder: (context) {
-        final state = useBlocBuilder(cubit, buildWhen: (current) => current is QuestionDisplayDescriptionUpdated);
+        final state = useBlocBuilder(cubit, buildWhen: (current) => current is AnsweringScreenDescriptionUpdated);
 
-        if (state is QuestionDisplayDescriptionUpdated) {
+        if (state is AnsweringScreenDescriptionUpdated) {
           return _QuestionDescriptionDisplay(value: state.value);
         }
 

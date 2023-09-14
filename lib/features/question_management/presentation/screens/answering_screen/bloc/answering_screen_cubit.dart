@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/core/utils/custom_implementations/rust_result.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
@@ -12,7 +13,7 @@ part 'answering_screen_state.dart';
 
 class AnsweringScreenCubit extends Cubit<AnsweringScreenState> {
   AnsweringScreenCubit({required this.logger, required this.getSingleQuestionUseCase})
-      : super(const QuestionDisplayInitial());
+      : super(const AnsweringScreenInitial());
 
   final QuizLabLogger logger;
   final GetSingleQuestionUseCase getSingleQuestionUseCase;
@@ -22,18 +23,15 @@ class AnsweringScreenCubit extends Cubit<AnsweringScreenState> {
   Future<void> loadQuestion(String? questionId) async {
     logger.debug('Loading question...');
 
-    await _emit(const QuestionDisplayLoading());
-    final result = await _getQuestionForId(questionId);
+    await _emit(const AnsweringScreenLoading());
 
-    if (result.isErr) {
-      logger.debug('Question loaded successfully');
-      await _emit(const QuestionDisplayError());
+    (await (await _getQuestionForId(questionId)).inspectAsync((question) async => _emitQuestion(question)))
+        .mapErr((_) => 'Unable to load question')
+        .inspectErr(logger.error)
+        .inspectErr((error) async => _emit(AnsweringScreenError(message: error)));
+  }
 
-      return;
-    }
-
-    final question = result.unwrap();
-
+  Future<void> _emitQuestion(Question question) async {
     _cacheAnswers(question);
     await _signalTitleUpdate(question);
     await _signalDescriptionUpdate(question);
@@ -43,7 +41,7 @@ class AnsweringScreenCubit extends Cubit<AnsweringScreenState> {
 
   Future<void> _signalAnswersUpdate(Question question) async {
     await _emit(
-      QuestionDisplayAnswersUpdated(
+      AnsweringScreenAnswersUpdated(
         value: _answers.map((a) => QuestionAnswerInfo(id: a.id, title: a.title)).toList()..shuffle(),
       ),
     );
@@ -59,15 +57,15 @@ class AnsweringScreenCubit extends Cubit<AnsweringScreenState> {
   }
 
   Future<void> _signalDescriptionUpdate(Question question) async {
-    await _emit(QuestionDisplayDescriptionUpdated(value: question.description));
+    await _emit(AnsweringScreenDescriptionUpdated(value: question.description));
   }
 
   Future<void> _signalDifficultyUpdate(Question question) async {
-    await _emit(QuestionDisplayDifficultyUpdated(value: _mapDifficulty(question.difficulty)));
+    await _emit(AnsweringScreenDifficultyUpdated(value: _mapDifficulty(question.difficulty)));
   }
 
   Future<void> _signalTitleUpdate(Question question) async {
-    await _emit(QuestionDisplayTitleUpdated(value: question.shortDescription));
+    await _emit(AnsweringScreenTitleUpdated(value: question.shortDescription));
   }
 
   Future<void> onOptionSelected(String optionId) async {
@@ -78,26 +76,24 @@ class AnsweringScreenCubit extends Cubit<AnsweringScreenState> {
 
       return answer.copyWith(isSelected: false);
     }).toList();
-    await _emit(QuestionDisplayAnswerOptionWasSelected(id: optionId));
-    await _emit(const QuestionDisplayAnswerButtonEnabled());
+    await _emit(AnsweringScreenAnswerOptionWasSelected(id: optionId));
+    await _emit(const AnsweringScreenAnswerButtonEnabled());
   }
 
   Future<void> onAnswer() async {
-    await _emit(const QuestionDisplayHideAnswerButton());
+    await _emit(const AnsweringScreenHideAnswerButton());
 
     final correctAnswers = _answers.where((answer) => answer.isCorrect);
     final firstCorrectAnswer = correctAnswers.first.id;
     final firstSelectedAnswer = _answers.firstWhere((answer) => answer.isSelected).id;
 
     await _emit(
-      QuestionDisplayShowResult(
+      AnsweringScreenShowResult(
         correctAnswerId: firstCorrectAnswer,
         selectedAnswerId: firstSelectedAnswer,
       ),
     );
   }
-
-  void onGoHome() => _emit(const QuestionDisplayGoHome());
 
   Future<void> _emit(AnsweringScreenState state) async {
     emit(state);

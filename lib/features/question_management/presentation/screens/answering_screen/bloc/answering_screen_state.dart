@@ -4,22 +4,22 @@ abstract class AnsweringScreenState extends Equatable {
   const AnsweringScreenState();
 }
 
-class QuestionDisplayInitial extends AnsweringScreenState {
-  const QuestionDisplayInitial() : super();
+class AnsweringScreenInitial extends AnsweringScreenState {
+  const AnsweringScreenInitial() : super();
 
   @override
   List<Object?> get props => [];
 }
 
-class QuestionDisplayLoading extends AnsweringScreenState {
-  const QuestionDisplayLoading() : super();
+class AnsweringScreenLoading extends AnsweringScreenState {
+  const AnsweringScreenLoading() : super();
 
   @override
   List<Object?> get props => [];
 }
 
-class QuestionDisplayTitleUpdated extends AnsweringScreenState {
-  const QuestionDisplayTitleUpdated({
+class AnsweringScreenTitleUpdated extends AnsweringScreenState {
+  const AnsweringScreenTitleUpdated({
     required this.value,
   }) : super();
 
@@ -29,8 +29,8 @@ class QuestionDisplayTitleUpdated extends AnsweringScreenState {
   List<Object?> get props => [value];
 }
 
-class QuestionDisplayDifficultyUpdated extends AnsweringScreenState {
-  const QuestionDisplayDifficultyUpdated({
+class AnsweringScreenDifficultyUpdated extends AnsweringScreenState {
+  const AnsweringScreenDifficultyUpdated({
     required this.value,
   }) : super();
 
@@ -40,8 +40,8 @@ class QuestionDisplayDifficultyUpdated extends AnsweringScreenState {
   List<Object?> get props => [value];
 }
 
-class QuestionDisplayDescriptionUpdated extends AnsweringScreenState {
-  const QuestionDisplayDescriptionUpdated({
+class AnsweringScreenDescriptionUpdated extends AnsweringScreenState {
+  const AnsweringScreenDescriptionUpdated({
     required this.value,
   }) : super();
 
@@ -51,8 +51,8 @@ class QuestionDisplayDescriptionUpdated extends AnsweringScreenState {
   List<Object?> get props => [value];
 }
 
-class QuestionDisplayAnswersUpdated extends AnsweringScreenState {
-  const QuestionDisplayAnswersUpdated({
+class AnsweringScreenAnswersUpdated extends AnsweringScreenState {
+  const AnsweringScreenAnswersUpdated({
     required this.value,
   }) : super();
 
@@ -62,8 +62,8 @@ class QuestionDisplayAnswersUpdated extends AnsweringScreenState {
   List<Object?> get props => [value];
 }
 
-class QuestionDisplayAnswerOptionWasSelected extends AnsweringScreenState {
-  const QuestionDisplayAnswerOptionWasSelected({required this.id}) : super();
+class AnsweringScreenAnswerOptionWasSelected extends AnsweringScreenState {
+  const AnsweringScreenAnswerOptionWasSelected({required this.id}) : super();
 
   final String id;
 
@@ -71,29 +71,29 @@ class QuestionDisplayAnswerOptionWasSelected extends AnsweringScreenState {
   List<Object?> get props => [id];
 }
 
-class QuestionDisplayShowAnswerButton extends AnsweringScreenState {
-  const QuestionDisplayShowAnswerButton() : super();
+class AnsweringScreenShowAnswerButton extends AnsweringScreenState {
+  const AnsweringScreenShowAnswerButton() : super();
 
   @override
   List<Object?> get props => [];
 }
 
-class QuestionDisplayHideAnswerButton extends AnsweringScreenState {
-  const QuestionDisplayHideAnswerButton() : super();
+class AnsweringScreenHideAnswerButton extends AnsweringScreenState {
+  const AnsweringScreenHideAnswerButton() : super();
 
   @override
   List<Object?> get props => [];
 }
 
-class QuestionDisplayAnswerButtonEnabled extends AnsweringScreenState {
-  const QuestionDisplayAnswerButtonEnabled() : super();
+class AnsweringScreenAnswerButtonEnabled extends AnsweringScreenState {
+  const AnsweringScreenAnswerButtonEnabled() : super();
 
   @override
   List<Object?> get props => [];
 }
 
-class QuestionDisplayShowResult extends AnsweringScreenState {
-  const QuestionDisplayShowResult({
+class AnsweringScreenShowResult extends AnsweringScreenState {
+  const AnsweringScreenShowResult({
     required this.correctAnswerId,
     required this.selectedAnswerId,
   }) : super();
@@ -105,15 +105,17 @@ class QuestionDisplayShowResult extends AnsweringScreenState {
   List<Object?> get props => [correctAnswerId, selectedAnswerId];
 }
 
-class QuestionDisplayGoHome extends AnsweringScreenState {
-  const QuestionDisplayGoHome() : super();
+class AnsweringScreenGoHome extends AnsweringScreenState {
+  const AnsweringScreenGoHome() : super();
 
   @override
   List<Object?> get props => [];
 }
 
-class QuestionDisplayError extends AnsweringScreenState {
-  const QuestionDisplayError() : super();
+class AnsweringScreenError extends AnsweringScreenState {
+  const AnsweringScreenError({required this.message}) : super();
+
+  final String message;
 
   @override
   List<Object?> get props => [];

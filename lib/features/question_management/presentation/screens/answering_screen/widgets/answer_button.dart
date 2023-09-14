@@ -18,11 +18,11 @@ class AnswerButton extends StatelessWidget {
         builder: (context) {
           final state = useBlocBuilder(
             cubit,
-            buildWhen: (current) => [QuestionDisplayAnswerButtonEnabled].contains(current.runtimeType),
+            buildWhen: (current) => [AnsweringScreenAnswerButtonEnabled].contains(current.runtimeType),
           );
 
           return QLPrimaryButton.text(
-            onPressed: state is QuestionDisplayAnswerButtonEnabled ? cubit.onAnswer : null,
+            onPressed: state is AnsweringScreenAnswerButtonEnabled ? cubit.onAnswer : null,
             text: S.of(context).answerQuestionButtonLabel,
           );
         },

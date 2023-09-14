@@ -14,9 +14,9 @@ class QuestionOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return HookBuilder(
       builder: (context) {
-        final state = useBlocBuilder(cubit, buildWhen: (current) => current is QuestionDisplayAnswersUpdated);
+        final state = useBlocBuilder(cubit, buildWhen: (current) => current is AnsweringScreenAnswersUpdated);
 
-        if (state is QuestionDisplayAnswersUpdated) {
+        if (state is AnsweringScreenAnswersUpdated) {
           return _QuestionOptionsDisplay(cubit: cubit, options: state.value);
         }
 
@@ -64,10 +64,10 @@ class _QuestionSingleOption extends StatelessWidget {
       builder: (context) {
         final state = useBlocBuilder(
           cubit,
-          buildWhen: (current) => current is QuestionDisplayShowResult,
+          buildWhen: (current) => current is AnsweringScreenShowResult,
         );
 
-        final showResult = state is QuestionDisplayShowResult;
+        final showResult = state is AnsweringScreenShowResult;
         final showCorrectAnswer = showResult && state.correctAnswerId == info.id;
         final showIncorrectAnswer = showResult && state.selectedAnswerId == info.id;
 
@@ -115,10 +115,10 @@ class _TristateCheckbox extends HookWidget {
   Widget build(BuildContext context) {
     final state = useBlocBuilder(
       cubit,
-      buildWhen: (current) => current is QuestionDisplayShowResult,
+      buildWhen: (current) => current is AnsweringScreenShowResult,
     );
 
-    final showResult = state is QuestionDisplayShowResult;
+    final showResult = state is AnsweringScreenShowResult;
 
     if (showResult && state.correctAnswerId == optionId) {
       return const _CorrectCheckbox();
@@ -151,11 +151,11 @@ class _StandardCheckbox extends HookWidget {
   Widget build(BuildContext context) {
     final state = useBlocBuilder(
       cubit,
-      buildWhen: (current) => current is QuestionDisplayAnswerOptionWasSelected,
+      buildWhen: (current) => current is AnsweringScreenAnswerOptionWasSelected,
     );
 
     return _CustomCheckbox(
-      value: !disabled && state is QuestionDisplayAnswerOptionWasSelected && state.id == optionId,
+      value: !disabled && state is AnsweringScreenAnswerOptionWasSelected && state.id == optionId,
       onChanged: ({newValue}) => cubit.onOptionSelected(optionId),
     );
   }
