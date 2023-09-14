@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/widgets/design_system/button/core.dart';
+import 'package:quiz_lab/core/presentation/design_system/button/core.dart';
 
-class QLWarningButton extends StatelessWidget {
-  const QLWarningButton._({
+class QLDangerButton extends StatelessWidget {
+  const QLDangerButton._({
     required this.onPressed,
     required this.child,
     required this.spacing,
@@ -10,14 +10,14 @@ class QLWarningButton extends StatelessWidget {
     super.key,
   });
 
-  factory QLWarningButton.text({
+  factory QLDangerButton.text({
     required String text,
     QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
     void Function()? onPressed,
     bool loading = false,
     Key? key,
   }) =>
-      _QLWarningButtonText(
+      _QLDangerButtonText(
         onPressed: onPressed,
         text: text,
         spacing: spacing,
@@ -25,14 +25,14 @@ class QLWarningButton extends StatelessWidget {
         key: key,
       );
 
-  factory QLWarningButton.icon({
+  factory QLDangerButton.icon({
     required IconData iconData,
     QLButtonSpacing spacing = QLButtonSpacing.defaultSpacing,
     void Function()? onPressed,
     bool loading = false,
     Key? key,
   }) =>
-      _QLWarningIconButton(
+      _QLDangerIconButton(
         onPressed: onPressed,
         data: iconData,
         color: _textColor,
@@ -42,9 +42,9 @@ class QLWarningButton extends StatelessWidget {
       );
 
   static const Color _textColor = Colors.white;
-  static const Color _defaultBackgroundColor = Color(0xFFE2B203);
-  static const Color _backgroundColorOnHover = Color(0xFFCF9F02);
-  static const Color _backgroundColorOnPressed = Color(0xFFB38600);
+  static const Color _defaultBackgroundColor = Color(0xFFCA3521);
+  static const Color _backgroundColorOnHover = Color(0xFFAE2A19);
+  static const Color _backgroundColorOnPressed = Color(0xFF601E16);
   final void Function()? onPressed;
   final Widget child;
   final QLButtonSpacing spacing;
@@ -67,8 +67,8 @@ class QLWarningButton extends StatelessWidget {
   }
 }
 
-class _QLWarningButtonText extends QLWarningButton {
-  _QLWarningButtonText({
+class _QLDangerButtonText extends QLDangerButton {
+  _QLDangerButtonText({
     required String text,
     required super.onPressed,
     required super.spacing,
@@ -77,8 +77,8 @@ class _QLWarningButtonText extends QLWarningButton {
   }) : super._(child: QLButtonText(text: text));
 }
 
-class _QLWarningIconButton extends QLWarningButton {
-  _QLWarningIconButton({
+class _QLDangerIconButton extends QLDangerButton {
+  _QLDangerIconButton({
     required IconData data,
     required Color color,
     required super.onPressed,

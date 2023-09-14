@@ -21,6 +21,8 @@ class MainColors {
     required this.accent,
     required this.subtle,
     required this.error,
+    required this.success,
+    required this.warning,
   });
 
   final Color primary;
@@ -28,6 +30,8 @@ class MainColors {
   final Color accent;
   final Color subtle;
   final Color error;
+  final Color success;
+  final Color warning;
 }
 
 class TextColors {

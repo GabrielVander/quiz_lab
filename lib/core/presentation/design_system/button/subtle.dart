@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/widgets/design_system/button/core.dart';
+import 'package:quiz_lab/core/presentation/design_system/button/core.dart';
 
 class QLSubtleButton extends StatelessWidget {
   const QLSubtleButton._({

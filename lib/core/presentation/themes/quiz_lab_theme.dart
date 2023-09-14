@@ -24,6 +24,8 @@ class QuizLabTheme extends _QuizLabTheme {
             accent: Color(0xFF837AD9),
             subtle: Color(0xFFCFCFCF),
             error: Colors.red,
+            success: Colors.green,
+            warning: Colors.yellow,
           ),
           textColors: const TextColors(
             primary: Color(0xFF172B4D),
