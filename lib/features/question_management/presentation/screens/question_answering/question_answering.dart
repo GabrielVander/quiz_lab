@@ -3,21 +3,21 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/bloc/answering_screen_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/widgets/answer_app_bar.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/widgets/answer_button.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/widgets/loading.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/widgets/question_info_display.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/answer_app_bar.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/answer_button.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/loading.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/question_info_display.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
-class AnsweringScreen extends HookWidget {
-  const AnsweringScreen({
+class QuestionAnsweringScreen extends HookWidget {
+  const QuestionAnsweringScreen({
     required this.cubit,
     required this.questionId,
     super.key,
   });
 
-  final AnsweringScreenCubit cubit;
+  final QuestionAnsweringCubit cubit;
   final String? questionId;
 
   @override

@@ -9,10 +9,10 @@ import 'package:quiz_lab/features/question_management/domain/entities/question_d
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:uuid/uuid.dart';
 
-part 'answering_screen_state.dart';
+part 'question_answering_state.dart';
 
-class AnsweringScreenCubit extends Cubit<AnsweringScreenState> {
-  AnsweringScreenCubit({required this.logger, required this.getSingleQuestionUseCase})
+class QuestionAnsweringCubit extends Cubit<AnsweringScreenState> {
+  QuestionAnsweringCubit({required this.logger, required this.getSingleQuestionUseCase})
       : super(const AnsweringScreenInitial());
 
   final QuizLabLogger logger;

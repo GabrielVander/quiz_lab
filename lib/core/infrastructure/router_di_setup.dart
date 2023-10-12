@@ -6,14 +6,14 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/login_pa
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/bloc/answering_screen_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
 
 void routerDiSetup(DependencyInjection di) {
   di.registerBuilder<QuizLabRouter>(
     (i) => QuizLabRouterImpl(
       bottomNavigationCubit: i.get<BottomNavigationCubit>(),
       loginPageCubit: i.get<LoginPageCubit>(),
-      questionDisplayCubit: i.get<AnsweringScreenCubit>(),
+      questionDisplayCubit: i.get<QuestionAnsweringCubit>(),
       questionCreationCubit: i.get<QuestionCreationCubit>(),
       questionsOverviewCubit: i.get<QuestionsOverviewCubit>(),
       networkCubit: i.get<NetworkCubit>(),

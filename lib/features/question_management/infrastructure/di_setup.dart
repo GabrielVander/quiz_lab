@@ -26,7 +26,7 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/login_pa
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/bloc/answering_screen_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
 import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/wrappers/package_info_wrapper.dart';
 
@@ -166,9 +166,9 @@ void _registerCubits(DependencyInjection di) {
         watchAllQuestionsUseCase: i.get<WatchAllQuestionsUseCase>(),
       ),
     )
-    ..registerBuilder<AnsweringScreenCubit>(
-      (i) => AnsweringScreenCubit(
-        logger: QuizLabLoggerImpl<AnsweringScreenCubit>(),
+    ..registerBuilder<QuestionAnsweringCubit>(
+      (i) => QuestionAnsweringCubit(
+        logger: QuizLabLoggerImpl<QuestionAnsweringCubit>(),
         getSingleQuestionUseCase: i.get<GetSingleQuestionUseCase>(),
       ),
     )

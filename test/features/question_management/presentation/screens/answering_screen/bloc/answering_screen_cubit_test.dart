@@ -10,19 +10,19 @@ import 'package:quiz_lab/features/question_management/domain/entities/answer_opt
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/bloc/answering_screen_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
 
 void main() {
   late QuizLabLogger logger;
   late GetSingleQuestionUseCase getSingleQuestionUseCaseMock;
 
-  late AnsweringScreenCubit cubit;
+  late QuestionAnsweringCubit cubit;
 
   setUp(() {
     logger = _MockQuizLabLogger();
     getSingleQuestionUseCaseMock = _GetSingleQuestionUseCaseMock();
 
-    cubit = AnsweringScreenCubit(
+    cubit = QuestionAnsweringCubit(
       logger: logger,
       getSingleQuestionUseCase: getSingleQuestionUseCaseMock,
     );

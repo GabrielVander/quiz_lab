@@ -1,4 +1,4 @@
-part of 'answering_screen_cubit.dart';
+part of 'question_answering_cubit.dart';
 
 abstract class AnsweringScreenState extends Equatable {
   const AnsweringScreenState();

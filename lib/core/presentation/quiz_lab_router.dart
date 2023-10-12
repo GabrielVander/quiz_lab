@@ -9,8 +9,8 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/login_pa
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/answering_screen.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/bloc/answering_screen_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/question_answering.dart';
+import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/assessments_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/home_page.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/login_page.dart';
@@ -39,7 +39,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
 
   final NetworkCubit networkCubit;
   final BottomNavigationCubit bottomNavigationCubit;
-  final AnsweringScreenCubit questionDisplayCubit;
+  final QuestionAnsweringCubit questionDisplayCubit;
   final QuestionCreationCubit questionCreationCubit;
   final QuestionsOverviewCubit questionsOverviewCubit;
   final LoginPageCubit loginPageCubit;
@@ -102,7 +102,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
                 name: Routes.displayQuestion.name,
                 path: Routes.displayQuestion.path,
                 builder: (BuildContext context, GoRouterState state) {
-                  return AnsweringScreen(
+                  return QuestionAnsweringScreen(
                     cubit: questionDisplayCubit,
                     questionId: state.pathParameters['id'],
                   );
