@@ -1,6 +1,6 @@
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_dto.dart';
+import 'package:quiz_lab/common/data/dto/appwrite_question_dto.dart';
 
 class AppwriteQuestionListDto extends Equatable {
   const AppwriteQuestionListDto({
