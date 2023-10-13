@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/common/domain/entities/question.dart';
+import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
-import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
-import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
@@ -198,16 +198,11 @@ void main() {
             final questionId = values[0] as String;
             final expectedStates = values[1] as List<Matcher>;
 
-            final questionOverviewItemViewModelMock =
-                _QuestionOverviewItemViewModelMock();
+            final questionOverviewItemViewModelMock = _QuestionOverviewItemViewModelMock();
 
-            mocktail
-                .when(() => questionOverviewItemViewModelMock.id)
-                .thenReturn(questionId);
+            mocktail.when(() => questionOverviewItemViewModelMock.id).thenReturn(questionId);
 
-            mocktail
-                .when(() => deleteQuestionUseCaseMock.execute(questionId))
-                .thenAnswer((_) async {});
+            mocktail.when(() => deleteQuestionUseCaseMock.execute(questionId)).thenAnswer((_) async {});
 
             expectLater(cubit.stream, emitsInOrder(expectedStates));
 
@@ -282,16 +277,13 @@ void main() {
           ],
         ]) {
           test(values.toString(), () {
-            final updateQuestionUseCaseResult =
-                values[0] as Result<Unit, UpdateQuestionUseCaseFailure>;
+            final updateQuestionUseCaseResult = values[0] as Result<Unit, UpdateQuestionUseCaseFailure>;
             final expectedStates = values[1] as List<Matcher>;
 
             final viewModelMock = _QuestionOverviewItemViewModelMock();
             final questionMock = _QuestionMock();
 
-            mocktail
-                .when(() => viewModelMock.shortDescription)
-                .thenReturn('gImVFe1#');
+            mocktail.when(() => viewModelMock.shortDescription).thenReturn('gImVFe1#');
 
             mocktail.when(viewModelMock.toQuestion).thenReturn(questionMock);
 
@@ -311,17 +303,13 @@ void main() {
 
 class _QuestionMock extends mocktail.Mock implements Question {}
 
-class _QuestionOverviewItemViewModelMock extends mocktail.Mock
-    implements QuestionsOverviewItemViewModel {}
+class _QuestionOverviewItemViewModelMock extends mocktail.Mock implements QuestionsOverviewItemViewModel {}
 
-class _UpdateQuestionUseCaseMock extends mocktail.Mock
-    implements UpdateQuestionUseCase {}
+class _UpdateQuestionUseCaseMock extends mocktail.Mock implements UpdateQuestionUseCase {}
 
-class _DeleteQuestionUseCaseMock extends mocktail.Mock
-    implements DeleteQuestionUseCase {}
+class _DeleteQuestionUseCaseMock extends mocktail.Mock implements DeleteQuestionUseCase {}
 
-class _WatchAllQuestionsUseCaseMock extends mocktail.Mock
-    implements WatchAllQuestionsUseCase {}
+class _WatchAllQuestionsUseCaseMock extends mocktail.Mock implements WatchAllQuestionsUseCase {}
 
 class _DummyQuestion extends Question {
   _DummyQuestion()

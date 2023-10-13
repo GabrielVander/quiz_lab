@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_lab/common/ui/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
-import 'package:quiz_lab/common/ui/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/quiz_lab_icon.dart';
 
 class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
