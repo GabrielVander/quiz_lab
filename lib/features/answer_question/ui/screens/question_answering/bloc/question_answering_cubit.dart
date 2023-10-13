@@ -101,7 +101,7 @@ class QuestionAnsweringCubit extends Cubit<AnsweringScreenState> {
   }
 
   Future<Result<Question, void>> _getQuestionForId(String? questionId) async =>
-      (await getSingleQuestionUseCase.execute(questionId)).mapErr((_) {});
+      (await getSingleQuestionUseCase.call(questionId)).mapErr((_) {});
 
   String _mapDifficulty(QuestionDifficulty difficulty) {
     switch (difficulty) {

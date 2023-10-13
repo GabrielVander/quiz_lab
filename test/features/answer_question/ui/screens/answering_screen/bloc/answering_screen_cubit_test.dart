@@ -41,7 +41,7 @@ void main() {
     for (final questionId in ['bhv3PXKt', 'y4a']) {
       group('when given $questionId as question id', () {
         test('should emit AnsweringScreenError if GetSingleQuestionUseCase fails', () async {
-          when(() => getSingleQuestionUseCaseMock.execute(any())).thenAnswer((_) async => const Err(unit));
+          when(() => getSingleQuestionUseCaseMock.call(any())).thenAnswer((_) async => const Err(unit));
 
           unawaited(
             expectLater(
@@ -59,7 +59,7 @@ void main() {
           await cubit.loadQuestion(questionId);
           await cubit.close();
 
-          verify(() => getSingleQuestionUseCaseMock.execute(questionId)).called(1);
+          verify(() => getSingleQuestionUseCaseMock.call(questionId)).called(1);
         });
 
         for (final question in [
@@ -84,7 +84,7 @@ void main() {
           ),
         ]) {
           test('should emit question updates for $question', () async {
-            when(() => getSingleQuestionUseCaseMock.execute(any())).thenAnswer((_) async => Ok(question));
+            when(() => getSingleQuestionUseCaseMock.call(any())).thenAnswer((_) async => Ok(question));
 
             unawaited(
               expectLater(
@@ -105,7 +105,7 @@ void main() {
             await cubit.loadQuestion(questionId);
             await cubit.close();
 
-            verify(() => getSingleQuestionUseCaseMock.execute(questionId)).called(1);
+            verify(() => getSingleQuestionUseCaseMock.call(questionId)).called(1);
           });
         }
       });
