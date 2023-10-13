@@ -7,12 +7,13 @@ void main() {
   group('fromAppwriteModel', () {
     for (final testCase in [
       (
-        <String, dynamic>{
+        User.fromMap(<String, dynamic>{
           'status': false,
           'emailVerification': false,
           'phoneVerification': false,
           'prefs': <String, dynamic>{},
-        },
+          'labels': <String>[],
+        }),
         const UserModel(
           $id: '',
           $createdAt: '',
@@ -29,12 +30,13 @@ void main() {
         )
       ),
       (
-        <String, dynamic>{
+        User.fromMap(<String, dynamic>{
           'status': true,
           'emailVerification': true,
           'phoneVerification': true,
           'prefs': <String, dynamic>{'we': 'are', 'the': 'champions', 'my': 'friend', 'Yx3Y': 573},
-        },
+          'labels': <String>[],
+        }),
         const UserModel(
           $id: '',
           $createdAt: '',
@@ -53,7 +55,7 @@ void main() {
         )
       ),
       (
-        <String, dynamic>{
+        User.fromMap(<String, dynamic>{
           r'$id': 'T14WkXV',
           r'$createdAt': 'egSOFEe',
           r'$updatedAt': 'ZgNwe4X',
@@ -62,11 +64,12 @@ void main() {
           'passwordUpdate': 'mM4f4Q',
           'email': 'Pb7',
           'phone': 'uzpUT',
+          'labels': <String>[],
           'status': false,
           'emailVerification': false,
           'phoneVerification': false,
           'prefs': <String, dynamic>{},
-        },
+        }),
         const UserModel(
           $id: 'T14WkXV',
           $createdAt: 'egSOFEe',
@@ -83,12 +86,13 @@ void main() {
         )
       ),
     ]) {
-      test('${testCase.$1} -> ${testCase.$2}', () {
-        final appwriteModel = User.fromMap(testCase.$1);
+      final appwriteUser = testCase.$1;
+      final expected = testCase.$2;
 
-        final result = UserModel.fromAppwriteModel(appwriteModel);
+      test('$appwriteUser -> $expected', () {
+        final result = UserModel.fromAppwriteModel(appwriteUser);
 
-        expect(result, testCase.$2);
+        expect(result, expected);
       });
     }
   });
