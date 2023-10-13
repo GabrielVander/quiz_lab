@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/features/question_management/presentation/shared/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/common/ui/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class AnswerAppBar extends StatelessWidget implements PreferredSizeWidget {

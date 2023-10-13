@@ -1,12 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/common/domain/entities/question.dart';
+import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/custom_implementations/rust_result.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
+import 'package:quiz_lab/features/answer_question/domain/usecases/get_question_with_id.dart';
 import 'package:uuid/uuid.dart';
 
 part 'question_answering_state.dart';
@@ -16,7 +16,7 @@ class QuestionAnsweringCubit extends Cubit<AnsweringScreenState> {
       : super(const AnsweringScreenInitial());
 
   final QuizLabLogger logger;
-  final GetSingleQuestionUseCase getSingleQuestionUseCase;
+  final GetQuestionWithId getSingleQuestionUseCase;
 
   List<_AnswerOptionState> _answers = [];
 

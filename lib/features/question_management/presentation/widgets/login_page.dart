@@ -9,7 +9,7 @@ import 'package:quiz_lab/core/presentation/themes/extensions.dart';
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
-import 'package:quiz_lab/features/question_management/presentation/shared/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/common/ui/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 

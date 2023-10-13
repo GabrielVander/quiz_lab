@@ -2,18 +2,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/features/answer_question/domain/usecases/get_question_with_id.dart';
+import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 
 void main() {
   late QuestionRepository questionRepositoryMock;
-  late GetSingleQuestionUseCase useCase;
+  late GetQuestionWithId useCase;
 
   setUp(() {
     questionRepositoryMock = _QuestionRepositoryMock();
-    useCase =
-        GetSingleQuestionUseCase(questionRepository: questionRepositoryMock);
+    useCase = GetQuestionWithId(questionRepository: questionRepositoryMock);
 
     mocktail.registerFallbackValue(_QuestionIdMock());
   });
@@ -73,8 +72,7 @@ void main() {
   });
 }
 
-class _QuestionRepositoryMock extends mocktail.Mock
-    implements QuestionRepository {}
+class _QuestionRepositoryMock extends mocktail.Mock implements QuestionRepository {}
 
 class _QuestionMock extends mocktail.Mock implements Question {}
 

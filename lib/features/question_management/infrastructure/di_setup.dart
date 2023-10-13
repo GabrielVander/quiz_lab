@@ -16,7 +16,7 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/fetch_application_version_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
+import 'package:quiz_lab/features/answer_question/domain/usecases/get_question_with_id.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
@@ -27,7 +27,7 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/login_pa
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
 import 'package:quiz_lab/features/question_management/wrappers/package_info_wrapper.dart';
 
 void questionManagementDiSetup(DependencyInjection di) {
@@ -110,8 +110,8 @@ void _registerUseCases(DependencyInjection di) {
     ..registerBuilder<DeleteQuestionUseCase>(
       (i) => DeleteQuestionUseCase(questionRepository: i.get<QuestionRepository>()),
     )
-    ..registerBuilder<GetSingleQuestionUseCase>(
-      (i) => GetSingleQuestionUseCase(questionRepository: i.get<QuestionRepository>()),
+    ..registerBuilder<GetQuestionWithId>(
+      (i) => GetQuestionWithId(questionRepository: i.get<QuestionRepository>()),
     )
     ..registerBuilder<CheckIfUserCanCreatePublicQuestionsUseCase>(
       (i) => CheckIfUserCanCreatePublicQuestionsUseCaseImpl(
@@ -169,7 +169,7 @@ void _registerCubits(DependencyInjection di) {
     ..registerBuilder<QuestionAnsweringCubit>(
       (i) => QuestionAnsweringCubit(
         logger: QuizLabLoggerImpl<QuestionAnsweringCubit>(),
-        getSingleQuestionUseCase: i.get<GetSingleQuestionUseCase>(),
+        getSingleQuestionUseCase: i.get<GetQuestionWithId>(),
       ),
     )
     ..registerFactory<NetworkCubit>((_) => NetworkCubit())

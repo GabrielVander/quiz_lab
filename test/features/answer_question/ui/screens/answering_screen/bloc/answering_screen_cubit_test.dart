@@ -4,17 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/common/domain/entities/question.dart';
+import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/answer_question/domain/usecases/get_question_with_id.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
 
 void main() {
   late QuizLabLogger logger;
-  late GetSingleQuestionUseCase getSingleQuestionUseCaseMock;
+  late GetQuestionWithId getSingleQuestionUseCaseMock;
 
   late QuestionAnsweringCubit cubit;
 
@@ -160,4 +160,4 @@ void main() {
 
 class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
 
-class _GetSingleQuestionUseCaseMock extends mocktail.Mock implements GetSingleQuestionUseCase {}
+class _GetSingleQuestionUseCaseMock extends mocktail.Mock implements GetQuestionWithId {}

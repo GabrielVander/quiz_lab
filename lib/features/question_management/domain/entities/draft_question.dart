@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
+import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 
 class DraftQuestion extends Equatable {
   const DraftQuestion({

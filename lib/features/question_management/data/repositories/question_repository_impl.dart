@@ -11,7 +11,7 @@ import 'package:quiz_lab/features/question_management/data/data_sources/dto/appw
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_option_dto.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {

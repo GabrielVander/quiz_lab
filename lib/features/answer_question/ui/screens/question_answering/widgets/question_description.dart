@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/loading.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/widgets/loading.dart';
 
 class QuestionDescription extends StatelessWidget {
   const QuestionDescription({required this.cubit, super.key});

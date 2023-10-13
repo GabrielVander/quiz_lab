@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/question_description.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/question_difficulty.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/question_options.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/question_title.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/widgets/question_description.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/widgets/question_difficulty.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/widgets/question_options.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/widgets/question_title.dart';
 
 class QuestionInfoDisplay extends StatelessWidget {
   const QuestionInfoDisplay({required this.cubit, super.key});

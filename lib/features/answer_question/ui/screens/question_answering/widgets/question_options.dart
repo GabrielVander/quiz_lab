@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/loading.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/widgets/loading.dart';
 
 class QuestionOptions extends StatelessWidget {
   const QuestionOptions({required this.cubit, super.key});

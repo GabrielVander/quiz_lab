@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/bloc/question_answering_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/question_answering/widgets/loading.dart';
-import 'package:quiz_lab/features/question_management/presentation/shared/widgets/difficulty_color.dart';
+import 'package:quiz_lab/common/ui/widgets/difficulty_color.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
+import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/widgets/loading.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuestionDifficulty extends StatelessWidget {
