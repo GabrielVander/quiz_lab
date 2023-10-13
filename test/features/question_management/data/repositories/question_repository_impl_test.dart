@@ -6,6 +6,8 @@ import 'package:quiz_lab/common/data/dto/appwrite_question_dto.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_question_list_dto.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_realtime_message_dto.dart';
 import 'package:quiz_lab/common/data/dto/create_appwrite_question_dto.dart';
+import 'package:quiz_lab/common/domain/entities/question.dart';
+import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
@@ -17,9 +19,7 @@ import 'package:quiz_lab/features/question_management/data/data_sources/profile_
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
-import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
-import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
@@ -224,7 +224,7 @@ void main() {
               }),
             );
             when(() => questionsAppwriteDataSource.createSingle(expected))
-                .thenAnswer((_) async => Ok(_MockAppwriteQuestionModel()));
+                .thenAnswer((_) async => Ok(_MockAppwriteQuestionDto()));
 
             final result = await repository.createSingle(question);
 
@@ -426,69 +426,6 @@ void main() {
     });
   });
 
-  group('getSingle()', () {
-    group('should call questions Appwrite data source correctly', () {
-      for (final questionId in [
-        '',
-        'P6m74A',
-      ]) {
-        test(questionId, () {
-          when(() => questionsAppwriteDataSource.fetchSingle(any()))
-              .thenAnswer((_) async => Err(QuestionsAppwriteDataSourceUnexpectedFailure('X90^#SU')));
-
-          repository.getSingle(QuestionId(questionId));
-
-          verify(() => questionsAppwriteDataSource.fetchSingle(questionId));
-        });
-      }
-    });
-
-    test('should map question appwrite model to question entity and return it', () async {
-      final appwriteQuestionModelMock = _MockAppwriteQuestionModel();
-      final questionMock = _MockQuestion();
-
-      when(appwriteQuestionModelMock.toQuestion).thenReturn(questionMock);
-      when(() => questionsAppwriteDataSource.fetchSingle(any())).thenAnswer((_) async => Ok(appwriteQuestionModelMock));
-
-      final result = await repository.getSingle(const QuestionId('o^Y*lN'));
-
-      expect(result, Ok<Question, QuestionRepositoryFailure>(questionMock));
-    });
-
-    group('should return expected failure when questions Appwrite data source fails', () {
-      for (final values in [
-        [
-          QuestionsAppwriteDataSourceUnexpectedFailure(''),
-          const QuestionRepositoryUnexpectedFailure(message: ''),
-        ],
-        [
-          QuestionsAppwriteDataSourceUnexpectedFailure('RdR'),
-          const QuestionRepositoryUnexpectedFailure(message: 'RdR'),
-        ],
-        [
-          QuestionsAppwriteDataSourceAppwriteFailure(''),
-          const QuestionRepositoryExternalServiceErrorFailure(message: ''),
-        ],
-        [
-          QuestionsAppwriteDataSourceAppwriteFailure('VD4'),
-          const QuestionRepositoryExternalServiceErrorFailure(message: 'VD4'),
-        ],
-      ]) {
-        test(values.toString(), () async {
-          final dataSourceFailure = values[0] as QuestionsAppwriteDataSourceFailure;
-          final expected = values[1] as QuestionRepositoryFailure;
-
-          when(() => questionsAppwriteDataSource.fetchSingle(any())).thenAnswer((_) async => Err(dataSourceFailure));
-
-          final result = await repository.getSingle(const QuestionId('2%E5%'));
-
-          expect(result.isErr, true);
-          expect(result.unwrapErr(), expected);
-        });
-      }
-    });
-  });
-
   group('updateSingle', () {
     test('unimplemented', () {
       expect(() async => repository.updateSingle(_MockQuestion()), throwsUnimplementedError);
@@ -506,7 +443,7 @@ class _MockAppwriteQuestionListModel extends Mock implements AppwriteQuestionLis
 
 class _MockQuestionsAppwriteDataSource extends Mock implements QuestionCollectionAppwriteDataSourceImpl {}
 
-class _MockAppwriteQuestionModel extends Mock implements AppwriteQuestionDto {}
+class _MockAppwriteQuestionDto extends Mock implements AppwriteQuestionDto {}
 
 class _MockQuestion extends Mock implements Question {}
 
