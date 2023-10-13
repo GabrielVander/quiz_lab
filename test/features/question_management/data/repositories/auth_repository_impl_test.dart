@@ -4,10 +4,10 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_error_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/email_session_credentials_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/session_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/user_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_error_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_session_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_user_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/create_appwrite_email_session_dto.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/current_user_session.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
@@ -64,12 +64,12 @@ void main() {
 
             when(
               () => authDataSource.createEmailSession(
-                EmailSessionCredentialsModel(
+                CreateAppwriteEmailSessionDto(
                   email: email,
                   password: password,
                 ),
               ),
-            ).thenAnswer((_) async => Ok(_MockSessionModel()));
+            ).thenAnswer((_) async => Ok(_MockAppwriteSessionDto()));
 
             final result = await repository.loginWithEmailCredentials(
               EmailCredentials(email: email, password: password),
@@ -152,7 +152,7 @@ void main() {
 
   group('getCurrentSession', () {
     test('should log initial message', () async {
-      when(() => authDataSource.getSession(any())).thenAnswer((_) async => const Err(UnknownAppwriteErrorModel()));
+      when(() => authDataSource.getSession(any())).thenAnswer((_) async => const Err(UnknownAppwriteErrorDto()));
 
       await repository.getCurrentSession();
 
@@ -162,7 +162,7 @@ void main() {
     group('should log and fail if auth data source fails', () {
       for (final errorMessage in ['4Sx', 'ILi']) {
         test(errorMessage, () async {
-          final unknownAppwriteErrorModel = UnknownAppwriteErrorModel(message: errorMessage);
+          final unknownAppwriteErrorModel = UnknownAppwriteErrorDto(message: errorMessage);
 
           when(() => authDataSource.getSession('current')).thenAnswer((_) async => Err(unknownAppwriteErrorModel));
 
@@ -181,13 +181,13 @@ void main() {
 
     group('should return expected', () {
       for (final testCase in [
-        (_FakeAnonymousSessionModel(), const CurrentUserSession(provider: SessionProvider.anonymous)),
+        (_FakeAnonymousAppwriteSessionDto(), const CurrentUserSession(provider: SessionProvider.anonymous)),
         (
-          _FakeEmailSessionModel(),
+          _FakeEmailAppwriteSessionDto(),
           const CurrentUserSession(provider: SessionProvider.email),
         ),
         (
-          _FakeUnknownSessionModel(),
+          _FakeUnknownAppwriteSessionDto(),
           const CurrentUserSession(provider: SessionProvider.unknown),
         ),
       ]) {
@@ -208,9 +208,9 @@ void main() {
 
 class _AuthAppwriteDataSourceMock extends Mock implements AuthAppwriteDataSource {}
 
-class _MockEmailSessionCredentialsModel extends Mock implements EmailSessionCredentialsModel {}
+class _MockEmailSessionCredentialsModel extends Mock implements CreateAppwriteEmailSessionDto {}
 
-class _MockSessionModel extends Mock implements SessionModel {}
+class _MockAppwriteSessionDto extends Mock implements AppwriteSessionDto {}
 
 class _MockEmailCredentials extends Mock implements EmailCredentials {
   @override
@@ -222,19 +222,19 @@ class _MockEmailCredentials extends Mock implements EmailCredentials {
 
 class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
 
-class _MockUserModel extends Mock implements UserModel {}
+class _MockUserModel extends Mock implements AppwriteUserDto {}
 
-class _FakeEmailSessionModel extends Fake implements SessionModel {
+class _FakeEmailAppwriteSessionDto extends Fake implements AppwriteSessionDto {
   @override
   final String provider = 'email';
 }
 
-class _FakeAnonymousSessionModel extends Fake implements SessionModel {
+class _FakeAnonymousAppwriteSessionDto extends Fake implements AppwriteSessionDto {
   @override
   final String provider = 'anonymous';
 }
 
-class _FakeUnknownSessionModel extends Fake implements SessionModel {
+class _FakeUnknownAppwriteSessionDto extends Fake implements AppwriteSessionDto {
   @override
   final String provider = '2i17';
 }

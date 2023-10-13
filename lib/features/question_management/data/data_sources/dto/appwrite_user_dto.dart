@@ -1,9 +1,9 @@
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/preferences_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_preferences_dto.dart';
 
-class UserModel extends Equatable {
-  const UserModel({
+class AppwriteUserDto extends Equatable {
+  const AppwriteUserDto({
     required this.$id,
     required this.$createdAt,
     required this.$updatedAt,
@@ -21,19 +21,19 @@ class UserModel extends Equatable {
     this.hashOptions,
   });
 
-  factory UserModel.fromAppwriteModel(User appwriteModel) => UserModel(
-        $id: appwriteModel.$id != 'null' ? appwriteModel.$id : '',
-        $createdAt: appwriteModel.$createdAt != 'null' ? appwriteModel.$createdAt : '',
-        $updatedAt: appwriteModel.$updatedAt != 'null' ? appwriteModel.$updatedAt : '',
-        name: appwriteModel.name != 'null' ? appwriteModel.name : '',
-        registration: appwriteModel.registration != 'null' ? appwriteModel.registration : '',
-        status: appwriteModel.status,
-        passwordUpdate: appwriteModel.passwordUpdate != 'null' ? appwriteModel.passwordUpdate : '',
-        email: appwriteModel.email != 'null' ? appwriteModel.email : '',
-        phone: appwriteModel.phone != 'null' ? appwriteModel.phone : '',
-        emailVerification: appwriteModel.emailVerification,
-        phoneVerification: appwriteModel.phoneVerification,
-        prefs: PreferencesModel.fromAppwriteModel(appwriteModel.prefs),
+  factory AppwriteUserDto.fromAppwriteModel(User model) => AppwriteUserDto(
+        $id: model.$id != 'null' ? model.$id : '',
+        $createdAt: model.$createdAt != 'null' ? model.$createdAt : '',
+        $updatedAt: model.$updatedAt != 'null' ? model.$updatedAt : '',
+        name: model.name != 'null' ? model.name : '',
+        registration: model.registration != 'null' ? model.registration : '',
+        status: model.status,
+        passwordUpdate: model.passwordUpdate != 'null' ? model.passwordUpdate : '',
+        email: model.email != 'null' ? model.email : '',
+        phone: model.phone != 'null' ? model.phone : '',
+        emailVerification: model.emailVerification,
+        phoneVerification: model.phoneVerification,
+        prefs: AppwritePreferencesDto.fromAppwriteModel(model.prefs),
       );
 
   final String $id;
@@ -50,7 +50,7 @@ class UserModel extends Equatable {
   final String phone;
   final bool emailVerification;
   final bool phoneVerification;
-  final PreferencesModel prefs;
+  final AppwritePreferencesDto prefs;
 
   @override
   List<Object?> get props => [
@@ -75,7 +75,7 @@ class UserModel extends Equatable {
   bool get stringify => false;
 
   @override
-  String toString() => 'UserModel{'
+  String toString() => 'AppwriteUserDto{'
       '\$id: ${$id}, '
       '\$createdAt: ${$createdAt}, '
       '\$updatedAt: ${$updatedAt}, '

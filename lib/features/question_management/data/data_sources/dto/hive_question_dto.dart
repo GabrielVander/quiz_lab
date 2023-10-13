@@ -2,8 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
-class HiveQuestionModel extends Equatable {
-  const HiveQuestionModel({
+class HiveQuestionDto extends Equatable {
+  const HiveQuestionDto({
     required this.id,
     required this.shortDescription,
     required this.description,
@@ -12,8 +12,8 @@ class HiveQuestionModel extends Equatable {
     required this.categories,
   });
 
-  factory HiveQuestionModel.fromMap(String id, Map<String, dynamic> map) {
-    return HiveQuestionModel(
+  factory HiveQuestionDto.fromMap(String id, Map<String, dynamic> map) {
+    return HiveQuestionDto(
       id: id,
       shortDescription: map['shortDescription'] as String? ?? '',
       description: map['description'] as String? ?? '',

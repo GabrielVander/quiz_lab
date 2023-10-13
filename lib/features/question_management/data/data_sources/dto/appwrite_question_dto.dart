@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_option_dto.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 
-class AppwriteQuestionModel extends Equatable {
-  const AppwriteQuestionModel({
+class AppwriteQuestionDto extends Equatable {
+  const AppwriteQuestionDto({
     required this.id,
     required this.createdAt,
     required this.updatedAt,
@@ -23,7 +23,7 @@ class AppwriteQuestionModel extends Equatable {
     required this.profile,
   });
 
-  factory AppwriteQuestionModel.fromMap(Map<String, dynamic> map) => AppwriteQuestionModel(
+  factory AppwriteQuestionDto.fromMap(Map<String, dynamic> map) => AppwriteQuestionDto(
         id: map[r'$id'] as String,
         createdAt: map[r'$createdAt'] as String,
         updatedAt: map[r'$updatedAt'] as String,
@@ -33,13 +33,13 @@ class AppwriteQuestionModel extends Equatable {
         description: map['description'] as String,
         difficulty: map['difficulty'] as String,
         options: (jsonDecode(map['options'] as String) as List<dynamic>)
-            .map((o) => AppwriteQuestionOptionModel.fromMap(o as Map<String, dynamic>))
+            .map((o) => AppwriteQuestionOptionDto.fromMap(o as Map<String, dynamic>))
             .toList(),
         categories: (map['categories'] as List<dynamic>).map((c) => c as String).toList(),
         profile: map['profile_'] as String?,
       );
 
-  factory AppwriteQuestionModel.fromDocument(Document doc) => AppwriteQuestionModel(
+  factory AppwriteQuestionDto.fromDocument(Document doc) => AppwriteQuestionDto(
         id: doc.$id,
         createdAt: doc.$createdAt,
         updatedAt: doc.$updatedAt,
@@ -50,7 +50,7 @@ class AppwriteQuestionModel extends Equatable {
         difficulty: doc.data['difficulty'] as String,
         options: (jsonDecode(doc.data['options'] as String) as List<dynamic>)
             .map((o) => o as Map<String, dynamic>)
-            .map(AppwriteQuestionOptionModel.fromMap)
+            .map(AppwriteQuestionOptionDto.fromMap)
             .toList(),
         categories: (doc.data['categories'] as List<dynamic>)
             .map((c) => c as String?)
@@ -68,7 +68,7 @@ class AppwriteQuestionModel extends Equatable {
   final String title;
   final String description;
   final String difficulty;
-  final List<AppwriteQuestionOptionModel> options;
+  final List<AppwriteQuestionOptionDto> options;
   final List<String> categories;
   final String? profile;
 
@@ -88,7 +88,7 @@ class AppwriteQuestionModel extends Equatable {
       ];
 
   @override
-  String toString() => 'AppwriteQuestionModel{'
+  String toString() => 'AppwriteQuestionDto{'
       'id: $id, '
       'createdAt: $createdAt, '
       'updatedAt: $updatedAt, '
@@ -125,7 +125,7 @@ class AppwriteQuestionModel extends Equatable {
     }
   }
 
-  AppwriteQuestionModel copyWith({
+  AppwriteQuestionDto copyWith({
     String? id,
     String? createdAt,
     String? updatedAt,
@@ -134,11 +134,11 @@ class AppwriteQuestionModel extends Equatable {
     String? title,
     String? description,
     String? difficulty,
-    List<AppwriteQuestionOptionModel>? options,
+    List<AppwriteQuestionOptionDto>? options,
     List<String>? categories,
     String? profile,
   }) =>
-      AppwriteQuestionModel(
+      AppwriteQuestionDto(
         id: id ?? this.id,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,

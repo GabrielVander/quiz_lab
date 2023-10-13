@@ -3,20 +3,20 @@ import 'package:appwrite/models.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_error_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/email_session_credentials_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/session_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/user_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_error_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_session_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_user_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/create_appwrite_email_session_dto.dart';
 
 // TODO(GabrielVander): Maybe this class would be better named AppwriteAccountDataSource
 abstract interface class AuthAppwriteDataSource {
-  Future<Result<SessionModel, String>> createEmailSession(EmailSessionCredentialsModel credentialsModel);
+  Future<Result<AppwriteSessionDto, String>> createEmailSession(CreateAppwriteEmailSessionDto dto);
 
   Future<Result<Unit, String>> createAnonymousSession();
 
-  Future<Result<UserModel, String>> getCurrentUser();
+  Future<Result<AppwriteUserDto, String>> getCurrentUser();
 
-  Future<Result<SessionModel, AppwriteErrorModel>> getSession(String sessionId);
+  Future<Result<AppwriteSessionDto, AppwriteErrorDto>> getSession(String sessionId);
 }
 
 class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
@@ -29,18 +29,18 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
   final Account appwriteAccountService;
 
   @override
-  Future<Result<SessionModel, String>> createEmailSession(EmailSessionCredentialsModel credentialsModel) async {
+  Future<Result<AppwriteSessionDto, String>> createEmailSession(CreateAppwriteEmailSessionDto dto) async {
     logger.debug('Creating email session...');
 
     try {
       final session = await appwriteAccountService.createEmailSession(
-        email: credentialsModel.email,
-        password: credentialsModel.password,
+        email: dto.email,
+        password: dto.password,
       );
 
       logger.debug('Email session created successfully');
 
-      return Ok(SessionModel.fromAppwriteSession(session));
+      return Ok(AppwriteSessionDto.fromAppwriteSession(session));
     } on AppwriteException catch (e) {
       logger.error(e.toString());
 
@@ -59,27 +59,27 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
   }
 
   @override
-  Future<Result<UserModel, String>> getCurrentUser() async {
+  Future<Result<AppwriteUserDto, String>> getCurrentUser() async {
     logger.debug('Fetching user information...');
 
     return (await _getCurrentlyLoggedInUser())
         .inspectErr((e) => logger.error(e.toString()))
         .mapErr((_) => 'Unable to fetch user information')
         .andThen(
-          (appwriteModel) => _appwriteUserToUserModel(appwriteModel)
+          (appwriteModel) => _appwriteUserModelToUserDto(appwriteModel)
               .inspect((_) => logger.debug('User information fetched successfully')),
         );
   }
 
   @override
-  Future<Result<SessionModel, AppwriteErrorModel>> getSession(String sessionId) async {
+  Future<Result<AppwriteSessionDto, AppwriteErrorDto>> getSession(String sessionId) async {
     logger.debug('Retrieving given Appwrite session...');
 
     return (await _fetchAppwriteSession(sessionId))
         .inspectErr((error) => logger.error(error.toString()))
-        .mapErr(AppwriteErrorModel.fromAppwriteException)
+        .mapErr(AppwriteErrorDto.fromAppwriteException)
         .inspect((_) => logger.debug('Appwrite session retrieved successfully'))
-        .map(SessionModel.fromAppwriteSession);
+        .map(AppwriteSessionDto.fromAppwriteSession);
   }
 
   Future<Result<Unit, AppwriteException>> _createAnonymousSessionOnAccountService() async {
@@ -91,9 +91,9 @@ class AuthAppwriteDataSourceImpl implements AuthAppwriteDataSource {
     }
   }
 
-  Result<UserModel, String> _appwriteUserToUserModel(User user) {
+  Result<AppwriteUserDto, String> _appwriteUserModelToUserDto(User model) {
     try {
-      return Ok(UserModel.fromAppwriteModel(user));
+      return Ok(AppwriteUserDto.fromAppwriteModel(model));
     } catch (e) {
       logger.error(e.toString());
       return const Err('Unable to map user information');

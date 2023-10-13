@@ -1,14 +1,14 @@
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 
-class AppwriteProfileModel extends Equatable {
-  const AppwriteProfileModel({
+class AppwriteProfileDto extends Equatable {
+  const AppwriteProfileDto({
     required this.id,
     required this.displayName,
   });
 
-  factory AppwriteProfileModel.fromAppwriteDocument(Document doc) {
-    return AppwriteProfileModel(
+  factory AppwriteProfileDto.fromAppwriteDocument(Document doc) {
+    return AppwriteProfileDto(
       id: doc.$id,
       displayName: doc.data['displayName'] as String?,
     );

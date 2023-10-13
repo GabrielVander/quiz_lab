@@ -1,7 +1,7 @@
 import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/preferences_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/user_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_preferences_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_user_dto.dart';
 
 void main() {
   group('fromAppwriteModel', () {
@@ -14,7 +14,7 @@ void main() {
           'prefs': <String, dynamic>{},
           'labels': <String>[],
         }),
-        const UserModel(
+        const AppwriteUserDto(
           $id: '',
           $createdAt: '',
           $updatedAt: '',
@@ -26,7 +26,7 @@ void main() {
           phone: '',
           emailVerification: false,
           phoneVerification: false,
-          prefs: PreferencesModel(data: <String, dynamic>{}),
+          prefs: AppwritePreferencesDto(data: <String, dynamic>{}),
         )
       ),
       (
@@ -37,7 +37,7 @@ void main() {
           'prefs': <String, dynamic>{'we': 'are', 'the': 'champions', 'my': 'friend', 'Yx3Y': 573},
           'labels': <String>[],
         }),
-        const UserModel(
+        const AppwriteUserDto(
           $id: '',
           $createdAt: '',
           $updatedAt: '',
@@ -49,7 +49,7 @@ void main() {
           phone: '',
           emailVerification: true,
           phoneVerification: true,
-          prefs: PreferencesModel(
+          prefs: AppwritePreferencesDto(
             data: <String, dynamic>{'we': 'are', 'the': 'champions', 'my': 'friend', 'Yx3Y': 573},
           ),
         )
@@ -70,7 +70,7 @@ void main() {
           'phoneVerification': false,
           'prefs': <String, dynamic>{},
         }),
-        const UserModel(
+        const AppwriteUserDto(
           $id: 'T14WkXV',
           $createdAt: 'egSOFEe',
           $updatedAt: 'ZgNwe4X',
@@ -82,7 +82,7 @@ void main() {
           phone: 'uzpUT',
           emailVerification: false,
           phoneVerification: false,
-          prefs: PreferencesModel(data: <String, dynamic>{}),
+          prefs: AppwritePreferencesDto(data: <String, dynamic>{}),
         )
       ),
     ]) {
@@ -90,7 +90,7 @@ void main() {
       final expected = testCase.$2;
 
       test('$appwriteUser -> $expected', () {
-        final result = UserModel.fromAppwriteModel(appwriteUser);
+        final result = AppwriteUserDto.fromAppwriteModel(appwriteUser);
 
         expect(result, expected);
       });

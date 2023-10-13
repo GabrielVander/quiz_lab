@@ -1,8 +1,8 @@
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 
-class SessionModel extends Equatable {
-  const SessionModel({
+class AppwriteSessionDto extends Equatable {
+  const AppwriteSessionDto({
     required this.$id,
     required this.$createdAt,
     required this.userId,
@@ -30,7 +30,7 @@ class SessionModel extends Equatable {
     required this.current,
   });
 
-  factory SessionModel.fromAppwriteSession(Session session) => SessionModel(
+  factory AppwriteSessionDto.fromAppwriteSession(Session session) => AppwriteSessionDto(
         $id: session.$id,
         $createdAt: session.$createdAt,
         userId: session.userId,
@@ -85,7 +85,7 @@ class SessionModel extends Equatable {
   final bool current;
 
   @override
-  String toString() => 'SessionModel{'
+  String toString() => 'AppwriteSessionDto{'
       '\$id: ${$id}, '
       '\$createdAt: ${$createdAt}, '
       'userId: $userId, '

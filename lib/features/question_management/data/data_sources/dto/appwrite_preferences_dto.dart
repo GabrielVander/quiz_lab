@@ -1,16 +1,12 @@
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 
-class PreferencesModel extends Equatable {
-  const PreferencesModel({
+class AppwritePreferencesDto extends Equatable {
+  const AppwritePreferencesDto({
     required this.data,
   });
 
-  factory PreferencesModel.fromAppwriteModel(Preferences appwriteModel) {
-    return PreferencesModel(
-      data: appwriteModel.data,
-    );
-  }
+  factory AppwritePreferencesDto.fromAppwriteModel(Preferences model) => AppwritePreferencesDto(data: model.data);
 
   final Map<String, dynamic> data;
 

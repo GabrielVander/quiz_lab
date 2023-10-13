@@ -2,12 +2,12 @@ import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_error_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_profile_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_error_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_profile_dto.dart';
 
 // ignore: one_member_abstracts
 abstract interface class ProfileCollectionAppwriteDataSource {
-  Future<Result<AppwriteProfileModel, AppwriteErrorModel>> fetchSingle(String id);
+  Future<Result<AppwriteProfileDto, AppwriteErrorDto>> fetchSingle(String id);
 }
 
 class ProfileCollectionAppwriteDataSourceImpl implements ProfileCollectionAppwriteDataSource {
@@ -24,13 +24,13 @@ class ProfileCollectionAppwriteDataSourceImpl implements ProfileCollectionAppwri
   String appwriteProfileCollectionId;
 
   @override
-  Future<Result<AppwriteProfileModel, AppwriteErrorModel>> fetchSingle(String id) async {
+  Future<Result<AppwriteProfileDto, AppwriteErrorDto>> fetchSingle(String id) async {
     logger.debug('Fetching single profile with id: $id from Appwrite...');
 
     return (await _performAppwriteFetch(id))
         .inspectErr((e) => logger.error(e.toString()))
-        .mapErr(AppwriteErrorModel.fromAppwriteException)
-        .map(AppwriteProfileModel.fromAppwriteDocument);
+        .mapErr(AppwriteErrorDto.fromAppwriteException)
+        .map(AppwriteProfileDto.fromAppwriteDocument);
   }
 
   Future<Result<Document, AppwriteException>> _performAppwriteFetch(String id) async {

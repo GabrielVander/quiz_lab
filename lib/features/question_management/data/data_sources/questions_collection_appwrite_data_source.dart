@@ -4,23 +4,23 @@ import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_error_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_error_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_list_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_realtime_message_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/create_appwrite_question_dto.dart';
 import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 
 abstract interface class QuestionCollectionAppwriteDataSource {
-  Future<Result<AppwriteQuestionModel, String>> createSingle(AppwriteQuestionCreationModel creationModel);
+  Future<Result<AppwriteQuestionDto, String>> createSingle(CreateAppwriteQuestionDto dto);
 
   Future<Result<Unit, QuestionsAppwriteDataSourceFailure>> deleteSingle(String id);
 
-  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id);
+  Future<Result<AppwriteQuestionDto, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id);
 
-  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAll();
+  Future<Result<AppwriteQuestionListDto, AppwriteErrorDto>> getAll();
 
-  Future<Result<Stream<AppwriteRealtimeQuestionMessageModel>, AppwriteErrorModel>> watchForUpdate();
+  Future<Result<Stream<AppwriteRealtimeQuestionMessageDto>, AppwriteErrorDto>> watchForUpdate();
 }
 
 class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppwriteDataSource {
@@ -41,12 +41,12 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
   final Realtime realtime;
 
   @override
-  Future<Result<AppwriteQuestionModel, String>> createSingle(AppwriteQuestionCreationModel creationModel) async {
+  Future<Result<AppwriteQuestionDto, String>> createSingle(CreateAppwriteQuestionDto dto) async {
     logger.debug('Creating single question on Appwrite...');
 
-    return (await _performDocumentCreation(creationModel))
+    return (await _performDocumentCreation(dto))
         .inspect((_) => logger.debug('Question created successfully on Appwrite'))
-        .map(AppwriteQuestionModel.fromDocument)
+        .map(AppwriteQuestionDto.fromDocument)
         .inspectErr((e) => logger.error(e.toString()))
         .mapErr((_) => 'Unable to create question on Appwrite');
   }
@@ -70,7 +70,7 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
   }
 
   @override
-  Future<Result<AppwriteQuestionModel, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id) async {
+  Future<Result<AppwriteQuestionDto, QuestionsAppwriteDataSourceFailure>> fetchSingle(String id) async {
     logger.debug('Fetching single question from Appwrite...');
 
     final documentFetchingResult = await appwriteWrapper.getDocument(
@@ -83,7 +83,7 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
       ok: (document) {
         logger.debug('Question fetched from Appwrite successfully');
 
-        return Ok(AppwriteQuestionModel.fromDocument(document));
+        return Ok(AppwriteQuestionDto.fromDocument(document));
       },
       err: (failure) {
         logger.error('Unable to fetch question from Appwrite');
@@ -93,16 +93,16 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
   }
 
   @override
-  Future<Result<AppwriteQuestionListModel, AppwriteErrorModel>> getAll() async {
+  Future<Result<AppwriteQuestionListDto, AppwriteErrorDto>> getAll() async {
     logger.debug('Retrieving all questions from Appwrite...');
 
     return (await _listDocuments())
-        .map(AppwriteQuestionListModel.fromAppwriteDocumentList)
-        .mapErr(AppwriteErrorModel.fromAppwriteException);
+        .map(AppwriteQuestionListDto.fromAppwriteDocumentList)
+        .mapErr(AppwriteErrorDto.fromAppwriteException);
   }
 
   @override
-  Future<Result<Stream<AppwriteRealtimeQuestionMessageModel>, AppwriteErrorModel>> watchForUpdate() async {
+  Future<Result<Stream<AppwriteRealtimeQuestionMessageDto>, AppwriteErrorDto>> watchForUpdate() async {
     logger.debug('Watching for question collection updates...');
 
     final s = realtime.subscribe([
@@ -113,7 +113,7 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
           '.documents'
     ]);
 
-    return Ok(s.stream.map(AppwriteRealtimeQuestionMessageModel.fromRealtimeMessage));
+    return Ok(s.stream.map(AppwriteRealtimeQuestionMessageDto.fromRealtimeMessage));
   }
 
   Future<Result<DocumentList, AppwriteException>> _listDocuments() async {
@@ -126,9 +126,9 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
     }
   }
 
-  Future<Result<Document, Exception>> _performDocumentCreation(AppwriteQuestionCreationModel creationModel) async {
+  Future<Result<Document, Exception>> _performDocumentCreation(CreateAppwriteQuestionDto dto) async {
     try {
-      final map = creationModel.toMap();
+      final map = dto.toMap();
 
       return Ok(
         await databases.createDocument(
@@ -136,7 +136,7 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
           collectionId: appwriteQuestionCollectionId,
           documentId: ID.unique(),
           data: map,
-          permissions: creationModel.permissions?.map((p) => p.toString()).toList(),
+          permissions: dto.permissions?.map((p) => p.toString()).toList(),
         ),
       );
     } on Exception catch (e) {

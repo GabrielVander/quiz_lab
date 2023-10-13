@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/hive_question_dto.dart';
 
 void main() {
   group('toMap', () {
     for (final testCase in [
       const _ToMapTestCase(
-        model: HiveQuestionModel(
+        model: HiveQuestionDto(
           id: 'id',
           description: 'description',
           shortDescription: 'shortDescription',
@@ -22,7 +22,7 @@ void main() {
         },
       ),
       const _ToMapTestCase(
-        model: HiveQuestionModel(
+        model: HiveQuestionDto(
           id: null,
           description: 'upright',
           shortDescription: 'end',
@@ -68,6 +68,6 @@ class _ToMapTestCase {
     required this.expected,
   });
 
-  final HiveQuestionModel model;
+  final HiveQuestionDto model;
   final Map<String, dynamic> expected;
 }

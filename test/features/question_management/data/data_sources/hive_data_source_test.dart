@@ -5,7 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/json_parser.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/hive_question_dto.dart';
 
 void main() {
   late Box<String> mockQuestionsBox;
@@ -64,7 +64,7 @@ void main() {
           () {
             for (final values in [
               [
-                const HiveQuestionModel(
+                const HiveQuestionDto(
                   id: '',
                   shortDescription: null,
                   description: null,
@@ -75,7 +75,7 @@ void main() {
                 HiveDataSourceFailure.emptyId(),
               ],
               [
-                const HiveQuestionModel(
+                const HiveQuestionDto(
                   id: null,
                   shortDescription: null,
                   description: null,
@@ -87,7 +87,7 @@ void main() {
               ],
             ]) {
               test(values.toString(), () async {
-                final question = values[0] as HiveQuestionModel;
+                final question = values[0] as HiveQuestionDto;
                 final expectedFailure = values[1] as HiveDataSourceFailure;
 
                 final result = await dataSource.saveQuestion(question);
@@ -147,7 +147,7 @@ void main() {
           'should return success',
           () {
             for (final model in [
-              const HiveQuestionModel(
+              const HiveQuestionDto(
                 id: '#y0C^5W*',
                 shortDescription: '',
                 description: '',
@@ -155,7 +155,7 @@ void main() {
                 categories: [],
                 options: [],
               ),
-              const HiveQuestionModel(
+              const HiveQuestionDto(
                 id: '@!5qIE',
                 shortDescription: 'ezVdUXg',
                 description: '*4h3B6',
@@ -199,7 +199,7 @@ void main() {
         'should return failure if empty id is given',
         () {
           for (final model in [
-            const HiveQuestionModel(
+            const HiveQuestionDto(
               id: '',
               shortDescription: null,
               description: null,
@@ -207,7 +207,7 @@ void main() {
               categories: null,
               options: null,
             ),
-            const HiveQuestionModel(
+            const HiveQuestionDto(
               id: null,
               shortDescription: null,
               description: null,
@@ -270,7 +270,7 @@ void main() {
             test(id, () async {
               expect(id, isNotEmpty);
 
-              final dummyModel = HiveQuestionModel(
+              final dummyModel = HiveQuestionDto(
                 id: id,
                 shortDescription: null,
                 description: null,
@@ -486,7 +486,7 @@ void main() {
                   BoxEvent('evenAnotherDeletedKey', null, true),
                 ],
                 <List<String>>[[], [], [], []],
-                <List<HiveQuestionModel>>[[], [], [], []],
+                <List<HiveQuestionDto>>[[], [], [], []],
               ],
               [
                 <BoxEvent>[
@@ -500,10 +500,10 @@ void main() {
                   ['someKey'],
                   ['someKey', 'anotherKey'],
                 ],
-                <List<HiveQuestionModel>>[
+                <List<HiveQuestionDto>>[
                   [],
                   [
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'someKey',
                       shortDescription: '',
                       description: '',
@@ -513,7 +513,7 @@ void main() {
                     ),
                   ],
                   [
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'someKey',
                       shortDescription: '',
                       description: '',
@@ -523,7 +523,7 @@ void main() {
                     ),
                   ],
                   [
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'someKey',
                       shortDescription: '',
                       description: '',
@@ -531,7 +531,7 @@ void main() {
                       categories: [],
                       options: [],
                     ),
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'anotherKey',
                       shortDescription: '',
                       description: '',
@@ -554,9 +554,9 @@ void main() {
                   ['lke46', 'Rqh9r'],
                   ['lke46', 'Rqh9r', '0Mth40'],
                 ],
-                <List<HiveQuestionModel>>[
+                <List<HiveQuestionDto>>[
                   [
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'lke46',
                       shortDescription: '',
                       description: '',
@@ -566,7 +566,7 @@ void main() {
                     ),
                   ],
                   [
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'lke46',
                       shortDescription: '',
                       description: '',
@@ -574,7 +574,7 @@ void main() {
                       categories: [],
                       options: [],
                     ),
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'Rqh9r',
                       shortDescription: '',
                       description: '',
@@ -584,7 +584,7 @@ void main() {
                     ),
                   ],
                   [
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'lke46',
                       shortDescription: '',
                       description: '',
@@ -592,7 +592,7 @@ void main() {
                       categories: [],
                       options: [],
                     ),
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'Rqh9r',
                       shortDescription: '',
                       description: '',
@@ -602,7 +602,7 @@ void main() {
                     ),
                   ],
                   [
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'lke46',
                       shortDescription: '',
                       description: '',
@@ -610,7 +610,7 @@ void main() {
                       categories: [],
                       options: [],
                     ),
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: 'Rqh9r',
                       shortDescription: '',
                       description: '',
@@ -618,7 +618,7 @@ void main() {
                       categories: [],
                       options: [],
                     ),
-                    const HiveQuestionModel(
+                    const HiveQuestionDto(
                       id: '0Mth40',
                       shortDescription: '',
                       description: '',
@@ -633,7 +633,7 @@ void main() {
               test(values.toString(), () async {
                 final boxEvents = values[0] as List<BoxEvent>;
                 final keysToEmit = values[1] as List<List<String>>;
-                final expectedEmissions = values[2] as List<List<HiveQuestionModel>>;
+                final expectedEmissions = values[2] as List<List<HiveQuestionDto>>;
 
                 when(() => mockQuestionsBox.keys).thenAnswer((_) {
                   final keys = keysToEmit.removeAt(0);
@@ -673,7 +673,7 @@ void main() {
   );
 }
 
-class _FakeHiveQuestionModel extends Fake implements HiveQuestionModel {
+class _FakeHiveQuestionModel extends Fake implements HiveQuestionDto {
   @override
   final String id = 'oBO5v';
 

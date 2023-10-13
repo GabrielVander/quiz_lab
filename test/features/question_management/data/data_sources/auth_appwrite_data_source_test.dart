@@ -7,11 +7,11 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_error_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/email_session_credentials_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/preferences_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/session_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/user_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_error_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_preferences_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_session_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_user_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/create_appwrite_email_session_dto.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -53,7 +53,7 @@ void main() {
               ).thenThrow(AppwriteException('Er2oG'));
 
               await dataSource.createEmailSession(
-                EmailSessionCredentialsModel(email: email, password: password),
+                CreateAppwriteEmailSessionDto(email: email, password: password),
               );
 
               verify(
@@ -78,7 +78,7 @@ void main() {
           ).thenThrow(AppwriteException('IR4N'));
 
           final result = await dataSource.createEmailSession(
-            const EmailSessionCredentialsModel(
+            const CreateAppwriteEmailSessionDto(
               email: 'x4piF3j',
               password: 'QCK!bQ',
             ),
@@ -120,7 +120,7 @@ void main() {
                 countryName: 'SoZly',
                 current: false,
               ),
-              const SessionModel(
+              const AppwriteSessionDto(
                 userId: 'K0qY0',
                 $id: 'phnC',
                 $createdAt: 'U&JX',
@@ -176,7 +176,7 @@ void main() {
                 countryName: 'S3fFYu',
                 current: true,
               ),
-              const SessionModel(
+              const AppwriteSessionDto(
                 userId: 'yw&C',
                 $id: 'R#U!&',
                 $createdAt: '7pR^PS%',
@@ -207,7 +207,7 @@ void main() {
           ]) {
             test(values.toString(), () async {
               final appwriteSession = values[0] as appwrite_models.Session;
-              final expectedSessionModel = values[1] as SessionModel;
+              final expectedAppwriteSessionDto = values[1] as AppwriteSessionDto;
 
               when(
                 () => appwriteAccountServiceMock.createEmailSession(
@@ -217,13 +217,13 @@ void main() {
               ).thenAnswer((_) async => appwriteSession);
 
               final result = await dataSource.createEmailSession(
-                const EmailSessionCredentialsModel(
+                const CreateAppwriteEmailSessionDto(
                   email: r'2@$UgaNF',
                   password: 'J!GK',
                 ),
               );
 
-              expect(result, Ok<SessionModel, String>(expectedSessionModel));
+              expect(result, Ok<AppwriteSessionDto, String>(expectedAppwriteSessionDto));
             });
           }
         },
@@ -289,7 +289,7 @@ void main() {
           verify(() => logger.error(exception.toString())).called(1);
           expect(
             result,
-            const Err<UserModel, String>('Unable to fetch user information'),
+            const Err<AppwriteUserDto, String>('Unable to fetch user information'),
           );
         });
       }
@@ -303,7 +303,7 @@ void main() {
       verify(() => logger.error(any())).called(1);
       expect(
         result,
-        const Err<UserModel, String>('Unable to map user information'),
+        const Err<AppwriteUserDto, String>('Unable to map user information'),
       );
     });
 
@@ -333,8 +333,8 @@ void main() {
       verify(() => logger.debug('User information fetched successfully')).called(1);
       expect(
         result,
-        Ok<UserModel, String>(
-          UserModel(
+        Ok<AppwriteUserDto, String>(
+          AppwriteUserDto(
             $id: r'$id',
             $createdAt: r'$createdAt',
             $updatedAt: r'$updatedAt',
@@ -346,7 +346,7 @@ void main() {
             phone: 'phone',
             emailVerification: true,
             phoneVerification: false,
-            prefs: PreferencesModel(data: preferencesData),
+            prefs: AppwritePreferencesDto(data: preferencesData),
           ),
         ),
       );
@@ -384,8 +384,8 @@ void main() {
               verify(() => logger.error(exception.toString())).called(1);
               expect(
                 result,
-                Err<SessionModel?, AppwriteErrorModel>(
-                  UnknownAppwriteErrorModel(message: error),
+                Err<AppwriteSessionDto?, AppwriteErrorDto>(
+                  UnknownAppwriteErrorDto(message: error),
                 ),
               );
             });
@@ -422,7 +422,7 @@ void main() {
                 countryName: '',
                 current: false,
               ),
-              const SessionModel(
+              const AppwriteSessionDto(
                 $id: '',
                 $createdAt: '',
                 userId: '',
@@ -452,10 +452,10 @@ void main() {
             ),
           ]) {
             final appwriteSession = testCase.$1;
-            final expectedSessionModel = testCase.$2;
+            final expectedAppwriteSessionDto = testCase.$2;
 
             test(
-              'when receiving $appwriteSession should return $expectedSessionModel',
+              'when receiving $appwriteSession should return $expectedAppwriteSessionDto',
               () async {
                 when(
                   () => appwriteAccountServiceMock.getSession(
@@ -470,8 +470,8 @@ void main() {
                 ).called(1);
                 expect(
                   result,
-                  Ok<SessionModel?, AppwriteErrorModel>(
-                    expectedSessionModel,
+                  Ok<AppwriteSessionDto?, AppwriteErrorDto>(
+                    expectedAppwriteSessionDto,
                   ),
                 );
               },

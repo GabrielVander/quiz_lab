@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 
-class AppwriteQuestionOptionModel extends Equatable {
-  const AppwriteQuestionOptionModel({
+class AppwriteQuestionOptionDto extends Equatable {
+  const AppwriteQuestionOptionDto({
     required this.description,
     required this.isCorrect,
   });
 
-  factory AppwriteQuestionOptionModel.fromMap(Map<String, dynamic> map) {
-    return AppwriteQuestionOptionModel(
+  factory AppwriteQuestionOptionDto.fromMap(Map<String, dynamic> map) {
+    return AppwriteQuestionOptionDto(
       description: map['description'] as String,
       isCorrect: map['isCorrect'] as bool,
     );

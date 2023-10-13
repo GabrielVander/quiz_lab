@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-class EmailSessionCredentialsModel extends Equatable {
-  const EmailSessionCredentialsModel({
+class CreateAppwriteEmailSessionDto extends Equatable {
+  const CreateAppwriteEmailSessionDto({
     required this.email,
     required this.password,
   });

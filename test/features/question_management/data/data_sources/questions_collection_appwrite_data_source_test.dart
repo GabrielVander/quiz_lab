@@ -7,13 +7,13 @@ import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_error_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_permission_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_error_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_permission_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/create_appwrite_question_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_list_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_option_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_realtime_message_dto.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 
@@ -194,7 +194,7 @@ void main() {
         (
           '',
           '',
-          const AppwriteQuestionCreationModel(
+          const CreateAppwriteQuestionDto(
             ownerId: null,
             title: '',
             description: '',
@@ -207,17 +207,17 @@ void main() {
         (
           'Q!3CTr',
           r'^NW8$',
-          const AppwriteQuestionCreationModel(
+          const CreateAppwriteQuestionDto(
             ownerId: null,
             title: '#7d76V',
             description: r'$7zCt%Z@',
             difficulty: 'k4Y0r9p',
             options: [
-              AppwriteQuestionOptionModel(
+              AppwriteQuestionOptionDto(
                 description: 'c1jh',
                 isCorrect: true,
               ),
-              AppwriteQuestionOptionModel(
+              AppwriteQuestionOptionDto(
                 description: r'Q5&&n9$',
                 isCorrect: false,
               ),
@@ -233,17 +233,17 @@ void main() {
         (
           'jbM3Wi',
           'Fuh#',
-          const AppwriteQuestionCreationModel(
+          const CreateAppwriteQuestionDto(
             ownerId: null,
             title: 'P7R9',
             description: 'oOx',
             difficulty: '8n34Tg5I',
             options: [
-              AppwriteQuestionOptionModel(
+              AppwriteQuestionOptionDto(
                 description: 'k1aU7',
                 isCorrect: false,
               ),
-              AppwriteQuestionOptionModel(
+              AppwriteQuestionOptionDto(
                 description: '4kNB',
                 isCorrect: false,
               ),
@@ -260,17 +260,17 @@ void main() {
         (
           'jbM3Wi',
           'Fuh#',
-          AppwriteQuestionCreationModel(
+          CreateAppwriteQuestionDto(
             ownerId: null,
             title: 'P7R9',
             description: 'oOx',
             difficulty: '8n34Tg5I',
             options: const [
-              AppwriteQuestionOptionModel(
+              AppwriteQuestionOptionDto(
                 description: 'k1aU7',
                 isCorrect: false,
               ),
-              AppwriteQuestionOptionModel(
+              AppwriteQuestionOptionDto(
                 description: '4kNB',
                 isCorrect: false,
               ),
@@ -281,281 +281,281 @@ void main() {
               'dRTs',
             ],
             permissions: [
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.any(),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.any(),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.guests(),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.guests(),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.users(),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.users(),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.users(verified: false),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.users(verified: false),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.user(userId: ''),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.user(userId: ''),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.user(userId: 'e58&4'),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.user(userId: 'e58&4'),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.user(userId: '', verified: false),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.user(userId: '', verified: false),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.user(
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.user(
                   userId: 'd#N',
                   verified: false,
                 ),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.team(teamId: ''),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.team(teamId: ''),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.team(teamId: 'vcx'),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.team(teamId: 'vcx'),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.teamRole(teamId: '', role: ''),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.teamRole(teamId: '', role: ''),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: '*rYi3wP',
                   role: '',
                 ),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: '',
                   role: 'WQYWru',
                 ),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: 'u65M3r',
                   role: '^g8@',
                 ),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.member(membershipId: ''),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.member(membershipId: ''),
               ),
-              AppwritePermissionTypeModel.read(
-                AppwritePermissionRoleModel.member(membershipId: '#&*5'),
+              AppwritePermissionTypeDto.read(
+                AppwritePermissionRoleDto.member(membershipId: '#&*5'),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.any(),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.any(),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.guests(),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.guests(),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.users(),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.users(),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.users(verified: false),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.users(verified: false),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.user(userId: ''),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.user(userId: ''),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.user(userId: 'e58&4'),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.user(userId: 'e58&4'),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.user(userId: '', verified: false),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.user(userId: '', verified: false),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.user(
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.user(
                   userId: 'd#N',
                   verified: false,
                 ),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.team(teamId: ''),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.team(teamId: ''),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.team(teamId: 'vcx'),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.team(teamId: 'vcx'),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.teamRole(teamId: '', role: ''),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.teamRole(teamId: '', role: ''),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: '*rYi3wP',
                   role: '',
                 ),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: '',
                   role: 'WQYWru',
                 ),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: 'u65M3r',
                   role: '^g8@',
                 ),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.member(membershipId: ''),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.member(membershipId: ''),
               ),
-              AppwritePermissionTypeModel.create(
-                AppwritePermissionRoleModel.member(membershipId: '#&*5'),
+              AppwritePermissionTypeDto.create(
+                AppwritePermissionRoleDto.member(membershipId: '#&*5'),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.any(),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.any(),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.guests(),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.guests(),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.users(),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.users(),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.users(verified: false),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.users(verified: false),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.user(userId: ''),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.user(userId: ''),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.user(userId: 'e58&4'),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.user(userId: 'e58&4'),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.user(userId: '', verified: false),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.user(userId: '', verified: false),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.user(
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.user(
                   userId: 'd#N',
                   verified: false,
                 ),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.team(teamId: ''),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.team(teamId: ''),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.team(teamId: 'vcx'),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.team(teamId: 'vcx'),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.teamRole(teamId: '', role: ''),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.teamRole(teamId: '', role: ''),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: '*rYi3wP',
                   role: '',
                 ),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: '',
                   role: 'WQYWru',
                 ),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: 'u65M3r',
                   role: '^g8@',
                 ),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.member(membershipId: ''),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.member(membershipId: ''),
               ),
-              AppwritePermissionTypeModel.update(
-                AppwritePermissionRoleModel.member(membershipId: '#&*5'),
+              AppwritePermissionTypeDto.update(
+                AppwritePermissionRoleDto.member(membershipId: '#&*5'),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.any(),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.any(),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.guests(),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.guests(),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.users(),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.users(),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.users(verified: false),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.users(verified: false),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.user(userId: ''),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.user(userId: ''),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.user(userId: 'e58&4'),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.user(userId: 'e58&4'),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.user(userId: '', verified: false),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.user(userId: '', verified: false),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.user(
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.user(
                   userId: 'd#N',
                   verified: false,
                 ),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.team(teamId: ''),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.team(teamId: ''),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.team(teamId: 'vcx'),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.team(teamId: 'vcx'),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.teamRole(teamId: '', role: ''),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.teamRole(teamId: '', role: ''),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: '*rYi3wP',
                   role: '',
                 ),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: '',
                   role: 'WQYWru',
                 ),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.teamRole(
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.teamRole(
                   teamId: 'u65M3r',
                   role: '^g8@',
                 ),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.member(membershipId: ''),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.member(membershipId: ''),
               ),
-              AppwritePermissionTypeModel.delete(
-                AppwritePermissionRoleModel.member(membershipId: '#&*5'),
+              AppwritePermissionTypeDto.delete(
+                AppwritePermissionRoleDto.member(membershipId: '#&*5'),
               ),
-              AppwritePermissionTypeModel.write(
-                AppwritePermissionRoleModel.any(),
+              AppwritePermissionTypeDto.write(
+                AppwritePermissionRoleDto.any(),
               ),
-              AppwritePermissionTypeModel.write(
-                AppwritePermissionRoleModel.guests(),
+              AppwritePermissionTypeDto.write(
+                AppwritePermissionRoleDto.guests(),
               ),
-              AppwritePermissionTypeModel.write(
-                AppwritePermissionRoleModel.users(),
+              AppwritePermissionTypeDto.write(
+                AppwritePermissionRoleDto.users(),
               ),
-              AppwritePermissionTypeModel.write(
-                AppwritePermissionRoleModel.users(verified: false),
+              AppwritePermissionTypeDto.write(
+                AppwritePermissionRoleDto.users(verified: false),
               ),
-              AppwritePermissionTypeModel.write(
-                AppwritePermissionRoleModel.user(userId: ''),
+              AppwritePermissionTypeDto.write(
+                AppwritePermissionRoleDto.user(userId: ''),
               ),
-              AppwritePermissionTypeModel.write(
-                AppwritePermissionRoleModel.user(userId: 'e58&4'),
+              AppwritePermissionTypeDto.write(
+                AppwritePermissionRoleDto.user(userId: 'e58&4'),
               ),
-              AppwritePermissionTypeModel.write(
-                AppwritePermissionRoleModel.user(userId: '', verified: false),
+              AppwritePermissionTypeDto.write(
+                AppwritePermissionRoleDto.user(userId: '', verified: false),
               ),
-              AppwritePermissionTypeModel.write(
-                AppwritePermissionRoleModel.user(
+              AppwritePermissionTypeDto.write(
+                AppwritePermissionRoleDto.user(
                   userId: 'd#N',
                   verified: false,
                 ),
               ),
-              AppwritePermissionTypeModel.write(AppwritePermissionRoleModel.team(teamId: '')),
-              AppwritePermissionTypeModel.write(AppwritePermissionRoleModel.team(teamId: 'vcx')),
-              AppwritePermissionTypeModel.write(AppwritePermissionRoleModel.teamRole(teamId: '', role: '')),
-              AppwritePermissionTypeModel.write(AppwritePermissionRoleModel.teamRole(teamId: '*rYi3wP', role: '')),
-              AppwritePermissionTypeModel.write(AppwritePermissionRoleModel.teamRole(teamId: '', role: 'WQYWru')),
-              AppwritePermissionTypeModel.write(AppwritePermissionRoleModel.teamRole(teamId: 'u65M3r', role: '^g8@')),
-              AppwritePermissionTypeModel.write(AppwritePermissionRoleModel.member(membershipId: '')),
-              AppwritePermissionTypeModel.write(AppwritePermissionRoleModel.member(membershipId: '#&*5')),
+              AppwritePermissionTypeDto.write(AppwritePermissionRoleDto.team(teamId: '')),
+              AppwritePermissionTypeDto.write(AppwritePermissionRoleDto.team(teamId: 'vcx')),
+              AppwritePermissionTypeDto.write(AppwritePermissionRoleDto.teamRole(teamId: '', role: '')),
+              AppwritePermissionTypeDto.write(AppwritePermissionRoleDto.teamRole(teamId: '*rYi3wP', role: '')),
+              AppwritePermissionTypeDto.write(AppwritePermissionRoleDto.teamRole(teamId: '', role: 'WQYWru')),
+              AppwritePermissionTypeDto.write(AppwritePermissionRoleDto.teamRole(teamId: 'u65M3r', role: '^g8@')),
+              AppwritePermissionTypeDto.write(AppwritePermissionRoleDto.member(membershipId: '')),
+              AppwritePermissionTypeDto.write(AppwritePermissionRoleDto.member(membershipId: '#&*5')),
             ],
           ),
           'EeC'
@@ -585,7 +585,7 @@ void main() {
           final result = await dataSource.createSingle(creationModel);
 
           verify(() => logger.error(exception.toString())).called(1);
-          expect(result, const Err<AppwriteQuestionModel, String>('Unable to create question on Appwrite'));
+          expect(result, const Err<AppwriteQuestionDto, String>('Unable to create question on Appwrite'));
         });
       }
     });
@@ -608,7 +608,7 @@ void main() {
               'categories': <String>[],
             },
           ),
-          const AppwriteQuestionModel(
+          const AppwriteQuestionDto(
             id: '',
             title: '',
             options: [],
@@ -643,13 +643,13 @@ void main() {
               'profile_': 'mKdE0u',
             },
           ),
-          const AppwriteQuestionModel(
+          const AppwriteQuestionDto(
             id: 'k2Kao43',
             title: 'v5l!@',
             options: [
-              AppwriteQuestionOptionModel(description: '7T5Tm0p', isCorrect: false),
-              AppwriteQuestionOptionModel(description: '!D@g3', isCorrect: true),
-              AppwriteQuestionOptionModel(description: 'V%#BGZ', isCorrect: false),
+              AppwriteQuestionOptionDto(description: '7T5Tm0p', isCorrect: false),
+              AppwriteQuestionOptionDto(description: '!D@g3', isCorrect: true),
+              AppwriteQuestionOptionDto(description: 'V%#BGZ', isCorrect: false),
             ],
             difficulty: 'Tw&N9dD',
             description: 'JLzh',
@@ -680,7 +680,7 @@ void main() {
 
           final result = await dataSource.createSingle(creationModelMock);
 
-          expect(result, Ok<AppwriteQuestionModel, String>(expectedModel));
+          expect(result, Ok<AppwriteQuestionDto, String>(expectedModel));
         });
       }
     });
@@ -847,7 +847,7 @@ void main() {
               'profile_': null,
             },
           ),
-          const AppwriteQuestionModel(
+          const AppwriteQuestionDto(
             id: '',
             title: '',
             options: [],
@@ -882,19 +882,19 @@ void main() {
               'profile_': 'OX8BLEUE',
             },
           ),
-          const AppwriteQuestionModel(
+          const AppwriteQuestionDto(
             id: 'k2Kao43',
             title: 'v5l!@',
             options: [
-              AppwriteQuestionOptionModel(
+              AppwriteQuestionOptionDto(
                 description: '7T5Tm0p',
                 isCorrect: false,
               ),
-              AppwriteQuestionOptionModel(
+              AppwriteQuestionOptionDto(
                 description: '!D@g3',
                 isCorrect: true,
               ),
-              AppwriteQuestionOptionModel(
+              AppwriteQuestionOptionDto(
                 description: 'V%#BGZ',
                 isCorrect: false,
               ),
@@ -952,7 +952,7 @@ void main() {
       group('with $databaseId as database id and $collectionId as collection id', () {
         group('should return expected', () {
           for (final values in [
-            (DocumentList(total: 0, documents: []), const AppwriteQuestionListModel(total: 0, questions: [])),
+            (DocumentList(total: 0, documents: []), const AppwriteQuestionListDto(total: 0, questions: [])),
             (
               DocumentList(
                 total: 1,
@@ -979,22 +979,22 @@ void main() {
                   ),
                 ],
               ),
-              const AppwriteQuestionListModel(
+              const AppwriteQuestionListDto(
                 total: 1,
                 questions: [
-                  AppwriteQuestionModel(
+                  AppwriteQuestionDto(
                     id: 'k2Kao43',
                     title: 'v5l!@',
                     options: [
-                      AppwriteQuestionOptionModel(
+                      AppwriteQuestionOptionDto(
                         description: '7T5Tm0p',
                         isCorrect: false,
                       ),
-                      AppwriteQuestionOptionModel(
+                      AppwriteQuestionOptionDto(
                         description: '!D@g3',
                         isCorrect: true,
                       ),
-                      AppwriteQuestionOptionModel(
+                      AppwriteQuestionOptionDto(
                         description: 'V%#BGZ',
                         isCorrect: false,
                       ),
@@ -1024,7 +1024,7 @@ void main() {
                 ..appwriteQuestionCollectionId = collectionId;
               final result = await dataSource.getAll();
 
-              expect(result, Ok<AppwriteQuestionListModel, AppwriteErrorModel>(expected));
+              expect(result, Ok<AppwriteQuestionListDto, AppwriteErrorDto>(expected));
             });
           }
         });
@@ -1098,11 +1098,11 @@ void main() {
                 channels: [],
                 timestamp: '',
               ),
-              const AppwriteRealtimeQuestionMessageModel(
+              const AppwriteRealtimeQuestionMessageDto(
                 events: [],
                 channels: [],
                 timestamp: '',
-                payload: AppwriteQuestionModel(
+                payload: AppwriteQuestionDto(
                   id: '',
                   title: '',
                   options: [],
@@ -1150,23 +1150,23 @@ void main() {
                 channels: ['NR1', '^o58IQ5', 'No854Z0N'],
                 timestamp: '29O%1',
               ),
-              const AppwriteRealtimeQuestionMessageModel(
+              const AppwriteRealtimeQuestionMessageDto(
                 events: ['&Bp54', r'C*F$!Ah', '*8pg^4'],
                 channels: ['NR1', '^o58IQ5', 'No854Z0N'],
                 timestamp: '29O%1',
-                payload: AppwriteQuestionModel(
+                payload: AppwriteQuestionDto(
                   id: 'k2Kao43',
                   title: 'v5l!@',
                   options: [
-                    AppwriteQuestionOptionModel(
+                    AppwriteQuestionOptionDto(
                       description: '7T5Tm0p',
                       isCorrect: false,
                     ),
-                    AppwriteQuestionOptionModel(
+                    AppwriteQuestionOptionDto(
                       description: '!D@g3',
                       isCorrect: true,
                     ),
-                    AppwriteQuestionOptionModel(
+                    AppwriteQuestionOptionDto(
                       description: 'V%#BGZ',
                       isCorrect: false,
                     ),
@@ -1185,7 +1185,7 @@ void main() {
           ]) {
             test(values.toString(), () async {
               final dummyRealtimeMessage = values[0] as RealtimeMessage;
-              final expectedAppwriteRealtimeQuestionMessageModel = values[1] as AppwriteRealtimeQuestionMessageModel;
+              final expectedAppwriteRealtimeQuestionMessageModel = values[1] as AppwriteRealtimeQuestionMessageDto;
 
               final realtimeSubscriptionMock = _MockRealtimeSubscription();
 
@@ -1206,7 +1206,7 @@ void main() {
 
 class _MockAppwriteWrapper extends Mock implements AppwriteWrapper {}
 
-class _AppwriteQuestionCreationModelMock extends Mock implements AppwriteQuestionCreationModel {}
+class _AppwriteQuestionCreationModelMock extends Mock implements CreateAppwriteQuestionDto {}
 
 class _MockDatabases extends Mock implements Databases {}
 

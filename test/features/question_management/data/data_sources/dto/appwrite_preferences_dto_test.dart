@@ -1,16 +1,16 @@
 import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/preferences_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_preferences_dto.dart';
 
 void main() {
   group('fromAppwriteModel', () {
     for (final testCase in [
-      (<String, dynamic>{}, const PreferencesModel(data: <String, dynamic>{})),
+      (<String, dynamic>{}, const AppwritePreferencesDto(data: <String, dynamic>{})),
       (
         <String, dynamic>{
           'q5GkCY2D': '1nBJ39d',
         },
-        const PreferencesModel(
+        const AppwritePreferencesDto(
           data: <String, dynamic>{
             'q5GkCY2D': '1nBJ39d',
           },
@@ -22,7 +22,7 @@ void main() {
           'NLZCPJ': 'GR4lCi',
           'QHRU': 8.36,
         },
-        const PreferencesModel(
+        const AppwritePreferencesDto(
           data: <String, dynamic>{
             '8jE4': 536,
             'NLZCPJ': 'GR4lCi',
@@ -34,7 +34,7 @@ void main() {
       test('${testCase.$1} -> ${testCase.$2}', () {
         final appwriteModel = Preferences.fromMap(testCase.$1);
 
-        final model = PreferencesModel.fromAppwriteModel(appwriteModel);
+        final model = AppwritePreferencesDto.fromAppwriteModel(appwriteModel);
 
         expect(model, testCase.$2);
       });
