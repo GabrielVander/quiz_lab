@@ -1,107 +1,101 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:okay/okay.dart';
-import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/custom_implementations/rust_result.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
-import 'package:quiz_lab/features/answer_question/domain/usecases/get_question_with_id.dart';
-import 'package:uuid/uuid.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:quiz_lab/features/answer_question/domain/entities/answerable_question.dart';
+import 'package:quiz_lab/features/answer_question/domain/usecases/retrieve_question.dart';
 
 part 'question_answering_state.dart';
 
-class QuestionAnsweringCubit extends Cubit<AnsweringScreenState> {
+class QuestionAnsweringCubit extends Cubit<QuestionAnsweringState> {
   QuestionAnsweringCubit({required this.logger, required this.getSingleQuestionUseCase})
-      : super(const AnsweringScreenInitial());
+      : super(const QuestionAnsweringInitial());
 
   final QuizLabLogger logger;
-  final GetQuestionWithId getSingleQuestionUseCase;
+  final RetrieveQuestion getSingleQuestionUseCase;
 
-  List<_AnswerOptionState> _answers = [];
+  List<String> _correctAnswers = [];
+  QuestionViewModel? _questionViewModel;
 
   Future<void> loadQuestion(String? questionId) async {
     logger.debug('Loading question...');
 
-    await _emit(const AnsweringScreenLoading());
+    await _emitLoadingState();
 
-    (await (await _getQuestionForId(questionId)).inspectAsync((question) async => _emitQuestion(question)))
+    (await (await _retrieveQuestion(questionId))
+            .inspect(_saveCorrectAnswers)
+            .map(_toViewModel)
+            .inspect((value) => _questionViewModel = value)
+            .inspectAsync((_) async => _emitQuestionViewModelUpdated()))
         .mapErr((_) => 'Unable to load question')
         .inspectErr(logger.error)
-        .inspectErr((error) async => _emit(AnsweringScreenError(message: error)));
+        .inspectErr((error) async => _emitErrorState(error));
   }
 
-  Future<void> _emitQuestion(Question question) async {
-    _cacheAnswers(question);
-    await _signalTitleUpdate(question);
-    await _signalDescriptionUpdate(question);
-    await _signalDifficultyUpdate(question);
-    await _signalAnswersUpdate(question);
+  Future<void> _emitLoadingState() => _asyncEmit(const QuestionAnsweringLoading());
+
+  Future<void> _emitErrorState(String error) => _asyncEmit(QuestionAnsweringError(message: error));
+
+  void _saveCorrectAnswers(AnswerableQuestion question) {
+    _correctAnswers = question.answers.where((answer) => answer.isCorrect).map((answer) => answer.id).toList();
   }
 
-  Future<void> _signalAnswersUpdate(Question question) async {
-    await _emit(
-      AnsweringScreenAnswersUpdated(
-        value: _answers.map((a) => QuestionAnswerInfo(id: a.id, title: a.title)).toList()..shuffle(),
-      ),
-    );
-  }
+  QuestionViewModel _toViewModel(AnswerableQuestion question) => QuestionViewModel(
+        title: question.title,
+        description: question.description,
+        difficulty: _mapDifficulty(question.difficulty),
+        answers: question.answers
+            .map(
+              (answer) => AnswerViewModel(
+                id: answer.id,
+                title: answer.description,
+                isSelected: false,
+                isCorrect: _correctAnswers.contains(answer.id),
+              ),
+            )
+            .toList(),
+        showResult: false,
+        isAnswerButtonEnabled: false,
+        isAnswerButtonVisible: true,
+      );
 
-  void _cacheAnswers(Question question) {
-    _answers.clear();
-    _answers = question.answerOptions.map((option) {
-      final id = const ResourceUuidGenerator(uuid: Uuid()).generate();
-
-      return _AnswerOptionState(id: id, title: option.description, isSelected: false, isCorrect: option.isCorrect);
-    }).toList();
-  }
-
-  Future<void> _signalDescriptionUpdate(Question question) async {
-    await _emit(AnsweringScreenDescriptionUpdated(value: question.description));
-  }
-
-  Future<void> _signalDifficultyUpdate(Question question) async {
-    await _emit(AnsweringScreenDifficultyUpdated(value: _mapDifficulty(question.difficulty)));
-  }
-
-  Future<void> _signalTitleUpdate(Question question) async {
-    await _emit(AnsweringScreenTitleUpdated(value: question.shortDescription));
+  Future<void> _emitQuestionViewModelUpdated() async {
+    await _asyncEmit(QuestionAnsweringQuestionViewModelUpdated(viewModel: _questionViewModel!));
   }
 
   Future<void> onOptionSelected(String optionId) async {
-    _answers = _answers.map((answer) {
-      if (answer.id == optionId) {
-        return answer.copyWith(isSelected: !answer.isSelected);
-      }
+    _questionViewModel = _questionViewModel?.copyWith(
+      isAnswerButtonEnabled: true,
+      answers: _questionViewModel!.answers.map((answer) {
+        if (answer.id == optionId) {
+          return answer.copyWith(isSelected: true);
+        }
 
-      return answer.copyWith(isSelected: false);
-    }).toList();
-    await _emit(AnsweringScreenAnswerOptionWasSelected(id: optionId));
-    await _emit(const AnsweringScreenAnswerButtonEnabled());
+        return answer.copyWith(isSelected: false);
+      }).toList(),
+    );
+
+    await _emitQuestionViewModelUpdated();
   }
 
   Future<void> onAnswer() async {
-    await _emit(const AnsweringScreenHideAnswerButton());
-
-    final correctAnswers = _answers.where((answer) => answer.isCorrect);
-    final firstCorrectAnswer = correctAnswers.first.id;
-    final firstSelectedAnswer = _answers.firstWhere((answer) => answer.isSelected).id;
-
-    await _emit(
-      AnsweringScreenShowResult(
-        correctAnswerId: firstCorrectAnswer,
-        selectedAnswerId: firstSelectedAnswer,
-      ),
+    _questionViewModel = _questionViewModel?.copyWith(
+      showResult: true,
+      isAnswerButtonVisible: false,
     );
+    await _emitQuestionViewModelUpdated();
   }
 
-  Future<void> _emit(AnsweringScreenState state) async {
+  Future<void> _asyncEmit(QuestionAnsweringState state) async {
     emit(state);
     await Future<void>.delayed(const Duration(milliseconds: 15));
   }
 
-  Future<Result<Question, void>> _getQuestionForId(String? questionId) async =>
-      (await getSingleQuestionUseCase.call(questionId)).mapErr((_) {});
+  Future<Result<AnswerableQuestion, Unit>> _retrieveQuestion(String? questionId) async =>
+      (await getSingleQuestionUseCase.call(questionId)).inspectErr(logger.error).mapErr((_) => unit);
 
   String _mapDifficulty(QuestionDifficulty difficulty) {
     switch (difficulty) {
@@ -117,8 +111,58 @@ class QuestionAnsweringCubit extends Cubit<AnsweringScreenState> {
   }
 }
 
-class _AnswerOptionState extends Equatable {
-  const _AnswerOptionState({
+class QuestionViewModel extends Equatable {
+  const QuestionViewModel({
+    required this.title,
+    required this.description,
+    required this.difficulty,
+    required this.answers,
+    required this.showResult,
+    required this.isAnswerButtonEnabled,
+    required this.isAnswerButtonVisible,
+  });
+
+  final String title;
+  final String description;
+  final String difficulty;
+  final List<AnswerViewModel> answers;
+  final bool showResult;
+  final bool isAnswerButtonVisible;
+  final bool isAnswerButtonEnabled;
+
+  @override
+  List<Object?> get props => [
+        title,
+        description,
+        difficulty,
+        answers,
+        showResult,
+        isAnswerButtonEnabled,
+        isAnswerButtonVisible,
+      ];
+
+  QuestionViewModel copyWith({
+    String? title,
+    String? description,
+    String? difficulty,
+    List<AnswerViewModel>? answers,
+    bool? showResult,
+    bool? isAnswerButtonEnabled,
+    bool? isAnswerButtonVisible,
+  }) =>
+      QuestionViewModel(
+        title: title ?? this.title,
+        description: description ?? this.description,
+        difficulty: difficulty ?? this.difficulty,
+        answers: answers ?? this.answers,
+        showResult: showResult ?? this.showResult,
+        isAnswerButtonEnabled: isAnswerButtonEnabled ?? this.isAnswerButtonEnabled,
+        isAnswerButtonVisible: isAnswerButtonVisible ?? this.isAnswerButtonVisible,
+      );
+}
+
+class AnswerViewModel extends Equatable {
+  const AnswerViewModel({
     required this.id,
     required this.title,
     required this.isSelected,
@@ -130,20 +174,19 @@ class _AnswerOptionState extends Equatable {
   final bool isSelected;
   final bool isCorrect;
 
-  _AnswerOptionState copyWith({
+  @override
+  List<Object> get props => [id, title, isSelected, isCorrect];
+
+  AnswerViewModel copyWith({
     String? id,
     String? title,
     bool? isSelected,
     bool? isCorrect,
-  }) {
-    return _AnswerOptionState(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      isSelected: isSelected ?? this.isSelected,
-      isCorrect: isCorrect ?? this.isCorrect,
-    );
-  }
-
-  @override
-  List<Object> get props => [id, title, isSelected, isCorrect];
+  }) =>
+      AnswerViewModel(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        isSelected: isSelected ?? this.isSelected,
+        isCorrect: isCorrect ?? this.isCorrect,
+      );
 }

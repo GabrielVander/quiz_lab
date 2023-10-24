@@ -10,9 +10,10 @@ import 'package:quiz_lab/core/utils/appwrite_references_config.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/environment.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
+import 'package:quiz_lab/core/utils/resource_uuid_generator.dart';
 import 'package:quiz_lab/features/answer_question/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/answer_question/domain/repositories/question_repository.dart';
-import 'package:quiz_lab/features/answer_question/domain/usecases/get_question_with_id.dart';
+import 'package:quiz_lab/features/answer_question/domain/usecases/retrieve_question.dart';
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
@@ -21,6 +22,7 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/login_pa
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
+import 'package:uuid/uuid.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,18 +74,19 @@ void setUpAnswerQuestionDependencies() => dependencyInjection
     (di) => QuestionRepositoryImpl(
       logger: QuizLabLoggerImpl<QuestionRepositoryImpl>(),
       questionsAppwriteDataSource: di.get(),
+      uuidGenerator: const ResourceUuidGenerator(uuid: Uuid()),
     ),
   )
-  ..registerBuilder<GetQuestionWithId>(
-    (di) => GetQuestionWithIdImpl(
-      logger: QuizLabLoggerImpl<GetQuestionWithId>(),
+  ..registerBuilder<RetrieveQuestion>(
+    (di) => RetrieveQuestionImpl(
+      logger: QuizLabLoggerImpl<RetrieveQuestion>(),
       questionRepository: di.get(),
     ),
   )
   ..registerBuilder<QuestionAnsweringCubit>(
     (di) => QuestionAnsweringCubit(
       logger: QuizLabLoggerImpl<QuestionAnsweringCubit>(),
-      getSingleQuestionUseCase: di.get<GetQuestionWithId>(),
+      getSingleQuestionUseCase: di.get<RetrieveQuestion>(),
     ),
   );
 

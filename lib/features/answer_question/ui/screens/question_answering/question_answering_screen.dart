@@ -26,7 +26,7 @@ class QuestionAnsweringScreen extends HookWidget {
       cubit,
       (bloc, current, context) => WidgetsBinding.instance
           .addPostFrameCallback((_) => GoRouter.of(context).goNamed(Routes.questionsOverview.name)),
-      listenWhen: (current) => current is AnsweringScreenGoHome,
+      listenWhen: (current) => current is QuestionAnsweringGoHome,
     );
 
     useEffect(
@@ -41,31 +41,39 @@ class QuestionAnsweringScreen extends HookWidget {
     return SafeArea(
       child: HookBuilder(
         builder: (context) {
-          final state = useBlocBuilder(
-            cubit,
-            buildWhen: (current) =>
-                [AnsweringScreenHideAnswerButton, AnsweringScreenShowAnswerButton].contains(current.runtimeType),
-          );
+          final state = useBlocBuilder(cubit);
 
           return Scaffold(
             appBar: const AnswerAppBar(),
-            bottomSheet: state is AnsweringScreenHideAnswerButton ? null : AnswerButton(cubit: cubit),
+            bottomSheet: state is QuestionAnsweringQuestionViewModelUpdated && state.viewModel.isAnswerButtonVisible
+                ? AnswerButton(
+                    onPressed: cubit.onAnswer,
+                    isButtonEnabled: state.viewModel.isAnswerButtonEnabled,
+                  )
+                : null,
             body: HookBuilder(
               builder: (context) {
                 final state = useBlocBuilder(cubit);
 
-                if (state is AnsweringScreenLoading || state is AnsweringScreenInitial) {
+                if (state is QuestionAnsweringInitial || state is QuestionAnsweringLoading) {
                   return const SimpleLoading();
                 }
 
-                if (state is AnsweringScreenError) {
-                  return Center(child: Text(S.current.genericErrorMessage));
+                if (state is QuestionAnsweringError) {
+                  return Center(child: Text(state.message));
                 }
 
-                return Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: QuestionInfoDisplay(cubit: cubit),
-                );
+                if (state is QuestionAnsweringQuestionViewModelUpdated) {
+                  return Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: QuestionInfoDisplay(
+                      question: state.viewModel,
+                      onAnswerSelected: cubit.onOptionSelected,
+                    ),
+                  );
+                }
+
+                return Center(child: Text(S.current.genericErrorMessage));
               },
             ),
           );

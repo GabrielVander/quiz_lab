@@ -1,31 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/design_system/button/primary.dart';
-import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class AnswerButton extends StatelessWidget {
-  const AnswerButton({required this.cubit, super.key});
+  const AnswerButton({required this.onPressed, required this.isButtonEnabled, super.key});
 
-  final QuestionAnsweringCubit cubit;
+  final Future<void> Function() onPressed;
+  final bool isButtonEnabled;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: HookBuilder(
-        builder: (context) {
-          final state = useBlocBuilder(
-            cubit,
-            buildWhen: (current) => [AnsweringScreenAnswerButtonEnabled].contains(current.runtimeType),
-          );
-
-          return QLPrimaryButton.text(
-            onPressed: state is AnsweringScreenAnswerButtonEnabled ? cubit.onAnswer : null,
-            text: S.of(context).answerQuestionButtonLabel,
-          );
-        },
+      child: QLPrimaryButton.text(
+        onPressed: isButtonEnabled ? onPressed : null,
+        text: S.of(context).answerQuestionButtonLabel,
       ),
     );
   }

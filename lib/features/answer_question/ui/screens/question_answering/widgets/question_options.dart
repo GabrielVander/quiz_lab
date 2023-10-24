@@ -1,83 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
-import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/widgets/loading.dart';
 
 class QuestionOptions extends StatelessWidget {
-  const QuestionOptions({required this.cubit, super.key});
-
-  final QuestionAnsweringCubit cubit;
-
-  @override
-  Widget build(BuildContext context) {
-    return HookBuilder(
-      builder: (context) {
-        final state = useBlocBuilder(cubit, buildWhen: (current) => current is AnsweringScreenAnswersUpdated);
-
-        if (state is AnsweringScreenAnswersUpdated) {
-          return _QuestionOptionsDisplay(cubit: cubit, options: state.value);
-        }
-
-        return const SimpleLoading();
-      },
-    );
-  }
-}
-
-class _QuestionOptionsDisplay extends StatelessWidget {
-  const _QuestionOptionsDisplay({
-    required this.cubit,
-    required this.options,
+  const QuestionOptions({
+    required this.answers,
+    required this.showResult,
+    required this.onAnswerSelected,
+    super.key,
   });
 
-  final QuestionAnsweringCubit cubit;
-  final List<QuestionAnswerInfo> options;
+  final List<AnswerViewModel> answers;
+  final bool showResult;
+  final void Function(String id) onAnswerSelected;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       shrinkWrap: true,
-      itemCount: options.length,
+      itemCount: answers.length,
       separatorBuilder: (context, index) => const SizedBox(height: 15),
-      itemBuilder: (context, index) => _QuestionSingleOption(
-        cubit: cubit,
-        info: options[index],
-      ),
+      itemBuilder: (context, index) {
+        final answer = answers[index];
+
+        return _QuestionSingleOption(
+          key: ValueKey(answer.id),
+          answer: answer,
+          showAsCorrect: showResult && answer.isCorrect,
+          showAsIncorrect: showResult && answer.isSelected,
+          isSelected: answer.isSelected,
+          onChange: showResult ? null : ({bool? newValue}) => onAnswerSelected(answer.id),
+        );
+      },
     );
   }
 }
 
 class _QuestionSingleOption extends StatelessWidget {
   const _QuestionSingleOption({
-    required this.cubit,
-    required this.info,
+    required this.answer,
+    required this.showAsCorrect,
+    required this.showAsIncorrect,
+    required this.isSelected,
+    required this.onChange,
+    super.key,
   });
 
-  final QuestionAnsweringCubit cubit;
-  final QuestionAnswerInfo info;
+  final AnswerViewModel answer;
+  final bool showAsCorrect;
+  final bool showAsIncorrect;
+  final bool isSelected;
+  final void Function({bool? newValue})? onChange;
 
   @override
   Widget build(BuildContext context) {
     return HookBuilder(
       builder: (context) {
-        final state = useBlocBuilder(
-          cubit,
-          buildWhen: (current) => current is AnsweringScreenShowResult,
-        );
-
-        final showResult = state is AnsweringScreenShowResult;
-        final showCorrectAnswer = showResult && state.correctAnswerId == info.id;
-        final showIncorrectAnswer = showResult && state.selectedAnswerId == info.id;
-
         return DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(width: 2),
-            color: showCorrectAnswer
+            color: showAsCorrect
                 ? Theme.of(context).themeColors.mainColors.success.withOpacity(0.2)
-                : showIncorrectAnswer
+                : showAsIncorrect
                     ? Theme.of(context).themeColors.mainColors.error.withOpacity(0.2)
                     : null,
           ),
@@ -85,10 +71,17 @@ class _QuestionSingleOption extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(
               children: [
-                _TristateCheckbox(cubit: cubit, optionId: info.id),
+                _TristateCheckbox(
+                  optionId: answer.id,
+                  showResult: showAsCorrect || showAsIncorrect,
+                  isSelected: isSelected,
+                  isCorrect: showAsCorrect,
+                  isIncorrect: showAsIncorrect,
+                  onChange: onChange,
+                ),
                 Flexible(
                   child: Text(
-                    info.title,
+                    answer.title,
                     style: Theme.of(context).textTheme.titleLarge,
                     overflow: TextOverflow.visible,
                   ),
@@ -104,61 +97,58 @@ class _QuestionSingleOption extends StatelessWidget {
 
 class _TristateCheckbox extends HookWidget {
   const _TristateCheckbox({
-    required this.cubit,
     required this.optionId,
+    required this.showResult,
+    required this.isSelected,
+    required this.isCorrect,
+    required this.isIncorrect,
+    required this.onChange,
   });
 
-  final QuestionAnsweringCubit cubit;
   final String optionId;
+  final bool showResult;
+  final bool isSelected;
+  final bool isCorrect;
+  final bool isIncorrect;
+  final void Function({bool? newValue})? onChange;
 
   @override
   Widget build(BuildContext context) {
-    final state = useBlocBuilder(
-      cubit,
-      buildWhen: (current) => current is AnsweringScreenShowResult,
-    );
-
-    final showResult = state is AnsweringScreenShowResult;
-
-    if (showResult && state.correctAnswerId == optionId) {
+    if (showResult && isCorrect) {
       return const _CorrectCheckbox();
     }
 
-    if (showResult && state.selectedAnswerId == optionId) {
+    if (showResult && isIncorrect) {
       return const _IncorrectCheckbox();
     }
 
     return _StandardCheckbox(
-      cubit: cubit,
       optionId: optionId,
       disabled: showResult,
+      selected: isSelected,
+      onChange: onChange,
     );
   }
 }
 
 class _StandardCheckbox extends HookWidget {
   const _StandardCheckbox({
-    required this.cubit,
+    required this.onChange,
     required this.optionId,
+    required this.selected,
     this.disabled = false,
   });
 
-  final QuestionAnsweringCubit cubit;
+  final void Function({bool? newValue})? onChange;
   final String optionId;
   final bool disabled;
+  final bool selected;
 
   @override
-  Widget build(BuildContext context) {
-    final state = useBlocBuilder(
-      cubit,
-      buildWhen: (current) => current is AnsweringScreenAnswerOptionWasSelected,
-    );
-
-    return _CustomCheckbox(
-      value: !disabled && state is AnsweringScreenAnswerOptionWasSelected && state.id == optionId,
-      onChanged: ({newValue}) => cubit.onOptionSelected(optionId),
-    );
-  }
+  Widget build(BuildContext context) => _CustomCheckbox(
+        value: !disabled && selected,
+        onChanged: onChange,
+      );
 }
 
 class _CorrectCheckbox extends StatelessWidget {

@@ -6,9 +6,10 @@ import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/widgets/question_title.dart';
 
 class QuestionInfoDisplay extends StatelessWidget {
-  const QuestionInfoDisplay({required this.cubit, super.key});
+  const QuestionInfoDisplay({required this.question, required this.onAnswerSelected, super.key});
 
-  final QuestionAnsweringCubit cubit;
+  final QuestionViewModel question;
+  final void Function(String) onAnswerSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +18,21 @@ class QuestionInfoDisplay extends StatelessWidget {
       children: [
         Column(
           children: [
-            QuestionTitle(cubit: cubit),
+            QuestionTitle(value: question.title),
             const SizedBox(height: 10),
-            QuestionDifficulty(cubit: cubit),
+            QuestionDifficulty(value: question.difficulty),
           ],
         ),
         Expanded(
-          child: QuestionDescription(cubit: cubit),
+          child: QuestionDescription(value: question.description),
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 60),
-          child: QuestionOptions(cubit: cubit),
+          child: QuestionOptions(
+            answers: question.answers,
+            showResult: question.showResult,
+            onAnswerSelected: onAnswerSelected,
+          ),
         ),
       ],
     );
