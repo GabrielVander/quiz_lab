@@ -5,7 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
+import 'package:quiz_lab/core/ui/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';

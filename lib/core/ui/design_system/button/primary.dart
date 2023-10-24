@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/design_system/button/core.dart';
+import 'package:quiz_lab/core/ui/design_system/button/core.dart';
 
 class QLPrimaryButton extends StatelessWidget {
   const QLPrimaryButton._({

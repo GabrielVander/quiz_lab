@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/design_system/button/core.dart';
+import 'package:quiz_lab/core/ui/design_system/button/core.dart';
 
-class QLLinkButton extends StatelessWidget {
-  const QLLinkButton._({
+class QLSubtleLinkButton extends StatelessWidget {
+  const QLSubtleLinkButton._({
     required this.onPressed,
     required this.child,
     required this.loading,
     super.key,
   });
 
-  factory QLLinkButton.text({
+  factory QLSubtleLinkButton.text({
     required String text,
     void Function()? onPressed,
     bool loading = false,
     Key? key,
   }) =>
-      _QLLinkButtonText(
+      _QLSubtleLinkButtonText(
         text: text,
         onPressed: onPressed,
         loading: loading,
         key: key,
       );
 
-  factory QLLinkButton.icon({
+  factory QLSubtleLinkButton.icon({
     required IconData iconData,
     void Function()? onPressed,
     bool loading = false,
     Key? key,
   }) =>
-      _QLLinkIconButton(
+      _QLSubtleLinkIconButton(
         data: iconData,
         onPressed: onPressed,
         color: _textColor,
@@ -36,9 +36,9 @@ class QLLinkButton extends StatelessWidget {
         key: key,
       );
 
-  static const Color _textColor = Color(0xFF0C66E4);
-  static const Color _pressedTextColor = Color(0xFF0055CC);
-  static const Color _backgroundColor = Colors.transparent;
+  static const Color _textColor = Color(0xFF44546F);
+  static const Color _defaultColor = Colors.transparent;
+  static const Color _pressedTextColor = Color(0xFF172B4D);
   final Widget child;
   final bool loading;
   final void Function()? onPressed;
@@ -47,9 +47,9 @@ class QLLinkButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return QLButton(
       onPressed: onPressed,
-      backgroundColor: _backgroundColor,
+      backgroundColor: _defaultColor,
       spacing: QLButtonSpacing.defaultSpacing,
-      backgroundColorOnHover: _backgroundColor,
+      backgroundColorOnHover: _defaultColor,
       backgroundColorOnPressed: _pressedTextColor,
       textColor: _textColor,
       textColorOnPressed: _pressedTextColor,
@@ -60,8 +60,8 @@ class QLLinkButton extends StatelessWidget {
   }
 }
 
-class _QLLinkButtonText extends QLLinkButton {
-  _QLLinkButtonText({
+class _QLSubtleLinkButtonText extends QLSubtleLinkButton {
+  _QLSubtleLinkButtonText({
     required String text,
     required super.onPressed,
     required super.loading,
@@ -69,8 +69,8 @@ class _QLLinkButtonText extends QLLinkButton {
   }) : super._(child: QLButtonText(text: text));
 }
 
-class _QLLinkIconButton extends QLLinkButton {
-  _QLLinkIconButton({
+class _QLSubtleLinkIconButton extends QLSubtleLinkButton {
+  _QLSubtleLinkIconButton({
     required IconData data,
     required Color color,
     required super.onPressed,

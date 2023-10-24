@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
+import 'package:quiz_lab/core/ui/themes/light_theme.dart';
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
 
 class QuestionOptions extends StatelessWidget {

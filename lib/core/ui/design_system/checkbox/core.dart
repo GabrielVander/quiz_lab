@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
+import 'package:quiz_lab/core/ui/themes/light_theme.dart';
 
 class QLCheckbox extends StatelessWidget {
   const QLCheckbox._({

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/design_system/button/primary.dart';
+import 'package:quiz_lab/core/ui/design_system/button/primary.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class AnswerButton extends StatelessWidget {

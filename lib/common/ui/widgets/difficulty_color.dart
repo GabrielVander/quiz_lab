@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/themes/extensions.dart';
+import 'package:quiz_lab/core/ui/themes/extensions.dart';
 
 class DifficultyColor extends StatelessWidget {
   const DifficultyColor({

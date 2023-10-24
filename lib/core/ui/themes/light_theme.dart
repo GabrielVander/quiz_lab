@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_lab/core/presentation/themes/extensions.dart';
-import 'package:quiz_lab/core/presentation/themes/quiz_lab_theme.dart';
+import 'package:quiz_lab/core/ui/themes/extensions.dart';
+import 'package:quiz_lab/core/ui/themes/quiz_lab_theme.dart';
 
 final quizLabLightTheme = QuizLabTheme.light();
 

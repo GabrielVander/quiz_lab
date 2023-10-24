@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/presentation/quiz_lab_router.dart';
-import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
+import 'package:quiz_lab/core/ui/quiz_lab_router.dart';
+import 'package:quiz_lab/core/ui/themes/light_theme.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class QuizLabApplication extends StatelessWidget {
