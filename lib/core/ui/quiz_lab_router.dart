@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_lab/common/ui/screens/configurations/configurations_screen.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/question_answering_screen.dart';
@@ -128,6 +129,14 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
           return LoginPage(
             loginPageCubit: loginPageCubit,
           );
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: Routes.configuration.name,
+        path: Routes.configuration.path,
+        builder: (BuildContext context, GoRouterState state) {
+          return ConfigurationsScreen();
         },
       ),
     ],

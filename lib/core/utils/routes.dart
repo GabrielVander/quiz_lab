@@ -4,7 +4,8 @@ enum Routes {
   resultsOverview(name: 'resultsOverview', path: '/results'),
   createQuestion(name: 'createQuestion', path: 'new'),
   displayQuestion(name: 'displayQuestion', path: ':id'),
-  login(name: 'login', path: '/login');
+  login(name: 'login', path: '/login'),
+  configuration(name: 'configuration', path: '/configuration');
 
   const Routes({required this.name, required this.path});
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_lab/common/ui/widgets/beta_banner_display.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/breakpoint.dart';
 import 'package:quiz_lab/core/utils/responsiveness_utils/screen_breakpoints.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/quiz_lab_icon.dart';
 
 class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -19,10 +21,10 @@ class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
     return BetaBannerDisplay(
       child: Padding(
         padding: padding,
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Column(
+            const Column(
               children: [
                 Expanded(
                   child: QuizLabIcon(
@@ -31,10 +33,12 @@ class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ],
             ),
-            Expanded(
+            const Expanded(
               child: Title(),
             ),
-            SettingsAction(),
+            SettingsAction(
+              onPressed: () => GoRouter.of(context).pushNamed(Routes.configuration.name),
+            ),
           ],
         ),
       ),
@@ -82,15 +86,15 @@ class Title extends StatelessWidget {
 }
 
 class SettingsAction extends StatelessWidget {
-  const SettingsAction({
-    super.key,
-  });
+  const SettingsAction({super.key, this.onPressed});
+
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
       key: const ValueKey('appBarSettingsButton'),
-      onPressed: () => {},
+      onPressed: onPressed,
       icon: Icon(
         Icons.settings,
         color: Theme.of(context).textTheme.titleLarge?.color,
