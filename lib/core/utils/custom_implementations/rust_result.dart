@@ -122,7 +122,11 @@ extension AsyncResult<T, E> on Result<T, E> {
   /// Result<int, String> y = x.andThen(parseToInt);
   /// expect(y, Ok(4));
   /// ```
-  // Result<U, E> andThen<U>(Result<U, E> Function(T value) okMap);
+  FutureOr<Result<U, E>> andThenAsync<U>(FutureOr<Result<U, E>> Function(T value) okMap) {
+    if (runtimeType == Ok<T, E>) return (this as Ok<T, E>).andThenAsync<U>(okMap);
+
+    return (this as Err<T, E>).andThenAsync<U>(okMap);
+  }
 
   /// Returns `res` if the result is `Err`,
   /// otherwise returns the `Ok` (success) value of `this`.
@@ -148,7 +152,17 @@ extension AsyncResult<T, E> on Result<T, E> {
   /// Result<int, String> y = Ok(100);
   /// expect(x.or(y), Ok<int, String>(2));
   /// ```
-  // Result<T, F> or<F>(Result<T, F> res);
+  FutureOr<Result<T, F>> orAsync<F>(FutureOr<Result<T, F>> res) async {
+    if (runtimeType == Ok<T, F>) return (this as Ok<T, F>).orAsync<F>(res);
+
+    return (this as Err<T, F>).orAsync<F>(res);
+  }
+
+  FutureOr<Result<T, F>> orExecuteAsync<F>(FutureOr<Result<T, F>> Function() res) async {
+    if (runtimeType == Ok<T, F>) return (this as Ok<T, F>).orExecuteAsync<F>(res);
+
+    return (this as Err<T, F>).orExecuteAsync<F>(res);
+  }
 
   /// Calls `op` if the result is `Err`,
   /// otherwise returns the `Ok` value of `this`.
@@ -810,8 +824,20 @@ extension OkAsyncExt<T, E> on Ok<T, E> {
 
     return this;
   }
+
+  FutureOr<Result<T, E>> orAsync<F>(FutureOr<Result<T, E>> res) async => this;
+
+  FutureOr<Result<T, E>> orExecuteAsync<F>(FutureOr<Result<T, E>> Function() res) async => this;
+
+  FutureOr<Result<U, E>> andThenAsync<U>(FutureOr<Result<U, E>> Function(T value) okMap) => okMap(v);
 }
 
 extension ErrAsyncExt<T, E> on Err<T, E> {
   FutureOr<Result<T, E>> inspectAsync(FutureOr<void> Function(T value) f) async => this;
+
+  FutureOr<Result<T, E>> orAsync<F>(FutureOr<Result<T, E>> res) async => res;
+
+  FutureOr<Result<T, U>> orExecuteAsync<U>(FutureOr<Result<T, U>> Function() res) async => await res();
+
+  FutureOr<Result<U, E>> andThenAsync<U>(FutureOr<Result<U, E>> Function(T value) okMap) async => this as Err<U, E>;
 }
