@@ -5,7 +5,7 @@ import 'package:quiz_lab/common/data/dto/package_info_dto.dart';
 import 'package:quiz_lab/core/utils/custom_implementations/rust_result.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/application_version/domain/repositories/application_version_repository.dart';
+import 'package:quiz_lab/features/application_information/domain/repositories/application_version_repository.dart';
 
 class ApplicationVersionRepositoryImpl implements ApplicationVersionRepository {
   ApplicationVersionRepositoryImpl({

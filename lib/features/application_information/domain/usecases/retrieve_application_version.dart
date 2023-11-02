@@ -1,6 +1,6 @@
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/features/application_version/domain/repositories/application_version_repository.dart';
+import 'package:quiz_lab/features/application_information/domain/repositories/application_version_repository.dart';
 
 // ignore: one_member_abstracts
 abstract interface class RetrieveApplicationVersion {
