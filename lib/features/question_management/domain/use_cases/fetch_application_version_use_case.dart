@@ -2,6 +2,7 @@ import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/wrappers/package_info_wrapper.dart';
 
+@Deprecated('Use [RetrieveApplicationVersionUseCase] instead')
 // ignore: one_member_abstracts
 abstract class FetchApplicationVersionUseCase {
   String execute();
