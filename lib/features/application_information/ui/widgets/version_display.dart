@@ -1,37 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:quiz_lab/core/ui/themes/light_theme.dart';
-import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/features/application_information/domain/usecases/retrieve_application_version.dart';
+import 'package:quiz_lab/features/application_information/ui/bloc/version_display/version_display_cubit.dart';
 
-class VersionDisplay extends StatelessWidget {
+class VersionDisplay extends HookWidget {
   const VersionDisplay({
-    required QuizLabLogger logger,
-    required RetrieveApplicationVersion retrieveApplicationVersion,
+    required VersionDisplayCubit cubit,
     super.key,
-  })  : _logger = logger,
-        _retrieveApplicationVersion = retrieveApplicationVersion;
+  }) : _cubit = cubit;
 
-  final QuizLabLogger _logger;
-  final RetrieveApplicationVersion _retrieveApplicationVersion;
+  final VersionDisplayCubit _cubit;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _retrieveApplicationVersion(),
-      builder: (context, snap) {
-        final hasData = snap.hasData;
+    useEffect(
+      () {
+        _cubit.displayApplicationVersion();
 
-        if (hasData) {
-          final result = snap.data!.inspectErr(_logger.error);
+        return null;
+      },
+      [],
+    );
 
-          return result.when(
-            ok: (version) => Text('v$version'),
-            err: (e) => Text(e, style: TextStyle(color: Theme.of(context).themeColors.mainColors.error)),
+    final state = useBlocBuilder(_cubit);
+
+    useBlocListener<VersionDisplayCubit, VersionDisplayState>(
+      _cubit,
+      (bloc, current, context) {
+        if (current.errorCode != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text(current.errorCode!, style: TextStyle(color: Theme.of(context).themeColors.mainColors.error)),
+            ),
           );
         }
-
-        return const CircularProgressIndicator();
       },
+      listenWhen: (current) => current.errorCode != null,
     );
+
+    if (state.isLoading) {
+      return const CircularProgressIndicator();
+    }
+
+    return Text(state.version);
   }
 }
