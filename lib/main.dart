@@ -3,6 +3,8 @@ import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:quiz_lab/common/data/data_sources/cache_data_source.dart';
+import 'package:quiz_lab/common/data/data_sources/package_info_data_source.dart';
 import 'package:quiz_lab/core/constants.dart';
 import 'package:quiz_lab/core/ui/quiz_lab_application.dart';
 import 'package:quiz_lab/core/ui/quiz_lab_router.dart';
@@ -15,6 +17,10 @@ import 'package:quiz_lab/features/answer_question/data/repositories/question_rep
 import 'package:quiz_lab/features/answer_question/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/answer_question/domain/usecases/retrieve_question.dart';
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
+import 'package:quiz_lab/features/application_information/data/repositories/application_version_repository_impl.dart';
+import 'package:quiz_lab/features/application_information/domain/repositories/application_version_repository.dart';
+import 'package:quiz_lab/features/application_information/domain/usecases/retrieve_application_version.dart';
+import 'package:quiz_lab/features/application_information/ui/bloc/version_display/version_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
@@ -38,6 +44,7 @@ void main() async {
         questionsOverviewCubit: dependencyInjection.get<QuestionsOverviewCubit>(),
         networkCubit: dependencyInjection.get<NetworkCubit>(),
         checkIfUserIsLoggedInUseCase: dependencyInjection.get<CheckIfUserIsLoggedInUseCase>(),
+        versionDisplayCubit: dependencyInjection.get(),
       ),
     ),
   );
@@ -66,10 +73,29 @@ Future<void> _setUpInjections() async {
     ..addSetup(questionManagementDiSetup)
     ..setUp();
 
-  setUpAnswerQuestionDependencies();
+  _setUpCommonDependencies();
+  _setUpFeaturesDependencies();
 }
 
-void setUpAnswerQuestionDependencies() => dependencyInjection
+void _setUpFeaturesDependencies() {
+  _setUpAnswerQuestionDependencies();
+  _setApplicationInformationDependencies();
+}
+
+void _setUpCommonDependencies() => dependencyInjection
+  ..registerBuilder<CacheDataSource<String>>(
+    (di) => CacheDataSourceImpl(
+      // ignore: strict_raw_type
+      logger: QuizLabLoggerImpl<CacheDataSourceImpl>(),
+    ),
+  )
+  ..registerBuilder<PackageInfoDataSource>(
+    (di) => PackageInfoDataSourceImpl(
+      logger: QuizLabLoggerImpl<PackageInfoDataSourceImpl>(),
+    ),
+  );
+
+void _setUpAnswerQuestionDependencies() => dependencyInjection
   ..registerBuilder<QuestionRepository>(
     (di) => QuestionRepositoryImpl(
       logger: QuizLabLoggerImpl<QuestionRepositoryImpl>(),
@@ -88,6 +114,24 @@ void setUpAnswerQuestionDependencies() => dependencyInjection
       logger: QuizLabLoggerImpl<QuestionAnsweringCubit>(),
       getSingleQuestionUseCase: di.get<RetrieveQuestion>(),
     ),
+  );
+
+void _setApplicationInformationDependencies() => dependencyInjection
+  ..registerBuilder<ApplicationVersionRepository>(
+    (di) => ApplicationVersionRepositoryImpl(
+      logger: QuizLabLoggerImpl<ApplicationVersionRepositoryImpl>(),
+      cacheDataSource: di.get(),
+      packageInfoDataSource: di.get(),
+    ),
+  )
+  ..registerBuilder<RetrieveApplicationVersion>(
+    (di) => RetrieveApplicationVersionImpl(
+      logger: QuizLabLoggerImpl<RetrieveApplicationVersionImpl>(),
+      applicationVersionRepository: di.get(),
+    ),
+  )
+  ..registerBuilder<VersionDisplayCubit>(
+    (di) => VersionDisplayCubit(QuizLabLoggerImpl<VersionDisplayCubit>(), di.get()),
   );
 
 void _appwriteDependencyInjectionSetup(DependencyInjection di) {

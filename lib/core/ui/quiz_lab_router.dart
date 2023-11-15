@@ -5,6 +5,8 @@ import 'package:quiz_lab/common/ui/screens/configurations/configurations_screen.
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/question_answering_screen.dart';
+import 'package:quiz_lab/features/application_information/ui/bloc/version_display/version_display_cubit.dart';
+import 'package:quiz_lab/features/application_information/ui/widgets/version_display.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
@@ -36,7 +38,8 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
     required this.questionsOverviewCubit,
     required this.loginPageCubit,
     required this.checkIfUserIsLoggedInUseCase,
-  });
+    required VersionDisplayCubit versionDisplayCubit,
+  }) : _versionDisplayCubit = versionDisplayCubit;
 
   final NetworkCubit networkCubit;
   final BottomNavigationCubit bottomNavigationCubit;
@@ -45,6 +48,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
   final QuestionsOverviewCubit questionsOverviewCubit;
   final LoginPageCubit loginPageCubit;
   final CheckIfUserIsLoggedInUseCase checkIfUserIsLoggedInUseCase;
+  final VersionDisplayCubit _versionDisplayCubit;
 
   static final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
   static final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -136,7 +140,10 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
         name: Routes.configuration.name,
         path: Routes.configuration.path,
         builder: (BuildContext context, GoRouterState state) {
-          return const ConfigurationsScreen(options: [],);
+          return ConfigurationsScreen(
+            options: const [],
+            bottomWidget: VersionDisplay(cubit: _versionDisplayCubit),
+          );
         },
       ),
     ],

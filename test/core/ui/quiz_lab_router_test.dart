@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/ui/quiz_lab_router.dart';
 import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/bloc/question_answering_cubit.dart';
+import 'package:quiz_lab/features/application_information/ui/bloc/version_display/version_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
@@ -18,6 +19,7 @@ void main() {
   late QuestionsOverviewCubit questionsOverviewCubit;
   late LoginPageCubit loginPageCubit;
   late CheckIfUserIsLoggedInUseCase checkIfUserIsLoggedInUseCase;
+  late VersionDisplayCubit versionDisplayCubit;
 
   late QuizLabRouter router;
 
@@ -29,6 +31,7 @@ void main() {
     questionsOverviewCubit = _MockQuestionsOverviewCubit();
     loginPageCubit = _MockLoginPageCubit();
     checkIfUserIsLoggedInUseCase = _MockCheckIfUserIsLoggedInUseCase();
+    versionDisplayCubit = _MockVersionDisplayCubit();
 
     router = QuizLabRouterImpl(
       networkCubit: networkCubit,
@@ -38,6 +41,7 @@ void main() {
       questionsOverviewCubit: questionsOverviewCubit,
       loginPageCubit: loginPageCubit,
       checkIfUserIsLoggedInUseCase: checkIfUserIsLoggedInUseCase,
+      versionDisplayCubit: versionDisplayCubit,
     );
   });
 
@@ -74,3 +78,5 @@ class _MockQuestionsOverviewCubit extends Mock implements QuestionsOverviewCubit
 class _MockLoginPageCubit extends Mock implements LoginPageCubit {}
 
 class _MockCheckIfUserIsLoggedInUseCase extends Mock implements CheckIfUserIsLoggedInUseCase {}
+
+class _MockVersionDisplayCubit extends Mock implements VersionDisplayCubit {}
