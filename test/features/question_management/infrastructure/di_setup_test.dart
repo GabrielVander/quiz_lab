@@ -295,8 +295,7 @@ void main() {
     final cubit = builder(dependencyInjection);
 
     expect(cubit.logger, isA<QuizLabLoggerImpl<LoginPageCubit>>());
-    expect(cubit.fetchApplicationVersionUseCase, mockFetchApplicationVersionUseCase);
-    expect(cubit.loginWithCredentionsUseCase, mockLoginWithCredentialsUseCase);
+    expect(cubit.loginWithCredentialsUseCase, mockLoginWithCredentialsUseCase);
     expect(cubit.loginAnonymouslyUseCase, mockLoginAnonymouslyUseCase);
   });
 }

@@ -132,6 +132,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
         builder: (BuildContext context, GoRouterState state) {
           return LoginPage(
             loginPageCubit: loginPageCubit,
+            versionDisplayWidget: VersionDisplay(cubit: _versionDisplayCubit),
           );
         },
       ),

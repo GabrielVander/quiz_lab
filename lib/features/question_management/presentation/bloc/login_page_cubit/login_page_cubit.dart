@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
@@ -13,14 +12,12 @@ part 'login_page_state.dart';
 class LoginPageCubit extends Cubit<LoginPageState> {
   LoginPageCubit({
     required this.logger,
-    required this.loginWithCredentionsUseCase,
-    required this.fetchApplicationVersionUseCase,
+    required this.loginWithCredentialsUseCase,
     required this.loginAnonymouslyUseCase,
   }) : super(const LoginPageInitial());
 
   final QuizLabLogger logger;
-  final LoginWithCredentialsUseCase loginWithCredentionsUseCase;
-  final FetchApplicationVersionUseCase fetchApplicationVersionUseCase;
+  final LoginWithCredentialsUseCase loginWithCredentialsUseCase;
   final LoginAnonymouslyUseCase loginAnonymouslyUseCase;
 
   late LoginPageViewModel _viewModel;
@@ -32,25 +29,13 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     password: PasswordViewModel(
       value: '',
     ),
-    applicationVersion: '',
   );
 
   void hydrate() {
     logger.debug('Hydrating...');
+    _viewModel = _defaultViewModel;
 
-    final rawVersion = fetchApplicationVersionUseCase.execute();
-    final applicationVersion = 'v$rawVersion';
-
-    logger.debug('Fetched application version: $applicationVersion');
-    final defaultViewModelUpdatedWithApplicationVersion = _defaultViewModel.copyWith(
-      applicationVersion: applicationVersion,
-    );
-
-    _viewModel = defaultViewModelUpdatedWithApplicationVersion;
-
-    emit(
-      LoginPageViewModelUpdated(viewModel: _viewModel),
-    );
+    emit(LoginPageViewModelUpdated(viewModel: _viewModel));
   }
 
   void updateEmail(String email) {
@@ -111,7 +96,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
       return;
     }
 
-    final logInResult = await loginWithCredentionsUseCase(
+    final logInResult = await loginWithCredentialsUseCase(
       LoginWithCredentialsUseCaseInput(
         email: _viewModel.email.value,
         password: _viewModel.password.value,

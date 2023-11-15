@@ -6,12 +6,10 @@ class LoginPageViewModel extends Equatable {
   const LoginPageViewModel({
     required this.email,
     required this.password,
-    required this.applicationVersion,
   });
 
   final EmailViewModel email;
   final PasswordViewModel password;
-  final String applicationVersion;
 
   LoginPageViewModel copyWith({
     EmailViewModel? email,
@@ -21,11 +19,10 @@ class LoginPageViewModel extends Equatable {
       LoginPageViewModel(
         email: email ?? this.email,
         password: password ?? this.password,
-        applicationVersion: applicationVersion ?? this.applicationVersion,
       );
 
   @override
-  List<Object> get props => [email, password, applicationVersion];
+  List<Object> get props => [email, password];
 }
 
 @immutable

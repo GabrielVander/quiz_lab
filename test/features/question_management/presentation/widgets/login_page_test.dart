@@ -110,7 +110,6 @@ void main() {
         viewModel: LoginPageViewModel(
           email: EmailViewModel(value: ''),
           password: PasswordViewModel(value: ''),
-          applicationVersion: '',
         ),
       ),
     );
@@ -160,37 +159,6 @@ void main() {
       ),
       findsOneWidget,
     );
-
-    expect(
-      find.byKey(const ValueKey('applicationVersion'), skipOffstage: false),
-      findsOneWidget,
-    );
-  });
-
-  group('should display application version', () {
-    for (final version in ['GAN4gzF0', 'fxAIW2']) {
-      testWidgets(version, (WidgetTester widgetTester) async {
-        final state = LoginPageViewModelUpdated(
-          viewModel: LoginPageViewModel(
-            email: const EmailViewModel(value: ''),
-            password: const PasswordViewModel(value: ''),
-            applicationVersion: version,
-          ),
-        );
-
-        when(() => loginPageCubitMock.stream).thenAnswer((_) => Stream.value(state));
-        when(() => loginPageCubitMock.state).thenReturn(state);
-
-        await _pumpTarget(
-          widgetTester,
-          localizationsDelegateMock,
-          loginPageCubitMock,
-          goRouterMock,
-        );
-
-        expect(find.text(version, skipOffstage: false), findsOneWidget);
-      });
-    }
   });
 
   group('should replace with given route when cubit state is [LoginPagePushRouteReplacing]', () {
@@ -236,7 +204,6 @@ void main() {
               password: PasswordViewModel(
                 value: '',
               ),
-              applicationVersion: '',
             ),
           ),
         );
@@ -268,7 +235,6 @@ void main() {
                 value: '',
                 showError: true,
               ),
-              applicationVersion: '',
             ),
           ),
         );
@@ -296,7 +262,6 @@ void main() {
             viewModel: LoginPageViewModel(
               email: EmailViewModel(value: email),
               password: const PasswordViewModel(value: ''),
-              applicationVersion: '',
             ),
           ),
         );
@@ -327,7 +292,6 @@ void main() {
             viewModel: LoginPageViewModel(
               email: const EmailViewModel(value: ''),
               password: PasswordViewModel(value: password),
-              applicationVersion: '',
             ),
           ),
         );
@@ -355,7 +319,6 @@ void main() {
             viewModel: LoginPageViewModel(
               email: EmailViewModel(value: ''),
               password: PasswordViewModel(value: ''),
-              applicationVersion: '',
             ),
           ),
         );
@@ -388,7 +351,6 @@ void main() {
             viewModel: LoginPageViewModel(
               email: EmailViewModel(value: ''),
               password: PasswordViewModel(value: ''),
-              applicationVersion: '',
             ),
           ),
         );
@@ -469,7 +431,6 @@ void main() {
         viewModel: LoginPageViewModel(
           email: EmailViewModel(value: ''),
           password: PasswordViewModel(value: ''),
-          applicationVersion: '',
         ),
       ),
     );
@@ -499,7 +460,6 @@ void main() {
         viewModel: LoginPageViewModel(
           email: EmailViewModel(value: ''),
           password: PasswordViewModel(value: ''),
-          applicationVersion: '',
         ),
       ),
     );
@@ -554,7 +514,6 @@ void main() {
           viewModel: LoginPageViewModel(
             email: EmailViewModel(value: ''),
             password: PasswordViewModel(value: ''),
-            applicationVersion: '',
           ),
         ),
       );
@@ -603,6 +562,7 @@ Future<void> _pumpTarget(
                   builder: (BuildContext context) => ScaffoldMessenger(
                     child: LoginPage(
                       loginPageCubit: loginPageCubit,
+                      versionDisplayWidget: const Text(r'1p^0$'),
                     ),
                   ),
                 ),

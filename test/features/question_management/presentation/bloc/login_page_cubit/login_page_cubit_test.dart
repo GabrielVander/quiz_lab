@@ -6,7 +6,6 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
@@ -14,22 +13,19 @@ import 'package:quiz_lab/features/question_management/presentation/bloc/login_pa
 
 void main() {
   late QuizLabLogger logger;
-  late FetchApplicationVersionUseCase fetchApplicationVersionUseCaseMock;
-  late LoginWithCredentialsUseCase loginWithCredentionsUseCaseMock;
+  late LoginWithCredentialsUseCase loginWithCredentialsUseCaseMock;
   late LoginAnonymouslyUseCase loginAnonymouslyUseCaseMock;
 
   late LoginPageCubit cubit;
 
   setUp(() {
     logger = _MockQuizLabLogger();
-    fetchApplicationVersionUseCaseMock = _MockFetchApplicationVersionUseCase();
-    loginWithCredentionsUseCaseMock = _MockLoginWithCredentionsUseCase();
+    loginWithCredentialsUseCaseMock = _MockLoginWithCredentialsUseCase();
     loginAnonymouslyUseCaseMock = _MockLoginAnonymouslyUseCase();
 
     cubit = LoginPageCubit(
       logger: logger,
-      loginWithCredentionsUseCase: loginWithCredentionsUseCaseMock,
-      fetchApplicationVersionUseCase: fetchApplicationVersionUseCaseMock,
+      loginWithCredentialsUseCase: loginWithCredentialsUseCaseMock,
       loginAnonymouslyUseCase: loginAnonymouslyUseCaseMock,
     );
   });
@@ -37,27 +33,20 @@ void main() {
   tearDown(resetMocktailState);
 
   group('hydrate', () {
-    group(
+    test(
       'should emit [LoginPageViewModelUpdated] with default view model',
       () {
-        for (final applicationVersion in ['', '%%@%Z@', 'S&b0^F']) {
-          test(applicationVersion, () {
-            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(applicationVersion);
+        cubit.hydrate();
 
-            cubit.hydrate();
-
-            expect(
-              cubit.state,
-              LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
-                  email: const EmailViewModel(value: ''),
-                  password: const PasswordViewModel(value: ''),
-                  applicationVersion: 'v$applicationVersion',
-                ),
-              ),
-            );
-          });
-        }
+        expect(
+          cubit.state,
+          const LoginPageViewModelUpdated(
+            viewModel: LoginPageViewModel(
+              email: EmailViewModel(value: ''),
+              password: PasswordViewModel(value: ''),
+            ),
+          ),
+        );
       },
     );
   });
@@ -72,10 +61,6 @@ void main() {
           '6bpedZ*',
         ]) {
           test(email, () {
-            const dummyApplicationVersion = 'T4qkCa#n';
-
-            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
-
             cubit
               ..hydrate()
               ..updateEmail(email);
@@ -91,7 +76,6 @@ void main() {
                   password: const PasswordViewModel(
                     value: '',
                   ),
-                  applicationVersion: 'v$dummyApplicationVersion',
                 ),
               ),
             );
@@ -111,10 +95,6 @@ void main() {
           'NE#o%',
         ]) {
           test(password, () {
-            const dummyApplicationVersion = 'wQg01jsN';
-
-            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
-
             cubit
               ..hydrate()
               ..updatePassword(password);
@@ -130,7 +110,6 @@ void main() {
                     value: password,
                     showError: true,
                   ),
-                  applicationVersion: 'v$dummyApplicationVersion',
                 ),
               ),
             );
@@ -148,10 +127,6 @@ void main() {
           ['', ''],
         ]) {
           test(values.toString(), () {
-            const dummyApplicationVersion = 'jF%';
-
-            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
-
             final email = values[0];
             final password = values[1];
 
@@ -173,7 +148,6 @@ void main() {
                     value: password,
                     showError: true,
                   ),
-                  applicationVersion: 'v$dummyApplicationVersion',
                 ),
               ),
             );
@@ -188,12 +162,9 @@ void main() {
         test('should emit [LoginUnableToLogin]', () {
           const email = '0NSu';
           const password = 'eG#*2IGw';
-          const dummyApplicationVersion = 'jF%';
-
-          when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
 
           when(
-            () => loginWithCredentionsUseCaseMock.call(
+            () => loginWithCredentialsUseCaseMock.call(
               const LoginWithCredentialsUseCaseInput(
                 email: email,
                 password: password,
@@ -231,12 +202,9 @@ void main() {
           () async {
             const dummyEmail = 'k%qMlC';
             const dummyPassword = '5G4tC3';
-            const dummyApplicationVersion = 'jF%';
-
-            when(() => fetchApplicationVersionUseCaseMock.execute()).thenReturn(dummyApplicationVersion);
 
             when(
-              () => loginWithCredentionsUseCaseMock.call(
+              () => loginWithCredentialsUseCaseMock.call(
                 const LoginWithCredentialsUseCaseInput(
                   email: dummyEmail,
                   password: dummyPassword,
@@ -349,9 +317,7 @@ void main() {
   });
 }
 
-class _MockLoginWithCredentionsUseCase extends Mock implements LoginWithCredentialsUseCase {}
-
-class _MockFetchApplicationVersionUseCase extends Mock implements FetchApplicationVersionUseCase {}
+class _MockLoginWithCredentialsUseCase extends Mock implements LoginWithCredentialsUseCase {}
 
 class _MockLoginAnonymouslyUseCase extends Mock implements LoginAnonymouslyUseCase {}
 

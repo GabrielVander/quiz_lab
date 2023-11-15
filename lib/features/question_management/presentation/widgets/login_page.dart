@@ -16,25 +16,29 @@ import 'package:quiz_lab/generated/l10n.dart';
 class LoginPage extends HookWidget {
   const LoginPage({
     required LoginPageCubit loginPageCubit,
+    required Widget versionDisplayWidget,
     super.key,
-  }) : cubit = loginPageCubit;
+  })  : _cubit = loginPageCubit,
+        _versionDisplayWidget = versionDisplayWidget;
 
-  final LoginPageCubit cubit;
+  final LoginPageCubit _cubit;
+  final Widget _versionDisplayWidget;
 
   @override
   Widget build(BuildContext context) {
     useEffect(
       () {
-        cubit.hydrate();
+        _cubit.hydrate();
+
         return null;
       },
       [],
     );
 
     useBlocListener<LoginPageCubit, LoginPageState>(
-      cubit,
+      _cubit,
       (_, value, context) {
-        final snackbar = switch (value) {
+        final snackBar = switch (value) {
           LoginPageNotYetImplemented() => SnackBar(
               content: Text(
                 S.of(context).notYetImplemented,
@@ -59,14 +63,14 @@ class LoginPage extends HookWidget {
             ),
         };
 
-        showSnackBar(context, snackbar);
+        showSnackBar(context, snackBar);
       },
       listenWhen: (state) =>
           state is LoginPageNotYetImplemented || state is LoginPageError || state is LoginPageUnableToLogin,
     );
 
     useBlocListener<LoginPageCubit, LoginPageState>(
-      cubit,
+      _cubit,
       (_, value, context) {
         switch (value) {
           case LoginPagePushRouteReplacing():
@@ -91,7 +95,7 @@ class LoginPage extends HookWidget {
 
                 return HookBuilder(
                   builder: (context) {
-                    final loadingState = useBlocBuilder(cubit);
+                    final loadingState = useBlocBuilder(_cubit);
 
                     if (loadingState is LoginPageLoading || loadingState is LoginPageInitial) {
                       return const _Loading();
@@ -111,7 +115,7 @@ class LoginPage extends HookWidget {
                         HookBuilder(
                           builder: (context) {
                             final state = useBlocBuilder(
-                              cubit,
+                              _cubit,
                               buildWhen: (current) => current is LoginPageViewModelUpdated,
                             );
 
@@ -120,9 +124,9 @@ class LoginPage extends HookWidget {
                                 key: const ValueKey<String>('loginForm'),
                                 emailViewModel: state.viewModel.email,
                                 passwordViewModel: state.viewModel.password,
-                                onLogin: cubit.login,
-                                onEmailChange: cubit.updateEmail,
-                                onPasswordChange: cubit.updatePassword,
+                                onLogin: _cubit.login,
+                                onEmailChange: _cubit.updateEmail,
+                                onPasswordChange: _cubit.updatePassword,
                               );
                             }
 
@@ -131,36 +135,13 @@ class LoginPage extends HookWidget {
                         ),
                         separator,
                         _AlternativeOptions(
-                          onEnterAnonymously: cubit.enterAnonymously,
-                          onSignUp: cubit.signUp,
+                          onEnterAnonymously: _cubit.enterAnonymously,
+                          onSignUp: _cubit.signUp,
                         ),
                         const SizedBox(
                           height: 25,
                         ),
-                        HookBuilder(
-                          builder: (context) {
-                            final state = useBlocComparativeBuilder(
-                              cubit,
-                              buildWhen: (previous, current) =>
-                                  current is LoginPageLoading ||
-                                  previous is! LoginPageViewModelUpdated ||
-                                  (current is LoginPageViewModelUpdated &&
-                                      previous.viewModel.applicationVersion != current.viewModel.applicationVersion),
-                            );
-
-                            return switch (state) {
-                              LoginPageViewModelUpdated(viewModel: final viewModel) => Center(
-                                  child: Text(
-                                    key: const ValueKey(
-                                      'applicationVersion',
-                                    ),
-                                    viewModel.applicationVersion,
-                                  ),
-                                ),
-                              _ => const _Loading(),
-                            };
-                          },
-                        ),
+                        Center(child: _versionDisplayWidget),
                       ],
                     );
                   },
