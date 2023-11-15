@@ -8,22 +8,22 @@ import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/view_models/login_view_model.dart';
 
 void main() {
   late QuizLabLogger logger;
   late LoginWithCredentialsUseCase loginWithCredentialsUseCaseMock;
   late LoginAnonymouslyUseCase loginAnonymouslyUseCaseMock;
 
-  late LoginPageCubit cubit;
+  late LoginCubit cubit;
 
   setUp(() {
     logger = _MockQuizLabLogger();
     loginWithCredentialsUseCaseMock = _MockLoginWithCredentialsUseCase();
     loginAnonymouslyUseCaseMock = _MockLoginAnonymouslyUseCase();
 
-    cubit = LoginPageCubit(
+    cubit = LoginCubit(
       logger: logger,
       loginWithCredentialsUseCase: loginWithCredentialsUseCaseMock,
       loginAnonymouslyUseCase: loginAnonymouslyUseCaseMock,
@@ -41,7 +41,7 @@ void main() {
         expect(
           cubit.state,
           const LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
+            viewModel: LoginViewModel(
               email: EmailViewModel(value: ''),
               password: PasswordViewModel(value: ''),
             ),
@@ -68,7 +68,7 @@ void main() {
             expect(
               cubit.state,
               LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
+                viewModel: LoginViewModel(
                   email: EmailViewModel(
                     value: email,
                     showError: true,
@@ -102,7 +102,7 @@ void main() {
             expect(
               cubit.state,
               LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
+                viewModel: LoginViewModel(
                   email: const EmailViewModel(
                     value: '',
                   ),
@@ -139,7 +139,7 @@ void main() {
             expect(
               cubit.state,
               LoginPageViewModelUpdated(
-                viewModel: LoginPageViewModel(
+                viewModel: LoginViewModel(
                   email: EmailViewModel(
                     value: email,
                     showError: true,

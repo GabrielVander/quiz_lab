@@ -8,20 +8,20 @@ import 'package:quiz_lab/core/ui/design_system/button/primary.dart';
 import 'package:quiz_lab/core/ui/design_system/text_field/core.dart';
 import 'package:quiz_lab/core/ui/themes/extensions.dart';
 import 'package:quiz_lab/core/ui/themes/light_theme.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/view_models/login_view_model.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class LoginPage extends HookWidget {
   const LoginPage({
-    required LoginPageCubit loginPageCubit,
+    required LoginCubit loginPageCubit,
     required Widget versionDisplayWidget,
     super.key,
   })  : _cubit = loginPageCubit,
         _versionDisplayWidget = versionDisplayWidget;
 
-  final LoginPageCubit _cubit;
+  final LoginCubit _cubit;
   final Widget _versionDisplayWidget;
 
   @override
@@ -35,7 +35,7 @@ class LoginPage extends HookWidget {
       [],
     );
 
-    useBlocListener<LoginPageCubit, LoginPageState>(
+    useBlocListener<LoginCubit, LoginState>(
       _cubit,
       (_, value, context) {
         final snackBar = switch (value) {
@@ -69,7 +69,7 @@ class LoginPage extends HookWidget {
           state is LoginPageNotYetImplemented || state is LoginPageError || state is LoginPageUnableToLogin,
     );
 
-    useBlocListener<LoginPageCubit, LoginPageState>(
+    useBlocListener<LoginCubit, LoginState>(
       _cubit,
       (_, value, context) {
         switch (value) {

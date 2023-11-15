@@ -24,7 +24,7 @@ import 'package:quiz_lab/features/application_information/ui/bloc/version_displa
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
@@ -38,7 +38,7 @@ void main() async {
     QuizLabApplication(
       router: QuizLabRouterImpl(
         bottomNavigationCubit: dependencyInjection.get<BottomNavigationCubit>(),
-        loginPageCubit: dependencyInjection.get<LoginPageCubit>(),
+        loginPageCubit: dependencyInjection.get<LoginCubit>(),
         questionDisplayCubit: dependencyInjection.get<QuestionAnsweringCubit>(),
         questionCreationCubit: dependencyInjection.get<QuestionCreationCubit>(),
         questionsOverviewCubit: dependencyInjection.get<QuestionsOverviewCubit>(),

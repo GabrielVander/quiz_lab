@@ -19,7 +19,7 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/fetch_app
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/question_management/infrastructure/di_setup.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 
 void main() {
@@ -289,12 +289,12 @@ void main() {
 
     questionManagementDiSetup(dependencyInjection);
 
-    final captured = verify(() => dependencyInjection.registerBuilder<LoginPageCubit>(captureAny())).captured;
+    final captured = verify(() => dependencyInjection.registerBuilder<LoginCubit>(captureAny())).captured;
 
-    final builder = captured.single as LoginPageCubit Function(DependencyInjection);
+    final builder = captured.single as LoginCubit Function(DependencyInjection);
     final cubit = builder(dependencyInjection);
 
-    expect(cubit.logger, isA<QuizLabLoggerImpl<LoginPageCubit>>());
+    expect(cubit.logger, isA<QuizLabLoggerImpl<LoginCubit>>());
     expect(cubit.loginWithCredentialsUseCase, mockLoginWithCredentialsUseCase);
     expect(cubit.loginAnonymouslyUseCase, mockLoginAnonymouslyUseCase);
   });

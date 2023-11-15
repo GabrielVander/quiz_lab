@@ -2,8 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
-class LoginPageViewModel extends Equatable {
-  const LoginPageViewModel({
+class LoginViewModel extends Equatable {
+  const LoginViewModel({
     required this.email,
     required this.password,
   });
@@ -11,12 +11,12 @@ class LoginPageViewModel extends Equatable {
   final EmailViewModel email;
   final PasswordViewModel password;
 
-  LoginPageViewModel copyWith({
+  LoginViewModel copyWith({
     EmailViewModel? email,
     PasswordViewModel? password,
     String? applicationVersion,
   }) =>
-      LoginPageViewModel(
+      LoginViewModel(
         email: email ?? this.email,
         password: password ?? this.password,
       );

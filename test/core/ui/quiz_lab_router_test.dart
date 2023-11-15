@@ -6,7 +6,7 @@ import 'package:quiz_lab/features/answer_question/ui/screens/question_answering/
 import 'package:quiz_lab/features/application_information/ui/bloc/version_display/version_display_cubit.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
@@ -17,7 +17,7 @@ void main() {
   late QuestionAnsweringCubit questionDisplayCubit;
   late QuestionCreationCubit questionCreationCubit;
   late QuestionsOverviewCubit questionsOverviewCubit;
-  late LoginPageCubit loginPageCubit;
+  late LoginCubit loginPageCubit;
   late CheckIfUserIsLoggedInUseCase checkIfUserIsLoggedInUseCase;
   late VersionDisplayCubit versionDisplayCubit;
 
@@ -75,7 +75,7 @@ class _MockQuestionCreationCubit extends Mock implements QuestionCreationCubit {
 
 class _MockQuestionsOverviewCubit extends Mock implements QuestionsOverviewCubit {}
 
-class _MockLoginPageCubit extends Mock implements LoginPageCubit {}
+class _MockLoginPageCubit extends Mock implements LoginCubit {}
 
 class _MockCheckIfUserIsLoggedInUseCase extends Mock implements CheckIfUserIsLoggedInUseCase {}
 

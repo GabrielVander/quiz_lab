@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/ui/themes/light_theme.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/view_models/login_view_model.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/login_page.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
@@ -18,7 +18,7 @@ void main() {
   late S localizationsMock;
   late AppLocalizationDelegate localizationsDelegateMock;
   late GoRouter goRouterMock;
-  late LoginPageCubit loginPageCubitMock;
+  late LoginCubit loginPageCubitMock;
 
   setUp(() {
     localizationsMock = _SMock();
@@ -83,7 +83,7 @@ void main() {
     testWidgets('should redirect to ${route.name} if cubit state is [LoginPagePushRouteReplacing]',
         (widgetTester) async {
       when(() => loginPageCubitMock.stream).thenAnswer(
-        (_) => Stream<LoginPageState>.value(
+        (_) => Stream<LoginState>.value(
           LoginPagePushRouteReplacing(route: route),
         ),
       );
@@ -107,7 +107,7 @@ void main() {
     when(() => loginPageCubitMock.stream).thenAnswer((_) => const Stream.empty());
     when(() => loginPageCubitMock.state).thenReturn(
       const LoginPageViewModelUpdated(
-        viewModel: LoginPageViewModel(
+        viewModel: LoginViewModel(
           email: EmailViewModel(value: ''),
           password: PasswordViewModel(value: ''),
         ),
@@ -196,7 +196,7 @@ void main() {
 
         when(() => loginPageCubitMock.state).thenReturn(
           const LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
+            viewModel: LoginViewModel(
               email: EmailViewModel(
                 value: '',
                 showError: true,
@@ -227,7 +227,7 @@ void main() {
         );
         when(() => loginPageCubitMock.state).thenReturn(
           const LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
+            viewModel: LoginViewModel(
               email: EmailViewModel(
                 value: '',
               ),
@@ -259,7 +259,7 @@ void main() {
         );
         when(() => loginPageCubitMock.state).thenReturn(
           LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
+            viewModel: LoginViewModel(
               email: EmailViewModel(value: email),
               password: const PasswordViewModel(value: ''),
             ),
@@ -289,7 +289,7 @@ void main() {
         );
         when(() => loginPageCubitMock.state).thenReturn(
           LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
+            viewModel: LoginViewModel(
               email: const EmailViewModel(value: ''),
               password: PasswordViewModel(value: password),
             ),
@@ -316,7 +316,7 @@ void main() {
         );
         when(() => loginPageCubitMock.state).thenReturn(
           const LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
+            viewModel: LoginViewModel(
               email: EmailViewModel(value: ''),
               password: PasswordViewModel(value: ''),
             ),
@@ -348,7 +348,7 @@ void main() {
         );
         when(() => loginPageCubitMock.state).thenReturn(
           const LoginPageViewModelUpdated(
-            viewModel: LoginPageViewModel(
+            viewModel: LoginViewModel(
               email: EmailViewModel(value: ''),
               password: PasswordViewModel(value: ''),
             ),
@@ -428,7 +428,7 @@ void main() {
     );
     when(() => loginPageCubitMock.state).thenReturn(
       const LoginPageViewModelUpdated(
-        viewModel: LoginPageViewModel(
+        viewModel: LoginViewModel(
           email: EmailViewModel(value: ''),
           password: PasswordViewModel(value: ''),
         ),
@@ -457,7 +457,7 @@ void main() {
     );
     when(() => loginPageCubitMock.state).thenReturn(
       const LoginPageViewModelUpdated(
-        viewModel: LoginPageViewModel(
+        viewModel: LoginViewModel(
           email: EmailViewModel(value: ''),
           password: PasswordViewModel(value: ''),
         ),
@@ -511,7 +511,7 @@ void main() {
       when(() => loginPageCubitMock.stream).thenAnswer((_) => const Stream.empty());
       when(() => loginPageCubitMock.state).thenReturn(
         const LoginPageViewModelUpdated(
-          viewModel: LoginPageViewModel(
+          viewModel: LoginViewModel(
             email: EmailViewModel(value: ''),
             password: PasswordViewModel(value: ''),
           ),
@@ -539,7 +539,7 @@ void main() {
 Future<void> _pumpTarget(
   WidgetTester widgetTester,
   AppLocalizationDelegate localizationsDelegateMock,
-  LoginPageCubit loginPageCubit,
+  LoginCubit loginPageCubit,
   GoRouter goRouter,
 ) async {
   await widgetTester.pumpWidget(
@@ -616,8 +616,8 @@ class _SMock extends Mock implements S {
   String get mustBeSetMessage => 'x^WO2S&';
 }
 
-class _LoginPageCubitMock extends Mock implements LoginPageCubit {}
+class _LoginPageCubitMock extends Mock implements LoginCubit {}
 
 class _GoRouterMock extends Mock implements GoRouter {}
 
-class LoginPageCubitMock extends MockCubit<LoginPageState> implements LoginPageCubit {}
+class LoginPageCubitMock extends MockCubit<LoginState> implements LoginCubit {}

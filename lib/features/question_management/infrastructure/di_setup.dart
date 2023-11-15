@@ -22,7 +22,7 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/update_qu
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
@@ -138,9 +138,9 @@ void _registerUseCases(DependencyInjection di) {
 
 void _registerCubits(DependencyInjection di) {
   di
-    ..registerBuilder<LoginPageCubit>(
-      (di) => LoginPageCubit(
-        logger: QuizLabLoggerImpl<LoginPageCubit>(),
+    ..registerBuilder<LoginCubit>(
+      (di) => LoginCubit(
+        logger: QuizLabLoggerImpl<LoginCubit>(),
         loginWithCredentialsUseCase: di.get<LoginWithCredentialsUseCase>(),
         loginAnonymouslyUseCase: di.get<LoginAnonymouslyUseCase>(),
       ),

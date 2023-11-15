@@ -1,27 +1,27 @@
-part of 'login_page_cubit.dart';
+part of 'login_cubit.dart';
 
 @immutable
-sealed class LoginPageState extends Equatable {
-  const LoginPageState();
+sealed class LoginState extends Equatable {
+  const LoginState();
 }
 
-class LoginPageInitial extends LoginPageState {
+class LoginPageInitial extends LoginState {
   const LoginPageInitial();
 
   @override
   List<Object> get props => [];
 }
 
-class LoginPageViewModelUpdated extends LoginPageState {
+class LoginPageViewModelUpdated extends LoginState {
   const LoginPageViewModelUpdated({required this.viewModel});
 
-  final LoginPageViewModel viewModel;
+  final LoginViewModel viewModel;
 
   @override
   List<Object> get props => [viewModel];
 }
 
-class LoginPagePushRouteReplacing extends LoginPageState {
+class LoginPagePushRouteReplacing extends LoginState {
   const LoginPagePushRouteReplacing({required this.route});
 
   final Routes route;
@@ -30,35 +30,35 @@ class LoginPagePushRouteReplacing extends LoginPageState {
   List<Object> get props => [route];
 }
 
-class LoginPageError extends LoginPageState {
+class LoginPageError extends LoginState {
   const LoginPageError();
 
   @override
   List<Object> get props => [];
 }
 
-class LoginPageUnableToLogin extends LoginPageState {
+class LoginPageUnableToLogin extends LoginState {
   const LoginPageUnableToLogin();
 
   @override
   List<Object> get props => [];
 }
 
-class LoginPageLoggedInSuccessfully extends LoginPageState {
+class LoginPageLoggedInSuccessfully extends LoginState {
   const LoginPageLoggedInSuccessfully();
 
   @override
   List<Object> get props => [];
 }
 
-class LoginPageNotYetImplemented extends LoginPageState {
+class LoginPageNotYetImplemented extends LoginState {
   const LoginPageNotYetImplemented();
 
   @override
   List<Object> get props => [];
 }
 
-class LoginPageLoading extends LoginPageState {
+class LoginPageLoading extends LoginState {
   const LoginPageLoading();
 
   @override

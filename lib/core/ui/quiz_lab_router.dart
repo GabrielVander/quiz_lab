@@ -10,7 +10,7 @@ import 'package:quiz_lab/features/application_information/ui/widgets/version_dis
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
@@ -46,7 +46,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
   final QuestionAnsweringCubit questionDisplayCubit;
   final QuestionCreationCubit questionCreationCubit;
   final QuestionsOverviewCubit questionsOverviewCubit;
-  final LoginPageCubit loginPageCubit;
+  final LoginCubit loginPageCubit;
   final CheckIfUserIsLoggedInUseCase checkIfUserIsLoggedInUseCase;
   final VersionDisplayCubit _versionDisplayCubit;
 
