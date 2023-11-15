@@ -136,7 +136,7 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
         name: Routes.configuration.name,
         path: Routes.configuration.path,
         builder: (BuildContext context, GoRouterState state) {
-          return const ConfigurationsScreen();
+          return const ConfigurationsScreen(options: [],);
         },
       ),
     ],
