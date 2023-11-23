@@ -39,7 +39,7 @@ dependencies:
   flutter_hooks: ^0.18.6
   hooked_bloc: ^1.4.2
   go_router: ^10.1.0
-  connectivity_plus: ^4.0.2
+  connectivity_plus: ^5.0.2
   okay: ^2.0.0
   bloc: ^8.1.2
   hive: ^2.2.3
