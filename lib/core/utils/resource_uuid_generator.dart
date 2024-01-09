@@ -1,13 +1,9 @@
 import 'package:uuid/uuid.dart';
 
 class ResourceUuidGenerator {
-  const ResourceUuidGenerator({
-    required this.uuid,
-  });
+  const ResourceUuidGenerator({required this.uuid});
 
   final Uuid uuid;
 
-  String generate() {
-    return uuid.v4();
-  }
+  String generate() => uuid.v4();
 }

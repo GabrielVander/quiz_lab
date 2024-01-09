@@ -54,23 +54,23 @@ final class _Printer {
       case logging.Level.INFO:
         return _Printer.blue();
       case logging.Level.CONFIG:
-        return _Printer.green();
-      case logging.Level.FINE:
-        return _Printer.cyan();
-      default:
         return _Printer.white();
+      case logging.Level.FINE:
+        return _Printer.green();
+      default:
+        return _Printer.gray();
     }
   }
 
   factory _Printer.white() => _Printer._(pen: AnsiPen()..white());
 
-  factory _Printer.cyan() => _Printer._(pen: AnsiPen()..cyan());
+  factory _Printer.green() => _Printer._(pen: AnsiPen()..green());
+
+  factory _Printer.gray() => _Printer._(pen: AnsiPen()..gray());
 
   factory _Printer.red() => _Printer._(pen: AnsiPen()..red());
 
   factory _Printer.yellow() => _Printer._(pen: AnsiPen()..yellow());
-
-  factory _Printer.green() => _Printer._(pen: AnsiPen()..green());
 
   factory _Printer.blue() => _Printer._(pen: AnsiPen()..blue());
 

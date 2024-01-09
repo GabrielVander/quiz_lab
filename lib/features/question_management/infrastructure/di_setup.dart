@@ -1,11 +1,12 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:quiz_lab/common/data/data_sources/questions_collection_appwrite_data_source.dart';
+import 'package:quiz_lab/common/data/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/core/utils/appwrite_references_config.dart';
 import 'package:quiz_lab/core/utils/dependency_injection/dependency_injection.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_impl.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
@@ -14,20 +15,16 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/fetch_application_version_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/get_single_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/assessments_overview/assessments_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/network/network_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/screens/answering_screen/bloc/answering_screen_cubit.dart';
-import 'package:quiz_lab/features/question_management/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/features/question_management/wrappers/package_info_wrapper.dart';
 
 void questionManagementDiSetup(DependencyInjection di) {
@@ -110,9 +107,6 @@ void _registerUseCases(DependencyInjection di) {
     ..registerBuilder<DeleteQuestionUseCase>(
       (i) => DeleteQuestionUseCase(questionRepository: i.get<QuestionRepository>()),
     )
-    ..registerBuilder<GetSingleQuestionUseCase>(
-      (i) => GetSingleQuestionUseCase(questionRepository: i.get<QuestionRepository>()),
-    )
     ..registerBuilder<CheckIfUserCanCreatePublicQuestionsUseCase>(
       (i) => CheckIfUserCanCreatePublicQuestionsUseCaseImpl(
         logger: QuizLabLoggerImpl<CheckIfUserCanCreatePublicQuestionsUseCaseImpl>(),
@@ -133,22 +127,16 @@ void _registerUseCases(DependencyInjection di) {
         logger: QuizLabLoggerImpl<CheckIfUserIsLoggedInUseCaseImpl>(),
         authRepository: di.get<AuthRepository>(),
       ),
-    )
-    ..registerBuilder<FetchApplicationVersionUseCase>(
-      (i) => FetchApplicationVersionUseCaseImpl(
-        packageInfoWrapper: i.get<PackageInfoWrapper>(),
-      ),
     );
 }
 
 void _registerCubits(DependencyInjection di) {
   di
-    ..registerBuilder<LoginPageCubit>(
-      (di) => LoginPageCubit(
-        logger: QuizLabLoggerImpl<LoginPageCubit>(),
-        loginWithCredentionsUseCase: di.get<LoginWithCredentialsUseCase>(),
+    ..registerBuilder<LoginCubit>(
+      (di) => LoginCubit(
+        logger: QuizLabLoggerImpl<LoginCubit>(),
+        loginWithCredentialsUseCase: di.get<LoginWithCredentialsUseCase>(),
         loginAnonymouslyUseCase: di.get<LoginAnonymouslyUseCase>(),
-        fetchApplicationVersionUseCase: di.get<FetchApplicationVersionUseCase>(),
       ),
     )
     ..registerBuilder<AssessmentsOverviewCubit>((i) => AssessmentsOverviewCubit())
@@ -164,12 +152,6 @@ void _registerCubits(DependencyInjection di) {
         updateQuestionUseCase: i.get<UpdateQuestionUseCase>(),
         deleteQuestionUseCase: i.get<DeleteQuestionUseCase>(),
         watchAllQuestionsUseCase: i.get<WatchAllQuestionsUseCase>(),
-      ),
-    )
-    ..registerBuilder<AnsweringScreenCubit>(
-      (i) => AnsweringScreenCubit(
-        logger: QuizLabLoggerImpl<AnsweringScreenCubit>(),
-        getSingleQuestionUseCase: i.get<GetSingleQuestionUseCase>(),
       ),
     )
     ..registerFactory<NetworkCubit>((_) => NetworkCubit())

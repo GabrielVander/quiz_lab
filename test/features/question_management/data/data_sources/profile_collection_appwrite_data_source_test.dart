@@ -3,9 +3,9 @@ import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/common/data/dto/appwrite_error_dto.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_error_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_profile_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_profile_dto.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
 
 void main() {
@@ -47,14 +47,14 @@ void main() {
       for (final testCases in [
         (
           AppwriteException('', 400, 'general_argument_invalid'),
-          const GeneralArgumentInvalidAppwriteErrorModel(message: ''),
+          const GeneralArgumentInvalidAppwriteErrorDto(message: ''),
           'mWU',
           'CaF',
           'ug21Zz'
         ),
         (
           AppwriteException('7R9n', 9999, '7dA'),
-          const UnknownAppwriteErrorModel(type: '7dA', code: 9999, message: '7R9n'),
+          const UnknownAppwriteErrorDto(type: '7dA', code: 9999, message: '7R9n'),
           'isqT1EO',
           '2XKw41',
           '6ytxheK0'
@@ -83,7 +83,7 @@ void main() {
             final result = await dataSource.fetchSingle(documentId);
 
             verify(() => logger.error(exception.toString())).called(1);
-            expect(result, Err<AppwriteProfileModel, AppwriteErrorModel>(expectedError));
+            expect(result, Err<AppwriteProfileDto, AppwriteErrorDto>(expectedError));
           },
         );
       }
@@ -104,7 +104,7 @@ void main() {
             $updatedAt: '',
             data: {'displayName': 'NXEzZH'},
           ),
-          const AppwriteProfileModel(id: 'ljkCh', displayName: 'NXEzZH')
+          const AppwriteProfileDto(id: 'ljkCh', displayName: 'NXEzZH')
         ),
       ]) {
         final databaseId = testCase.$1;
@@ -129,7 +129,7 @@ void main() {
               ..appwriteProfileCollectionId = collectionId;
             final result = await dataSource.fetchSingle(documentId);
 
-            expect(result, Ok<AppwriteProfileModel, AppwriteErrorModel>(expected));
+            expect(result, Ok<AppwriteProfileDto, AppwriteErrorDto>(expected));
           },
         );
       }

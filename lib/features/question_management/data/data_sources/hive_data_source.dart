@@ -6,7 +6,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/json_parser.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/hive_question_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/hive_question_dto.dart';
 
 class HiveDataSource {
   HiveDataSource({
@@ -18,10 +18,10 @@ class HiveDataSource {
   final Box<String> _questionsBox;
   final JsonParser<Map<String, dynamic>> _jsonParser;
 
-  final _questionsStreamController = StreamController<List<HiveQuestionModel>>();
+  final _questionsStreamController = StreamController<List<HiveQuestionDto>>();
 
   Future<Result<Unit, HiveDataSourceFailure>> saveQuestion(
-    HiveQuestionModel question,
+    HiveQuestionDto question,
   ) async {
     final idValidationResult = _validateId(question);
 
@@ -44,7 +44,7 @@ class HiveDataSource {
   }
 
   Future<Result<Unit, HiveDataSourceFailure>> deleteQuestion(
-    HiveQuestionModel question,
+    HiveQuestionDto question,
   ) async {
     final idValidationResult = _validateId(question);
 
@@ -62,7 +62,7 @@ class HiveDataSource {
     }
   }
 
-  Result<Stream<List<HiveQuestionModel>>, HiveDataSourceFailure> watchAllQuestions() {
+  Result<Stream<List<HiveQuestionDto>>, HiveDataSourceFailure> watchAllQuestions() {
     try {
       return Ok(_getAllQuestionsFromBox());
       // ignore: avoid_catching_errors
@@ -78,7 +78,7 @@ class HiveDataSource {
   }
 
   Result<Unit, HiveDataSourceFailure> _validateId(
-    HiveQuestionModel question,
+    HiveQuestionDto question,
   ) {
     if (question.id == null || question.id == '') {
       return Err(
@@ -90,7 +90,7 @@ class HiveDataSource {
   }
 
   Future<Unit> _putQuestionInBox(
-    HiveQuestionModel question,
+    HiveQuestionDto question,
   ) async {
     final questionAsMap = question.toMap();
     await _questionsBox.put(question.id, _encodeMap(questionAsMap));
@@ -98,13 +98,13 @@ class HiveDataSource {
     return unit;
   }
 
-  Future<Unit> _deleteQuestionFromBox(HiveQuestionModel question) async {
+  Future<Unit> _deleteQuestionFromBox(HiveQuestionDto question) async {
     await _questionsBox.delete(question.id);
 
     return unit;
   }
 
-  Stream<List<HiveQuestionModel>> _getAllQuestionsFromBox() {
+  Stream<List<HiveQuestionDto>> _getAllQuestionsFromBox() {
     _updateQuestionStream();
 
     _questionsBox.watch().listen((_) => _updateQuestionStream());
@@ -118,10 +118,10 @@ class HiveDataSource {
     _questionsStreamController.add(questions);
   }
 
-  List<HiveQuestionModel> _getCurrentQuestions() {
+  List<HiveQuestionDto> _getCurrentQuestions() {
     return _questionsBox.keys
         .map(
-          (key) => HiveQuestionModel.fromMap(
+          (key) => HiveQuestionDto.fromMap(
             key as String,
             _decodeMapFromString(_questionsBox.get(key)!),
           ),

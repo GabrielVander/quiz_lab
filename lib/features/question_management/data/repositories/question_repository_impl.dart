@@ -1,17 +1,17 @@
 import 'dart:async';
 
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/common/data/data_sources/questions_collection_appwrite_data_source.dart';
+import 'package:quiz_lab/common/data/dto/appwrite_question_list_dto.dart';
+import 'package:quiz_lab/common/data/dto/create_appwrite_question_dto.dart';
+import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_permission_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_permission_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_option_dto.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {
@@ -33,9 +33,9 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<Result<Unit, String>> createSingle(DraftQuestion question) async {
     logger.debug('Creating question...');
 
-    final creationModel = await _toCreationModel(question);
+    final dto = await _toCreationDto(question);
 
-    return (await questionsAppwriteDataSource.createSingle(creationModel))
+    return (await questionsAppwriteDataSource.createSingle(dto))
         .inspect((_) => logger.debug('Question created successfully'))
         .map((_) => unit)
         .inspectErr(logger.error)
@@ -61,15 +61,10 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<Result<Question, QuestionRepositoryFailure>> getSingle(QuestionId id) async {
     logger.debug('Getting question...');
 
-    final fetchResult = await questionsAppwriteDataSource.fetchSingle(id.value);
-
-    return fetchResult.when(
-      ok: (model) {
-        logger.debug('Question fetched successfully');
-        return Ok(model.toQuestion());
-      },
-      err: (failure) => Err(_mapQuestionsAppwriteDataSourceFailure(failure)),
-    );
+    return (await questionsAppwriteDataSource.fetchSingle(id.value))
+        .inspect((_) => logger.debug('Question fetched successfully'))
+        .map((dto) => dto.toQuestion())
+        .mapErr(_mapQuestionsAppwriteDataSourceFailure);
   }
 
   @override
@@ -87,16 +82,16 @@ class QuestionRepositoryImpl implements QuestionRepository {
         .mapErr((_) => 'Unable to watch questions');
   }
 
-  Future<AppwriteQuestionCreationModel> _toCreationModel(DraftQuestion question) async {
+  Future<CreateAppwriteQuestionDto> _toCreationDto(DraftQuestion question) async {
     final ownerId = await _getCurrentUserId();
 
-    return AppwriteQuestionCreationModel(
+    return CreateAppwriteQuestionDto(
       ownerId: ownerId,
       title: question.title,
       description: question.description,
       options: question.options
           .map(
-            (o) => AppwriteQuestionOptionModel(
+            (o) => AppwriteQuestionOptionDto(
               description: o.description,
               isCorrect: o.isCorrect,
             ),
@@ -104,7 +99,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
           .toList(),
       difficulty: question.difficulty.name,
       categories: question.categories.map((e) => e.value).toList(),
-      permissions: question.isPublic ? [AppwritePermissionTypeModel.read(AppwritePermissionRoleModel.any())] : null,
+      permissions: question.isPublic ? [AppwritePermissionTypeDto.read(AppwritePermissionRoleDto.any())] : null,
     );
   }
 
@@ -150,22 +145,22 @@ class QuestionRepositoryImpl implements QuestionRepository {
         .when(ok: _mapQuestions, err: (err) => logger.error(err.toString()));
   }
 
-  Future<List<Question>> _mapQuestions(AppwriteQuestionListModel model) async {
+  Future<List<Question>> _mapQuestions(AppwriteQuestionListDto listDto) async {
     final questions = <Question>[];
 
-    for (final questionModel in model.questions) {
-      final ownerId = questionModel.profile;
+    for (final questionDto in listDto.questions) {
+      final ownerId = questionDto.profile;
 
       if (ownerId != null) {
         final result = await profileAppwriteDataSource.fetchSingle(ownerId);
 
         if (result.isOk) {
-          final profileModel = result.unwrap();
-          questions.add(questionModel.copyWith(profile: profileModel.displayName).toQuestion());
+          final profileDto = result.unwrap();
+          questions.add(questionDto.copyWith(profile: profileDto.displayName).toQuestion());
           continue;
         }
       }
-      questions.add(questionModel.toQuestion());
+      questions.add(questionDto.toQuestion());
     }
 
     _questionsStreamController.add(questions);

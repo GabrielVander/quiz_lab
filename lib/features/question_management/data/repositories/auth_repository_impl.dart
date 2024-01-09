@@ -2,8 +2,8 @@ import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/email_session_credentials_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/session_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_session_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/create_appwrite_email_session_dto.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/current_user_session.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
 
@@ -24,7 +24,7 @@ class AuthRepositoryImpl implements AuthRepository {
     logger.debug('Login in with email credentials...');
 
     final result = await authDataSource.createEmailSession(
-      EmailSessionCredentialsModel(
+      CreateAppwriteEmailSessionDto(
         email: credentials.email,
         password: credentials.password,
       ),
@@ -67,11 +67,11 @@ class AuthRepositoryImpl implements AuthRepository {
     return (await authDataSource.getSession('current'))
         .inspectErr((error) => logger.error(error.toString()))
         .mapErr((_) => 'Unable to fetch current session')
-        .map((model) => CurrentUserSession(provider: _buildProvider(model)));
+        .map((dto) => CurrentUserSession(provider: _buildProvider(dto)));
   }
 
-  SessionProvider _buildProvider(SessionModel model) {
-    switch (model.provider) {
+  SessionProvider _buildProvider(AppwriteSessionDto dto) {
+    switch (dto.provider) {
       case 'email':
         return SessionProvider.email;
       case 'anonymous':

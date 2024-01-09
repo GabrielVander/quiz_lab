@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
+import 'package:quiz_lab/common/domain/entities/question.dart';
+import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 
 @immutable
@@ -58,7 +58,7 @@ class QuestionsOverviewItemViewModel extends Equatable {
         description: description,
         categories: categories.map((c) => QuestionCategory(value: c)).toList(),
         difficulty: QuestionDifficulty.values.firstWhere(
-          (d) => describeEnum(d) == difficulty,
+          (d) => d.name == difficulty,
           orElse: () => QuestionDifficulty.unknown,
         ),
         answerOptions: const [],

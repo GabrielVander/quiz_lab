@@ -1,25 +1,25 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
+import 'package:quiz_lab/common/data/data_sources/questions_collection_appwrite_data_source.dart';
+import 'package:quiz_lab/common/data/dto/appwrite_question_dto.dart';
+import 'package:quiz_lab/common/data/dto/appwrite_question_list_dto.dart';
+import 'package:quiz_lab/common/data/dto/appwrite_realtime_message_dto.dart';
+import 'package:quiz_lab/common/data/dto/create_appwrite_question_dto.dart';
+import 'package:quiz_lab/common/domain/entities/question.dart';
+import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/auth_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_permission_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_profile_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_creation_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_list_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_question_option_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/appwrite_realtime_message_model.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/models/user_model.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_permission_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_profile_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_option_dto.dart';
+import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_user_dto.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
-import 'package:quiz_lab/features/question_management/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/data/repositories/question_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/answer_option.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
-import 'package:quiz_lab/features/question_management/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 
@@ -50,7 +50,7 @@ void main() {
   group('createSingle()', () {
     setUp(
       () => registerFallbackValue(
-        const AppwriteQuestionCreationModel(
+        const CreateAppwriteQuestionDto(
           ownerId: null,
           title: '',
           description: '',
@@ -88,7 +88,7 @@ void main() {
           categories: [],
         ),
         const Err<String, String>('SfpYD4d'),
-        const AppwriteQuestionCreationModel(
+        const CreateAppwriteQuestionDto(
           ownerId: null,
           title: '',
           description: '',
@@ -111,12 +111,12 @@ void main() {
           isPublic: true,
         ),
         const Err<String, String>('y7g'),
-        AppwriteQuestionCreationModel(
+        CreateAppwriteQuestionDto(
           ownerId: null,
           title: r'1HFm$Ny',
           description: 'g18QU',
           options: const [
-            AppwriteQuestionOptionModel(
+            AppwriteQuestionOptionDto(
               description: '!nC#',
               isCorrect: false,
             ),
@@ -125,7 +125,7 @@ void main() {
           categories: const [
             'Az75%p8',
           ],
-          permissions: [AppwritePermissionTypeModel.read(AppwritePermissionRoleModel.any())],
+          permissions: [AppwritePermissionTypeDto.read(AppwritePermissionRoleDto.any())],
         )
       ),
       (
@@ -146,20 +146,20 @@ void main() {
           ],
         ),
         const Ok<String, String>('RF6fL'),
-        const AppwriteQuestionCreationModel(
+        const CreateAppwriteQuestionDto(
           ownerId: 'RF6fL',
           title: '79FgDD',
           description: r'N915*v$R',
           options: [
-            AppwriteQuestionOptionModel(
+            AppwriteQuestionOptionDto(
               description: 'nh92Pe6',
               isCorrect: true,
             ),
-            AppwriteQuestionOptionModel(
+            AppwriteQuestionOptionDto(
               description: r'0N2W%S$',
               isCorrect: true,
             ),
-            AppwriteQuestionOptionModel(
+            AppwriteQuestionOptionDto(
               description: '@W2',
               isCorrect: true,
             ),
@@ -183,7 +183,7 @@ void main() {
         () {
           setUp(() {
             registerFallbackValue(
-              const AppwriteQuestionCreationModel(
+              const CreateAppwriteQuestionDto(
                 ownerId: null,
                 title: '',
                 description: '',
@@ -224,7 +224,7 @@ void main() {
               }),
             );
             when(() => questionsAppwriteDataSource.createSingle(expected))
-                .thenAnswer((_) async => Ok(_MockAppwriteQuestionModel()));
+                .thenAnswer((_) async => Ok(_MockAppwriteQuestionDto()));
 
             final result = await repository.createSingle(question);
 
@@ -264,12 +264,12 @@ void main() {
 
     group('should emit expected', () {
       for (final values in [
-        ((const AppwriteQuestionListModel(total: 0, questions: []), <Question>[])),
+        (const AppwriteQuestionListDto(total: 0, questions: []), <Question>[]),
         (
-          const AppwriteQuestionListModel(
+          const AppwriteQuestionListDto(
             total: 1,
             questions: [
-              AppwriteQuestionModel(
+              AppwriteQuestionDto(
                 id: '',
                 createdAt: '',
                 updatedAt: '',
@@ -296,10 +296,10 @@ void main() {
           ]
         ),
         (
-          const AppwriteQuestionListModel(
+          const AppwriteQuestionListDto(
             total: 3,
             questions: [
-              AppwriteQuestionModel(
+              AppwriteQuestionDto(
                 id: r'PfZ*N22$',
                 createdAt: 'J14ud1p^',
                 updatedAt: 'GhC86Sv',
@@ -309,15 +309,15 @@ void main() {
                 description: 'be%92n',
                 difficulty: 'easy',
                 options: [
-                  AppwriteQuestionOptionModel(
+                  AppwriteQuestionOptionDto(
                     description: '1Dj@',
                     isCorrect: false,
                   ),
-                  AppwriteQuestionOptionModel(
+                  AppwriteQuestionOptionDto(
                     description: 'Az^81FLU',
                     isCorrect: true,
                   ),
-                  AppwriteQuestionOptionModel(
+                  AppwriteQuestionOptionDto(
                     description: '6Wi',
                     isCorrect: false,
                   ),
@@ -355,7 +355,7 @@ void main() {
           when(() => questionsAppwriteDataSource.watchForUpdate()).thenAnswer((_) async => const Ok(Stream.empty()));
           when(() => questionsAppwriteDataSource.getAll()).thenAnswer((_) async => Ok(appwriteQuestionListModel));
           when(() => profileAppwriteDataSource.fetchSingle(any()))
-              .thenAnswer((_) async => const Ok(AppwriteProfileModel(id: 'hi2jW', displayName: '8c8O9R6x')));
+              .thenAnswer((_) async => const Ok(AppwriteProfileDto(id: 'hi2jW', displayName: '8c8O9R6x')));
 
           final result = await repository.watchAll();
 
@@ -426,69 +426,6 @@ void main() {
     });
   });
 
-  group('getSingle()', () {
-    group('should call questions Appwrite data source correctly', () {
-      for (final questionId in [
-        '',
-        'P6m74A',
-      ]) {
-        test(questionId, () {
-          when(() => questionsAppwriteDataSource.fetchSingle(any()))
-              .thenAnswer((_) async => Err(QuestionsAppwriteDataSourceUnexpectedFailure('X90^#SU')));
-
-          repository.getSingle(QuestionId(questionId));
-
-          verify(() => questionsAppwriteDataSource.fetchSingle(questionId));
-        });
-      }
-    });
-
-    test('should map question appwrite model to question entity and return it', () async {
-      final appwriteQuestionModelMock = _MockAppwriteQuestionModel();
-      final questionMock = _MockQuestion();
-
-      when(appwriteQuestionModelMock.toQuestion).thenReturn(questionMock);
-      when(() => questionsAppwriteDataSource.fetchSingle(any())).thenAnswer((_) async => Ok(appwriteQuestionModelMock));
-
-      final result = await repository.getSingle(const QuestionId('o^Y*lN'));
-
-      expect(result, Ok<Question, QuestionRepositoryFailure>(questionMock));
-    });
-
-    group('should return expected failure when questions Appwrite data source fails', () {
-      for (final values in [
-        [
-          QuestionsAppwriteDataSourceUnexpectedFailure(''),
-          const QuestionRepositoryUnexpectedFailure(message: ''),
-        ],
-        [
-          QuestionsAppwriteDataSourceUnexpectedFailure('RdR'),
-          const QuestionRepositoryUnexpectedFailure(message: 'RdR'),
-        ],
-        [
-          QuestionsAppwriteDataSourceAppwriteFailure(''),
-          const QuestionRepositoryExternalServiceErrorFailure(message: ''),
-        ],
-        [
-          QuestionsAppwriteDataSourceAppwriteFailure('VD4'),
-          const QuestionRepositoryExternalServiceErrorFailure(message: 'VD4'),
-        ],
-      ]) {
-        test(values.toString(), () async {
-          final dataSourceFailure = values[0] as QuestionsAppwriteDataSourceFailure;
-          final expected = values[1] as QuestionRepositoryFailure;
-
-          when(() => questionsAppwriteDataSource.fetchSingle(any())).thenAnswer((_) async => Err(dataSourceFailure));
-
-          final result = await repository.getSingle(const QuestionId('2%E5%'));
-
-          expect(result.isErr, true);
-          expect(result.unwrapErr(), expected);
-        });
-      }
-    });
-  });
-
   group('updateSingle', () {
     test('unimplemented', () {
       expect(() async => repository.updateSingle(_MockQuestion()), throwsUnimplementedError);
@@ -500,16 +437,16 @@ class _MockQuizLabLogger extends Mock implements QuizLabLogger {}
 
 class _MockAuthAppwriteDataSource extends Mock implements AuthAppwriteDataSource {}
 
-class _MockAppwriteRealtimeQuestionMessageModel extends Mock implements AppwriteRealtimeQuestionMessageModel {}
+class _MockAppwriteRealtimeQuestionMessageModel extends Mock implements AppwriteRealtimeQuestionMessageDto {}
 
-class _MockAppwriteQuestionListModel extends Mock implements AppwriteQuestionListModel {}
+class _MockAppwriteQuestionListModel extends Mock implements AppwriteQuestionListDto {}
 
 class _MockQuestionsAppwriteDataSource extends Mock implements QuestionCollectionAppwriteDataSourceImpl {}
 
-class _MockAppwriteQuestionModel extends Mock implements AppwriteQuestionModel {}
+class _MockAppwriteQuestionDto extends Mock implements AppwriteQuestionDto {}
 
 class _MockQuestion extends Mock implements Question {}
 
-class _MockUserModel extends Mock implements UserModel {}
+class _MockUserModel extends Mock implements AppwriteUserDto {}
 
 class _MockProfileCollectionAppwriteDataSource extends Mock implements ProfileCollectionAppwriteDataSource {}

@@ -2,82 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
-import 'package:quiz_lab/core/presentation/design_system/button/link.dart';
-import 'package:quiz_lab/core/presentation/design_system/button/primary.dart';
-import 'package:quiz_lab/core/presentation/design_system/text_field/core.dart';
-import 'package:quiz_lab/core/presentation/themes/extensions.dart';
-import 'package:quiz_lab/core/presentation/themes/light_theme.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/login_page_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_page_cubit/view_models/login_page_view_model.dart';
-import 'package:quiz_lab/features/question_management/presentation/shared/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/common/ui/widgets/beta_banner_display.dart';
+import 'package:quiz_lab/core/ui/design_system/button/link.dart';
+import 'package:quiz_lab/core/ui/design_system/button/primary.dart';
+import 'package:quiz_lab/core/ui/design_system/text_field/core.dart';
+import 'package:quiz_lab/core/ui/themes/extensions.dart';
+import 'package:quiz_lab/core/utils/routes.dart';
+import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/widgets/quiz_lab_icon.dart';
 import 'package:quiz_lab/generated/l10n.dart';
 
 class LoginPage extends HookWidget {
   const LoginPage({
-    required LoginPageCubit loginPageCubit,
+    required LoginCubit loginPageCubit,
+    required Widget versionDisplayWidget,
     super.key,
-  }) : cubit = loginPageCubit;
+  })  : _cubit = loginPageCubit,
+        _versionDisplayWidget = versionDisplayWidget;
 
-  final LoginPageCubit cubit;
+  final LoginCubit _cubit;
+  final Widget _versionDisplayWidget;
 
   @override
   Widget build(BuildContext context) {
-    useEffect(
-      () {
-        cubit.hydrate();
-        return null;
-      },
-      [],
-    );
+    useBlocListener<LoginCubit, LoginState>(_cubit, (bloc, current, context) {
+      if (current.generalErrorCode != null) {
+        showSnackBar(context, SnackBar(content: Text(current.generalErrorCode!)));
+      }
+    });
 
-    useBlocListener<LoginPageCubit, LoginPageState>(
-      cubit,
+    useBlocListener<LoginCubit, LoginState>(
+      _cubit,
       (_, value, context) {
-        final snackbar = switch (value) {
-          LoginPageNotYetImplemented() => SnackBar(
-              content: Text(
-                S.of(context).notYetImplemented,
-              ),
-            ),
-          LoginPageError() => SnackBar(
-              backgroundColor: Theme.of(context).themeColors.mainColors.error,
-              content: Text(
-                S.of(context).genericErrorMessage,
-              ),
-            ),
-          LoginPageUnableToLogin() => SnackBar(
-              backgroundColor: Theme.of(context).themeColors.mainColors.error,
-              content: Text(
-                S.of(context).unableToLogin,
-              ),
-            ),
-          _ => SnackBar(
-              content: Text(
-                S.of(context).genericErrorMessage,
-              ),
-            ),
-        };
-
-        showSnackBar(context, snackbar);
-      },
-      listenWhen: (state) =>
-          state is LoginPageNotYetImplemented || state is LoginPageError || state is LoginPageUnableToLogin,
-    );
-
-    useBlocListener<LoginPageCubit, LoginPageState>(
-      cubit,
-      (_, value, context) {
-        switch (value) {
-          case LoginPagePushRouteReplacing():
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              GoRouter.of(context).goNamed(value.route.name);
-            });
-          default:
-            break;
+        if (value.success) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            GoRouter.of(context).goNamed(Routes.questionsOverview.name);
+          });
         }
       },
-      listenWhen: (state) => state is LoginPagePushRouteReplacing,
+      listenWhen: (LoginState state) => state.success,
     );
 
     return SafeArea(
@@ -90,10 +53,10 @@ class LoginPage extends HookWidget {
                 final separator = SizedBox(height: constraints.maxHeight * 0.1);
 
                 return HookBuilder(
-                  builder: (context) {
-                    final loadingState = useBlocBuilder(cubit);
+                  builder: (BuildContext context) {
+                    final LoginState state = useBlocBuilder(_cubit);
 
-                    if (loadingState is LoginPageLoading || loadingState is LoginPageInitial) {
+                    if (state.loading) {
                       return const _Loading();
                     }
 
@@ -108,59 +71,25 @@ class LoginPage extends HookWidget {
                           child: _Title(),
                         ),
                         separator,
-                        HookBuilder(
-                          builder: (context) {
-                            final state = useBlocBuilder(
-                              cubit,
-                              buildWhen: (current) => current is LoginPageViewModelUpdated,
-                            );
-
-                            if (state is LoginPageViewModelUpdated) {
-                              return _LoginForm(
-                                key: const ValueKey<String>('loginForm'),
-                                emailViewModel: state.viewModel.email,
-                                passwordViewModel: state.viewModel.password,
-                                onLogin: cubit.login,
-                                onEmailChange: cubit.updateEmail,
-                                onPasswordChange: cubit.updatePassword,
-                              );
-                            }
-
-                            return Container();
-                          },
+                        _LoginForm(
+                          key: const ValueKey<String>('loginForm'),
+                          email: state.email,
+                          password: state.password,
+                          onLogin: _cubit.login,
+                          onEmailChange: _cubit.updateEmail,
+                          onPasswordChange: _cubit.updatePassword,
+                          emailErrorCode: state.emailErrorCode,
+                          passwordErrorCode: state.passwordErrorCode,
                         ),
                         separator,
                         _AlternativeOptions(
-                          onEnterAnonymously: cubit.enterAnonymously,
-                          onSignUp: cubit.signUp,
+                          onEnterAnonymously: _cubit.enterAnonymously,
+                          onSignUp: _cubit.signUp,
                         ),
                         const SizedBox(
                           height: 25,
                         ),
-                        HookBuilder(
-                          builder: (context) {
-                            final state = useBlocComparativeBuilder(
-                              cubit,
-                              buildWhen: (previous, current) =>
-                                  current is LoginPageLoading ||
-                                  previous is! LoginPageViewModelUpdated ||
-                                  (current is LoginPageViewModelUpdated &&
-                                      previous.viewModel.applicationVersion != current.viewModel.applicationVersion),
-                            );
-
-                            return switch (state) {
-                              LoginPageViewModelUpdated(viewModel: final viewModel) => Center(
-                                  child: Text(
-                                    key: const ValueKey(
-                                      'applicationVersion',
-                                    ),
-                                    viewModel.applicationVersion,
-                                  ),
-                                ),
-                              _ => const _Loading(),
-                            };
-                          },
-                        ),
+                        Center(child: _versionDisplayWidget),
                       ],
                     );
                   },
@@ -207,16 +136,20 @@ class _Title extends StatelessWidget {
 
 class _LoginForm extends StatelessWidget {
   const _LoginForm({
-    required this.emailViewModel,
-    required this.passwordViewModel,
+    required this.email,
+    required this.emailErrorCode,
+    required this.password,
+    required this.passwordErrorCode,
     required this.onEmailChange,
     required this.onPasswordChange,
     required this.onLogin,
     super.key,
   });
 
-  final EmailViewModel emailViewModel;
-  final PasswordViewModel passwordViewModel;
+  final String email;
+  final String? emailErrorCode;
+  final String password;
+  final String? passwordErrorCode;
   final void Function(String newValue) onEmailChange;
   final void Function(String newValue) onPasswordChange;
   final void Function() onLogin;
@@ -227,16 +160,18 @@ class _LoginForm extends StatelessWidget {
       child: Column(
         children: [
           _EmailInput(
-            viewModel: emailViewModel,
+            value: email,
             onChange: onEmailChange,
+            error: emailErrorCode,
           ),
           const SizedBox(
             height: 15,
           ),
           _PasswordInput(
-            viewModel: passwordViewModel,
+            value: password,
             onChange: onPasswordChange,
             onSubmited: (_) => onLogin(),
+            error: passwordErrorCode,
           ),
           const SizedBox(
             height: 15,
@@ -254,30 +189,26 @@ class _LoginForm extends StatelessWidget {
 
 class _EmailInput extends StatelessWidget {
   const _EmailInput({
-    required this.viewModel,
+    required this.value,
+    required this.error,
     required this.onChange,
   });
 
-  final EmailViewModel viewModel;
+  final String value;
+  final String? error;
   final void Function(String newValue) onChange;
 
   @override
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
-        String? errorMessage;
-
-        if (viewModel.isEmpty && viewModel.showError) {
-          errorMessage = S.of(context).mustBeSetMessage;
-        }
-
         return QLTextField.standard(
           key: const ValueKey('emailFormField'),
           onChanged: onChange,
-          initialValue: viewModel.value,
+          initialValue: value,
           labelText: S.of(context).emailLabel,
           prefixIcon: const Icon(Icons.email),
-          errorMessage: errorMessage,
+          errorMessage: error,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.emailAddress,
         );
@@ -288,12 +219,14 @@ class _EmailInput extends StatelessWidget {
 
 class _PasswordInput extends StatelessWidget {
   const _PasswordInput({
-    required this.viewModel,
+    required this.value,
+    required this.error,
     required this.onChange,
     required this.onSubmited,
   });
 
-  final PasswordViewModel viewModel;
+  final String value;
+  final String? error;
   final void Function(String) onChange;
   final void Function(String?)? onSubmited;
 
@@ -301,21 +234,15 @@ class _PasswordInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
-        String? errorMessage;
-
-        if (viewModel.isEmpty && viewModel.showError) {
-          errorMessage = S.of(context).mustBeSetMessage;
-        }
-
         return QLTextField.standard(
           key: const ValueKey('passwordFormField'),
           labelText: S.of(context).passwordLabel,
           prefixIcon: const Icon(Icons.lock),
           obscureText: true,
-          errorMessage: errorMessage,
+          errorMessage: error,
           onChanged: onChange,
           onFieldSubmitted: onSubmited,
-          initialValue: viewModel.value,
+          initialValue: value,
           textInputAction: TextInputAction.done,
         );
       },
