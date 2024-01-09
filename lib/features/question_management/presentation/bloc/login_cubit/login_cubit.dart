@@ -51,9 +51,6 @@ class LoginCubit extends Cubit<LoginState> {
             state.copyWith(
               success: true,
               loading: false,
-              emailErrorCode: null,
-              passwordErrorCode: null,
-              generalErrorCode: null,
             ),
           ),
         )

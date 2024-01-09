@@ -15,7 +15,6 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/delete_question_use_case.dart';
-import 'package:quiz_lab/features/question_management/domain/use_cases/fetch_application_version_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
@@ -127,11 +126,6 @@ void _registerUseCases(DependencyInjection di) {
       (di) => CheckIfUserIsLoggedInUseCaseImpl(
         logger: QuizLabLoggerImpl<CheckIfUserIsLoggedInUseCaseImpl>(),
         authRepository: di.get<AuthRepository>(),
-      ),
-    )
-    ..registerBuilder<FetchApplicationVersionUseCase>(
-      (i) => FetchApplicationVersionUseCaseImpl(
-        packageInfoWrapper: i.get<PackageInfoWrapper>(),
       ),
     );
 }

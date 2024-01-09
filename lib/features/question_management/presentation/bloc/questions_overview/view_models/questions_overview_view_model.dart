@@ -58,7 +58,7 @@ class QuestionsOverviewItemViewModel extends Equatable {
         description: description,
         categories: categories.map((c) => QuestionCategory(value: c)).toList(),
         difficulty: QuestionDifficulty.values.firstWhere(
-          (d) => describeEnum(d) == difficulty,
+          (d) => d.name == difficulty,
           orElse: () => QuestionDifficulty.unknown,
         ),
         answerOptions: const [],

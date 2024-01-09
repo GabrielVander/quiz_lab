@@ -12,7 +12,6 @@ final lightThemeColors = ThemeColors(
 );
 
 final ThemeData lightTheme = ThemeData.light().copyWith(
-  useMaterial3: true,
   textTheme: ThemeData.light().textTheme.apply(
         fontFamily: 'Inter',
         bodyColor: quizLabLightTheme.textColors.primary,

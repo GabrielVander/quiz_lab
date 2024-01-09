@@ -264,7 +264,7 @@ void main() {
 
     group('should emit expected', () {
       for (final values in [
-        ((const AppwriteQuestionListDto(total: 0, questions: []), <Question>[])),
+        (const AppwriteQuestionListDto(total: 0, questions: []), <Question>[]),
         (
           const AppwriteQuestionListDto(
             total: 1,
