@@ -4,167 +4,185 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/login_cubit.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/view_models/login_view_model.dart';
 
 void main() {
   late QuizLabLogger logger;
-  late LoginWithCredentialsUseCase loginWithCredentialsUseCaseMock;
-  late LoginAnonymouslyUseCase loginAnonymouslyUseCaseMock;
+  late LoginWithCredentialsUseCase loginWithCredentialsUseCase;
+  late LoginAnonymouslyUseCase loginAnonymouslyUseCase;
 
   late LoginCubit cubit;
 
   setUp(() {
     logger = _MockQuizLabLogger();
-    loginWithCredentialsUseCaseMock = _MockLoginWithCredentialsUseCase();
-    loginAnonymouslyUseCaseMock = _MockLoginAnonymouslyUseCase();
+    loginWithCredentialsUseCase = _MockLoginWithCredentialsUseCase();
+    loginAnonymouslyUseCase = _MockLoginAnonymouslyUseCase();
 
     cubit = LoginCubit(
       logger: logger,
-      loginWithCredentialsUseCase: loginWithCredentialsUseCaseMock,
-      loginAnonymouslyUseCase: loginAnonymouslyUseCaseMock,
+      loginWithCredentialsUseCase: loginWithCredentialsUseCase,
+      loginAnonymouslyUseCase: loginAnonymouslyUseCase,
     );
   });
 
   tearDown(resetMocktailState);
 
-  group('hydrate', () {
-    test(
-      'should emit [LoginPageViewModelUpdated] with default view model',
-      () {
-        cubit.hydrate();
+  test('should emit initial state', () async {
+    expect(cubit.state, const LoginState());
 
-        expect(
-          cubit.state,
-          const LoginPageViewModelUpdated(
-            viewModel: LoginViewModel(
-              email: EmailViewModel(value: ''),
-              password: PasswordViewModel(value: ''),
-            ),
-          ),
-        );
-      },
-    );
+    await cubit.close();
   });
 
   group('onEmailChange', () {
-    group(
-      'should emit [LoginPageViewModelUpdated] with given email value and '
-      'should be showing errors',
-      () {
-        for (final email in [
-          '',
-          '6bpedZ*',
-        ]) {
-          test(email, () {
-            cubit
-              ..hydrate()
-              ..updateEmail(email);
-
-            expect(
-              cubit.state,
-              LoginPageViewModelUpdated(
-                viewModel: LoginViewModel(
-                  email: EmailViewModel(
-                    value: email,
-                    showError: true,
-                  ),
-                  password: const PasswordViewModel(
-                    value: '',
-                  ),
+    group('should emit state with given email value', () {
+      for (final email in ['8Ox', '6bpedZ*']) {
+        test(email, () async {
+          unawaited(
+            expectLater(
+              cubit.stream,
+              emitsInOrder([
+                emitsThrough(
+                  LoginState(email: email),
                 ),
+                emitsDone,
+              ]),
+            ),
+          );
+
+          cubit.updateEmail(email);
+          await cubit.close();
+        });
+      }
+    });
+
+    test('should emit state with show errors true if email is empty', () async {
+      unawaited(
+        expectLater(
+          cubit.stream,
+          emitsInOrder([
+            emitsThrough(
+              const LoginState(
+                emailErrorCode: 'emptyValue',
+                showEmailError: true,
               ),
-            );
-          });
-        }
-      },
-    );
+            ),
+            emitsDone,
+          ]),
+        ),
+      );
+
+      cubit.updateEmail('');
+      await cubit.close();
+    });
   });
 
   group('onPasswordChange', () {
-    group(
-      'should emit [LoginPageViewModelUpdated] with given password value and '
-      'should be showing errors',
-      () {
-        for (final password in [
-          '',
-          'NE#o%',
-        ]) {
-          test(password, () {
-            cubit
-              ..hydrate()
-              ..updatePassword(password);
-
-            expect(
-              cubit.state,
-              LoginPageViewModelUpdated(
-                viewModel: LoginViewModel(
-                  email: const EmailViewModel(
-                    value: '',
-                  ),
-                  password: PasswordViewModel(
-                    value: password,
-                    showError: true,
-                  ),
-                ),
+    group('should emit state with given password value', () {
+      for (final password in ['W6q', 'NE#o%']) {
+        test(password, () async {
+          unawaited(
+            expectLater(
+              cubit.stream,
+              emitsThrough(
+                LoginState(password: password),
               ),
-            );
-          });
-        }
-      },
-    );
+            ),
+          );
+
+          cubit.updatePassword(password);
+
+          await cubit.close();
+        });
+      }
+    });
+
+    test('should emit state with emptyValue error code', () async {
+      unawaited(
+        expectLater(
+          cubit.stream,
+          emitsInOrder([
+            emitsThrough(
+              const LoginState(
+                passwordErrorCode: 'emptyValue',
+                showPasswordError: true,
+              ),
+            ),
+            emitsDone,
+          ]),
+        ),
+      );
+
+      cubit.updatePassword('');
+      await cubit.close();
+    });
   });
 
   group('onLogin', () {
-    group(
-      'should emit [LoginPageViewModelUpdated] showing errors if email/password have issues',
-      () {
-        for (final values in [
-          ['', ''],
-        ]) {
-          test(values.toString(), () {
-            final email = values[0];
-            final password = values[1];
+    test('should emit loading true', () async {
+      when(
+        () => loginWithCredentialsUseCase.call(
+          const LoginWithCredentialsUseCaseInput(email: '', password: ''),
+        ),
+      ).thenAnswer((_) async => const Err('oXy2d8^%'));
 
-            cubit
-              ..hydrate()
-              ..updateEmail(email)
-              ..updatePassword(password)
-              ..login();
+      unawaited(
+        expectLater(
+          cubit.stream,
+          emitsThrough(const LoginState(loading: true)),
+        ),
+      );
 
-            expect(
-              cubit.state,
-              LoginPageViewModelUpdated(
-                viewModel: LoginViewModel(
-                  email: EmailViewModel(
-                    value: email,
-                    showError: true,
-                  ),
-                  password: PasswordViewModel(
-                    value: password,
-                    showError: true,
-                  ),
+      await cubit.login();
+      await cubit.close();
+    });
+
+    group('should emit state showing errors if email/password have issues', () {
+      const email = '';
+      const password = '';
+
+      test('with $email as email and $password as password', () async {
+        when(
+          () => loginWithCredentialsUseCase
+              .call(const LoginWithCredentialsUseCaseInput(email: email, password: password)),
+        ).thenAnswer((_) async => const Err('fiii8S'));
+
+        unawaited(
+          expectLater(
+            cubit.stream,
+            emitsInOrder([
+              emitsThrough(
+                const LoginState(
+                  emailErrorCode: 'emptyValue',
+                  showEmailError: true,
+                  passwordErrorCode: 'emptyValue',
+                  showPasswordError: true,
                 ),
               ),
-            );
-          });
-        }
-      },
-    );
+            ]),
+          ),
+        );
+
+        cubit
+          ..updateEmail(email)
+          ..updatePassword(password);
+
+        await cubit.login();
+        await cubit.close();
+      });
+    });
 
     group(
       'err flow',
       () {
-        test('should emit [LoginUnableToLogin]', () {
+        test('should emit state with unableToLoginErrorCode', () async {
           const email = '0NSu';
           const password = 'eG#*2IGw';
 
           when(
-            () => loginWithCredentialsUseCaseMock.call(
+            () => loginWithCredentialsUseCase.call(
               const LoginWithCredentialsUseCaseInput(
                 email: email,
                 password: password,
@@ -172,114 +190,117 @@ void main() {
             ),
           ).thenAnswer((_) async => const Err('plM430*8'));
 
-          expectLater(
-            cubit.stream,
-            emitsInOrder([
-              isA<LoginPageViewModelUpdated>(),
-              isA<LoginPageViewModelUpdated>(),
-              isA<LoginPageViewModelUpdated>(),
-              isA<LoginPageLoading>(),
-              const LoginPageUnableToLogin(),
-              isA<LoginPageViewModelUpdated>(),
-            ]),
+          unawaited(
+            expectLater(
+              cubit.stream,
+              emitsInOrder([
+                emitsThrough(
+                  const LoginState(
+                    email: email,
+                    password: password,
+                    generalErrorCode: 'unableToLogin',
+                  ),
+                ),
+                // emitsDone,
+              ]),
+            ),
           );
 
           cubit
-            ..hydrate()
             ..updateEmail(email)
-            ..updatePassword(password)
-            ..login();
+            ..updatePassword(password);
+
+          await cubit.login();
+          await cubit.close();
         });
       },
     );
 
-    group(
-      'ok flow',
-      () {
-        test(
-          'should emit '
-          '[LoginPageDisplayLoggedInMessage, LoginPagePushRouteReplacing]',
-          () async {
-            const dummyEmail = 'k%qMlC';
-            const dummyPassword = '5G4tC3';
+    group('ok flow', () {
+      test('should emit success', () async {
+        const dummyEmail = 'k%qMlC';
+        const dummyPassword = '5G4tC3';
 
-            when(
-              () => loginWithCredentialsUseCaseMock.call(
-                const LoginWithCredentialsUseCaseInput(
-                  email: dummyEmail,
-                  password: dummyPassword,
+        when(
+          () => loginWithCredentialsUseCase.call(
+            const LoginWithCredentialsUseCaseInput(
+              email: dummyEmail,
+              password: dummyPassword,
+            ),
+          ),
+        ).thenAnswer((_) async => const Ok(unit));
+
+        unawaited(
+          expectLater(
+            cubit.stream,
+            emitsInOrder(
+              [
+                emitsThrough(
+                  const LoginState(
+                    email: dummyEmail,
+                    password: dummyPassword,
+                    success: true,
+                  ),
                 ),
-              ),
-            ).thenAnswer(
-              (_) async => const Ok(unit),
-            );
-
-            unawaited(
-              expectLater(
-                cubit.stream,
-                emitsInOrder(
-                  [
-                    isA<LoginPageViewModelUpdated>(),
-                    isA<LoginPageViewModelUpdated>(),
-                    isA<LoginPageViewModelUpdated>(),
-                    isA<LoginPageLoading>(),
-                    isA<LoginPageLoggedInSuccessfully>(),
-                    const LoginPagePushRouteReplacing(
-                      route: Routes.questionsOverview,
-                    ),
-                    emitsDone,
-                  ],
-                ),
-              ),
-            );
-
-            cubit
-              ..hydrate()
-              ..updateEmail(dummyEmail)
-              ..updatePassword(dummyPassword);
-
-            await cubit.login();
-            await cubit.close();
-          },
+                emitsDone,
+              ],
+            ),
+          ),
         );
-      },
-    );
+
+        cubit
+          ..updateEmail(dummyEmail)
+          ..updatePassword(dummyPassword);
+
+        await cubit.login();
+        await cubit.close();
+      });
+    });
   });
 
-  test('onSignUp', () {
-    expectLater(
-      cubit.stream,
-      emitsInOrder([
-        isA<LoginPageNotYetImplemented>(),
-      ]),
+  test('onSignUp should emit state with not implemented message', () async {
+    unawaited(
+      expectLater(
+        cubit.stream,
+        emitsInOrder([
+          const LoginState(generalMessageCode: 'notImplemented'),
+          emitsDone,
+        ]),
+      ),
     );
 
     cubit.signUp();
+    await cubit.close();
   });
 
   group('enterAnonymously', () {
-    test('should emit [LoginPageLoading]', () {
-      when(() => loginAnonymouslyUseCaseMock.call()).thenAnswer((_) async => const Err('DGI'));
+    test('should emit state with loading = true', () async {
+      when(() => loginAnonymouslyUseCase.call()).thenAnswer((_) async => const Err('DGI'));
 
-      expectLater(cubit.stream, emits(const LoginPageLoading()));
+      unawaited(
+        expectLater(cubit.stream, emits(const LoginState(loading: true))),
+      );
 
-      cubit.enterAnonymously();
+      await cubit.enterAnonymously();
+      await cubit.close();
     });
 
     group(
-      'should emit [LoginPageUnableToLogin, LoginPageInitial] if login anonymously use case fails',
+      'should emit error code unableToLogin if login anonymously use case fails',
       () {
         for (final error in ['8dNTWA', '1FAaAW2']) {
           test(error, () async {
-            when(loginAnonymouslyUseCaseMock.call).thenAnswer((_) async => Err(error));
+            when(loginAnonymouslyUseCase.call).thenAnswer((_) async => Err(error));
 
             unawaited(
               expectLater(
                 cubit.stream,
                 emitsInOrder([
-                  const LoginPageLoading(),
-                  const LoginPageUnableToLogin(),
-                  const LoginPageInitial(),
+                  emitsThrough(
+                    const LoginState(
+                      generalErrorCode: 'unableToLogin',
+                    ),
+                  ),
                   emitsDone,
                 ]),
               ),
@@ -294,25 +315,31 @@ void main() {
       },
     );
 
-    test('should emit [LoginPageLoggedInSuccessfully, LoginPagePushRouteReplacing]', () async {
-      when(loginAnonymouslyUseCaseMock.call).thenAnswer((_) async => const Ok(unit));
+    test('should emit state with successful true', () async {
+      when(loginAnonymouslyUseCase.call).thenAnswer((_) async => const Ok(unit));
 
       unawaited(
         expectLater(
           cubit.stream,
           emitsInOrder([
-            const LoginPageLoading(),
-            const LoginPageLoggedInSuccessfully(),
-            const LoginPagePushRouteReplacing(route: Routes.questionsOverview),
+            emitsThrough(
+              const LoginState(
+                email: 'email',
+                password: 'password',
+                success: true,
+              ),
+            ),
             emitsDone,
           ]),
         ),
       );
 
+      cubit
+        ..updateEmail('email')
+        ..updatePassword('password');
+
       await cubit.enterAnonymously();
       await cubit.close();
-
-      verify(() => logger.info('Logged in successfully. Redirecting...')).called(1);
     });
   });
 }

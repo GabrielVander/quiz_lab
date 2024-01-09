@@ -1,140 +1,140 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
+import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
-import 'package:quiz_lab/core/utils/routes.dart';
+import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
-import 'package:quiz_lab/features/question_management/presentation/bloc/login_cubit/view_models/login_view_model.dart';
 
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit({
-    required this.logger,
-    required this.loginWithCredentialsUseCase,
-    required this.loginAnonymouslyUseCase,
-  }) : super(const LoginPageInitial());
+    required QuizLabLogger logger,
+    required LoginWithCredentialsUseCase loginWithCredentialsUseCase,
+    required LoginAnonymouslyUseCase loginAnonymouslyUseCase,
+  })  : _logger = logger,
+        _loginWithCredentialsUseCase = loginWithCredentialsUseCase,
+        _loginAnonymouslyUseCase = loginAnonymouslyUseCase,
+        super(const LoginState());
 
-  final QuizLabLogger logger;
-  final LoginWithCredentialsUseCase loginWithCredentialsUseCase;
-  final LoginAnonymouslyUseCase loginAnonymouslyUseCase;
-
-  late LoginViewModel _viewModel;
-
-  final LoginViewModel _defaultViewModel = const LoginViewModel(
-    email: EmailViewModel(
-      value: '',
-    ),
-    password: PasswordViewModel(
-      value: '',
-    ),
-  );
-
-  void hydrate() {
-    logger.debug('Hydrating...');
-    _viewModel = _defaultViewModel;
-
-    emit(LoginPageViewModelUpdated(viewModel: _viewModel));
-  }
+  final QuizLabLogger _logger;
+  final LoginWithCredentialsUseCase _loginWithCredentialsUseCase;
+  final LoginAnonymouslyUseCase _loginAnonymouslyUseCase;
 
   void updateEmail(String email) {
-    logger.debug('Received email input');
+    _logger.debug('Received email input');
 
-    _viewModel = _viewModel.copyWith(
-      email: _viewModel.email.copyWith(
-        value: email,
-        showError: true,
-      ),
-    );
-
-    emit(
-      LoginPageViewModelUpdated(viewModel: _viewModel),
-    );
+    _emitNewEmailValue(email);
+    _validateEmail(email);
   }
 
   void updatePassword(String password) {
-    logger.debug('Received password input');
+    _logger.debug('Received password input');
 
-    _viewModel = _viewModel.copyWith(
-      password: _viewModel.password.copyWith(
-        value: password,
-        showError: true,
-      ),
-    );
-
-    emit(
-      LoginPageViewModelUpdated(viewModel: _viewModel),
-    );
+    _emitNewPasswordValue(password);
+    _validatePassword(password);
   }
 
   Future<void> login() async {
-    logger.debug('Received login request');
-    emit(const LoginPageLoading());
+    _logger.debug('Received login request');
 
-    final isEmailEmpty = _viewModel.email.value.isEmpty;
-    final isPasswordEmpty = _viewModel.password.value.isEmpty;
+    _emitLoading();
 
-    if (isEmailEmpty) {
-      _viewModel = _viewModel.copyWith(
-        email: _viewModel.email.copyWith(
-          showError: true,
-        ),
-      );
+    if (!_validateEmail(state.email) || !_validatePassword(state.password)) {
+      return emit(state.copyWith(loading: false));
     }
 
-    if (isPasswordEmpty) {
-      _viewModel = _viewModel.copyWith(
-        password: _viewModel.password.copyWith(
-          showError: true,
-        ),
-      );
-    }
-
-    if (isEmailEmpty || isPasswordEmpty) {
-      emit(LoginPageViewModelUpdated(viewModel: _viewModel));
-      return;
-    }
-
-    final logInResult = await loginWithCredentialsUseCase(
-      LoginWithCredentialsUseCaseInput(
-        email: _viewModel.email.value,
-        password: _viewModel.password.value,
-      ),
-    );
-
-    if (logInResult.isErr) {
-      emit(const LoginPageUnableToLogin());
-      emit(LoginPageViewModelUpdated(viewModel: _defaultViewModel));
-
-      return;
-    }
-
-    emit(const LoginPageLoggedInSuccessfully());
-    emit(const LoginPagePushRouteReplacing(route: Routes.questionsOverview));
+    (await _loginWithCredentials())
+        .inspect(
+          (value) => emit(
+            state.copyWith(
+              success: true,
+              loading: false,
+              emailErrorCode: null,
+              passwordErrorCode: null,
+              generalErrorCode: null,
+            ),
+          ),
+        )
+        .inspectErr((errorCode) => emit(state.copyWith(generalErrorCode: errorCode, loading: false)));
   }
 
   Future<void> enterAnonymously() async {
-    emit(const LoginPageLoading());
+    _logger.info('Logging in anonymously...');
 
-    final result = await loginAnonymouslyUseCase();
+    _emitLoading();
 
-    result.inspectErr(_onLoginFailed).inspect(_onLoginSucceeded);
+    (await _loginAnonymously())
+        .inspect((_) => emit(state.copyWith(success: true, loading: false)))
+        .inspectErr((error) => emit(state.copyWith(generalErrorCode: error, loading: false)));
   }
 
-  void signUp() => emit(const LoginPageNotYetImplemented());
+  void signUp() => emit(state.copyWith(generalMessageCode: _LoginCubitGeneralMessageCode.notImplemented.name));
 
-  void _onLoginFailed(String error) {
-    logger.error(error);
+  void _emitNewEmailValue(String email) => emit(state.copyWith(email: email));
 
-    emit(const LoginPageUnableToLogin());
-    emit(const LoginPageInitial());
+  bool _validateEmail(String email) {
+    _logger.debug('Validating email...');
+
+    if (email.isEmpty) {
+      _logger.warn('Email must be set');
+
+      emit(
+        state.copyWith(
+          emailErrorCode: _LoginCubitErrorCode.emptyValue.name,
+          showEmailError: true,
+        ),
+      );
+
+      return false;
+    }
+
+    return true;
   }
 
-  void _onLoginSucceeded(_) {
-    logger.info('Logged in successfully. Redirecting...');
+  void _emitNewPasswordValue(String password) => emit(state.copyWith(password: password));
 
-    emit(const LoginPageLoggedInSuccessfully());
-    emit(const LoginPagePushRouteReplacing(route: Routes.questionsOverview));
+  bool _validatePassword(String password) {
+    _logger.debug('Validating password...');
+
+    if (password.isEmpty) {
+      _logger.warn('Password must be set');
+
+      emit(
+        state.copyWith(
+          passwordErrorCode: _LoginCubitErrorCode.emptyValue.name,
+          showPasswordError: true,
+        ),
+      );
+
+      return false;
+    }
+
+    return true;
   }
+
+  void _emitLoading() => emit(state.copyWith(loading: true));
+
+  Future<Result<Unit, String>> _loginWithCredentials() async => (await _loginWithCredentialsUseCase(
+        LoginWithCredentialsUseCaseInput(
+          email: state.email,
+          password: state.password,
+        ),
+      ))
+          .inspectErr(_logger.error)
+          .mapErr((_) => _LoginCubitErrorCode.unableToLogin.name);
+
+  Future<Result<Unit, String>> _loginAnonymously() async => (await _loginAnonymouslyUseCase.call())
+      .inspectErr(_logger.error)
+      .mapErr((_) => _LoginCubitErrorCode.unableToLogin.name);
+}
+
+enum _LoginCubitErrorCode {
+  emptyValue,
+  unableToLogin,
+}
+
+enum _LoginCubitGeneralMessageCode {
+  notImplemented,
 }
