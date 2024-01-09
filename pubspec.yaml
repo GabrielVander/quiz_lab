@@ -53,6 +53,7 @@ dependencies:
   super_banners: ^0.0.1
   package_info_plus: ^4.1.0
   intl: ^0.18.1
+  rust_core: ^0.3.5
 
 dev_dependencies:
   bloc_test: ^9.1.5
