@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/answer_question/domain/entities/answerable_question.dart';
 import 'package:quiz_lab/features/answer_question/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/answer_question/domain/usecases/retrieve_question.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -63,7 +63,7 @@ void main() {
 
         verify(() => questionRepository.fetchQuestionWithId(id)).called(1);
         verify(() => logger.debug('Question retrieved')).called(1);
-        expect(result, Ok<AnswerableQuestion, dynamic>(expected));
+        expect(result, Ok<AnswerableQuestion, String>(expected));
       });
     }
   });

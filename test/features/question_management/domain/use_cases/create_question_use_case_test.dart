@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
@@ -11,6 +10,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/draft_ques
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -33,11 +33,11 @@ void main() {
 
   tearDown(resetMocktailState);
 
-  test('should log initial message', () {
+  test('should log initial message', () async {
     when(() => uuidGenerator.generate()).thenReturn('8&tL6xjE');
     when(() => questionRepository.createSingle(any())).thenAnswer((_) async => const Err('9qNsuf'));
 
-    useCase.call(
+    await useCase.call(
       const DraftQuestion(
         title: '',
         description: '',

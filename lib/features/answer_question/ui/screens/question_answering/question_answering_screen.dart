@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -31,7 +33,7 @@ class QuestionAnsweringScreen extends HookWidget {
 
     useEffect(
       () {
-        cubit.loadQuestion(questionId);
+        unawaited(cubit.loadQuestion(questionId));
 
         return null;
       },

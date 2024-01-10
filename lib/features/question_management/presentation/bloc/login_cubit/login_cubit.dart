@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
+import 'package:rust_core/result.dart';
 
 part 'login_state.dart';
 

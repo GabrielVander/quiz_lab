@@ -2,7 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/common/data/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 
@@ -61,19 +61,17 @@ void main() {
           ],
         ),
       ]) {
-        test(creationRequest.toString(), () {
-          mocktail
-              .when(
-                () => databasesMock.createDocument(
-                  databaseId: creationRequest.databaseId,
-                  collectionId: creationRequest.collectionId,
-                  documentId: creationRequest.documentId,
-                  data: creationRequest.data,
-                ),
-              )
-              .thenAnswer((_) async => _DocumentMock());
+        test(creationRequest.toString(), () async {
+          when(
+            () => databasesMock.createDocument(
+              databaseId: creationRequest.databaseId,
+              collectionId: creationRequest.collectionId,
+              documentId: creationRequest.documentId,
+              data: creationRequest.data,
+            ),
+          ).thenAnswer((_) async => _DocumentMock());
 
-          wrapper.createDocument(
+          await wrapper.createDocument(
             databaseId: creationRequest.databaseId,
             collectionId: creationRequest.collectionId,
             documentId: creationRequest.documentId,
@@ -81,7 +79,7 @@ void main() {
             permissions: creationRequest.permissions,
           );
 
-          mocktail.verify(
+          verify(
             () => databasesMock.createDocument(
               databaseId: creationRequest.databaseId,
               collectionId: creationRequest.collectionId,
@@ -173,16 +171,14 @@ void main() {
             final exception = values[0] as AppwriteException;
             final expectedFailure = values[1] as AppwriteWrapperFailure;
 
-            mocktail
-                .when(
-                  () => databasesMock.createDocument(
-                    databaseId: mocktail.any(named: 'databaseId'),
-                    collectionId: mocktail.any(named: 'collectionId'),
-                    documentId: mocktail.any(named: 'documentId'),
-                    data: mocktail.any(named: 'data'),
-                  ),
-                )
-                .thenThrow(exception);
+            when(
+              () => databasesMock.createDocument(
+                databaseId: any(named: 'databaseId'),
+                collectionId: any(named: 'collectionId'),
+                documentId: any(named: 'documentId'),
+                data: any(named: 'data'),
+              ),
+            ).thenThrow(exception);
 
             final result = await wrapper.createDocument(
               databaseId: 'O68JS0u',
@@ -198,7 +194,7 @@ void main() {
               },
             );
 
-            expect(result.isErr, true);
+            expect(result.isErr(), true);
             expect(result.unwrapErr(), expectedFailure);
           });
         }
@@ -208,16 +204,14 @@ void main() {
         'should return unexpected failure when an non-Appwrite exception is '
         'thrown',
         () async {
-          mocktail
-              .when(
-                () => databasesMock.createDocument(
-                  databaseId: mocktail.any(named: 'databaseId'),
-                  collectionId: mocktail.any(named: 'collectionId'),
-                  documentId: mocktail.any(named: 'documentId'),
-                  data: mocktail.any(named: 'data'),
-                ),
-              )
-              .thenThrow(_ExceptionMock());
+          when(
+            () => databasesMock.createDocument(
+              databaseId: any(named: 'databaseId'),
+              collectionId: any(named: 'collectionId'),
+              documentId: any(named: 'documentId'),
+              data: any(named: 'data'),
+            ),
+          ).thenThrow(_ExceptionMock());
 
           final result = await wrapper.createDocument(
             databaseId: 'O68JS0u',
@@ -233,7 +227,7 @@ void main() {
             },
           );
 
-          expect(result.isErr, true);
+          expect(result.isErr(), true);
           expect(
             result.unwrapErr(),
             AppwriteWrapperUnexpectedFailure('_ExceptionMock'),
@@ -248,16 +242,14 @@ void main() {
         () async {
           final dummyDocument = _DocumentMock();
 
-          mocktail
-              .when(
-                () => databasesMock.createDocument(
-                  databaseId: mocktail.any(named: 'databaseId'),
-                  collectionId: mocktail.any(named: 'collectionId'),
-                  documentId: mocktail.any(named: 'documentId'),
-                  data: mocktail.any(named: 'data'),
-                ),
-              )
-              .thenAnswer((_) async => dummyDocument);
+          when(
+            () => databasesMock.createDocument(
+              databaseId: any(named: 'databaseId'),
+              collectionId: any(named: 'collectionId'),
+              documentId: any(named: 'documentId'),
+              data: any(named: 'data'),
+            ),
+          ).thenAnswer((_) async => dummyDocument);
 
           final result = await wrapper.createDocument(
             databaseId: 'O68JS0u',
@@ -273,7 +265,7 @@ void main() {
             },
           );
 
-          expect(result.isOk, true);
+          expect(result.isOk(), true);
           expect(result.unwrap(), dummyDocument);
         },
       );
@@ -293,15 +285,13 @@ void main() {
             final collectionId = values[1];
             final documentId = values[2];
 
-            mocktail
-                .when(
-                  () => databasesMock.deleteDocument(
-                    databaseId: mocktail.any(named: 'databaseId'),
-                    collectionId: mocktail.any(named: 'collectionId'),
-                    documentId: mocktail.any(named: 'documentId'),
-                  ),
-                )
-                .thenThrow(_AppwriteExceptionMock());
+            when(
+              () => databasesMock.deleteDocument(
+                databaseId: any(named: 'databaseId'),
+                collectionId: any(named: 'collectionId'),
+                documentId: any(named: 'documentId'),
+              ),
+            ).thenThrow(_AppwriteExceptionMock());
 
             await wrapper.deleteDocument(
               databaseId: databaseId,
@@ -309,7 +299,7 @@ void main() {
               documentId: documentId,
             );
 
-            mocktail.verify(
+            verify(
               () => databasesMock.deleteDocument(
                 databaseId: databaseId,
                 collectionId: collectionId,
@@ -404,15 +394,13 @@ void main() {
             const collectionId = 'wgujt0';
             const documentId = 'o&TO@L';
 
-            mocktail
-                .when(
-                  () => databasesMock.deleteDocument(
-                    databaseId: databaseId,
-                    collectionId: collectionId,
-                    documentId: documentId,
-                  ),
-                )
-                .thenThrow(exception);
+            when(
+              () => databasesMock.deleteDocument(
+                databaseId: databaseId,
+                collectionId: collectionId,
+                documentId: documentId,
+              ),
+            ).thenThrow(exception);
 
             final result = await wrapper.deleteDocument(
               databaseId: databaseId,
@@ -420,7 +408,7 @@ void main() {
               documentId: documentId,
             );
 
-            expect(result.isErr, true);
+            expect(result.isErr(), true);
             expect(result.unwrapErr(), expectedFailure);
           });
         }
@@ -435,15 +423,13 @@ void main() {
         const collectionId = 'y8A7';
         const documentId = 'Y%C7';
 
-        mocktail
-            .when(
-              () => databasesMock.deleteDocument(
-                databaseId: databaseId,
-                collectionId: collectionId,
-                documentId: documentId,
-              ),
-            )
-            .thenThrow(_ExceptionMock());
+        when(
+          () => databasesMock.deleteDocument(
+            databaseId: databaseId,
+            collectionId: collectionId,
+            documentId: documentId,
+          ),
+        ).thenThrow(_ExceptionMock());
 
         final result = await wrapper.deleteDocument(
           databaseId: databaseId,
@@ -451,7 +437,7 @@ void main() {
           documentId: documentId,
         );
 
-        expect(result.isErr, true);
+        expect(result.isErr(), true);
         expect(
           result.unwrapErr(),
           AppwriteWrapperUnexpectedFailure('_ExceptionMock'),
@@ -460,21 +446,19 @@ void main() {
     );
 
     test(
-      "should return Unit if Databases service does't throws",
+      "should return Unit if Databases service doesn't throws",
       () async {
         const databaseId = '045E9ED';
         const collectionId = 'b@u';
         const documentId = 'yMQ';
 
-        mocktail
-            .when(
-              () => databasesMock.deleteDocument(
-                databaseId: databaseId,
-                collectionId: collectionId,
-                documentId: documentId,
-              ),
-            )
-            .thenAnswer((_) async => null);
+        when(
+          () => databasesMock.deleteDocument(
+            databaseId: databaseId,
+            collectionId: collectionId,
+            documentId: documentId,
+          ),
+        ).thenAnswer((_) async => null);
 
         final result = await wrapper.deleteDocument(
           databaseId: databaseId,
@@ -482,7 +466,7 @@ void main() {
           documentId: documentId,
         );
 
-        expect(result.isOk, true);
+        expect(result.isOk(), true);
         expect(result.unwrap(), unit);
       },
     );
@@ -504,24 +488,22 @@ void main() {
             documentId: 'ePU3b',
           ),
         ]) {
-          test(docReference.toString(), () {
-            mocktail
-                .when(
-                  () => databasesMock.getDocument(
-                    databaseId: docReference.databaseId,
-                    collectionId: docReference.collectionId,
-                    documentId: docReference.documentId,
-                  ),
-                )
-                .thenAnswer((_) async => _DocumentMock());
+          test(docReference.toString(), () async {
+            when(
+              () => databasesMock.getDocument(
+                databaseId: docReference.databaseId,
+                collectionId: docReference.collectionId,
+                documentId: docReference.documentId,
+              ),
+            ).thenAnswer((_) async => _DocumentMock());
 
-            wrapper.getDocument(
+            await wrapper.getDocument(
               databaseId: docReference.databaseId,
               collectionId: docReference.collectionId,
               documentId: docReference.documentId,
             );
 
-            mocktail.verify(
+            verify(
               () => databasesMock.getDocument(
                 databaseId: docReference.databaseId,
                 collectionId: docReference.collectionId,
@@ -613,15 +595,13 @@ void main() {
               final exception = values[0] as AppwriteException;
               final expectedFailure = values[1] as AppwriteWrapperFailure;
 
-              mocktail
-                  .when(
-                    () => databasesMock.getDocument(
-                      databaseId: mocktail.any(named: 'databaseId'),
-                      collectionId: mocktail.any(named: 'collectionId'),
-                      documentId: mocktail.any(named: 'documentId'),
-                    ),
-                  )
-                  .thenThrow(exception);
+              when(
+                () => databasesMock.getDocument(
+                  databaseId: any(named: 'databaseId'),
+                  collectionId: any(named: 'collectionId'),
+                  documentId: any(named: 'documentId'),
+                ),
+              ).thenThrow(exception);
 
               final result = await wrapper.getDocument(
                 databaseId: 'O68JS0u',
@@ -629,7 +609,7 @@ void main() {
                 documentId: '^Z9@Cm',
               );
 
-              expect(result.isErr, true);
+              expect(result.isErr(), true);
               expect(result.unwrapErr(), expectedFailure);
             });
           }
@@ -640,15 +620,13 @@ void main() {
         'should return unexpected failure when an non-Appwrite exception is '
         'thrown',
         () async {
-          mocktail
-              .when(
-                () => databasesMock.getDocument(
-                  databaseId: mocktail.any(named: 'databaseId'),
-                  collectionId: mocktail.any(named: 'collectionId'),
-                  documentId: mocktail.any(named: 'documentId'),
-                ),
-              )
-              .thenThrow(_ExceptionMock());
+          when(
+            () => databasesMock.getDocument(
+              databaseId: any(named: 'databaseId'),
+              collectionId: any(named: 'collectionId'),
+              documentId: any(named: 'documentId'),
+            ),
+          ).thenThrow(_ExceptionMock());
 
           final result = await wrapper.getDocument(
             databaseId: 'm%oWh3&',
@@ -656,7 +634,7 @@ void main() {
             documentId: r'$j651f',
           );
 
-          expect(result.isErr, true);
+          expect(result.isErr(), true);
           expect(
             result.unwrapErr(),
             AppwriteWrapperUnexpectedFailure('_ExceptionMock'),
@@ -671,15 +649,13 @@ void main() {
         () async {
           final dummyDocument = _DocumentMock();
 
-          mocktail
-              .when(
-                () => databasesMock.getDocument(
-                  databaseId: mocktail.any(named: 'databaseId'),
-                  collectionId: mocktail.any(named: 'collectionId'),
-                  documentId: mocktail.any(named: 'documentId'),
-                ),
-              )
-              .thenAnswer((_) async => dummyDocument);
+          when(
+            () => databasesMock.getDocument(
+              databaseId: any(named: 'databaseId'),
+              collectionId: any(named: 'collectionId'),
+              documentId: any(named: 'documentId'),
+            ),
+          ).thenAnswer((_) async => dummyDocument);
 
           final result = await wrapper.getDocument(
             databaseId: 'FMGb&',
@@ -687,7 +663,7 @@ void main() {
             documentId: '6ZCK',
           );
 
-          expect(result.isOk, true);
+          expect(result.isOk(), true);
           expect(result.unwrap(), dummyDocument);
         },
       );
@@ -695,13 +671,13 @@ void main() {
   });
 }
 
-class _DatabasesMock extends mocktail.Mock implements Databases {}
+class _DatabasesMock extends Mock implements Databases {}
 
-class _AppwriteExceptionMock extends mocktail.Mock implements AppwriteException {}
+class _AppwriteExceptionMock extends Mock implements AppwriteException {}
 
-class _ExceptionMock extends mocktail.Mock implements Exception {}
+class _ExceptionMock extends Mock implements Exception {}
 
-class _DocumentMock extends mocktail.Mock implements Document {}
+class _DocumentMock extends Mock implements Document {}
 
 class _AppwriteDocumentCreationRequest extends Equatable {
   const _AppwriteDocumentCreationRequest({

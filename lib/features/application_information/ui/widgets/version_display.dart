@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
@@ -16,7 +18,7 @@ class VersionDisplay extends HookWidget {
   Widget build(BuildContext context) {
     useEffect(
       () {
-        _cubit.displayApplicationVersion();
+        unawaited(_cubit.displayApplicationVersion());
 
         return null;
       },

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_question_list_dto.dart';
 import 'package:quiz_lab/common/data/dto/create_appwrite_question_dto.dart';
@@ -13,6 +12,7 @@ import 'package:quiz_lab/features/question_management/data/data_sources/dto/appw
 import 'package:quiz_lab/features/question_management/data/data_sources/profile_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:rust_core/result.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {
   QuestionRepositoryImpl({
@@ -48,13 +48,13 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
     final deletionResult = await questionsAppwriteDataSource.deleteSingle(id.value);
 
-    return deletionResult.when(
-      ok: (_) {
+    switch (deletionResult) {
+      case Ok():
         logger.debug('Question deleted successfully');
         return const Ok(unit);
-      },
-      err: (failure) => Err(_mapQuestionsAppwriteDataSourceFailure(failure)),
-    );
+      case Err(:final err):
+        return Err(_mapQuestionsAppwriteDataSourceFailure(err));
+    }
   }
 
   @override
@@ -106,7 +106,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<String?> _getCurrentUserId() async {
     logger.debug('Retrieving owner id...');
 
-    return (await authAppwriteDataSource.getCurrentUser()).mapOr(fallback: null, okMap: (user) => user.$id);
+    return (await authAppwriteDataSource.getCurrentUser()).mapOr(null, (user) => user.$id);
   }
 
   QuestionRepositoryFailure _mapQuestionsAppwriteDataSourceFailure(
@@ -142,7 +142,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
     (await questionsAppwriteDataSource.getAll())
         .inspect((value) => logger.debug('Fetched ${value.total} questions'))
-        .when(ok: _mapQuestions, err: (err) => logger.error(err.toString()));
+        .map(_mapQuestions)
+        .inspectErr((err) => logger.error(err.toString()));
   }
 
   Future<List<Question>> _mapQuestions(AppwriteQuestionListDto listDto) async {
@@ -154,7 +155,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
       if (ownerId != null) {
         final result = await profileAppwriteDataSource.fetchSingle(ownerId);
 
-        if (result.isOk) {
+        if (result.isOk()) {
           final profileDto = result.unwrap();
           questions.add(questionDto.copyWith(profile: profileDto.displayName).toQuestion());
           continue;

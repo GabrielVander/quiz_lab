@@ -1,5 +1,5 @@
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/domain/entities/question.dart';
+import 'package:rust_core/result.dart';
 
 class GetRandomQuestionIdUseCase {
   Result<String, String> execute(Iterable<Question> questions) {

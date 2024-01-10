@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:rust_core/result.dart';
 
 class AnswerableQuestion extends Equatable {
   const AnswerableQuestion({

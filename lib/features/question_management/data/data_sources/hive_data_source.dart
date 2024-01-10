@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/json_parser.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/hive_question_dto.dart';
+import 'package:rust_core/result.dart';
 
 class HiveDataSource {
   HiveDataSource({
@@ -25,7 +25,7 @@ class HiveDataSource {
   ) async {
     final idValidationResult = _validateId(question);
 
-    if (idValidationResult.isErr) {
+    if (idValidationResult.isErr()) {
       return Err(idValidationResult.unwrapErr());
     }
 
@@ -48,7 +48,7 @@ class HiveDataSource {
   ) async {
     final idValidationResult = _validateId(question);
 
-    if (idValidationResult.isErr) {
+    if (idValidationResult.isErr()) {
       return Err(idValidationResult.unwrapErr());
     }
 
@@ -130,17 +130,22 @@ class HiveDataSource {
   }
 
   String _encodeMap(Map<String, dynamic> questionAsMap) {
-    return _jsonParser.encode(questionAsMap).when(
-          ok: (s) => s,
-          err: (err) => throw _JsonEncodeException(err.message),
-        );
+    switch (_jsonParser.encode(questionAsMap)) {
+      case Ok(:final ok):
+        return ok;
+      case Err(:final err):
+        throw _JsonEncodeException(err.message);
+    }
   }
 
-  Map<String, dynamic> _decodeMapFromString(String encodedMapString) =>
-      _jsonParser.decode(encodedMapString).when(
-            ok: (m) => m,
-            err: (err) => throw _JsonDecodeException(err.message),
-          );
+  Map<String, dynamic> _decodeMapFromString(String encodedMapString) {
+    switch (_jsonParser.decode(encodedMapString)) {
+      case Ok(:final ok):
+        return ok;
+      case Err(:final err):
+        throw _JsonDecodeException(err.message);
+    }
+  }
 }
 
 class _JsonEncodeException implements Exception {
@@ -166,11 +171,9 @@ abstract class HiveDataSourceFailure extends Equatable {
 
   factory HiveDataSourceFailure.emptyId() => const _EmptyIdFailure._();
 
-  factory HiveDataSourceFailure.jsonEncoding({required String message}) =>
-      _JsonEncodingFailure._(message: message);
+  factory HiveDataSourceFailure.jsonEncoding({required String message}) => _JsonEncodingFailure._(message: message);
 
-  factory HiveDataSourceFailure.jsonDecoding({required String message}) =>
-      _JsonDecodingFailure._(message: message);
+  factory HiveDataSourceFailure.jsonDecoding({required String message}) => _JsonDecodingFailure._(message: message);
 
   final String message;
 

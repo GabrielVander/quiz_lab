@@ -4,7 +4,6 @@ import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_error_dto.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_question_dto.dart';
@@ -16,6 +15,7 @@ import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_permission_dto.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_option_dto.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -694,7 +694,7 @@ void main() {
           ('', '', ''),
           ('G3Q', 'A9MnFkz', 'dN*p'),
         ]) {
-          test(values.toString(), () {
+          test(values.toString(), () async {
             final databaseId = values.$1;
             final collectionId = values.$2;
             final id = values.$3;
@@ -711,7 +711,7 @@ void main() {
               ),
             ).thenAnswer((_) async => Err(AppwriteWrapperUnexpectedFailure('k7^&M')));
 
-            dataSource.deleteSingle(id);
+            await dataSource.deleteSingle(id);
 
             verify(
               () => appwriteWrapperMock.deleteDocument(
@@ -743,7 +743,7 @@ void main() {
 
             final result = await dataSource.deleteSingle('*1Kl!M2q');
 
-            expect(result.isErr, true);
+            expect(result.isErr(), true);
             expect(result.unwrapErr(), expectedFailure);
           });
         }
@@ -770,7 +770,7 @@ void main() {
       'should call Appwrite wrapper correctly',
       () {
         for (final values in [('', '', ''), (r'35&Y3$8', '4F28AYf#', 'vX19')]) {
-          test(values.toString(), () {
+          test(values.toString(), () async {
             final databaseId = values.$1;
             final collectionId = values.$2;
             final id = values.$3;
@@ -789,7 +789,7 @@ void main() {
               (_) async => Err(AppwriteWrapperUnexpectedFailure('k7^&M')),
             );
 
-            dataSource.fetchSingle(id);
+            await dataSource.fetchSingle(id);
 
             verify(
               () => appwriteWrapperMock.getDocument(
@@ -821,7 +821,7 @@ void main() {
 
             final result = await dataSource.fetchSingle('9m8v3W');
 
-            expect(result.isErr, true);
+            expect(result.isErr(), true);
             expect(result.unwrapErr(), expectedFailure);
           });
         }
@@ -924,7 +924,7 @@ void main() {
 
           final result = await dataSource.fetchSingle('!K8@');
 
-          expect(result.isOk, true);
+          expect(result.isOk(), true);
           expect(result.unwrap(), expectedModel);
         });
       }
@@ -932,12 +932,12 @@ void main() {
   });
 
   group('getAllQuestions()', () {
-    test('should log initial message', () {
+    test('should log initial message', () async {
       when(
         () => databases.listDocuments(databaseId: any(named: 'databaseId'), collectionId: any(named: 'collectionId')),
       ).thenAnswer((_) async => DocumentList(total: 0, documents: []));
 
-      dataSource.getAll();
+      await dataSource.getAll();
 
       verify(() => logger.debug('Retrieving all questions from Appwrite...')).called(1);
     });
@@ -1194,7 +1194,7 @@ void main() {
 
               final result = await dataSource.watchForUpdate();
 
-              expect(result.isOk, true);
+              expect(result.isOk(), true);
               expect(result.unwrap(), emits(expectedAppwriteRealtimeQuestionMessageModel));
             });
           }

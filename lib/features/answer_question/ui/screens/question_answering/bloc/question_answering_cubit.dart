@@ -1,12 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
-import 'package:quiz_lab/core/utils/custom_implementations/rust_result.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/answer_question/domain/entities/answerable_question.dart';
 import 'package:quiz_lab/features/answer_question/domain/usecases/retrieve_question.dart';
+import 'package:rust_core/result.dart';
 
 part 'question_answering_state.dart';
 
@@ -25,11 +24,11 @@ class QuestionAnsweringCubit extends Cubit<QuestionAnsweringState> {
 
     await _emitLoadingState();
 
-    (await (await _retrieveQuestion(questionId))
+    (await _retrieveQuestion(questionId))
             .inspect(_saveCorrectAnswers)
             .map(_toViewModel)
-            .inspect((value) => _questionViewModel = value)
-            .inspectAsync((_) async => _emitQuestionViewModelUpdated()))
+            .inspect((QuestionViewModel value) => _questionViewModel = value)
+            .inspect((_) async => _emitQuestionViewModelUpdated())
         .mapErr((_) => 'Unable to load question')
         .inspectErr(logger.error)
         .inspectErr((error) async => _emitErrorState(error));

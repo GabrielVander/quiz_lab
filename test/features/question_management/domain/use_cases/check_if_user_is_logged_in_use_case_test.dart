@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_is_logged_in_use_case.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger loggerMock;
@@ -23,10 +23,10 @@ void main() {
 
   tearDown(resetMocktailState);
 
-  test('should log initial message', () {
+  test('should log initial message', () async {
     when(() => authRepository.isLoggedIn()).thenAnswer((_) async => const Err('a23'));
 
-    useCase();
+    await useCase();
 
     verify(() => loggerMock.debug('Executing...')).called(1);
   });

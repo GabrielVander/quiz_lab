@@ -1,9 +1,9 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_error_dto.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_profile_dto.dart';
+import 'package:rust_core/result.dart';
 
 // ignore: one_member_abstracts
 abstract interface class ProfileCollectionAppwriteDataSource {

@@ -3,7 +3,6 @@ import 'package:appwrite/models.dart' as appwrite_models;
 import 'package:appwrite/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_error_dto.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
@@ -12,6 +11,7 @@ import 'package:quiz_lab/features/question_management/data/data_sources/dto/appw
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_session_dto.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_user_dto.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/create_appwrite_email_session_dto.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -84,7 +84,7 @@ void main() {
             ),
           );
 
-          expect(result.isErr, true);
+          expect(result.isErr(), true);
         },
       );
 
@@ -232,10 +232,10 @@ void main() {
   );
 
   group('createAnonymousSession', () {
-    test('should log initial message', () {
+    test('should log initial message', () async {
       when(() => appwriteAccountServiceMock.createAnonymousSession()).thenThrow(AppwriteException('rPXyEK6n'));
 
-      dataSource.createAnonymousSession();
+      await dataSource.createAnonymousSession();
 
       verify(() => logger.debug('Creating anonymous session...')).called(1);
     });

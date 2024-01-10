@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/current_user_session.dart';
+import 'package:rust_core/result.dart';
 
 abstract interface class AuthRepository {
   Future<Result<Unit, AuthRepositoryError>> loginWithEmailCredentials(

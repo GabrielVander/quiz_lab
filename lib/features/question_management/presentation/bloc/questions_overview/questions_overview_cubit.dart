@@ -9,6 +9,7 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/delete_qu
 import 'package:quiz_lab/features/question_management/domain/use_cases/update_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/view_models/questions_overview_view_model.dart';
+import 'package:rust_core/result.dart';
 
 part 'questions_overview_state.dart';
 
@@ -43,7 +44,7 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
     _logger.info('Updating questions...');
     emit(const QuestionsOverviewLoading());
 
-    _watchQuestions();
+    unawaited(_watchQuestions());
   }
 
   Future<void> removeQuestion(QuestionsOverviewItemViewModel question) async {
@@ -59,11 +60,8 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
 
       final updateResult = await _updateQuestionUseCase.execute(viewModelAsQuestion);
 
-      updateResult.when(
-        ok: (_) {},
-        err: (failure) => emit(
-          QuestionsOverviewErrorOccurred(message: failure.message),
-        ),
+      updateResult.inspectErr(
+        (UpdateQuestionUseCaseFailure failure) => emit(QuestionsOverviewErrorOccurred(message: failure.message)),
       );
     }
   }
@@ -83,22 +81,22 @@ class QuestionsOverviewCubit extends Cubit<QuestionsOverviewState> {
   Future<void> _watchQuestions() async {
     final watchResult = await _watchAllQuestionsUseCase.execute();
 
-    await watchResult.when(
-      ok: (questionsStream) async {
+    switch (watchResult) {
+      case Ok(:final ok):
         _questionStreamController.stream.listen(_emitNewQuestions);
 
-        await questionsStream.pipe(_questionStreamController);
-      },
-      err: (failure) {
+        await ok.pipe(_questionStreamController);
+
+        return;
+      case Err(:final err):
         emit(
           QuestionsOverviewErrorOccurred(
-            message: failure.message,
+            message: err.message,
           ),
         );
 
         return;
-      },
-    );
+    }
   }
 
   Future<void> _deleteQuestion(QuestionsOverviewItemViewModel question) async =>

@@ -1,7 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_error_dto.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_question_dto.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_question_list_dto.dart';
@@ -10,6 +9,7 @@ import 'package:quiz_lab/common/data/dto/create_appwrite_question_dto.dart';
 import 'package:quiz_lab/common/data/wrappers/appwrite_wrapper.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:rust_core/result.dart';
 
 abstract interface class QuestionCollectionAppwriteDataSource {
   Future<Result<AppwriteQuestionDto, String>> createSingle(CreateAppwriteQuestionDto dto);
@@ -57,16 +57,14 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
 
     final deletionResult = await _performAppwriteDeletion(id);
 
-    return deletionResult.when(
-      ok: (_) {
+    switch (deletionResult) {
+      case Ok():
         logger.debug('Question deleted successfully from Appwrite');
         return const Ok(unit);
-      },
-      err: (failure) {
+      case Err(:final err):
         logger.error('Unable to delete question on Appwrite');
-        return Err(_mapAppwriteWrapperFailure(failure));
-      },
-    );
+        return Err(_mapAppwriteWrapperFailure(err));
+    }
   }
 
   @override
@@ -79,17 +77,15 @@ class QuestionCollectionAppwriteDataSourceImpl implements QuestionCollectionAppw
       documentId: id,
     );
 
-    return documentFetchingResult.when(
-      ok: (document) {
+    switch (documentFetchingResult) {
+      case Ok(:final ok):
         logger.debug('Question fetched from Appwrite successfully');
 
-        return Ok(AppwriteQuestionDto.fromDocument(document));
-      },
-      err: (failure) {
+        return Ok(AppwriteQuestionDto.fromDocument(ok));
+      case Err(:final err):
         logger.error('Unable to fetch question from Appwrite');
-        return Err(_mapAppwriteWrapperFailure(failure));
-      },
-    );
+        return Err(_mapAppwriteWrapperFailure(err));
+    }
   }
 
   @override

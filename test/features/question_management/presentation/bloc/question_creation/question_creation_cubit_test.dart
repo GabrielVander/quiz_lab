@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/check_if_user_can_create_public_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/create_question_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/question_creation/question_creation_cubit.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -33,10 +33,10 @@ void main() {
 
   group('load', () {
     group('when checking if should enable is public toggle', () {
-      test('should log initial message', () {
+      test('should log initial message', () async {
         when(() => checkIfUserCanCreatePublicQuestionsUseCase()).thenAnswer((_) async => const Err('LW6jE'));
 
-        cubit.load();
+        await cubit.load();
 
         verify(() => logger.info('Checking if user can create public questions...')).called(1);
       });

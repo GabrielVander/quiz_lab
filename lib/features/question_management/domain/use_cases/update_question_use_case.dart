@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:rust_core/result.dart';
 
 class UpdateQuestionUseCase {
   const UpdateQuestionUseCase({

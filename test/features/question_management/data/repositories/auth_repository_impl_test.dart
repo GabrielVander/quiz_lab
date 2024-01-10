@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_error_dto.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
@@ -11,6 +10,7 @@ import 'package:quiz_lab/features/question_management/data/data_sources/dto/crea
 import 'package:quiz_lab/features/question_management/data/repositories/auth_repository_impl.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/current_user_session.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late AuthAppwriteDataSource authDataSource;
@@ -40,7 +40,7 @@ void main() {
 
             final result = await repository.loginWithEmailCredentials(_MockEmailCredentials());
 
-            expect(result.isErr, true);
+            expect(result.isErr(), true);
 
             final expected = AuthRepositoryError.unexpected(message: errorMessage);
             expect(result.unwrapErr(), expected);
@@ -75,7 +75,7 @@ void main() {
               EmailCredentials(email: email, password: password),
             );
 
-            expect(result.isOk, true);
+            expect(result.isOk(), true);
             expect(result.unwrap(), unit);
           });
         }

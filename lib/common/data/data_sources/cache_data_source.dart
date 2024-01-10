@@ -1,6 +1,6 @@
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:rust_core/result.dart';
 
 abstract interface class CacheDataSource<T> {
   Future<Result<T, String>> fetchValue(String key);

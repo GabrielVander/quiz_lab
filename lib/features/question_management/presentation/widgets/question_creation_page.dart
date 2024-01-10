@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -38,7 +40,7 @@ class QuestionCreationPage extends HookWidget {
             child: Builder(
               builder: (context) {
                 if (state is QuestionCreationInitial) {
-                  cubit.load();
+                  unawaited(cubit.load());
                 }
 
                 if (state is QuestionCreationGoBack) {
