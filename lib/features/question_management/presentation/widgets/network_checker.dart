@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
@@ -19,7 +21,7 @@ class NetworkChecker extends HookWidget {
     final state = useBlocBuilder(cubit);
 
     if (state is NetworkInitial) {
-      cubit.update();
+      unawaited(cubit.update());
     }
 
     if (state is NetworkChanged) {

@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_question_dto.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_question_list_dto.dart';
@@ -22,6 +21,7 @@ import 'package:quiz_lab/features/question_management/domain/entities/draft_ques
 import 'package:quiz_lab/features/question_management/domain/entities/question_category.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/question_owner.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -61,11 +61,11 @@ void main() {
       ),
     );
 
-    test('should log initial message', () {
+    test('should log initial message', () async {
       when(() => authAppwriteDataSource.getCurrentUser()).thenAnswer((_) async => const Err('dALlzcb'));
       when(() => questionsAppwriteDataSource.createSingle(any())).thenAnswer((_) async => const Err('q7249j'));
 
-      repository.createSingle(
+      await repository.createSingle(
         const DraftQuestion(
           title: '',
           description: '',
@@ -359,7 +359,7 @@ void main() {
 
           final result = await repository.watchAll();
 
-          expect(result.isOk, true);
+          expect(result.isOk(), true);
           expect(result.unwrap(), emits(expected));
         });
       }
@@ -372,11 +372,11 @@ void main() {
         const QuestionId(''),
         const QuestionId('olp'),
       ]) {
-        test(questionId.toString(), () {
+        test(questionId.toString(), () async {
           when(() => questionsAppwriteDataSource.deleteSingle(any()))
               .thenAnswer((_) async => Err(QuestionsAppwriteDataSourceUnexpectedFailure(r'T8$W7')));
 
-          repository.deleteSingle(questionId);
+          await repository.deleteSingle(questionId);
 
           verify(() => questionsAppwriteDataSource.deleteSingle(questionId.value)).called(1);
         });

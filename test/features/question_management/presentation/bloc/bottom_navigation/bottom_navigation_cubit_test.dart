@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_lab/core/utils/routes.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/bottom_navigation/bottom_navigation_cubit.dart';
@@ -9,8 +11,8 @@ void main() {
     cubit = BottomNavigationCubit();
   });
 
-  tearDown(() {
-    cubit.close();
+  tearDown(() async {
+    await cubit.close();
   });
 
   test('initial state', () {
@@ -41,12 +43,11 @@ void main() {
           const BottomNavigationNavigateToRoute(route: Routes.resultsOverview),
         ],
       }.forEach((key, value) {
-        test('$key -> $value', () {
-          expectLater(cubit.stream, emitsInAnyOrder(value));
+        test('$key -> $value', () async {
+          unawaited(expectLater(cubit.stream, emitsInAnyOrder(value)));
 
-          cubit
-            ..transitionTo(newIndex: key.indexNumber)
-            ..close();
+          cubit.transitionTo(newIndex: key.indexNumber);
+          await cubit.close();
         });
       });
     });
@@ -108,14 +109,14 @@ void main() {
           const BottomNavigationNavigateToRoute(route: Routes.assessments),
         ],
       }.forEach((List<NavigationIndex> indexes, value) {
-        test('$indexes -> $value', () {
-          expectLater(cubit.stream, emitsInOrder(value));
+        test('$indexes -> $value', () async {
+          unawaited(expectLater(cubit.stream, emitsInOrder(value)));
 
           for (final i in indexes) {
             cubit.transitionTo(newIndex: i.indexNumber);
           }
 
-          cubit.close();
+          await cubit.close();
         });
       });
     });

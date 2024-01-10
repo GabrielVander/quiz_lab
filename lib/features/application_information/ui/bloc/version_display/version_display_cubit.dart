@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/application_information/domain/usecases/retrieve_application_version.dart';
+import 'package:rust_core/result.dart';
 
 part 'version_display_state.dart';
 

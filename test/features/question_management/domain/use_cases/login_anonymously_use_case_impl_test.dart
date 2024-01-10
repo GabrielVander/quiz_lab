@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_anonymously_use_case.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger loggerMock;
@@ -24,10 +24,10 @@ void main() {
 
   tearDown(resetMocktailState);
 
-  test('should log initial message', () {
+  test('should log initial message', () async {
     when(() => authRepositoryMock.loginAnonymously()).thenAnswer((_) async => const Err('!meldT'));
 
-    useCase();
+    await useCase();
 
     verify(() => loggerMock.debug('Executing...')).called(1);
   });
@@ -49,7 +49,7 @@ void main() {
           final result = await useCase();
 
           verify(() => loggerMock.error(error)).called(1);
-          expect(result.containsErr('Unable to login anonymously'), true);
+          expect(result.isErrAnd((err) => err.contains('Unable to login anonymously')), true);
         });
       }
     });
@@ -59,7 +59,7 @@ void main() {
 
       final result = await useCase();
 
-      expect(result.contains(unit), true);
+      expect(result, const Ok(unit));
     });
   });
 }

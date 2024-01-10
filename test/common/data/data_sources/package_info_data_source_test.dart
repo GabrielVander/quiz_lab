@@ -32,7 +32,7 @@ void main() {
     test('should return Ok', () async {
       final result = await dataSource.fetchPackageInformation();
 
-      expect(result.isOk, true);
+      expect(result.isOk(), true);
     });
   });
 }

@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/data_sources/questions_collection_appwrite_data_source.dart';
 import 'package:quiz_lab/common/data/dto/appwrite_question_dto.dart';
 import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
@@ -10,6 +9,7 @@ import 'package:quiz_lab/features/answer_question/data/repositories/question_rep
 import 'package:quiz_lab/features/answer_question/domain/entities/answerable_question.dart' as answerable_question;
 import 'package:quiz_lab/features/answer_question/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/appwrite_question_option_dto.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -33,11 +33,11 @@ void main() {
   tearDown(resetMocktailState);
 
   group('fetchQuestionWithId', () {
-    test('should log initial message', () {
+    test('should log initial message', () async {
       when(() => questionCollectionAppwriteDataSource.fetchSingle(any()))
           .thenAnswer((_) async => Err(QuestionsAppwriteDataSourceUnexpectedFailure('22!4RhY8')));
 
-      repository.fetchQuestionWithId(r'2I2SE$');
+      await repository.fetchQuestionWithId(r'2I2SE$');
 
       verify(() => logger.debug('Fetching question with given id...'));
     });
@@ -185,7 +185,7 @@ void main() {
 
           verify(() => questionCollectionAppwriteDataSource.fetchSingle(id)).called(1);
           verify(() => logger.debug('Question fetched successfully')).called(1);
-          expect(result, Ok<answerable_question.AnswerableQuestion, dynamic>(expected));
+          expect(result, Ok<answerable_question.AnswerableQuestion, String>(expected));
         });
       }
     });

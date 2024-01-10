@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:okay/okay.dart';
+import 'package:rust_core/result.dart';
 
 class JsonParser<T extends Object> {
   JsonParser({required this.encoder, required this.decoder});

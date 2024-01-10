@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
-import 'package:okay/okay.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/auth_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/login_with_credentials_use_case.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late AuthRepository authRepository;
@@ -14,7 +14,7 @@ void main() {
     () => {
       authRepository = _AuthRepositoryMock(),
       useCase = LoginWithCredentialsUseCaseImpl(authRepository: authRepository),
-      mocktail.registerFallbackValue(
+      registerFallbackValue(
         _FakeEmailCredentials(),
       ),
     },
@@ -33,18 +33,16 @@ void main() {
             const dummyEmail = 'N3GKON@F';
             const dummyPassword = 's5o';
 
-            mocktail
-                .when(
-                  () => authRepository.loginWithEmailCredentials(
-                    const EmailCredentials(
-                      email: dummyEmail,
-                      password: dummyPassword,
-                    ),
-                  ),
-                )
-                .thenAnswer(
-                  (_) async => Err(authError),
-                );
+            when(
+              () => authRepository.loginWithEmailCredentials(
+                const EmailCredentials(
+                  email: dummyEmail,
+                  password: dummyPassword,
+                ),
+              ),
+            ).thenAnswer(
+              (_) async => Err(authError),
+            );
 
             final result = await useCase(
               const LoginWithCredentialsUseCaseInput(
@@ -53,7 +51,7 @@ void main() {
               ),
             );
 
-            expect(result.isErr, true);
+            expect(result.isErr(), true);
             expect(result.unwrapErr(), 'Login failed');
           });
         }
@@ -68,16 +66,14 @@ void main() {
         const dummyEmail = 'dz536IRG';
         const dummyPassword = 'ErSV';
 
-        mocktail
-            .when(
-              () => authRepository.loginWithEmailCredentials(
-                const EmailCredentials(
-                  email: dummyEmail,
-                  password: dummyPassword,
-                ),
-              ),
-            )
-            .thenAnswer((_) async => const Ok(unit));
+        when(
+          () => authRepository.loginWithEmailCredentials(
+            const EmailCredentials(
+              email: dummyEmail,
+              password: dummyPassword,
+            ),
+          ),
+        ).thenAnswer((_) async => const Ok(unit));
 
         final result = await useCase(
           const LoginWithCredentialsUseCaseInput(
@@ -86,15 +82,15 @@ void main() {
           ),
         );
 
-        expect(result.isOk, true);
+        expect(result.isOk(), true);
         expect(result.unwrap(), unit);
       },
     );
   });
 }
 
-class _AuthRepositoryMock extends mocktail.Mock implements AuthRepository {}
+class _AuthRepositoryMock extends Mock implements AuthRepository {}
 
-class _FakeEmailCredentials extends mocktail.Fake implements EmailCredentials {}
+class _FakeEmailCredentials extends Fake implements EmailCredentials {}
 
-class _FakeAuthRepositoryError extends mocktail.Fake implements AuthRepositoryError {}
+class _FakeAuthRepositoryError extends Fake implements AuthRepositoryError {}

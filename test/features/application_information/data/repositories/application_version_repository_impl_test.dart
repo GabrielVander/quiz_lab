@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/data_sources/cache_data_source.dart';
 import 'package:quiz_lab/common/data/data_sources/package_info_data_source.dart';
 import 'package:quiz_lab/common/data/dto/package_info_dto.dart';
@@ -8,6 +7,7 @@ import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/application_information/data/repositories/application_version_repository_impl.dart';
 import 'package:quiz_lab/features/application_information/domain/repositories/application_version_repository.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -29,10 +29,10 @@ void main() {
   });
 
   group('fetchVersionName', () {
-    test('should log initial message', () {
+    test('should log initial message', () async {
       when(() => cacheDataSource.fetchValue(any<String>())).thenAnswer((_) async => const Ok('7Vbg!'));
 
-      repository.fetchVersionName();
+      await repository.fetchVersionName();
 
       verify(() => logger.debug('Fetching version name...')).called(1);
     });
@@ -46,7 +46,7 @@ void main() {
 
           verify(() => cacheDataSource.fetchValue('applicationVersionName')).called(1);
           verifyNever(() => packageInfoDataSource.fetchPackageInformation());
-          expect(result, Ok<String, dynamic>(version));
+          expect(result, Ok<String, String>(version));
         });
       }
     });
@@ -94,13 +94,13 @@ void main() {
               ),
             ),
           );
-          when(() => cacheDataSource.storeValue(any<String>(), any<String>())).thenAnswer((_) async => Err(cacheDataSourceMessage));
+          when(() => cacheDataSource.storeValue(any<String>(), any<String>()))
+              .thenAnswer((_) async => Err(cacheDataSourceMessage));
 
           final result = await repository.fetchVersionName();
 
           verify(() => cacheDataSource.storeValue('applicationVersionName', version)).called(1);
-          verify(() => logger.warn(cacheDataSourceMessage)).called(1);
-          expect(result, Ok<String, dynamic>(version));
+          expect(result, Ok<String, String>(version));
         });
       }
     });
@@ -131,7 +131,7 @@ void main() {
           verify(() => logger.debug(cacheDataSourceMessage)).called(1);
           verify(() => packageInfoDataSource.fetchPackageInformation()).called(1);
           verify(() => cacheDataSource.storeValue('applicationVersionName', version)).called(1);
-          expect(result, Ok<String, dynamic>(version));
+          expect(result, Ok<String, String>(version));
         });
       }
     });

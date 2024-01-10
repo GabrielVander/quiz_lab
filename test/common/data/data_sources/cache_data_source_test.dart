@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/data/data_sources/cache_data_source.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -46,7 +46,7 @@ void main() {
           await dataSource.storeValue(key, value);
           final result = await dataSource.fetchValue(key);
 
-          expect(result, Ok<String, dynamic>(value));
+          expect(result, Ok<String, String>(value));
         });
       }
     });
@@ -85,7 +85,7 @@ void main() {
         test('with $key as key and $value as value', () async {
           final result = await dataSource.storeValue(key, value);
 
-          expect(result, const Ok<Unit, dynamic>(unit));
+          expect(result, const Ok<Unit, String>(unit));
         });
       }
     });

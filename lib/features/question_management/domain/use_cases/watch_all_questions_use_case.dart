@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/core/utils/logger/impl/quiz_lab_logger_factory.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:rust_core/result.dart';
 import 'package:rxdart/rxdart.dart';
 
 class WatchAllQuestionsUseCase {
@@ -21,7 +21,7 @@ class WatchAllQuestionsUseCase {
 
     final streamResult = await _questionRepository.watchAll();
 
-    if (streamResult.isErr) {
+    if (streamResult.isErr()) {
       final failure = WatchAllQuestionsFailure.generic(
         message: streamResult.unwrapErr(),
       );

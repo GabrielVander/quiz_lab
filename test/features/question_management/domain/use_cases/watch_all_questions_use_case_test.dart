@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
-import 'package:okay/okay.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuestionRepository questionRepositoryMock;
@@ -19,7 +19,7 @@ void main() {
     );
   });
 
-  tearDown(mocktail.resetMocktailState);
+  tearDown(resetMocktailState);
 
   group('err flow', () {
     group(
@@ -33,11 +33,11 @@ void main() {
             final repositoryFailure = values[0] as String;
             final expectedFailure = values[1] as WatchAllQuestionsFailure;
 
-            mocktail.when(questionRepositoryMock.watchAll).thenAnswer((_) async => Err(repositoryFailure));
+            when(questionRepositoryMock.watchAll).thenAnswer((_) async => Err(repositoryFailure));
 
             final result = await useCase.execute();
 
-            expect(result.isErr, true);
+            expect(result.isErr(), true);
             expect(result.unwrapErr(), expectedFailure);
           });
         }
@@ -95,11 +95,11 @@ void main() {
           test(streamValues.toString(), () async {
             final stream = Stream.fromIterable(streamValues);
 
-            mocktail.when(questionRepositoryMock.watchAll).thenAnswer((_) async => Ok(stream));
+            when(questionRepositoryMock.watchAll).thenAnswer((_) async => Ok(stream));
 
             final result = await useCase.execute();
 
-            expect(result.isOk, isTrue);
+            expect(result.isOk(), isTrue);
 
             final actualStream = result.unwrap();
             unawaited(expectLater(actualStream, emitsInOrder(streamValues)));
@@ -110,4 +110,4 @@ void main() {
   });
 }
 
-class _QuestionRepositoryMock extends mocktail.Mock implements QuestionRepository {}
+class _QuestionRepositoryMock extends Mock implements QuestionRepository {}

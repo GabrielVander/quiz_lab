@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/features/answer_question/domain/entities/answerable_question.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   group('answerWith', () {
@@ -137,7 +137,7 @@ void main() {
         test('when called with $question as question and $answerId as answerId should return $expectedResult', () {
           final result = question.answerWith(answerId);
 
-          expect(result, Ok<QuestionResult, dynamic>(expectedResult));
+          expect(result, Ok<QuestionResult, AnswerFailure>(expectedResult));
         });
       }
     });

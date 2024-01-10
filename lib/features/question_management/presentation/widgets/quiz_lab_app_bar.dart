@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_lab/common/ui/widgets/beta_banner_display.dart';
@@ -37,7 +39,7 @@ class QuizLabAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: Title(),
             ),
             SettingsAction(
-              onPressed: () => GoRouter.of(context).pushNamed(Routes.configuration.name),
+              onPressed: () => unawaited(GoRouter.of(context).pushNamed(Routes.configuration.name)),
             ),
           ],
         ),

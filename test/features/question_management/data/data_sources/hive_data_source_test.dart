@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/json_parser.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/dto/hive_question_dto.dart';
 import 'package:quiz_lab/features/question_management/data/data_sources/hive_data_source.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late Box<String> mockQuestionsBox;
@@ -52,7 +52,7 @@ void main() {
 
                 final result = await dataSource.saveQuestion(_FakeHiveQuestionModel());
 
-                expect(result.isErr, isTrue);
+                expect(result.isErr(), isTrue);
                 expect(result.unwrapErr(), expectedFailure);
               });
             }
@@ -92,7 +92,7 @@ void main() {
 
                 final result = await dataSource.saveQuestion(question);
 
-                expect(result.isErr, isTrue);
+                expect(result.isErr(), isTrue);
 
                 expect(result.unwrapErr(), expectedFailure);
               });
@@ -131,7 +131,7 @@ void main() {
 
                 final result = await dataSource.saveQuestion(fakeModel);
 
-                expect(result.isErr, isTrue);
+                expect(result.isErr(), isTrue);
                 expect(result.unwrapErr(), expectedFailure);
               });
             }
@@ -181,7 +181,7 @@ void main() {
 
                 final result = await dataSource.saveQuestion(model);
 
-                expect(result.isOk, isTrue);
+                expect(result.isOk(), isTrue);
                 verify(
                   () => mockQuestionsBox.put(model.id, dummyJsonEncodedString),
                 ).called(1);
@@ -221,7 +221,7 @@ void main() {
 
               final result = await dataSource.deleteQuestion(model);
 
-              expect(result.isErr, isTrue);
+              expect(result.isErr(), isTrue);
               expect(result.unwrapErr(), HiveDataSourceFailure.emptyId());
             });
           }
@@ -251,7 +251,7 @@ void main() {
 
               final result = await dataSource.deleteQuestion(fakeModel);
 
-              expect(result.isErr, isTrue);
+              expect(result.isErr(), isTrue);
               expect(result.unwrapErr(), expectedFailure);
             });
           }
@@ -283,7 +283,7 @@ void main() {
 
               final result = await dataSource.deleteQuestion(dummyModel);
 
-              expect(result.isOk, isTrue);
+              expect(result.isOk(), isTrue);
               verify(() => mockQuestionsBox.delete(id)).called(1);
             });
           }
@@ -319,7 +319,7 @@ void main() {
 
                   final result = dataSource.watchAllQuestions();
 
-                  expect(result.isErr, isTrue);
+                  expect(result.isErr(), isTrue);
                   expect(result.unwrapErr(), expectedFailure);
                 });
               }
@@ -351,7 +351,7 @@ void main() {
 
                   final result = dataSource.watchAllQuestions();
 
-                  expect(result.isErr, isTrue);
+                  expect(result.isErr(), isTrue);
                   expect(result.unwrapErr(), expectedFailure);
                 });
               }
@@ -390,7 +390,7 @@ void main() {
 
                   final result = dataSource.watchAllQuestions();
 
-                  expect(result.isErr, isTrue);
+                  expect(result.isErr(), isTrue);
                   expect(result.unwrapErr(), expectedFailure);
                 });
               }
@@ -428,7 +428,7 @@ void main() {
 
                   final result = dataSource.watchAllQuestions();
 
-                  expect(result.isErr, isTrue);
+                  expect(result.isErr(), isTrue);
                   expect(result.unwrapErr(), expectedFailure);
                 });
               }
@@ -465,7 +465,7 @@ void main() {
 
                   final result = dataSource.watchAllQuestions();
 
-                  expect(result.isErr, isTrue);
+                  expect(result.isErr(), isTrue);
                   expect(result.unwrapErr(), expectedFailure);
                 });
               }
@@ -658,7 +658,7 @@ void main() {
 
                 final result = dataSource.watchAllQuestions();
 
-                expect(result.isOk, isTrue);
+                expect(result.isOk(), isTrue);
 
                 await expectLater(
                   result.unwrap(),

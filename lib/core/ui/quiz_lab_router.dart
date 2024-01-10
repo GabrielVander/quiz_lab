@@ -83,8 +83,8 @@ class QuizLabRouterImpl with EquatableMixin implements QuizLabRouter {
             name: Routes.questionsOverview.name,
             path: Routes.questionsOverview.path,
             redirect: (buildContext, routerState) async => (await checkIfUserIsLoggedInUseCase()).mapOrElse(
-              errMap: (_) => null,
-              okMap: (isLoggedIn) => isLoggedIn ? null : Routes.login.path,
+              (_) => null,
+              (isLoggedIn) => isLoggedIn ? null : Routes.login.path,
             ),
             pageBuilder: (BuildContext context, GoRouterState state) => NoTransitionPage(
               child: QuestionsOverviewPage(

@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/application_information/domain/usecases/retrieve_application_version.dart';
 import 'package:quiz_lab/features/application_information/ui/bloc/version_display/version_display_cubit.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;

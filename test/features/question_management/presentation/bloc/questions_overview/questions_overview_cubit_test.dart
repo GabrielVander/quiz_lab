@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart' as mocktail;
-import 'package:okay/okay.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:quiz_lab/common/domain/entities/question.dart';
 import 'package:quiz_lab/common/domain/entities/question_difficulty.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
@@ -13,6 +12,7 @@ import 'package:quiz_lab/features/question_management/domain/use_cases/update_qu
 import 'package:quiz_lab/features/question_management/domain/use_cases/watch_all_questions_use_case.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/questions_overview_cubit.dart';
 import 'package:quiz_lab/features/question_management/presentation/bloc/questions_overview/view_models/questions_overview_view_model.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late UpdateQuestionUseCase updateQuestionUseCaseMock;
@@ -33,9 +33,9 @@ void main() {
     );
   });
 
-  tearDown(() {
-    cubit.close();
-    mocktail.resetMocktailState();
+  tearDown(() async {
+    await cubit.close();
+    resetMocktailState();
   });
 
   test(
@@ -120,11 +120,11 @@ void main() {
       final expectedStates = values[1] as List<Matcher>;
 
       test('should emit expected states: $expectedStates', () {
-        mocktail.when(watchAllQuestionsUseCaseMock.execute).thenAnswer(
-              (_) async => Ok(Stream.fromIterable(questions)),
-            );
+        when(watchAllQuestionsUseCaseMock.execute).thenAnswer(
+          (_) async => Ok(Stream.fromIterable(questions)),
+        );
 
-        expectLater(cubit.stream, emitsInOrder(expectedStates));
+        unawaited(expectLater(cubit.stream, emitsInOrder(expectedStates)));
 
         cubit.updateQuestions();
       });
@@ -161,13 +161,13 @@ void main() {
             final message = values[0] as String;
             final expectedStates = values[1] as List<Matcher>;
 
-            mocktail.when(watchAllQuestionsUseCaseMock.execute).thenAnswer(
-                  (_) async => Err(
-                    WatchAllQuestionsFailure.generic(message: message),
-                  ),
-                );
+            when(watchAllQuestionsUseCaseMock.execute).thenAnswer(
+              (_) async => Err(
+                WatchAllQuestionsFailure.generic(message: message),
+              ),
+            );
 
-            expectLater(cubit.stream, emitsInOrder(expectedStates));
+            unawaited(expectLater(cubit.stream, emitsInOrder(expectedStates)));
 
             cubit.updateQuestions();
           });
@@ -194,19 +194,19 @@ void main() {
             ]
           ],
         ]) {
-          test(values.toString(), () {
+          test(values.toString(), () async {
             final questionId = values[0] as String;
             final expectedStates = values[1] as List<Matcher>;
 
             final questionOverviewItemViewModelMock = _QuestionOverviewItemViewModelMock();
 
-            mocktail.when(() => questionOverviewItemViewModelMock.id).thenReturn(questionId);
+            when(() => questionOverviewItemViewModelMock.id).thenReturn(questionId);
 
-            mocktail.when(() => deleteQuestionUseCaseMock.execute(questionId)).thenAnswer((_) async {});
+            when(() => deleteQuestionUseCaseMock.execute(questionId)).thenAnswer((_) async {});
 
-            expectLater(cubit.stream, emitsInOrder(expectedStates));
+            unawaited(expectLater(cubit.stream, emitsInOrder(expectedStates)));
 
-            cubit.removeQuestion(questionOverviewItemViewModelMock);
+            await cubit.removeQuestion(questionOverviewItemViewModelMock);
           });
         }
       },
@@ -214,18 +214,18 @@ void main() {
   });
 
   group('onQuestionSaved', () {
-    setUp(() => mocktail.registerFallbackValue(_QuestionMock()));
+    setUp(() => registerFallbackValue(_QuestionMock()));
 
     test(
-      'should emit nothing if description is emtpy',
-      () {
+      'should emit nothing if description is empty',
+      () async {
         final viewModelMock = _QuestionOverviewItemViewModelMock();
 
-        mocktail.when(() => viewModelMock.shortDescription).thenReturn('');
+        when(() => viewModelMock.shortDescription).thenReturn('');
 
-        expectLater(cubit.stream, emitsInOrder([]));
+        unawaited(expectLater(cubit.stream, emitsInOrder([])));
 
-        cubit.onQuestionSaved(viewModelMock);
+        await cubit.onQuestionSaved(viewModelMock);
       },
     );
 
@@ -276,24 +276,22 @@ void main() {
             ]
           ],
         ]) {
-          test(values.toString(), () {
+          test(values.toString(), () async {
             final updateQuestionUseCaseResult = values[0] as Result<Unit, UpdateQuestionUseCaseFailure>;
             final expectedStates = values[1] as List<Matcher>;
 
             final viewModelMock = _QuestionOverviewItemViewModelMock();
             final questionMock = _QuestionMock();
 
-            mocktail.when(() => viewModelMock.shortDescription).thenReturn('gImVFe1#');
+            when(() => viewModelMock.shortDescription).thenReturn('gImVFe1#');
 
-            mocktail.when(viewModelMock.toQuestion).thenReturn(questionMock);
+            when(viewModelMock.toQuestion).thenReturn(questionMock);
 
-            mocktail
-                .when(() => updateQuestionUseCaseMock.execute(mocktail.any()))
-                .thenAnswer((_) async => updateQuestionUseCaseResult);
+            when(() => updateQuestionUseCaseMock.execute(any())).thenAnswer((_) async => updateQuestionUseCaseResult);
 
-            expectLater(cubit.stream, emitsInOrder(expectedStates));
+            unawaited(expectLater(cubit.stream, emitsInOrder(expectedStates)));
 
-            cubit.onQuestionSaved(viewModelMock);
+            await cubit.onQuestionSaved(viewModelMock);
           });
         }
       },
@@ -301,15 +299,15 @@ void main() {
   });
 }
 
-class _QuestionMock extends mocktail.Mock implements Question {}
+class _QuestionMock extends Mock implements Question {}
 
-class _QuestionOverviewItemViewModelMock extends mocktail.Mock implements QuestionsOverviewItemViewModel {}
+class _QuestionOverviewItemViewModelMock extends Mock implements QuestionsOverviewItemViewModel {}
 
-class _UpdateQuestionUseCaseMock extends mocktail.Mock implements UpdateQuestionUseCase {}
+class _UpdateQuestionUseCaseMock extends Mock implements UpdateQuestionUseCase {}
 
-class _DeleteQuestionUseCaseMock extends mocktail.Mock implements DeleteQuestionUseCase {}
+class _DeleteQuestionUseCaseMock extends Mock implements DeleteQuestionUseCase {}
 
-class _WatchAllQuestionsUseCaseMock extends mocktail.Mock implements WatchAllQuestionsUseCase {}
+class _WatchAllQuestionsUseCaseMock extends Mock implements WatchAllQuestionsUseCase {}
 
 class _DummyQuestion extends Question {
   _DummyQuestion()

@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/features/application_information/domain/repositories/application_version_repository.dart';
 import 'package:quiz_lab/features/application_information/domain/usecases/retrieve_application_version.dart';
+import 'package:rust_core/result.dart';
 
 void main() {
   late QuizLabLogger logger;
@@ -38,7 +38,7 @@ void main() {
 
         verify(() => applicationVersionRepository.fetchVersionName()).called(1);
         verify(() => logger.error(message)).called(1);
-        expect(result, const Err<String, dynamic>('Unable to retrieve application version'));
+        expect(result, const Err<String, String>('Unable to retrieve application version'));
       });
     }
   });
@@ -51,7 +51,7 @@ void main() {
         final result = await useCase();
 
         verify(() => applicationVersionRepository.fetchVersionName()).called(1);
-        expect(result, Ok<String, dynamic>(version));
+        expect(result, Ok<String, String>(version));
       });
     }
   });

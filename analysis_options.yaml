@@ -11,6 +11,11 @@ include: package:very_good_analysis/analysis_options.yaml
 
 analyzer:
   exclude: [ build/**, lib/**.freezed.dart, lib/**.g.dart, lib/generated/**, lib/firebase_options.dart ]
+  errors:
+    unawaited_futures: error
+    await_only_futures: error
+    avoid_void_async: error
+    discarded_futures: error
 
 linter:
   # The lint rules applied to this project can be customized in the
@@ -31,6 +36,10 @@ linter:
     sort_pub_dependencies: false
     no_adjacent_strings_in_list: false
     lines_longer_than_80_chars: false
+    unawaited_futures: true # Future results in async function bodies must be awaited or marked unawaited using dart:async
+    await_only_futures: true # "await" should only be used on Futures
+    avoid_void_async: true # Avoid async functions that return void. (they should return Future<void>)
+    discarded_futures: true # Don’t invoke asynchronous functions in non-async blocks.
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

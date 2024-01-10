@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -60,7 +62,7 @@ class QuestionsOverviewPage extends HookWidget {
           Container(
             margin: const EdgeInsets.only(bottom: 15),
             child: _Header(
-              onAddQuestion: () => GoRouter.of(context).pushNamed(Routes.createQuestion.name),
+              onAddQuestion: () => unawaited(GoRouter.of(context).pushNamed(Routes.createQuestion.name)),
             ),
           ),
           Expanded(
@@ -112,9 +114,11 @@ class QuestionsOverviewPage extends HookWidget {
   void _handleOpenQuestionState(Object? current, BuildContext context) {
     final state = current! as QuestionsOverviewOpenQuestion;
 
-    GoRouter.of(context).pushNamed(
-      Routes.displayQuestion.name,
-      pathParameters: {'id': state.questionId},
+    unawaited(
+      GoRouter.of(context).pushNamed(
+        Routes.displayQuestion.name,
+        pathParameters: {'id': state.questionId},
+      ),
     );
   }
 }

@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:okay/okay.dart';
 import 'package:quiz_lab/core/utils/logger/quiz_lab_logger.dart';
 import 'package:quiz_lab/core/utils/unit.dart';
 import 'package:quiz_lab/features/question_management/domain/entities/draft_question.dart';
 import 'package:quiz_lab/features/question_management/domain/repositories/question_repository.dart';
+import 'package:rust_core/result.dart';
 
 // ignore: one_member_abstracts
 abstract interface class CreateQuestionUseCase {

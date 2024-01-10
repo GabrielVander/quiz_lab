@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
@@ -20,7 +22,7 @@ class AssessmentsPage extends HookWidget {
     final state = useBlocBuilder(assessmentsOverviewCubit);
 
     if (state is AssessmentsOverviewInitial) {
-      assessmentsOverviewCubit.getAssessments(context);
+      unawaited(assessmentsOverviewCubit.getAssessments(context));
     }
 
     return Padding(
